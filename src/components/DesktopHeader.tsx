@@ -127,47 +127,42 @@ export default function DesktopHeader() {
               <div className="w-8 h-8 bg-gray-200 rounded-full animate-pulse"></div>
             ) : session ? (
               <div className="flex items-center space-x-2">
-                {/* User Profile */}
-                <Link 
-                  href="/profile" 
-                  className={`
-                    flex items-center space-x-2 px-3 py-2 rounded-xl transition-all duration-300 group
-                    ${isActive('/profile')
-                      ? 'text-orange-500 bg-orange-50 shadow-md'
-                      : 'text-gray-900 hover:text-orange-500 hover:bg-orange-50'
-                    }
-                  `}
-                >
-                  <User className="h-5 w-5" />
-                  <span className="hidden sm:block font-medium">{session.user?.name}</span>
-                  
-                  {/* Активный индикатор для профиля */}
-                  {isActive('/profile') && (
-                    <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-6 h-1 bg-orange-500 rounded-full"></div>
-                  )}
-                </Link>
-                
-                {/* Admin Link */}
-                {session.user?.role === 'ADMIN' && (
-                  <Link 
-                    href="/admin" 
+                {/* Admin: один элемент — кнопка Админ; обычный пользователь — профиль */}
+                {session.user?.role === 'ADMIN' ? (
+                  <Link
+                    href="/admin"
                     className={`
-                      relative px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-300 group
+                      relative px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-300
                       ${isActive('/admin')
-                        ? 'text-orange-500 bg-orange-50 shadow-md'
+                        ? 'text-orange-600 bg-orange-100 shadow-md'
                         : 'bg-orange-100 text-orange-600 hover:bg-orange-200'
                       }
                     `}
                   >
                     Админ
-                    
-                    {/* Активный индикатор для админки */}
                     {isActive('/admin') && (
-                      <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-6 h-1 bg-orange-500 rounded-full"></div>
+                      <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-6 h-1 bg-orange-500 rounded-full" />
+                    )}
+                  </Link>
+                ) : (
+                  <Link
+                    href="/profile"
+                    className={`
+                      flex items-center space-x-2 px-3 py-2 rounded-xl transition-all duration-300 group
+                      ${isActive('/profile')
+                        ? 'text-orange-500 bg-orange-50 shadow-md'
+                        : 'text-gray-900 hover:text-orange-500 hover:bg-orange-50'
+                      }
+                    `}
+                  >
+                    <User className="h-5 w-5" />
+                    <span className="hidden sm:block font-medium">{session.user?.name}</span>
+                    {isActive('/profile') && (
+                      <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-6 h-1 bg-orange-500 rounded-full" />
                     )}
                   </Link>
                 )}
-                
+
                 {/* Logout */}
                 <button
                   onClick={() => signOut({ callbackUrl: '/' })}
