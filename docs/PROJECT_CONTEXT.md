@@ -37,6 +37,7 @@ norapat/
 │   │       └── admin/       # stats, products, products/[id], orders, orders/[id]/status, categories, categories/[id], settings
 │   ├── components/          # UI и фичи
 │   │   ├── ui/              # button, input, card, badge, select
+│   │   ├── home/            # Главная: BrandBannerSection, CategoriesSection
 │   │   ├── Header, MobileHeader, DesktopHeader, MobileBottomNav, Footer
 │   │   ├── ClientProviders  # SessionProvider + CartProvider
 │   │   ├── ProductCard, ProductQuantityControls, ImageUpload, ImageSelector, OptimizedImage
@@ -78,7 +79,7 @@ next.config: `outputFileTracingRoot`, ESLint/TS ignore during builds, images (we
 - **OrderItem:** id, orderId, productId, quantity, price
 - **Settings:** id, key, value
 
-Типы и константы (OrderStatus, ProductStatus, PaymentMethod, ORDER_STATUS_LABELS, PRODUCT_STATUS_LABELS, PAYMENT_METHODS) — в `src/types/index.ts`. Product/Category также реэкспортируются из `@prisma/client`.
+Типы и константы (OrderStatus, ProductStatus, PaymentMethod, ORDER_STATUS_LABELS, PRODUCT_STATUS_LABELS, PAYMENT_METHODS) — в `src/types/index.ts`. Product/Category реэкспортируются из `@prisma/client`; добавлены ProductWithCategory, CategoryWithCount для главной и API.
 
 ---
 
@@ -106,7 +107,7 @@ next.config: `outputFileTracingRoot`, ESLint/TS ignore during builds, images (we
 ## Важные моменты
 
 1. **Корзина:** контекст в `useCart.tsx` (CartProvider), ключ localStorage `pideh-cart`. Типы CartItem, CartContextType в `@/types`.
-2. **Главная:** данные с `/api/products`, `/api/products/featured`, `/api/products/banner`; категории: Пиде, Комбо, Снэк, Соусы, Напитки.
+2. **Главная:** секции — (1) Brand banner `BrandBannerSection` + `/api/products/banner`, (2) Категории `CategoriesSection` + `/api/categories` (карточки, scroll к товарам), (3) товары по категориям + хиты; данные: `/api/products`, `/api/products/featured`, `/api/products/banner`.
 3. **Админка:** защищена по роли ADMIN; маршруты под `/admin/*`.
 4. **Константы компании:** `src/constants/company.ts` (Witleybel); для бренда «Pideh Armenia» метаданные заданы в layout (title, description).
 5. **Не использовать:** `@/constants/products` — файла нет, импорт из него удалён в api/products/route.ts.
@@ -122,4 +123,10 @@ next.config: `outputFileTracingRoot`, ESLint/TS ignore during builds, images (we
 
 ---
 
-*Последнее обновление контекста: по результатам изучения репозитория.*
+## Последние изменения
+
+- **2026-03-20:** Главная — выделены секции 1.1 и 1.2 (02-FUNCTIONAL): компоненты `src/components/home/BrandBannerSection.tsx` (брендовый баннер + товар BANNER), `src/components/home/CategoriesSection.tsx` (категории с API, карточки, выбор категории и scroll к блоку товаров). В `page.tsx` порядок: Brand banner → Категории → Товары (id=`products-section`). Типы: ProductWithCategory, CategoryWithCount в `@/types`.
+
+---
+
+*Последнее обновление контекста: 2026-03-20.*
