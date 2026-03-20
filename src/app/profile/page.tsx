@@ -136,8 +136,6 @@ export default function ProfilePage() {
     setIsDeletingAccount(true)
     
     try {
-      console.log('🔄 Starting account deletion...')
-      
       const response = await fetch('/api/user/delete', {
         method: 'DELETE',
         headers: {
@@ -146,8 +144,6 @@ export default function ProfilePage() {
       })
 
       if (response.ok) {
-        console.log('✅ Account deleted successfully')
-        
         // Выходим из системы и перенаправляем на страницу подтверждения
         const { signOut } = await import('next-auth/react')
         
@@ -159,8 +155,6 @@ export default function ProfilePage() {
         
         // Перенаправляем на страницу подтверждения
         window.location.href = '/account-deleted'
-        
-        console.log('✅ Signed out successfully')
       } else {
         const errorData = await response.json()
         throw new Error(errorData.error || 'Failed to delete account')

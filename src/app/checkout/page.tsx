@@ -38,7 +38,6 @@ export default function CheckoutPage() {
   // Redirect if cart is empty and validate cart
   useEffect(() => {
     if (items.length === 0) {
-      console.log('Cart is empty, redirecting to cart page')
       router.push('/cart')
     } else {
       // Валидируем корзину при загрузке страницы
@@ -51,34 +50,23 @@ export default function CheckoutPage() {
     const loadUserProfile = async () => {
       if (status === 'loading') return
       
-      if (!session) {
-        console.log('Guest user - no profile to load')
-        return
-      }
+      if (!session) return
 
       try {
-        console.log('Loading user profile for authenticated user')
         const response = await fetch('/api/user/profile')
-        
+
         if (response.ok) {
           const profile = await response.json()
           setUserProfile(profile)
-          
-          // Автоматически заполняем форму данными пользователя
           setFormData(prev => ({
             ...prev,
             name: profile.name || '',
             phone: profile.phone || '',
             address: profile.address || ''
           }))
-          console.log('User profile loaded and form auto-filled:', profile)
-        } else if (response.status === 401) {
-          console.log('User session expired, continuing as guest')
-        } else {
-          console.log('Profile not found, continuing as guest')
         }
-      } catch (error) {
-        console.log('Error loading profile, continuing as guest:', error)
+      } catch {
+        // Продолжаем как гость при ошибке загрузки профиля
       }
     }
 
@@ -172,8 +160,6 @@ export default function CheckoutPage() {
         })
         throw new Error(`Failed to create order: ${errorData.error || response.statusText}`)
       }
-      
-      console.log('Order created successfully, redirecting to order-success page')
       
       // Clear cart first
       clearCart()

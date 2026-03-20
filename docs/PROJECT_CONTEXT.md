@@ -8,7 +8,7 @@
 
 - **Имя в package.json:** `witleybel-online-shop`, версия 1.3.0
 - **Суть:** интернет-магазин армянских пиде (Next.js fullstack, доставка по Еревану)
-- **Язык интерфейса:** русский (`lang="ru"` в layout)
+- **Язык интерфейса:** русский (`lang="ru"` в layout). В 02-FUNCTIONAL целевой язык контента указан как армянский; текущая реализация — русский.
 - **База:** PostgreSQL (Prisma), Auth: NextAuth (Credentials + JWT)
 
 ---

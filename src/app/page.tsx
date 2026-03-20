@@ -1,28 +1,45 @@
 'use client'
 
-import Image from "next/image";
 import Link from "next/link";
-import { Phone, MapPin, Clock, ShoppingCart, Search } from "lucide-react";
+import { Phone, MapPin, Clock } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useCart } from "@/hooks/useCart";
-import { Product, ProductWithCategory } from "@/types";
+import { Product, ProductWithCategory, CategoryWithCount } from "@/types";
 import Footer from "@/components/Footer";
 import ProductCard from "@/components/ProductCard";
 import { BrandBannerSection } from "@/components/home/BrandBannerSection";
 import { CategoriesSection } from "@/components/home/CategoriesSection";
 import { BestSellersSection } from "@/components/home/BestSellersSection";
 
+const ADDED_TO_CART_FEEDBACK_MS = 2000
+
 export default function Home() {
   const [products, setProducts] = useState<ProductWithCategory[]>([])
   const [bannerProduct, setBannerProduct] = useState<Product | null>(null)
+  const [categories, setCategories] = useState<CategoryWithCount[]>([])
   const [loading, setLoading] = useState(true)
-  const [activeCategory, setActiveCategory] = useState('Пиде')
+  const [activeCategory, setActiveCategory] = useState<string>('')
   const [addedToCart, setAddedToCart] = useState<Set<string>>(new Set())
   const [addedToCartBestSellers, setAddedToCartBestSellers] = useState<Set<string>>(new Set())
   const { addItem } = useCart()
 
   useEffect(() => {
     fetchProducts()
+  }, [])
+
+  useEffect(() => {
+    const controller = new AbortController()
+    fetch('/api/categories', { signal: controller.signal, cache: 'no-store' })
+      .then((res) => res.ok ? res.json() : Promise.reject(new Error('Failed to fetch categories')))
+      .then((data: CategoryWithCount[]) => {
+        const list = Array.isArray(data) ? data : []
+        setCategories(list)
+        if (list.length > 0) {
+          setActiveCategory((prev) => (prev === '' ? list[0].name : prev))
+        }
+      })
+      .catch(() => setCategories([]))
+    return () => controller.abort()
   }, [])
 
   const fetchProducts = async () => {
@@ -77,11 +94,11 @@ export default function Home() {
     // Убираем подсветку через 2 секунды
     setTimeout(() => {
       setAddedToCart(prev => {
-        const newSet = new Set(prev)
-        newSet.delete(product.id)
-        return newSet
+        const next = new Set(prev)
+        next.delete(product.id)
+        return next
       })
-    }, 2000)
+    }, ADDED_TO_CART_FEEDBACK_MS)
   }
 
   const handleAddToCartBestSellers = (product: Product) => {
@@ -93,7 +110,7 @@ export default function Home() {
         next.delete(product.id)
         return next
       })
-    }, 2000)
+    }, ADDED_TO_CART_FEEDBACK_MS)
   }
 
   const getStatusBadge = (status: string) => {
@@ -112,23 +129,12 @@ export default function Home() {
   }
 
   const getFilteredProducts = () => {
-    // Проверяем, что products является массивом
-    if (!Array.isArray(products)) {
-      return []
-    }
-    
-    
-    // Если нет поискового запроса, показываем товары выбранной категории
-    return products.filter(product => product.category?.name === activeCategory)
+    if (!Array.isArray(products)) return []
+    if (!activeCategory) return products
+    return products.filter((product) => product.category?.name === activeCategory)
   }
 
-  const isPopularProduct = (product: Product) => {
-    // Определяем популярные товары по названию или другим критериям
-    const popularNames = ['Мясная пиде', 'Пепперони пиде', 'Классическая сырная пиде', 'Грибная пиде']
-    return popularNames.some(name => product.name.toLowerCase().includes(name.toLowerCase()))
-  }
-
-  const categories = ['Пиде', 'Комбо', 'Снэк', 'Соусы', 'Напитки']
+  const categoryNames = categories.map((c) => c.name)
 
   return (
     <div className="min-h-screen bg-gray-50 overflow-x-hidden">
@@ -161,38 +167,30 @@ export default function Home() {
                 <div className="space-y-3">
                   {/* First row - Пиде и Комбо занимают весь ряд */}
                   <div className="grid grid-cols-2 gap-3">
-                    {categories.slice(0, 2).map((category) => (
+                    {categoryNames.slice(0, 2).map((category) => (
                       <button
                         key={category}
                         onClick={() => setActiveCategory(category)}
                         className={`px-6 py-4 rounded-2xl font-bold transition-all duration-300 text-base ${
                           activeCategory === category
-                            ? 'bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-lg'
+                            ? 'bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-lg shadow-orange-500/40 ring-1 ring-white/10'
                             : 'bg-gray-100 text-gray-700 hover:bg-gray-200 active:scale-95'
                         }`}
-                        style={activeCategory === category ? {
-                          boxShadow: '0 8px 25px rgba(255, 107, 53, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1)',
-                        } : {}}
                       >
                         {category}
                       </button>
                     ))}
                   </div>
-                  
-                  {/* Second row - остальные категории */}
                   <div className="flex flex-wrap gap-2 justify-center">
-                    {categories.slice(2).map((category) => (
+                    {categoryNames.slice(2).map((category) => (
                       <button
                         key={category}
                         onClick={() => setActiveCategory(category)}
                         className={`px-5 py-3 rounded-2xl font-semibold transition-all duration-300 text-sm ${
                           activeCategory === category
-                            ? 'bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-lg'
+                            ? 'bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-lg shadow-orange-500/40 ring-1 ring-white/10'
                             : 'bg-gray-100 text-gray-700 hover:bg-gray-200 active:scale-95'
                         }`}
-                        style={activeCategory === category ? {
-                          boxShadow: '0 8px 25px rgba(255, 107, 53, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1)',
-                        } : {}}
                       >
                         {category}
                       </button>
@@ -203,7 +201,7 @@ export default function Home() {
               
               {/* Desktop - single row */}
               <div className="hidden lg:flex flex-wrap justify-center gap-4">
-                {categories.map((category) => (
+                {categoryNames.map((category) => (
                   <button
                     key={category}
                     onClick={() => setActiveCategory(category)}
@@ -239,18 +237,17 @@ export default function Home() {
                 Пока что посмотрите другие категории
               </p>
               <button
-                onClick={() => setActiveCategory('Комбо')}
+                onClick={() => setActiveCategory(categoryNames[0] ?? '')}
                 className="bg-orange-500 text-white px-6 py-3 rounded-xl font-semibold hover:bg-orange-600 transition-colors"
               >
-                Показать комбо
+                {categoryNames.length > 0 ? `Показать «${categoryNames[0]}»` : 'Показать категории'}
               </button>
             </div>
           ) : (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 gap-y-8 md:gap-15">
               {getFilteredProducts().map((product, index) => (
-                <div 
+                <div
                   key={product.id}
-                  style={{ animationDelay: `${index * 0.1}s` }}
                   className="transform hover:scale-105 transition-transform duration-300"
                 >
                   <ProductCard

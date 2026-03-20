@@ -1,9 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth'
-import { PrismaClient } from '@prisma/client'
-
-const prisma = new PrismaClient()
+import { prisma } from '@/lib/prisma'
+import type { OrderItemForm } from '@/types'
 
 export async function GET(request: NextRequest) {
   try {
@@ -52,42 +51,28 @@ export async function POST(request: NextRequest) {
     const session = await getServerSession(authOptions)
     const { name, phone, address, paymentMethod, notes, items, total, deliveryTime } = await request.json()
 
-    console.log('Creating order with data:', { 
-      hasSession: !!session, 
-      userId: session?.user?.id, 
-      name, 
-      phone, 
-      address, 
-      itemsCount: items?.length,
-      total,
-      items: items?.map((item: any) => ({
-        productId: item.productId,
-        quantity: item.quantity,
-        price: item.price
-      }))
-    })
+    const orderItems = (items ?? []) as OrderItemForm[]
 
-    // Проверяем, что все продукты существуют
-    if (items && items.length > 0) {
-      const productIds = items.map((item: any) => item.productId)
-      const existingProducts = await prisma.product.findMany({
-        where: { id: { in: productIds } },
-        select: { id: true, name: true }
-      })
-      
-      console.log('Existing products:', existingProducts)
-      
-      const missingProducts = productIds.filter((id: string) => 
-        !existingProducts.find(p => p.id === id)
+    if (orderItems.length === 0) {
+      return NextResponse.json(
+        { error: 'Order must contain at least one item' },
+        { status: 400 }
       )
-      
-      if (missingProducts.length > 0) {
-        console.error('Missing products:', missingProducts)
-        return NextResponse.json(
-          { error: `Products not found: ${missingProducts.join(', ')}` },
-          { status: 400 }
-        )
-      }
+    }
+
+    const productIds = orderItems.map((item) => item.productId)
+    const existingProducts = await prisma.product.findMany({
+      where: { id: { in: productIds } },
+      select: { id: true, name: true }
+    })
+    const missingProducts = productIds.filter(
+      (id) => !existingProducts.some((p) => p.id === id)
+    )
+    if (missingProducts.length > 0) {
+      return NextResponse.json(
+        { error: `Products not found: ${missingProducts.join(', ')}` },
+        { status: 400 }
+      )
     }
 
     // Create order (supports both authenticated and guest users)
@@ -103,7 +88,7 @@ export async function POST(request: NextRequest) {
         paymentMethod,
         deliveryTime,
         items: {
-          create: items.map((item: { productId: string; quantity: number; price: number }) => ({
+          create: orderItems.map((item) => ({
             productId: item.productId,
             quantity: item.quantity,
             price: item.price
@@ -124,19 +109,8 @@ export async function POST(request: NextRequest) {
       }
     })
 
-    console.log('Order created successfully:', order.id)
     return NextResponse.json(order, { status: 201 })
   } catch (error) {
-    console.error('Create order API error:', error)
-    
-    if (error instanceof Error) {
-      console.error('Error details:', {
-        name: error.name,
-        message: error.message,
-        stack: error.stack
-      })
-    }
-    
     return NextResponse.json(
       { error: 'Internal server error', details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }

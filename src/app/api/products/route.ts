@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import type { Prisma } from '@prisma/client'
 import { prisma } from '@/lib/prisma'
 
 // GET /api/products - получить все товары
@@ -9,7 +10,7 @@ export async function GET(request: NextRequest) {
     const search = searchParams.get('search')
     const status = searchParams.get('status')
 
-    const whereClause: any = {
+    const whereClause: Prisma.ProductWhereInput = {
       isAvailable: true
     }
 
