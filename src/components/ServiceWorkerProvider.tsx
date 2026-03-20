@@ -2,10 +2,17 @@
 
 import { useEffect } from 'react'
 
+const isDevelopment =
+  typeof window !== 'undefined' &&
+  (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+
 export default function ServiceWorkerProvider() {
   useEffect(() => {
+    if (isDevelopment) {
+      // В development не регистрируем SW — избегаем кэширования и 404 на _next/static
+      return
+    }
     if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
-      // Регистрируем Service Worker
       navigator.serviceWorker.register('/sw.js')
         .then((registration) => {
           console.log('Service Worker registered successfully:', registration.scope)

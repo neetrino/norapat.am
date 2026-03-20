@@ -1,5 +1,5 @@
 // Service Worker для кэширования и оптимизации производительности
-const CACHE_NAME = 'pideh-armenia-v1.0.3'
+const CACHE_NAME = 'pideh-armenia-v1.0.4'
 
 // Файлы для кэширования (только статика; НЕ кэшируем "/" — иначе старый HTML отдаёт битые ссылки на _next/*)
 const STATIC_FILES = [
@@ -107,8 +107,8 @@ self.addEventListener('fetch', (event) => {
           })
       })
       .catch(() => {
-        // Если ничего не работает, возвращаем offline страницу
-        return caches.match('/')
+        // Не отдаём кэшированный '/' — старый HTML ведёт к 404 на _next/*. Пусть запрос падает.
+        return fetch(request)
       })
   )
 })
