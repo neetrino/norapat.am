@@ -29,7 +29,7 @@ norapat/
 │   │   ├── admin/            # Админка: page, orders, products, products/new, products/[id]/edit, categories, settings
 │   │   └── api/
 │   │       ├── auth/         # [...nextauth], register
-│   │       ├── products/    # route, [id], featured, banner, validate
+│   │       ├── products/    # route, [id], featured, banner, promo, validate
 │   │       ├── orders/      # route
 │   │       ├── categories/  # route
 │   │       ├── user/        # profile, delete
@@ -37,7 +37,7 @@ norapat/
 │   │       └── admin/       # stats, products, products/[id], orders, orders/[id]/status, categories, categories/[id], settings
 │   ├── components/          # UI и фичи
 │   │   ├── ui/              # button, input, card, badge, select
-│   │   ├── home/            # Главная: BrandBannerSection, CategoriesSection, BestSellersSection
+│   │   ├── home/            # Главная: BrandBannerSection, CategoriesSection, BestSellersSection, PromoSection
 │   │   ├── Header, MobileHeader, DesktopHeader, MobileBottomNav, Footer
 │   │   ├── ClientProviders  # SessionProvider + CartProvider
 │   │   ├── ProductCard, ProductQuantityControls, ImageUpload, ImageSelector, OptimizedImage
@@ -107,7 +107,7 @@ next.config: `outputFileTracingRoot`, ESLint/TS ignore during builds, images (we
 ## Важные моменты
 
 1. **Корзина:** контекст в `useCart.tsx` (CartProvider), ключ localStorage `pideh-cart`. Типы CartItem, CartContextType в `@/types`.
-2. **Главная:** секции — (1) Brand banner `BrandBannerSection` + `/api/products/banner`, (2) Категории `CategoriesSection` + `/api/categories` (карточки, scroll к товарам), (3) **Лав. утեսներ** `BestSellersSection` + `/api/products/featured` (короткий список хитов), (4) товары по категориям; данные: `/api/products`, `/api/products/featured`, `/api/products/banner`.
+2. **Главная:** секции — (1) Brand banner `BrandBannerSection` + `/api/products/banner`, (2) Категории `CategoriesSection` + `/api/categories` (карточки, scroll к товарам), (3) **Лав. утեսներ** `BestSellersSection` + `/api/products/featured`, (4) **Զեղչեր / Հատուկ առաջարկներ** `PromoSection` + `/api/products/promo` (акции, скидки; HIT/NEW), (5) товары по категориям; данные: `/api/products`, `/api/products/featured`, `/api/products/banner`, `/api/products/promo`.
 3. **Админка:** защищена по роли ADMIN; маршруты под `/admin/*`.
 4. **Константы компании:** `src/constants/company.ts` (Witleybel); для бренда «Pideh Armenia» метаданные заданы в layout (title, description).
 5. **Не использовать:** `@/constants/products` — файла нет, импорт из него удалён в api/products/route.ts.
@@ -125,8 +125,9 @@ next.config: `outputFileTracingRoot`, ESLint/TS ignore during builds, images (we
 
 ## Последние изменения
 
+- **2026-03-20:** Главная — секция 1.4 (02-FUNCTIONAL): `PromoSection` — «Զեղչեր / Հատուկ առաջարկներ», данные из `/api/products/promo` (HIT, NEW, до 6), армянский текст, ссылка «Դիտել բոլորը». Компонент в `src/components/home/PromoSection.tsx`.
 - **2026-03-20:** Главная — секция 1.3 (02-FUNCTIONAL): `BestSellersSection` — «Լավագույն ուտեսներ», короткий список (до 6) из `/api/products/featured`, виден на всех устройствах, армянский текст, ссылка «Դիտել բոլորը». В API featured убран `any`, используется `Prisma.ProductWhereInput`.
-- **2026-03-20:** Главная — выделены секции 1.1 и 1.2 (02-FUNCTIONAL): компоненты `BrandBannerSection`, `CategoriesSection`. Порядок: Brand banner → Категории → Best sellers → Товары (id=`products-section`). Типы: ProductWithCategory, CategoryWithCount в `@/types`.
+- **2026-03-20:** Главная — выделены секции 1.1 и 1.2 (02-FUNCTIONAL): компоненты `BrandBannerSection`, `CategoriesSection`. Порядок: Brand banner → Категории → Best sellers → Promo → Товары (id=`products-section`). Типы: ProductWithCategory, CategoryWithCount в `@/types`.
 
 ---
 

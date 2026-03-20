@@ -10,6 +10,7 @@ import ProductCard from "@/components/ProductCard";
 import { BrandBannerSection } from "@/components/home/BrandBannerSection";
 import { CategoriesSection } from "@/components/home/CategoriesSection";
 import { BestSellersSection } from "@/components/home/BestSellersSection";
+import { PromoSection } from "@/components/home/PromoSection";
 
 const ADDED_TO_CART_FEEDBACK_MS = 2000
 
@@ -21,6 +22,7 @@ export default function Home() {
   const [activeCategory, setActiveCategory] = useState<string>('')
   const [addedToCart, setAddedToCart] = useState<Set<string>>(new Set())
   const [addedToCartBestSellers, setAddedToCartBestSellers] = useState<Set<string>>(new Set())
+  const [addedToCartPromo, setAddedToCartPromo] = useState<Set<string>>(new Set())
   const { addItem } = useCart()
 
   useEffect(() => {
@@ -113,6 +115,18 @@ export default function Home() {
     }, ADDED_TO_CART_FEEDBACK_MS)
   }
 
+  const handleAddToCartPromo = (product: Product) => {
+    addItem(product, 1)
+    setAddedToCartPromo(prev => new Set(prev).add(product.id))
+    setTimeout(() => {
+      setAddedToCartPromo(prev => {
+        const next = new Set(prev)
+        next.delete(product.id)
+        return next
+      })
+    }, ADDED_TO_CART_FEEDBACK_MS)
+  }
+
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'HIT':
@@ -154,7 +168,13 @@ export default function Home() {
         addedToCart={addedToCartBestSellers}
       />
 
-      {/* 4. Products Showcase Section */}
+      {/* 4. Զեղչեր / Հատուկ առաջարկներ (02-FUNCTIONAL 1.4) */}
+      <PromoSection
+        onAddToCart={handleAddToCartPromo}
+        addedToCart={addedToCartPromo}
+      />
+
+      {/* 5. Products Showcase Section */}
       <section id="products-section" className="py-16 lg:py-20 bg-white scroll-mt-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Section header */}
