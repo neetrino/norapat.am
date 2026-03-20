@@ -153,7 +153,7 @@ export default function Home() {
   const categoryNames = categories.map((c) => c.name)
 
   return (
-    <div className="min-h-screen bg-gray-50 overflow-x-hidden">
+    <div className="min-h-screen bg-white overflow-x-hidden">
       {/* Отступ для fixed хедера */}
       <div className="lg:hidden h-16"></div>
       <div className="hidden lg:block h-24"></div>
@@ -306,7 +306,7 @@ export default function Home() {
       </section>
 
       {/* Features Section - Hidden on mobile and tablet */}
-      <section className="hidden lg:block py-20 bg-gray-50">
+      <section className="hidden lg:block py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Section header */}
           <div className="text-center mb-16">

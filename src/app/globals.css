@@ -6,21 +6,46 @@
 
 :root {
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #000000;
+  --foreground-muted: #333333;
+  --brand-primary: #EE3124;
+  --brand-black: #000000;
+  --brand-white: #FFFFFF;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  /* Inter задаётся в layout (--font-inter), fallback — системные шрифты */
+  /* NORAPAT: orange/red scale from logo #EE3124 */
+  --color-orange-50: #fef2f2;
+  --color-orange-100: #fde8e7;
+  --color-orange-200: #fccfcd;
+  --color-orange-300: #f9a5a1;
+  --color-orange-400: #f56d66;
+  --color-orange-500: #EE3124;
+  --color-orange-600: #d92b1f;
+  --color-orange-700: #b32319;
+  --color-orange-800: #8c1b13;
+  --color-orange-900: #66140e;
+  --color-red-50: #fef2f2;
+  --color-red-100: #fde8e7;
+  --color-red-200: #fccfcd;
+  --color-red-300: #f9a5a1;
+  --color-red-400: #f56d66;
+  --color-red-500: #EE3124;
+  --color-red-600: #d92b1f;
+  --color-red-700: #b32319;
+  --color-red-800: #8c1b13;
+  --color-red-900: #66140e;
   --font-sans: var(--font-inter, ui-sans-serif, system-ui, sans-serif);
   --font-mono: ui-monospace, "Cascadia Code", "Source Code Pro", monospace;
 }
 
+/* NORAPAT: always light — white background, red elements */
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #ffffff;
+    --foreground: #000000;
   }
 }
 
@@ -58,16 +83,16 @@ html {
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: #ffffff;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #ff6b35;
+  background: #EE3124;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #e55a2b;
+  background: #d92b1f;
 }
 
 /* Custom animations */

@@ -16,22 +16,21 @@ export default function MobileBottomNav() {
   const { data: session, status } = useSession()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
-  if (pathname?.startsWith('/admin')) {
-    return null
-  }
-
-  // Блокировка скролла когда меню открыто
+  // Все хуки вызываются до любого return (Rules of Hooks)
   useEffect(() => {
     if (isMenuOpen) {
       document.body.style.overflow = 'hidden'
     } else {
       document.body.style.overflow = ''
     }
-    
     return () => {
       document.body.style.overflow = ''
     }
   }, [isMenuOpen])
+
+  if (pathname?.startsWith('/admin')) {
+    return null
+  }
 
   const isActive = (path: string) => {
     if (path === '/') {
@@ -120,7 +119,7 @@ export default function MobileBottomNav() {
         </div>
 
         {/* Bottom Info */}
-        <div className="p-6 bg-gray-50 border-t border-gray-200">
+        <div className="p-6 bg-white border-t border-gray-200">
           {/* Legal Links */}
           <div className="flex justify-center space-x-4 mb-4">
             <Link 

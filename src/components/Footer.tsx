@@ -4,7 +4,7 @@ import { Phone, Mail, MapPin, Clock, Facebook, Instagram } from 'lucide-react'
 
 export default function Footer() {
   return (
-    <footer className="bg-gray-900 text-white py-12">
+    <footer className="bg-white border-t border-gray-200 text-gray-900 py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Company Info */}
@@ -19,21 +19,21 @@ export default function Footer() {
                 style={{ width: "auto", height: "auto" }}
               />
             </div>
-            <p className="text-gray-300 mb-4">
+            <p className="text-gray-600 mb-4">
               Армянские пиде - новый вкус. Свежие, вкусные, быстрые!
               Традиционная форма с современными начинками. 15 уникальных вкусов для настоящих гурманов.
             </p>
             <div className="flex flex-wrap items-center gap-3">
-              <a href="tel:+37495044888" className="text-gray-300 hover:text-orange-500 transition-colors" aria-label="Հեռախոս">
+              <a href="tel:+37495044888" className="text-gray-600 hover:text-orange-500 transition-colors" aria-label="Հեռախոս">
                 <Phone className="h-5 w-5" />
               </a>
-              <a href="mailto:info@pideh.am" className="text-gray-300 hover:text-orange-500 transition-colors" aria-label="Էլ. փոստ">
+              <a href="mailto:info@pideh.am" className="text-gray-600 hover:text-orange-500 transition-colors" aria-label="Էլ. փոստ">
                 <Mail className="h-5 w-5" />
               </a>
-              <a href="https://www.facebook.com" target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-orange-500 transition-colors" aria-label="Facebook">
+              <a href="https://www.facebook.com" target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-orange-500 transition-colors" aria-label="Facebook">
                 <Facebook className="h-5 w-5" />
               </a>
-              <a href="https://www.instagram.com" target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-orange-500 transition-colors" aria-label="Instagram">
+              <a href="https://www.instagram.com" target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-orange-500 transition-colors" aria-label="Instagram">
                 <Instagram className="h-5 w-5" />
               </a>
             </div>
@@ -41,35 +41,35 @@ export default function Footer() {
 
           {/* Quick Links */}
           <div>
-            <h4 className="text-lg font-semibold mb-4">Навигация</h4>
+            <h4 className="text-lg font-semibold mb-4 text-gray-900">Навигация</h4>
             <ul className="space-y-2">
               <li>
-                <Link href="/" className="text-gray-300 hover:text-orange-500 transition-colors">
+                <Link href="/" className="text-gray-600 hover:text-orange-500 transition-colors">
                   Главная
                 </Link>
               </li>
               <li>
-                <Link href="/products" className="text-gray-300 hover:text-orange-500 transition-colors">
+                <Link href="/products" className="text-gray-600 hover:text-orange-500 transition-colors">
                   Меню
                 </Link>
               </li>
               <li>
-                <Link href="/about" className="text-gray-300 hover:text-orange-500 transition-colors">
+                <Link href="/about" className="text-gray-600 hover:text-orange-500 transition-colors">
                   О нас
                 </Link>
               </li>
               <li>
-                <Link href="/contact" className="text-gray-300 hover:text-orange-500 transition-colors">
+                <Link href="/contact" className="text-gray-600 hover:text-orange-500 transition-colors">
                   Контакты
                 </Link>
               </li>
               <li>
-                <Link href="/refund" className="text-gray-300 hover:text-orange-500 transition-colors">
+                <Link href="/refund" className="text-gray-600 hover:text-orange-500 transition-colors">
                   Վերադարձի քաղաքականություն
                 </Link>
               </li>
               <li>
-                <Link href="/delivery" className="text-gray-300 hover:text-orange-500 transition-colors">
+                <Link href="/delivery" className="text-gray-600 hover:text-orange-500 transition-colors">
                   Առաքման քաղաքականություն
                 </Link>
               </li>
@@ -78,17 +78,17 @@ export default function Footer() {
 
           {/* Contact Info */}
           <div>
-            <h4 className="text-lg font-semibold mb-4">Контакты</h4>
+            <h4 className="text-lg font-semibold mb-4 text-gray-900">Контакты</h4>
             <div className="space-y-3">
               <div className="flex items-center space-x-2">
                 <Phone className="h-4 w-4 text-orange-500" />
-                <a href="tel:+37495044888" className="text-gray-300 hover:text-orange-500 transition-colors">
+                <a href="tel:+37495044888" className="text-gray-600 hover:text-orange-500 transition-colors">
                   +374 95-044-888
                 </a>
               </div>
               <div className="flex items-center space-x-2">
                 <Mail className="h-4 w-4 text-orange-500" />
-                <a href="mailto:info@pideh.am" className="text-gray-300 hover:text-orange-500 transition-colors">
+                <a href="mailto:info@pideh.am" className="text-gray-600 hover:text-orange-500 transition-colors">
                   info@pideh.am
                 </a>
               </div>
@@ -99,7 +99,7 @@ export default function Footer() {
                     href="https://maps.google.com/?q=ул.+Зоравар+Андраник+151/2,+Ереван,+Армения"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-gray-300 hover:text-orange-500 transition-colors"
+                    className="text-gray-600 hover:text-orange-500 transition-colors"
                   >
                     ул. Зоравар Андраник 151/2
                   </a>
@@ -110,7 +110,7 @@ export default function Footer() {
                     href="https://maps.google.com/?q=ул.+Езник+Кохбаци+83,+Ереван,+Армения"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-gray-300 hover:text-orange-500 transition-colors"
+                    className="text-gray-600 hover:text-orange-500 transition-colors"
                   >
                     ул. Езник Кохбаци 83
                   </a>
@@ -118,7 +118,7 @@ export default function Footer() {
               </div>
               <div className="flex items-center space-x-2">
                 <Clock className="h-4 w-4 text-orange-500" />
-                <div className="text-gray-300">
+                <div className="text-gray-600">
                   <div>Пн-Вс: 10:00 - 22:00</div>
                   <div className="text-sm">Доставка: 11:00 - 21:00</div>
                 </div>
@@ -128,23 +128,23 @@ export default function Footer() {
         </div>
 
         {/* Bottom */}
-        <div className="border-t border-gray-700 mt-8 pt-8">
+        <div className="border-t border-gray-200 mt-8 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <div className="flex flex-wrap justify-center md:justify-start gap-x-6 gap-y-2 text-sm">
-              <Link href="/privacy" className="text-gray-400 hover:text-orange-500 transition-colors">
+              <Link href="/privacy" className="text-gray-500 hover:text-orange-500 transition-colors">
                 Политика конфиденциальности
               </Link>
-              <Link href="/terms" className="text-gray-400 hover:text-orange-500 transition-colors">
+              <Link href="/terms" className="text-gray-500 hover:text-orange-500 transition-colors">
                 Условия использования
               </Link>
-              <Link href="/refund" className="text-gray-400 hover:text-orange-500 transition-colors">
+              <Link href="/refund" className="text-gray-500 hover:text-orange-500 transition-colors">
                 Վերադարձ
               </Link>
-              <Link href="/delivery" className="text-gray-400 hover:text-orange-500 transition-colors">
+              <Link href="/delivery" className="text-gray-500 hover:text-orange-500 transition-colors">
                 Առաքում
               </Link>
             </div>
-            <p className="text-sm font-light tracking-wide text-gray-400">
+            <p className="text-sm font-light tracking-wide text-gray-500">
               Copyright © 2025. All Rights Reserved. Created by{' '}
               <a 
                 href="https://neetrino.com" 

@@ -6,7 +6,7 @@ import Footer from '@/components/Footer'
 
 export default function OrderSuccessPage() {
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-white">
       
       {/* Отступ для fixed хедера */}
       <div className="h-16 lg:h-24"></div>

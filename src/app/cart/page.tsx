@@ -28,7 +28,7 @@ export default function CartPage() {
 
   if (items.length === 0) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-white">
         
         {/* Отступ для fixed хедера */}
         <div className="h-16 lg:h-24"></div>
@@ -61,7 +61,7 @@ export default function CartPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-white">
       
       {/* Отступ для fixed хедера */}
       <div className="h-16 lg:h-24"></div>

@@ -81,7 +81,7 @@ export default async function ProductPage({
     }
 
   return (
-    <div className="min-h-screen bg-gray-50" style={{ overflow: 'auto' }}>
+    <div className="min-h-screen bg-white" style={{ overflow: 'auto' }}>
       
       {/* Breadcrumb */}
       <div className="bg-white pt-20 md:pt-24">

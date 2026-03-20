@@ -3,7 +3,7 @@ import { Phone, Mail, MapPin, Clock, MessageCircle, Star, Calendar, CreditCard }
 
 export default function ContactPage() {
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-white">
       
       {/* Отступ для fixed хедера */}
       <div className="lg:hidden h-16"></div>
