@@ -15,8 +15,6 @@ import {
   Settings,
   Tag
 } from 'lucide-react'
-import Footer from '@/components/Footer'
-
 interface ProductStat { productId: string; name: string; totalQuantity: number }
 interface CustomerStat { userId: string; name: string | null; totalSpend: number; orderCount: number }
 
@@ -105,13 +103,7 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      
-      {/* Отступ для fixed хедера */}
-      <div className="lg:hidden h-16"></div>
-      <div className="hidden lg:block h-24"></div>
-      
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Админ-панель</h1>
@@ -346,12 +338,6 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-      </div>
-      
-      {/* Hide Footer on Mobile and Tablet */}
-      <div className="hidden lg:block">
-        <Footer />
-      </div>
     </div>
   )
 }

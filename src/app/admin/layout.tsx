@@ -1,0 +1,149 @@
+'use client'
+
+import { useSession } from 'next-auth/react'
+import { useRouter, usePathname } from 'next/navigation'
+import Link from 'next/link'
+import { signOut } from 'next-auth/react'
+import {
+  LayoutDashboard,
+  Package,
+  ShoppingCart,
+  Tag,
+  Percent,
+  Settings,
+  ExternalLink,
+  LogOut,
+  Menu,
+  X,
+} from 'lucide-react'
+import { useState, useEffect } from 'react'
+
+const NAV_ITEMS = [
+  { href: '/admin', label: 'Դաշտբորդ', icon: LayoutDashboard },
+  { href: '/admin/products', label: 'Ապրանքներ', icon: Package },
+  { href: '/admin/orders', label: 'Պատվերներ', icon: ShoppingCart },
+  { href: '/admin/categories', label: 'Կատեգորիաներ', icon: Tag },
+  { href: '/admin/promo', label: 'Պրոմո կոդեր', icon: Percent },
+  { href: '/admin/settings', label: 'Կարգավորումներ', icon: Settings },
+]
+
+export default function AdminLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  const { data: session, status } = useSession()
+  const router = useRouter()
+  const pathname = usePathname()
+  const [sidebarOpen, setSidebarOpen] = useState(false)
+
+  useEffect(() => {
+    if (status === 'loading') return
+    if (!session || session.user?.role !== 'ADMIN') {
+      router.push('/login')
+    }
+  }, [session, status, router])
+
+  if (status === 'loading') {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="w-12 h-12 border-4 border-orange-500 border-t-transparent rounded-full animate-spin" />
+      </div>
+    )
+  }
+
+  if (!session || session.user?.role !== 'ADMIN') {
+    return null
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      {/* Top bar */}
+      <header className="fixed top-0 left-0 right-0 z-40 h-14 lg:h-16 bg-white border-b border-gray-200 shadow-sm">
+        <div className="flex items-center justify-between h-full px-4 lg:px-6">
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => setSidebarOpen((o) => !o)}
+              className="lg:hidden p-2 rounded-lg hover:bg-gray-100 text-gray-600"
+              aria-label="Մենյու"
+            >
+              {sidebarOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            </button>
+            <Link href="/admin" className="font-bold text-gray-900 text-lg">
+              Admin Panel
+            </Link>
+          </div>
+          <div className="flex items-center gap-2">
+            <Link
+              href="/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1.5 px-3 py-2 text-sm text-gray-600 hover:text-orange-500 hover:bg-orange-50 rounded-lg transition-colors"
+            >
+              <ExternalLink className="h-4 w-4" />
+              <span className="hidden sm:inline">Կայք</span>
+            </Link>
+            <button
+              type="button"
+              onClick={() => signOut({ callbackUrl: '/' })}
+              className="flex items-center gap-1.5 px-3 py-2 text-sm text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+            >
+              <LogOut className="h-4 w-4" />
+              <span className="hidden sm:inline">Դուրս գալ</span>
+            </button>
+          </div>
+        </div>
+      </header>
+
+      {/* Sidebar overlay (mobile) */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 z-30 bg-black/30 lg:hidden"
+          onClick={() => setSidebarOpen(false)}
+          aria-hidden
+        />
+      )}
+
+      {/* Sidebar */}
+      <aside
+        className={`
+          fixed top-14 lg:top-16 left-0 z-40 w-56 h-[calc(100vh-3.5rem)] lg:h-[calc(100vh-4rem)]
+          bg-white border-r border-gray-200 transform transition-transform duration-200 ease-out
+          lg:translate-x-0
+          ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
+        `}
+      >
+        <nav className="p-3 space-y-0.5">
+          {NAV_ITEMS.map(({ href, label, icon: Icon }) => {
+            const isActive = pathname === href || (href !== '/admin' && pathname.startsWith(href))
+            return (
+              <Link
+                key={href}
+                href={href}
+                onClick={() => setSidebarOpen(false)}
+                className={`
+                  flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors
+                  ${isActive
+                    ? 'bg-orange-500 text-white'
+                    : 'text-gray-700 hover:bg-gray-100'
+                  }
+                `}
+              >
+                <Icon className="h-5 w-5 shrink-0" />
+                {label}
+              </Link>
+            )
+          })}
+        </nav>
+      </aside>
+
+      {/* Main content */}
+      <main className="pt-14 lg:pt-16 lg:pl-56">
+        <div className="p-4 lg:p-8">
+          {children}
+        </div>
+      </main>
+    </div>
+  )
+}

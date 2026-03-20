@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { signIn } from 'next-auth/react'
+import { signIn, getSession } from 'next-auth/react'
 import Link from 'next/link'
 import { Eye, EyeOff, Mail, Lock } from 'lucide-react'
 import Footer from '@/components/Footer'
@@ -28,8 +28,12 @@ export default function LoginPage() {
       if (result?.error) {
         setError('Неверный email или пароль')
       } else {
-        // Перенаправляем на главную страницу
-        window.location.href = '/'
+        const session = await getSession()
+        if (session?.user?.role === 'ADMIN') {
+          window.location.href = '/admin'
+        } else {
+          window.location.href = '/'
+        }
       }
     } catch (error) {
       setError('Произошла ошибка при входе')

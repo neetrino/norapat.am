@@ -9,6 +9,7 @@
     "start": "next start",
     "lint": "eslint",
     "db:seed": "tsx scripts/seed.ts",
+    "create-admin": "tsx scripts/create-admin.ts",
     "db:reset": "prisma migrate reset --force && npm run db:seed",
     "parse": "tsx scripts/parse-buy-am.ts",
     "import": "tsx scripts/import-from-file.ts",
