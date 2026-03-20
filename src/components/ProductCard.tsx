@@ -8,7 +8,7 @@ import { Product } from '@/types'
 
 interface ProductCardProps {
   product: Product
-  onAddToCart: (product: Product) => void
+  onAddToCart?: (product: Product) => void
   variant?: 'default' | 'compact'
   addedToCart?: Set<string>
 }
@@ -205,44 +205,43 @@ const ProductCard = memo(({ product, onAddToCart, variant = 'default', addedToCa
         {/* Action Section */}
         <div className={`relative ${isCompact ? 'space-y-3' : 'space-y-4'}`}>
           {isCompact ? (
-            // Компактный вариант
+            // Компактный вариант (кнопка только если передан onAddToCart)
             <div className="flex flex-col space-y-3">
-              <button
-                onClick={(e) => {
-                  e.preventDefault()
-                  e.stopPropagation()
-                  onAddToCart(product)
-                }}
-                className={`w-full h-10 rounded-2xl font-bold text-sm transition-all duration-300 shadow-2xl flex items-center justify-center overflow-hidden hover:scale-105 hover:shadow-3xl relative active:scale-95 ${
-                  isAdded
-                    ? 'bg-gradient-to-r from-green-500 to-emerald-600 text-white'
-                    : 'bg-gradient-to-r from-orange-500 to-red-500 text-white hover:from-orange-600 hover:to-red-600'
-                }`}
-                style={{
-                  boxShadow: isAdded 
-                    ? '0 8px 25px rgba(34, 197, 94, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1)'
-                    : '0 8px 25px rgba(255, 107, 53, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1)',
-                  backdropFilter: 'blur(10px)',
-                }}
-                title="В корзину"
-              >
-                {/* 3D Button Background Animation - Removed white overlay */}
-                {/* <div className="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl" /> */}
-                
-                {isAdded ? (
-                  <span className="flex items-center relative z-10">
-                    <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                    В корзине
-                  </span>
-                ) : (
-                  <span className="flex items-center relative z-10">
-                    <ShoppingCart className="w-4 h-4 mr-2" />
-                    Добавить
-                  </span>
-                )}
-              </button>
+              {onAddToCart && (
+                <button
+                  onClick={(e) => {
+                    e.preventDefault()
+                    e.stopPropagation()
+                    onAddToCart(product)
+                  }}
+                  className={`w-full h-10 rounded-2xl font-bold text-sm transition-all duration-300 shadow-2xl flex items-center justify-center overflow-hidden hover:scale-105 hover:shadow-3xl relative active:scale-95 ${
+                    isAdded
+                      ? 'bg-gradient-to-r from-green-500 to-emerald-600 text-white'
+                      : 'bg-gradient-to-r from-orange-500 to-red-500 text-white hover:from-orange-600 hover:to-red-600'
+                  }`}
+                  style={{
+                    boxShadow: isAdded 
+                      ? '0 8px 25px rgba(34, 197, 94, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1)'
+                      : '0 8px 25px rgba(255, 107, 53, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1)',
+                    backdropFilter: 'blur(10px)',
+                  }}
+                  title="В корзину"
+                >
+                  {isAdded ? (
+                    <span className="flex items-center relative z-10">
+                      <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                      </svg>
+                      В корзине
+                    </span>
+                  ) : (
+                    <span className="flex items-center relative z-10">
+                      <ShoppingCart className="w-4 h-4 mr-2" />
+                      Добавить
+                    </span>
+                  )}
+                </button>
+              )}
             </div>
           ) : (
             // Обычный вариант
@@ -257,25 +256,26 @@ const ProductCard = memo(({ product, onAddToCart, variant = 'default', addedToCa
                 </div>
               </div>
               
-              <button
-                onClick={(e) => {
-                  e.preventDefault()
-                  e.stopPropagation()
-                  onAddToCart(product)
-                }}
-                className={`px-6 h-10 rounded-2xl font-bold text-sm transition-all duration-500 shadow-2xl flex items-center justify-center overflow-hidden hover:scale-105 hover:shadow-3xl relative min-w-[140px] ${
-                  isAdded
-                    ? 'bg-gradient-to-r from-green-500 to-emerald-600 text-white'
-                    : 'bg-gradient-to-r from-orange-500 to-red-500 text-white hover:from-orange-600 hover:to-red-600'
-                }`}
-                style={{
-                  boxShadow: isAdded 
-                    ? '0 15px 35px rgba(34, 197, 94, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1)'
-                    : '0 15px 35px rgba(255, 107, 53, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1)',
-                  backdropFilter: 'blur(10px)',
-                }}
-                title="В корзину"
-              >
+              {onAddToCart && (
+                <button
+                  onClick={(e) => {
+                    e.preventDefault()
+                    e.stopPropagation()
+                    onAddToCart(product)
+                  }}
+                  className={`px-6 h-10 rounded-2xl font-bold text-sm transition-all duration-500 shadow-2xl flex items-center justify-center overflow-hidden hover:scale-105 hover:shadow-3xl relative min-w-[140px] ${
+                    isAdded
+                      ? 'bg-gradient-to-r from-green-500 to-emerald-600 text-white'
+                      : 'bg-gradient-to-r from-orange-500 to-red-500 text-white hover:from-orange-600 hover:to-red-600'
+                  }`}
+                  style={{
+                    boxShadow: isAdded 
+                      ? '0 15px 35px rgba(34, 197, 94, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1)'
+                      : '0 15px 35px rgba(255, 107, 53, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1)',
+                    backdropFilter: 'blur(10px)',
+                  }}
+                  title="В корзину"
+                >
                 {/* 3D Button Background Animation - Removed white overlay */}
                 {/* <div className="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl" /> */}
                 
@@ -292,7 +292,8 @@ const ProductCard = memo(({ product, onAddToCart, variant = 'default', addedToCa
                     Добавить
                   </span>
                 )}
-              </button>
+                </button>
+              )}
             </div>
           )}
         </div>

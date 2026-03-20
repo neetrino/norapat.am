@@ -1,6 +1,12 @@
 import type { NextConfig } from "next";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const nextConfig: NextConfig = {
+  // Корень проекта для трассировки файлов (избегаем конфликта с lockfile в родительской папке)
+  outputFileTracingRoot: path.join(__dirname),
   eslint: {
     // Отключаем ESLint во время сборки для продакшена
     ignoreDuringBuilds: true,
@@ -22,14 +28,7 @@ const nextConfig: NextConfig = {
   experimental: {
     optimizePackageImports: ['lucide-react'],
   },
-  turbopack: {
-    rules: {
-      '*.svg': {
-        loaders: ['@svgr/webpack'],
-        as: '*.js',
-      },
-    },
-  },
+  // turbopack SVG rule removed: @svgr/webpack was not installed and caused module resolution errors
   // Компрессия
   compress: true,
   // Кэширование

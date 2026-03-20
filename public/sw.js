@@ -1,9 +1,8 @@
 // Service Worker для кэширования и оптимизации производительности
-const CACHE_NAME = 'pideh-armenia-v1.0.2'
+const CACHE_NAME = 'pideh-armenia-v1.0.3'
 
-// Файлы для кэширования (только статические ресурсы)
+// Файлы для кэширования (только статика; НЕ кэшируем "/" — иначе старый HTML отдаёт битые ссылки на _next/*)
 const STATIC_FILES = [
-  '/',
   '/manifest.json',
   '/favicon.ico',
   '/logo.png'
@@ -62,17 +61,22 @@ self.addEventListener('fetch', (event) => {
     return
   }
 
-  // НЕ кэшируем API запросы аутентификации и динамические данные
-  if (request.url.includes('/api/auth/') || 
-      request.url.includes('/api/user/') ||
-      request.url.includes('/api/admin/') ||
-      request.url.includes('/api/orders') ||
-      request.url.includes('/api/products') && request.url.includes('?') ||
-      request.url.includes('_next/static/chunks/') ||
-      request.url.includes('_next/static/css/') ||
-      request.url.includes('_next/static/chunks/app/') ||
-      request.url.includes('_next/static/chunks/pages/')) {
-    // Для API запросов и динамических чанков - всегда идем в сеть, не кэшируем
+  const url = new URL(request.url)
+  const isSameOrigin = url.origin === self.location.origin
+  const isNextAsset = url.pathname.startsWith('/_next/')
+  const isHtmlDocument = request.mode === 'navigate' || (request.headers.get('accept') || '').includes('text/html')
+
+  // Всегда сеть: документы (чтобы не отдавать старый HTML с битыми _next ссылками), _next/* и API
+  if (
+    !isSameOrigin ||
+    isHtmlDocument ||
+    isNextAsset ||
+    request.url.includes('/api/auth/') ||
+    request.url.includes('/api/user/') ||
+    request.url.includes('/api/admin/') ||
+    request.url.includes('/api/orders') ||
+    (request.url.includes('/api/products') && request.url.includes('?'))
+  ) {
     event.respondWith(fetch(request))
     return
   }
@@ -89,16 +93,15 @@ self.addEventListener('fetch', (event) => {
         // Иначе загружаем из сети
         return fetch(request)
           .then((response) => {
-            // Кэшируем только успешные ответы и только статические ресурсы
-            if (response.status === 200 && 
-                !request.url.includes('/api/') &&
-                !request.url.includes('_next/static/chunks/') &&
-                !request.url.includes('_next/static/css/')) {
+            // Кэшируем только успешные ответы, не документы и не _next/*
+            if (
+              response.status === 200 &&
+              !request.url.includes('/api/') &&
+              !url.pathname.startsWith('/_next/') &&
+              !isHtmlDocument
+            ) {
               const responseClone = response.clone()
-              caches.open(CACHE_NAME)
-                .then((cache) => {
-                  cache.put(request, responseClone)
-                })
+              caches.open(CACHE_NAME).then((cache) => cache.put(request, responseClone))
             }
             return response
           })
