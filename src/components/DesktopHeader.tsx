@@ -122,9 +122,9 @@ export default function DesktopHeader() {
               )}
             </Link>
 
-            {/* Auth Buttons */}
-            {status === 'loading' ? (
-              <div className="w-8 h-8 bg-gray-200 rounded-full animate-pulse"></div>
+            {/* Auth: до гидратации показываем скелетон, чтобы не было mismatch server/client */}
+            {!isHydrated || status === 'loading' ? (
+              <div className="w-8 h-8 bg-gray-200 rounded-full animate-pulse" aria-hidden />
             ) : session ? (
               <div className="flex items-center space-x-2">
                 {/* Admin: один элемент — кнопка Админ; обычный пользователь — профиль */}

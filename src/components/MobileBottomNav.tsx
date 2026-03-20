@@ -20,8 +20,6 @@ export default function MobileBottomNav() {
     return null
   }
 
-  const navKey = session ? `nav-authenticated-${session.user?.id}` : 'nav-unauthenticated'
-
   // Блокировка скролла когда меню открыто
   useEffect(() => {
     if (isMenuOpen) {
@@ -166,10 +164,9 @@ export default function MobileBottomNav() {
 
   return (
     <>
-      <nav key={navKey} className="lg:hidden fixed bottom-0 left-0 right-0 w-full bg-white/95 backdrop-blur-xl border-t border-gray-200 z-40 shadow-2xl">
+      <nav className="lg:hidden fixed bottom-0 left-0 right-0 w-full bg-white/95 backdrop-blur-xl border-t border-gray-200 z-40 shadow-2xl">
         <div className="flex justify-around items-center py-3">
-          {status === 'loading' ? (
-            // Показываем загрузку для всех кнопок
+          {!isHydrated || status === 'loading' ? (
             Array.from({ length: 4 }).map((_, index) => (
               <div key={index} className="flex flex-col items-center justify-center py-3 px-4 rounded-2xl">
                 <div className="w-6 h-6 bg-gray-200 rounded-full animate-pulse"></div>

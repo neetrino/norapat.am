@@ -10,10 +10,10 @@ interface ClientProvidersProps {
 
 export default function ClientProviders({ children }: ClientProvidersProps) {
   return (
-    <SessionProvider 
-      refetchInterval={5 * 60} // Обновляем каждые 5 минут
-      refetchOnWindowFocus={true} // Обновляем при фокусе на окне
-      refetchWhenOffline={false} // Не обновляем когда офлайн
+    <SessionProvider
+      refetchInterval={10 * 60}
+      refetchOnWindowFocus={false}
+      refetchWhenOffline={false}
     >
       <CartProvider>
         {children}
