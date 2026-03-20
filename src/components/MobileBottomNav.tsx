@@ -15,8 +15,11 @@ export default function MobileBottomNav() {
   const { getTotalItems } = useCart()
   const { data: session, status } = useSession()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
-  
-  // Принудительное обновление при изменении сессии
+
+  if (pathname?.startsWith('/admin')) {
+    return null
+  }
+
   const navKey = session ? `nav-authenticated-${session.user?.id}` : 'nav-unauthenticated'
 
   // Блокировка скролла когда меню открыто

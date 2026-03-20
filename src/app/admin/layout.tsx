@@ -15,10 +15,12 @@ import {
   LogOut,
   Menu,
   X,
+  Home,
 } from 'lucide-react'
 import { useState, useEffect } from 'react'
 
-const NAV_ITEMS = [
+const SIDEBAR_NAV_ITEMS = [
+  { href: '/', label: 'Գլխավոր էջ', icon: Home, external: false },
   { href: '/admin', label: 'Դաշտբորդ', icon: LayoutDashboard },
   { href: '/admin/products', label: 'Ապրանքներ', icon: Package },
   { href: '/admin/orders', label: 'Պատվերներ', icon: ShoppingCart },
@@ -115,8 +117,9 @@ export default function AdminLayout({
         `}
       >
         <nav className="p-3 space-y-0.5">
-          {NAV_ITEMS.map(({ href, label, icon: Icon }) => {
-            const isActive = pathname === href || (href !== '/admin' && pathname.startsWith(href))
+          {SIDEBAR_NAV_ITEMS.map(({ href, label, icon: Icon, external }) => {
+            const isAdminLink = href.startsWith('/admin')
+            const isActive = isAdminLink && (pathname === href || (href !== '/admin' && pathname.startsWith(href)))
             return (
               <Link
                 key={href}
@@ -124,11 +127,9 @@ export default function AdminLayout({
                 onClick={() => setSidebarOpen(false)}
                 className={`
                   flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors
-                  ${isActive
-                    ? 'bg-orange-500 text-white'
-                    : 'text-gray-700 hover:bg-gray-100'
-                  }
+                  ${isActive ? 'bg-orange-500 text-white' : 'text-gray-700 hover:bg-gray-100'}
                 `}
+                {...(external && { target: '_blank', rel: 'noopener noreferrer' })}
               >
                 <Icon className="h-5 w-5 shrink-0" />
                 {label}
