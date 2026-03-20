@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { Search, Filter, ShoppingCart } from 'lucide-react'
 import { useCart } from '@/hooks/useCart'
+import { useWishlist } from '@/hooks/useWishlist'
 import { Product, Category } from '@/types'
 import Footer from '@/components/Footer'
 import ProductCard from '@/components/ProductCard'
@@ -21,6 +22,7 @@ function ProductsPageContent() {
   const [searching, setSearching] = useState(false)
   const [addedToCart, setAddedToCart] = useState<Set<string>>(new Set())
   const { addItem } = useCart()
+  const { isInWishlist, toggle: toggleWishlist } = useWishlist()
   const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   // Порядок категорий для сортировки (приоритетные категории)
@@ -347,6 +349,8 @@ function ProductsPageContent() {
                       onAddToCart={handleAddToCart}
                       variant="compact"
                       addedToCart={addedToCart}
+                      isInWishlist={isInWishlist(product.id)}
+                      onToggleWishlist={toggleWishlist}
                     />
                   ))}
                 </div>
@@ -363,6 +367,8 @@ function ProductsPageContent() {
                 onAddToCart={handleAddToCart}
                 variant="compact"
                 addedToCart={addedToCart}
+                isInWishlist={isInWishlist(product.id)}
+                onToggleWishlist={toggleWishlist}
               />
             ))}
           </div>

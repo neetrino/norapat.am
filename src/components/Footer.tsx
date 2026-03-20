@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import Image from 'next/image'
-import { Phone, Mail, MapPin, Clock } from 'lucide-react'
+import { Phone, Mail, MapPin, Clock, Facebook, Instagram } from 'lucide-react'
 
 export default function Footer() {
   return (
@@ -23,12 +23,18 @@ export default function Footer() {
               Армянские пиде - новый вкус. Свежие, вкусные, быстрые!
               Традиционная форма с современными начинками. 15 уникальных вкусов для настоящих гурманов.
             </p>
-            <div className="flex space-x-4">
-              <a href="tel:+37495044888" className="text-gray-300 hover:text-orange-500 transition-colors">
+            <div className="flex flex-wrap items-center gap-3">
+              <a href="tel:+37495044888" className="text-gray-300 hover:text-orange-500 transition-colors" aria-label="Հեռախոս">
                 <Phone className="h-5 w-5" />
               </a>
-              <a href="mailto:info@pideh.am" className="text-gray-300 hover:text-orange-500 transition-colors">
+              <a href="mailto:info@pideh.am" className="text-gray-300 hover:text-orange-500 transition-colors" aria-label="Էլ. փոստ">
                 <Mail className="h-5 w-5" />
+              </a>
+              <a href="https://www.facebook.com" target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-orange-500 transition-colors" aria-label="Facebook">
+                <Facebook className="h-5 w-5" />
+              </a>
+              <a href="https://www.instagram.com" target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-orange-500 transition-colors" aria-label="Instagram">
+                <Instagram className="h-5 w-5" />
               </a>
             </div>
           </div>
@@ -55,6 +61,16 @@ export default function Footer() {
               <li>
                 <Link href="/contact" className="text-gray-300 hover:text-orange-500 transition-colors">
                   Контакты
+                </Link>
+              </li>
+              <li>
+                <Link href="/refund" className="text-gray-300 hover:text-orange-500 transition-colors">
+                  Վերադարձի քաղաքականություն
+                </Link>
+              </li>
+              <li>
+                <Link href="/delivery" className="text-gray-300 hover:text-orange-500 transition-colors">
+                  Առաքման քաղաքականություն
                 </Link>
               </li>
             </ul>
@@ -114,12 +130,18 @@ export default function Footer() {
         {/* Bottom */}
         <div className="border-t border-gray-700 mt-8 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-            <div className="flex flex-wrap justify-center md:justify-start space-x-6 text-sm">
+            <div className="flex flex-wrap justify-center md:justify-start gap-x-6 gap-y-2 text-sm">
               <Link href="/privacy" className="text-gray-400 hover:text-orange-500 transition-colors">
                 Политика конфиденциальности
               </Link>
               <Link href="/terms" className="text-gray-400 hover:text-orange-500 transition-colors">
                 Условия использования
+              </Link>
+              <Link href="/refund" className="text-gray-400 hover:text-orange-500 transition-colors">
+                Վերադարձ
+              </Link>
+              <Link href="/delivery" className="text-gray-400 hover:text-orange-500 transition-colors">
+                Առաքում
               </Link>
             </div>
             <p className="text-sm font-light tracking-wide text-gray-400">

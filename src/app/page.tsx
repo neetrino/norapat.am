@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Phone, MapPin, Clock } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useCart } from "@/hooks/useCart";
+import { useWishlist } from "@/hooks/useWishlist";
 import { Product, ProductWithCategory, CategoryWithCount } from "@/types";
 import Footer from "@/components/Footer";
 import ProductCard from "@/components/ProductCard";
@@ -24,6 +25,7 @@ export default function Home() {
   const [addedToCartBestSellers, setAddedToCartBestSellers] = useState<Set<string>>(new Set())
   const [addedToCartPromo, setAddedToCartPromo] = useState<Set<string>>(new Set())
   const { addItem } = useCart()
+  const { isInWishlist, toggle: toggleWishlist } = useWishlist()
 
   useEffect(() => {
     fetchProducts()
@@ -166,12 +168,16 @@ export default function Home() {
       <BestSellersSection
         onAddToCart={handleAddToCartBestSellers}
         addedToCart={addedToCartBestSellers}
+        isInWishlist={isInWishlist}
+        onToggleWishlist={toggleWishlist}
       />
 
       {/* 4. Զեղչեր / Հատուկ առաջարկներ (02-FUNCTIONAL 1.4) */}
       <PromoSection
         onAddToCart={handleAddToCartPromo}
         addedToCart={addedToCartPromo}
+        isInWishlist={isInWishlist}
+        onToggleWishlist={toggleWishlist}
       />
 
       {/* 5. Products Showcase Section */}
@@ -275,6 +281,8 @@ export default function Home() {
                     onAddToCart={handleAddToCart}
                     variant="compact"
                     addedToCart={addedToCart}
+                    isInWishlist={isInWishlist(product.id)}
+                    onToggleWishlist={toggleWishlist}
                   />
                 </div>
               ))}

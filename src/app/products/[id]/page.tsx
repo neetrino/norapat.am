@@ -4,8 +4,8 @@ import Image from 'next/image'
 import { ArrowLeft, Star, Clock, MapPin, Phone, Zap } from 'lucide-react'
 import { Product } from '@/types'
 import Footer from '@/components/Footer'
-import ProductCard from '@/components/ProductCard'
 import ProductQuantityControls from '@/components/ProductQuantityControls'
+import { SimilarProducts } from '@/components/SimilarProducts'
 import { prisma } from '@/lib/prisma'
 
 // Server Component - данные загружаются на сервере
@@ -359,15 +359,7 @@ export default async function ProductPage({
               </Link>
             </div>
             
-            <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-                {similarProducts.map((similarProduct) => (
-                <ProductCard
-                  key={similarProduct.id}
-                  product={similarProduct}
-                  variant="compact"
-                />
-              ))}
-            </div>
+            <SimilarProducts products={similarProducts} />
           </section>
         )}
       </div>

@@ -9,9 +9,17 @@ export async function GET(request: NextRequest) {
     const category = searchParams.get('category')
     const search = searchParams.get('search')
     const status = searchParams.get('status')
+    const idsParam = searchParams.get('ids')
 
-    const whereClause: Prisma.ProductWhereInput = {
-      isAvailable: true
+    const whereClause: Prisma.ProductWhereInput = {}
+
+    if (idsParam) {
+      const ids = idsParam.split(',').map((s) => s.trim()).filter(Boolean)
+      if (ids.length > 0) {
+        whereClause.id = { in: ids }
+      }
+    } else {
+      whereClause.isAvailable = true
     }
 
     if (category && category !== 'Все') {
@@ -24,7 +32,7 @@ export async function GET(request: NextRequest) {
       whereClause.status = status
     }
 
-    if (search) {
+    if (search && !idsParam) {
       whereClause.OR = [
         { name: { contains: search, mode: 'insensitive' } },
         { description: { contains: search, mode: 'insensitive' } }

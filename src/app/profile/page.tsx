@@ -16,11 +16,16 @@ import {
   ArrowLeft,
   Edit,
   Trash2,
-  LogOut
+  LogOut,
+  RotateCcw,
+  Heart
 } from 'lucide-react'
 import Footer from '@/components/Footer'
 import EditProfileModal from '@/components/EditProfileModal'
 import DeleteAccountModal from '@/components/DeleteAccountModal'
+import { useCart } from '@/hooks/useCart'
+import { useWishlist } from '@/hooks/useWishlist'
+import type { Product } from '@/types'
 
 interface Order {
   id: string
@@ -28,7 +33,9 @@ interface Order {
   total: number
   createdAt: string
   items: Array<{
+    productId: string
     product: {
+      id: string
       name: string
       image: string
     }
@@ -40,7 +47,10 @@ interface Order {
 export default function ProfilePage() {
   const { data: session, status } = useSession()
   const router = useRouter()
+  const { addItem: addToCart } = useCart()
+  const { products: wishlistProducts, remove: removeFromWishlist, loading: wishlistLoading } = useWishlist()
   const [orders, setOrders] = useState<Order[]>([])
+  const [reorderingId, setReorderingId] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
@@ -199,6 +209,27 @@ export default function ProfilePage() {
         return <XCircle className="h-4 w-4" />
       default:
         return <Clock className="h-4 w-4" />
+    }
+  }
+
+  const handleReorder = async (order: Order) => {
+    if (order.items.length === 0) return
+    setReorderingId(order.id)
+    try {
+      const ids = order.items.map((i) => i.productId).filter(Boolean)
+      const res = await fetch(`/api/products?ids=${ids.join(',')}`)
+      if (!res.ok) throw new Error('Failed to load products')
+      const products: Product[] = await res.json()
+      const qtyByProductId = Object.fromEntries(order.items.map((i) => [i.productId, i.quantity]))
+      for (const product of products) {
+        const qty = qtyByProductId[product.id] ?? 1
+        addToCart(product, qty)
+      }
+      router.push('/cart')
+    } catch (e) {
+      console.error('Reorder failed:', e)
+    } finally {
+      setReorderingId(null)
     }
   }
 
@@ -368,8 +399,50 @@ export default function ProfilePage() {
             </div>
           </div>
 
-          {/* Orders History */}
-          <div className="lg:col-span-2">
+          {/* Wishlist & Orders */}
+          <div className="lg:col-span-2 space-y-6">
+            <div className="bg-white rounded-2xl shadow-lg p-4 md:p-6">
+              <h2 className="text-lg md:text-xl font-semibold text-gray-900 mb-4 md:mb-6 flex items-center gap-2">
+                <Heart className="h-5 w-5 text-orange-500" />
+                Նախընտրած ապրանքներ
+              </h2>
+              {wishlistLoading ? (
+                <div className="flex justify-center py-8">
+                  <div className="w-8 h-8 border-2 border-orange-500 border-t-transparent rounded-full animate-spin" />
+                </div>
+              ) : wishlistProducts.length === 0 ? (
+                <p className="text-gray-500 text-center py-6">Դեռ ապրանքներ ավելացված չեն</p>
+              ) : (
+                <ul className="space-y-3">
+                  {wishlistProducts.map((p) => (
+                    <li key={p.id} className="flex items-center gap-3 p-3 rounded-xl border border-gray-100 hover:bg-gray-50">
+                      <Link href={`/products/${p.id}`} className="flex-1 flex items-center gap-3 min-w-0">
+                        <div className="w-12 h-12 rounded-lg bg-gray-100 overflow-hidden flex-shrink-0">
+                          {p.image && p.image !== 'no-image' ? (
+                            <img src={p.image} alt={p.name} className="w-full h-full object-cover" />
+                          ) : (
+                            <Package className="w-6 h-6 m-3 text-gray-400" />
+                          )}
+                        </div>
+                        <div className="min-w-0">
+                          <p className="font-medium text-gray-900 truncate">{p.name}</p>
+                          <p className="text-sm text-gray-600">{p.price} ֏</p>
+                        </div>
+                      </Link>
+                      <button
+                        type="button"
+                        onClick={() => removeFromWishlist(p.id)}
+                        className="p-2 text-gray-400 hover:text-red-500 rounded-lg hover:bg-red-50"
+                        aria-label="Remove from wishlist"
+                      >
+                        <Trash2 className="h-5 w-5" />
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+
             <div className="bg-white rounded-2xl shadow-lg p-4 md:p-6">
               <h2 className="text-lg md:text-xl font-semibold text-gray-900 mb-4 md:mb-6">История заказов</h2>
               
@@ -416,7 +489,7 @@ export default function ProfilePage() {
                           {order.items.map((item, index) => (
                             <div key={index} className="flex items-center space-x-2 md:space-x-3">
                               <div className="w-10 h-10 md:w-12 md:h-12 bg-orange-50 rounded-lg flex items-center justify-center overflow-hidden flex-shrink-0">
-                                {item.product.image ? (
+                                {item.product?.image ? (
                                   <img 
                                     src={item.product.image} 
                                     alt={item.product.name}
@@ -427,12 +500,23 @@ export default function ProfilePage() {
                                 )}
                               </div>
                               <div className="flex-1 min-w-0">
-                                <p className="font-medium text-gray-900 text-sm md:text-base truncate">{item.product.name}</p>
+                                <p className="font-medium text-gray-900 text-sm md:text-base truncate">{item.product?.name ?? '—'}</p>
                                 <p className="text-xs md:text-sm text-gray-600">{item.quantity} шт. × {item.price} ֏</p>
                               </div>
                               <p className="font-semibold text-gray-900 text-sm md:text-base flex-shrink-0">{item.quantity * item.price} ֏</p>
                             </div>
                           ))}
+                        </div>
+                        <div className="mt-3 pt-3 border-t border-gray-100">
+                          <button
+                            type="button"
+                            onClick={() => handleReorder(order)}
+                            disabled={reorderingId === order.id}
+                            className="flex items-center justify-center gap-2 w-full md:w-auto text-sm font-medium text-orange-600 hover:text-orange-700 hover:bg-orange-50 py-2 px-4 rounded-lg transition-colors disabled:opacity-50"
+                          >
+                            <RotateCcw className="h-4 w-4" />
+                            {reorderingId === order.id ? 'Загрузка...' : 'Повторить заказ'}
+                          </button>
                         </div>
                       </div>
                     )

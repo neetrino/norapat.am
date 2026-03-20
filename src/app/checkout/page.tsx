@@ -28,12 +28,16 @@ export default function CheckoutPage() {
     name: '',
     phone: '',
     address: '',
-    deliveryTime: 'asap', // Дефолтное значение "Как можно скорее"
+    deliveryTime: 'asap',
     paymentMethod: 'cash',
     notes: ''
   })
 
   const [errors, setErrors] = useState<Record<string, string>>({})
+  const [promoCode, setPromoCode] = useState('')
+  const [promoDiscount, setPromoDiscount] = useState(0)
+  const [promoMessage, setPromoMessage] = useState('')
+  const [promoApplying, setPromoApplying] = useState(false)
 
   // Redirect if cart is empty and validate cart
   useEffect(() => {
@@ -89,6 +93,34 @@ export default function CheckoutPage() {
     }
   }
 
+  const applyPromo = async () => {
+    const code = promoCode.trim().toUpperCase()
+    if (!code) return
+    setPromoApplying(true)
+    setPromoMessage('')
+    setPromoDiscount(0)
+    try {
+      const res = await fetch('/api/promo/validate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code, total: getTotalPrice() })
+      })
+      const data = await res.json()
+      if (data.valid && data.discountAmount != null) {
+        setPromoDiscount(data.discountAmount)
+        setPromoMessage(data.message || 'Զեղչ կիրառված')
+      } else {
+        setPromoMessage(data.message || 'Պրոմո կոդը սխալ է')
+      }
+    } catch {
+      setPromoMessage('Սխալ')
+    } finally {
+      setPromoApplying(false)
+    }
+  }
+
+  const finalTotal = Math.max(0, getTotalPrice() - promoDiscount)
+
   const validateForm = () => {
     const newErrors: Record<string, string> = {}
 
@@ -132,7 +164,6 @@ export default function CheckoutPage() {
     setIsSubmitting(true)
 
     try {
-      // Send order to API
       const orderData = {
         ...formData,
         items: items.map(item => ({
@@ -140,7 +171,8 @@ export default function CheckoutPage() {
           quantity: item.quantity,
           price: item.product.price
         })),
-        total: getTotalPrice()
+        total: finalTotal,
+        promoCode: promoDiscount > 0 ? promoCode.trim().toUpperCase() : undefined
       }
 
       const response = await fetch('/api/orders', {
@@ -413,14 +445,41 @@ export default function CheckoutPage() {
                   </div>
                 ))}
                 
-                <div className="border-t border-gray-300 pt-3">
+                <div className="border-t border-gray-300 pt-3 space-y-2">
+                  {promoDiscount > 0 && (
+                    <div className="flex justify-between text-sm text-green-600">
+                      <span>Զեղչ (պրոմո)</span>
+                      <span>-{promoDiscount} ֏</span>
+                    </div>
+                  )}
                   <div className="flex justify-between text-lg font-bold text-gray-900">
                     <span>Итого</span>
-                    <span>{getTotalPrice()} ֏</span>
+                    <span>{finalTotal} ֏</span>
                   </div>
                   <div className="text-sm text-green-600 mt-1">
                     Доставка бесплатно
                   </div>
+                </div>
+                <div className="pt-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Պրոմո կոդ</label>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={promoCode}
+                      onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
+                      placeholder="PROMO"
+                      className="flex-1 px-4 py-2 border border-gray-300 rounded-xl text-gray-900"
+                    />
+                    <button
+                      type="button"
+                      onClick={applyPromo}
+                      disabled={promoApplying}
+                      className="px-4 py-2 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 disabled:opacity-50"
+                    >
+                      {promoApplying ? '...' : 'Կիրառել'}
+                    </button>
+                  </div>
+                  {promoMessage && <p className={`text-sm mt-1 ${promoDiscount > 0 ? 'text-green-600' : 'text-red-600'}`}>{promoMessage}</p>}
                 </div>
               </div>
               
@@ -651,14 +710,41 @@ export default function CheckoutPage() {
                     </div>
                   ))}
                   
-                  <div className="border-t border-gray-300 pt-4">
+                  <div className="border-t border-gray-300 pt-4 space-y-2">
+                    {promoDiscount > 0 && (
+                      <div className="flex justify-between text-sm text-green-600">
+                        <span>Զեղչ (պրոմո)</span>
+                        <span>-{promoDiscount} ֏</span>
+                      </div>
+                    )}
                     <div className="flex justify-between text-lg font-bold text-gray-900">
                       <span>Итого</span>
-                      <span>{getTotalPrice()} ֏</span>
+                      <span>{finalTotal} ֏</span>
                     </div>
                     <div className="text-sm text-green-600 mt-1">
                       Доставка бесплатно
                     </div>
+                  </div>
+                  <div className="pt-4">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Պրոմո կոդ</label>
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        value={promoCode}
+                        onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
+                        placeholder="PROMO"
+                        className="flex-1 px-4 py-2 border border-gray-300 rounded-xl text-gray-900"
+                      />
+                      <button
+                        type="button"
+                        onClick={applyPromo}
+                        disabled={promoApplying}
+                        className="px-4 py-2 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 disabled:opacity-50"
+                      >
+                        {promoApplying ? '...' : 'Կիրառել'}
+                      </button>
+                    </div>
+                    {promoMessage && <p className={`text-sm mt-1 ${promoDiscount > 0 ? 'text-green-600' : 'text-red-600'}`}>{promoMessage}</p>}
                   </div>
                 </div>
                 

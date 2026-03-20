@@ -24,10 +24,10 @@
 ● “Ինրու ընտրել մեզ” հատված ✅ ավարտված
 (3–4 առավելություն)
 ● Footer ✅ ավարտված
-○ Կոնտակտային տվյալներ
-○ Սոցիալական հղումներ
-○ Քարտեզ
-○ Կարեւոր էջերի հղումներ
+● Կոնտակտային տվյալներ ✅
+● Սոցիալական հղումներ (Facebook, Instagram) ✅
+○ Քարտեզ (embed — ըստ ցանկության)
+● Կարեւոր էջերի հղումներ (Refund, Delivery) ✅
 ```
 ## 2 ⃣ SHOP ԷՋ
 
@@ -100,7 +100,7 @@
 ● Registration / Login ✅ ավարտված
 ○ Email կամ Phone number
 ● Պատվերների պատմություն ✅ ավարտված
-● Պատվերը կրկնելու ֆունկցիա —
+● Պատվերը կրկնելու ֆունկցիա ✅ (Կրկնել պատվեր → զամբյուղ)
 ● Հասցեների կառավարում ✅ ավարտված
 ● Անձնական տվյալների կառավարում ✅ ավարտված
 ```
@@ -126,8 +126,8 @@
 #### 7.3 Զեղչեր
 
 ```
-● Promo code-ի կառավարում —
-● Զեղչերի տեղադրում եւ կառավարում —
+● Promo code-ի կառավարում ✅ (ադմին /admin/promo)
+● Զեղչերի տեղադրում եւ կառավարում ✅ (checkout-ում կիրառում)
 ```
 ### 7.4 Կատեգորիաներ
 
@@ -136,20 +136,14 @@
 ```
 #### 7.5 Անալիտիկա
 
-**Զեղչերի անալիտիկա** (API `/api/admin/stats` — ավարտված, ադմին էջ — —)
-● Total orders
-● Total revenue
-● Average order value
-**Պատվերների անալիտիկա**
-● Orders by status
-● Today / This week / This month
-**Ապրանքների անալիտիկա**
-● Top 5 best-selling products
-● Least-selling products
-**Հաճախորդների անալիտիկա**
-● New customers
-● Repeat orders
-● Top customers by spend
+**Զեղչերի անալիտիկա** ✅ API `/api/admin/stats` + ադմին դաշտբորդ
+● Total orders, Total revenue, Average order value ✅
+**Պատվերների անալիտիկա** ✅
+● Orders by status, Today / This week / This month ✅
+**Ապրանքների անալիտիկա** ✅
+● Top 5 best-selling, Least-selling ✅
+**Հաճախորդների անալիտիկա** ✅
+● New customers, Repeat orders, Top customers by spend ✅
 
 
 ## 9 ⃣ Այլ էջեր եւ ֆունկցիոնալ
@@ -160,11 +154,10 @@
 ● Իրավական էջեր
 ○ Privacy Policy ✅ ավարտված
 ○ Terms & Conditions ✅ ավարտված
-○ Refund Policy —
-○ Delivery Policy —
-● Global Search - Որոնման հնարավորություն —
-● Wishlist - Հաճախորդները կարողանալու են ապրանքները ավելացնել նախընտրած
-  ապրանքների ցանկում —
+○ Refund Policy ✅ (/refund)
+○ Delivery Policy ✅ (/delivery)
+● Global Search ✅ (էջերում /products?search=)
+● Wishlist ✅ (սիրտ կոճակ, պրոֆիլում ցուցակ)
 ● Կայքի լեզուն լինելու է հայերեն —
 ```
 

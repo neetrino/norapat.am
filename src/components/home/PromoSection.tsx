@@ -10,13 +10,14 @@ const PROMO_LIMIT = 6
 export interface PromoSectionProps {
   onAddToCart?: (product: Product) => void
   addedToCart?: Set<string>
+  isInWishlist?: (productId: string) => boolean
+  onToggleWishlist?: (productId: string) => void
 }
 
 /**
  * Զեղչեր / Հատուկ առաջարկներ — ակցիաներ, զեղչեր, հատուկ առաջարկներ (02-FUNCTIONAL 1.4).
- * Data from /api/products/promo (HIT, NEW products).
  */
-export function PromoSection({ onAddToCart, addedToCart }: PromoSectionProps) {
+export function PromoSection({ onAddToCart, addedToCart, isInWishlist, onToggleWishlist }: PromoSectionProps) {
   const [products, setProducts] = useState<ProductWithCategory[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -79,6 +80,8 @@ export function PromoSection({ onAddToCart, addedToCart }: PromoSectionProps) {
                   onAddToCart={onAddToCart}
                   variant="compact"
                   addedToCart={addedToCart}
+                  isInWishlist={isInWishlist?.(product.id)}
+                  onToggleWishlist={onToggleWishlist}
                 />
               </div>
             ))}

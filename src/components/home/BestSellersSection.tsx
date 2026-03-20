@@ -9,17 +9,16 @@ import ProductCard from '@/components/ProductCard'
 const BEST_SELLERS_LIMIT = 6
 
 export interface BestSellersSectionProps {
-  /** Callback when adding product to cart */
   onAddToCart?: (product: Product) => void
-  /** Set of product IDs recently added to cart (for highlight) */
   addedToCart?: Set<string>
+  isInWishlist?: (productId: string) => boolean
+  onToggleWishlist?: (productId: string) => void
 }
 
 /**
  * Լավագույն ուտեսներ — ամենավաճառվող կամ ընտրված ապրանքների կարճ ցուցակ (02-FUNCTIONAL 1.3).
- * Data from /api/products/featured.
  */
-export function BestSellersSection({ onAddToCart, addedToCart }: BestSellersSectionProps) {
+export function BestSellersSection({ onAddToCart, addedToCart, isInWishlist, onToggleWishlist }: BestSellersSectionProps) {
   const [products, setProducts] = useState<ProductWithCategory[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -79,6 +78,8 @@ export function BestSellersSection({ onAddToCart, addedToCart }: BestSellersSect
                   onAddToCart={onAddToCart}
                   variant="compact"
                   addedToCart={addedToCart}
+                  isInWishlist={isInWishlist?.(product.id)}
+                  onToggleWishlist={onToggleWishlist}
                 />
               </div>
             ))}

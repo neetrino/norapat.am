@@ -24,6 +24,7 @@ export async function GET(request: NextRequest) {
           include: {
             product: {
               select: {
+                id: true,
                 name: true,
                 image: true
               }
@@ -49,7 +50,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions)
-    const { name, phone, address, paymentMethod, notes, items, total, deliveryTime } = await request.json()
+    const { name, phone, address, paymentMethod, notes, items, total, deliveryTime, promoCode } = await request.json()
 
     const orderItems = (items ?? []) as OrderItemForm[]
 
@@ -75,10 +76,16 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Create order (supports both authenticated and guest users)
+    if (promoCode && typeof promoCode === 'string') {
+      await prisma.promoCode.updateMany({
+        where: { code: promoCode.trim().toUpperCase(), isActive: true },
+        data: { usedCount: { increment: 1 } }
+      })
+    }
+
     const order = await prisma.order.create({
       data: {
-        userId: session?.user?.id || null, // null for guest orders
+        userId: session?.user?.id || null,
         name: name || 'Guest Customer',
         status: 'PENDING',
         total,

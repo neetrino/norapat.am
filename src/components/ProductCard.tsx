@@ -3,7 +3,7 @@
 import { memo } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { ShoppingCart, Star, Zap } from 'lucide-react'
+import { ShoppingCart, Star, Zap, Heart } from 'lucide-react'
 import { Product } from '@/types'
 
 interface ProductCardProps {
@@ -11,9 +11,11 @@ interface ProductCardProps {
   onAddToCart?: (product: Product) => void
   variant?: 'default' | 'compact'
   addedToCart?: Set<string>
+  isInWishlist?: boolean
+  onToggleWishlist?: (productId: string) => void
 }
 
-const ProductCard = memo(({ product, onAddToCart, variant = 'default', addedToCart }: ProductCardProps) => {
+const ProductCard = memo(({ product, onAddToCart, variant = 'default', addedToCart, isInWishlist, onToggleWishlist }: ProductCardProps) => {
   const isCompact = variant === 'compact'
   const isAdded = addedToCart?.has(product.id) || false
 
@@ -33,6 +35,22 @@ const ProductCard = memo(({ product, onAddToCart, variant = 'default', addedToCa
       <div className={`relative overflow-visible ${
         isCompact ? 'h-48' : 'h-80'
       }`}>
+        {onToggleWishlist && (
+          <button
+            type="button"
+            aria-label={isInWishlist ? 'Remove from wishlist' : 'Add to wishlist'}
+            onClick={(e) => {
+              e.preventDefault()
+              e.stopPropagation()
+              onToggleWishlist(product.id)
+            }}
+            className="absolute top-3 right-3 z-10 p-2 rounded-full bg-white/90 shadow hover:bg-white transition-colors"
+          >
+            <Heart
+              className={`h-5 w-5 ${isInWishlist ? 'fill-red-500 text-red-500' : 'text-gray-400 hover:text-red-400'}`}
+            />
+          </button>
+        )}
         {/* Background Gradient - Removed */}
         {/* <div className="absolute inset-0 bg-gradient-to-br from-orange-50 via-orange-100 to-red-50 opacity-40 group-hover:opacity-60 transition-opacity duration-500" /> */}
         
