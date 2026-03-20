@@ -10,16 +10,15 @@ import Footer from "@/components/Footer";
 import ProductCard from "@/components/ProductCard";
 import { BrandBannerSection } from "@/components/home/BrandBannerSection";
 import { CategoriesSection } from "@/components/home/CategoriesSection";
+import { BestSellersSection } from "@/components/home/BestSellersSection";
 
 export default function Home() {
   const [products, setProducts] = useState<ProductWithCategory[]>([])
-  const [comboProducts, setComboProducts] = useState<ProductWithCategory[]>([])
-  const [featuredProducts, setFeaturedProducts] = useState<ProductWithCategory[]>([])
   const [bannerProduct, setBannerProduct] = useState<Product | null>(null)
   const [loading, setLoading] = useState(true)
   const [activeCategory, setActiveCategory] = useState('Пиде')
   const [addedToCart, setAddedToCart] = useState<Set<string>>(new Set())
-  const [addedToCartHits, setAddedToCartHits] = useState<Set<string>>(new Set())
+  const [addedToCartBestSellers, setAddedToCartBestSellers] = useState<Set<string>>(new Set())
   const { addItem } = useCart()
 
   useEffect(() => {
@@ -28,15 +27,8 @@ export default function Home() {
 
   const fetchProducts = async () => {
     try {
-      const [productsResponse, featuredResponse, bannerResponse] = await Promise.all([
+      const [productsResponse, bannerResponse] = await Promise.all([
         fetch('/api/products', { 
-          cache: 'no-store',
-          headers: {
-            'Cache-Control': 'no-cache',
-            'Pragma': 'no-cache'
-          }
-        }),
-        fetch('/api/products/featured', { 
           cache: 'no-store',
           headers: {
             'Cache-Control': 'no-cache',
@@ -52,59 +44,26 @@ export default function Home() {
         })
       ])
       
-      // Проверяем статус ответов
       if (!productsResponse.ok) {
         const errorText = await productsResponse.text()
-        console.error('Products API error:', productsResponse.status, errorText)
         throw new Error(`Products API error: ${productsResponse.status} - ${errorText}`)
-      }
-      if (!featuredResponse.ok) {
-        const errorText = await featuredResponse.text()
-        console.error('Featured API error:', featuredResponse.status, errorText)
-        throw new Error(`Featured API error: ${featuredResponse.status} - ${errorText}`)
       }
       if (!bannerResponse.ok) {
         const errorText = await bannerResponse.text()
-        console.error('Banner API error:', bannerResponse.status, errorText)
         throw new Error(`Banner API error: ${bannerResponse.status} - ${errorText}`)
       }
       
       const productsData = await productsResponse.json()
-      const featuredData = await featuredResponse.json()
       const bannerData = await bannerResponse.json()
       
-      console.log('API Responses:', {
-        productsData: Array.isArray(productsData) ? `Array(${productsData.length})` : typeof productsData,
-        featuredData: Array.isArray(featuredData) ? `Array(${featuredData.length})` : typeof featuredData,
-        bannerData: bannerData ? typeof bannerData : 'null'
-      })
-      
-      // Проверяем, что productsData является массивом
       if (Array.isArray(productsData)) {
         setProducts(productsData)
-        
-        // Фильтруем комбо товары для секции хитов
-        const combos = productsData.filter((product: ProductWithCategory) => product.category?.name === 'Комбо')
-        setComboProducts(combos.slice(0, 4)) // Берем первые 4 комбо
       } else {
-        console.error('Products API returned non-array:', productsData)
         setProducts([])
-        setComboProducts([])
       }
       
-      // Проверяем, что featuredData является массивом
-      if (Array.isArray(featuredData)) {
-        setFeaturedProducts(featuredData) // Показываем все товары-хиты
-      } else {
-        console.error('Featured products API returned non-array:', featuredData)
-        setFeaturedProducts([])
-      }
-      
-      // Устанавливаем товар-баннер (может быть null)
       setBannerProduct(bannerData)
     } catch (error) {
-      console.error('Error fetching products:', error)
-      setFeaturedProducts([])
       setBannerProduct(null)
     } finally {
       setLoading(false)
@@ -125,16 +84,14 @@ export default function Home() {
     }, 2000)
   }
 
-  const handleAddToCartHits = (product: Product) => {
+  const handleAddToCartBestSellers = (product: Product) => {
     addItem(product, 1)
-    setAddedToCartHits(prev => new Set(prev).add(product.id))
-    
-    // Убираем подсветку через 2 секунды
+    setAddedToCartBestSellers(prev => new Set(prev).add(product.id))
     setTimeout(() => {
-      setAddedToCartHits(prev => {
-        const newSet = new Set(prev)
-        newSet.delete(product.id)
-        return newSet
+      setAddedToCartBestSellers(prev => {
+        const next = new Set(prev)
+        next.delete(product.id)
+        return next
       })
     }, 2000)
   }
@@ -185,7 +142,13 @@ export default function Home() {
       {/* 2. Կատեգորիաների ցուցադրման հատված (02-FUNCTIONAL 1.2) */}
       <CategoriesSection onSelectCategory={setActiveCategory} productsSectionId="products-section" />
 
-      {/* 3. Products Showcase Section */}
+      {/* 3. Լավագույն ուտեսներ (02-FUNCTIONAL 1.3) */}
+      <BestSellersSection
+        onAddToCart={handleAddToCartBestSellers}
+        addedToCart={addedToCartBestSellers}
+      />
+
+      {/* 4. Products Showcase Section */}
       <section id="products-section" className="py-16 lg:py-20 bg-white scroll-mt-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Section header */}
@@ -309,58 +272,6 @@ export default function Home() {
               className="group inline-flex items-center bg-orange-500 text-white px-8 py-4 rounded-2xl font-bold text-lg hover:bg-orange-600 transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl"
             >
               <span>Посмотреть все меню</span>
-              <svg className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* Additional Pide Showcase Section - Hidden on mobile and tablet */}
-      <section className="hidden lg:block py-20 bg-orange-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Section header */}
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-              Попробуйте наши хиты
-            </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Самые популярные и вкусные пиде, которые выбирают наши клиенты
-            </p>
-          </div>
-
-          {/* Featured products grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-            {featuredProducts.length > 0 ? (
-              featuredProducts.map((product, index) => (
-                <div 
-                  key={product.id}
-                  style={{ animationDelay: `${index * 0.1}s` }}
-                >
-                  <ProductCard
-                    product={product}
-                    onAddToCart={handleAddToCartHits}
-                    variant="compact"
-                    addedToCart={addedToCartHits}
-                  />
-                </div>
-              ))
-            ) : (
-              // Fallback if no featured products
-              <div className="col-span-full text-center py-12">
-                <p className="text-gray-500 text-lg">Товары-хиты скоро появятся!</p>
-              </div>
-            )}
-          </div>
-
-          {/* CTA */}
-          <div className="text-center mt-16">
-            <Link 
-              href="/products"
-              className="group inline-flex items-center bg-orange-500 text-white px-8 py-4 rounded-2xl font-bold text-lg hover:bg-orange-600 transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl"
-            >
-              <span>Посмотреть все вкусы</span>
               <svg className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
