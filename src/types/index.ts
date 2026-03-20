@@ -8,6 +8,11 @@ export interface ProductWithIngredients extends Product {
   // PostgreSQL уже возвращает ingredients как массив
 }
 
+/** Ապրանք category relation-ով (API products, featured, banner) */
+export type ProductWithCategory = Product & {
+  category: { id: string; name: string; isActive: boolean } | null
+}
+
 export interface OrderWithItems extends Order {
   items: (OrderItem & {
     product: Product
@@ -87,6 +92,11 @@ export interface Category {
   isActive: boolean
   createdAt: Date
   updatedAt: Date
+}
+
+// Категория с количеством товаров (ответ /api/categories)
+export interface CategoryWithCount extends Category {
+  _count: { products: number }
 }
 
 // Старые типы категорий для обратной совместимости
