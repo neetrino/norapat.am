@@ -183,6 +183,7 @@ export const en: AppMessages = {
   products: {
     allCategories: 'All',
     uncategorized: 'Uncategorized',
+    categoryLabel: 'Category',
     searchNoResultsTitle: (query: string) =>
       `No results for "${query}"`,
     searchNoResultsHint:

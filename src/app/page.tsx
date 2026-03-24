@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Phone, MapPin, Clock } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useI18n } from "@/i18n/I18nContext";
+import { getCategoryDisplayName } from "@/i18n/getCategoryDisplayName";
 import { useCart } from "@/hooks/useCart";
 import { useWishlist } from "@/hooks/useWishlist";
 import { Product, ProductWithCategory, CategoryWithCount } from "@/types";
@@ -17,7 +18,7 @@ import { PromoSection } from "@/components/home/PromoSection";
 const ADDED_TO_CART_FEEDBACK_MS = 2000
 
 export default function Home() {
-  const { t } = useI18n()
+  const { t, locale } = useI18n()
   const h = t.home
   const [products, setProducts] = useState<ProductWithCategory[]>([])
   const [bannerProduct, setBannerProduct] = useState<Product | null>(null)
@@ -191,7 +192,7 @@ export default function Home() {
                             : 'bg-gray-100 text-gray-700 hover:bg-gray-200 active:scale-95'
                         }`}
                       >
-                        {category}
+                        {getCategoryDisplayName(category, locale)}
                       </button>
                     ))}
                   </div>
@@ -206,7 +207,7 @@ export default function Home() {
                             : 'bg-gray-100 text-gray-700 hover:bg-gray-200 active:scale-95'
                         }`}
                       >
-                        {category}
+                        {getCategoryDisplayName(category, locale)}
                       </button>
                     ))}
                   </div>
@@ -225,7 +226,7 @@ export default function Home() {
                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                     }`}
                   >
-                    {category}
+                    {getCategoryDisplayName(category, locale)}
                   </button>
                 ))}
               </div>
@@ -245,7 +246,9 @@ export default function Home() {
             <div className="text-center py-20">
               <div className="text-6xl mb-4">🍽️</div>
               <h3 className="text-2xl font-bold text-gray-900 mb-2">
-                {h.categoryEmptyTitle(activeCategory)}
+                {h.categoryEmptyTitle(
+                  getCategoryDisplayName(activeCategory, locale)
+                )}
               </h3>
               <p className="text-gray-600 mb-6">
                 {h.categoryEmptyHint}
@@ -255,7 +258,9 @@ export default function Home() {
                 className="bg-orange-500 text-white px-6 py-3 rounded-xl font-semibold hover:bg-orange-600 transition-colors"
               >
                 {categoryNames.length > 0
-                  ? h.showFirstCategory(categoryNames[0])
+                  ? h.showFirstCategory(
+                      getCategoryDisplayName(categoryNames[0], locale)
+                    )
                   : h.showCategories}
               </button>
             </div>

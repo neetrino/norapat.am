@@ -6,6 +6,7 @@ import Image from 'next/image'
 import { ShoppingCart, Star, Zap, Heart } from 'lucide-react'
 import { Product } from '@/types'
 import { useI18n } from '@/i18n/I18nContext'
+import { getCategoryDisplayName } from '@/i18n/getCategoryDisplayName'
 
 interface ProductCardProps {
   product: Product
@@ -17,7 +18,7 @@ interface ProductCardProps {
 }
 
 const ProductCard = memo(({ product, onAddToCart, variant = 'default', addedToCart, isInWishlist, onToggleWishlist }: ProductCardProps) => {
-  const { t } = useI18n()
+  const { t, locale } = useI18n()
   const pc = t.productCard
   const isCompact = variant === 'compact'
   const isAdded = addedToCart?.has(product.id) || false
@@ -147,7 +148,9 @@ const ProductCard = memo(({ product, onAddToCart, variant = 'default', addedToCa
                 backdropFilter: 'blur(10px)',
               }}
             >
-              {product.category?.name || pc.uncategorized}
+              {product.category?.name
+                ? getCategoryDisplayName(product.category.name, locale)
+                : pc.uncategorized}
             </div>
           )}
           

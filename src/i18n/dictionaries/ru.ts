@@ -195,6 +195,7 @@ export const ru: AppMessages = {
   products: {
     allCategories: 'Все',
     uncategorized: 'Без категории',
+    categoryLabel: 'Категория',
     searchNoResultsTitle: (query: string) =>
       `По запросу «${query}» ничего не найдено`,
     searchNoResultsHint:

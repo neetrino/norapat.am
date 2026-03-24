@@ -185,6 +185,7 @@ export interface AppMessages {
   products: {
     allCategories: string
     uncategorized: string
+    categoryLabel: string
     searchNoResultsTitle: (query: string) => string
     searchNoResultsHint: string
     clearSearch: string

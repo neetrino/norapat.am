@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { ChevronRight } from 'lucide-react'
 import { CategoryWithCount } from '@/types'
 import { useI18n } from '@/i18n/I18nContext'
+import { getCategoryDisplayName } from '@/i18n/getCategoryDisplayName'
 
 const CATEGORY_ICONS: Record<string, string> = {
   'Пиде': '🥟',
@@ -27,7 +28,7 @@ export interface CategoriesSectionProps {
  * Կատեգորիաների ցուցադրման հատված — /api/categories, քարտեր, սեղմելով՝ filter կամ scroll.
  */
 export function CategoriesSection({ onSelectCategory, productsSectionId = 'products-section' }: CategoriesSectionProps) {
-  const { t } = useI18n()
+  const { t, locale } = useI18n()
   const c = t.home.categories
   const ariaCategories = t.home.ariaCategories
   const [categories, setCategories] = useState<CategoryWithCount[]>([])
@@ -116,7 +117,9 @@ export function CategoriesSection({ onSelectCategory, productsSectionId = 'produ
                 <span className="text-4xl md:text-5xl mb-3 group-hover:scale-110 transition-transform" aria-hidden>
                   {icon}
                 </span>
-                <span className="font-bold text-gray-900 text-base md:text-lg line-clamp-1">{cat.name}</span>
+                <span className="font-bold text-gray-900 text-base md:text-lg line-clamp-1">
+                  {getCategoryDisplayName(cat.name, locale)}
+                </span>
                 {cat.description && (
                   <span className="text-sm text-gray-500 mt-1 line-clamp-2">{cat.description}</span>
                 )}

@@ -188,6 +188,7 @@ export const hy: AppMessages = {
   products: {
     allCategories: 'Բոլորը',
     uncategorized: 'Առանց կատեգորիայի',
+    categoryLabel: 'Կատեգորիա',
     searchNoResultsTitle: (query: string) =>
       `«${query}» հարցման համար արդյունք չի գտնվել`,
     searchNoResultsHint:

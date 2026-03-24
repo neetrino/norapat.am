@@ -2,10 +2,11 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
 import { ArrowLeft, Star, Clock, MapPin, Phone, Zap } from 'lucide-react'
-import { Product } from '@/types'
 import Footer from '@/components/Footer'
 import ProductQuantityControls from '@/components/ProductQuantityControls'
 import { SimilarProducts } from '@/components/SimilarProducts'
+import { CategoryDisplayName } from '@/components/CategoryDisplayName'
+import { ProductCategoryLine } from '@/components/ProductCategoryLine'
 import { prisma } from '@/lib/prisma'
 
 // Server Component - данные загружаются на сервере
@@ -163,7 +164,7 @@ export default async function ProductPage({
                       backdropFilter: 'blur(10px)',
                     }}
                   >
-                    {product.category?.name || 'Без категории'}
+                    <CategoryDisplayName apiName={product.category?.name} />
                   </div>
                   
                   {/* 3D Special Badge */}
@@ -238,10 +239,7 @@ export default async function ProductPage({
               <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
                 <h4 className="text-lg font-semibold text-gray-900 mb-4">Информация о товаре:</h4>
                 <ul className="space-y-2 text-gray-700">
-                  <li className="flex items-center">
-                    <span className="w-2 h-2 bg-orange-500 rounded-full mr-3"></span>
-                    Категория: {product.category?.name || 'Без категории'}
-                  </li>
+                  <ProductCategoryLine apiName={product.category?.name} />
                   <li className="flex items-center">
                     <span className="w-2 h-2 bg-orange-500 rounded-full mr-3"></span>
                     Время приготовления: 15-20 минут

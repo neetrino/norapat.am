@@ -6,9 +6,10 @@ import { ArrowLeft, ShoppingCart, Minus, Trash2, ShoppingBag } from 'lucide-reac
 import { useCart } from '@/hooks/useCart'
 import Footer from '@/components/Footer'
 import { useI18n } from '@/i18n/I18nContext'
+import { getCategoryDisplayName } from '@/i18n/getCategoryDisplayName'
 
 export default function CartPage() {
-  const { t } = useI18n()
+  const { t, locale } = useI18n()
   const c = t.cartPage
   const uncategorized = t.productCard.uncategorized
   const { items, updateQuantity, removeItem, getTotalPrice, clearCart } = useCart()
@@ -159,7 +160,9 @@ export default function CartPage() {
                         {item.product.name}
                       </h3>
                       <p className="text-sm text-gray-600 mb-2">
-                        {item.product.category?.name || uncategorized}
+                        {item.product.category?.name
+                          ? getCategoryDisplayName(item.product.category.name, locale)
+                          : uncategorized}
                       </p>
                       <div className="text-lg font-bold text-orange-500 mb-3">
                         {item.product.price} ֏
@@ -253,7 +256,9 @@ export default function CartPage() {
                           {item.product.name}
                         </h3>
                         <p className="text-sm text-gray-600 mb-2">
-                          {item.product.category?.name || uncategorized}
+                          {item.product.category?.name
+                          ? getCategoryDisplayName(item.product.category.name, locale)
+                          : uncategorized}
                         </p>
                         <div className="text-xl font-bold text-orange-500">
                           {item.product.price} ֏

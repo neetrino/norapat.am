@@ -9,6 +9,7 @@ import { Product, Category } from '@/types'
 import Footer from '@/components/Footer'
 import ProductCard from '@/components/ProductCard'
 import { useI18n } from '@/i18n/I18nContext'
+import { getCategoryDisplayName } from '@/i18n/getCategoryDisplayName'
 
 const CATEGORY_ORDER = ['Комбо', 'Пиде', 'Снэк', 'Соусы', 'Напитки'] as const
 
@@ -267,7 +268,9 @@ function ProductsPageContent() {
                         boxShadow: '0 8px 25px rgba(255, 107, 53, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1)',
                       } : {}}
                     >
-                      {category}
+                      {category === allCategories
+                        ? allCategories
+                        : getCategoryDisplayName(category, locale)}
                     </button>
                   ))}
                 </div>
@@ -289,7 +292,7 @@ function ProductsPageContent() {
                         boxShadow: '0 8px 25px rgba(255, 107, 53, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1)',
                       } : {}}
                     >
-                      {category.name}
+                      {getCategoryDisplayName(category.name, locale)}
                     </button>
                   ))}
                 </div>
@@ -327,7 +330,7 @@ function ProductsPageContent() {
                     boxShadow: '0 8px 25px rgba(255, 107, 53, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1)',
                   } : {}}
                 >
-                  {category.name}
+                  {getCategoryDisplayName(category.name, locale)}
                 </button>
               ))}
             </div>
@@ -343,7 +346,7 @@ function ProductsPageContent() {
                 {/* Заголовок категории */}
                 <div className="flex items-center mb-6">
                   <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mr-4">
-                    {category}
+                    {getCategoryDisplayName(category, locale)}
                   </h2>
                   <div className="flex-1 h-px bg-gradient-to-r from-orange-200 to-transparent"></div>
                 </div>
