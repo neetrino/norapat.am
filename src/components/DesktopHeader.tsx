@@ -7,6 +7,7 @@ import { usePathname } from 'next/navigation'
 import { useState } from 'react'
 import { useSession, signOut } from 'next-auth/react'
 import { useCart } from '@/hooks/useCart'
+import { useWishlist } from '@/hooks/useWishlist'
 import { useHydration } from '@/hooks/useHydration'
 import { useI18n } from '@/i18n/I18nContext'
 
@@ -15,6 +16,7 @@ export default function DesktopHeader() {
   const { nav, auth, search, wishlist } = t
   const isHydrated = useHydration()
   const { getTotalItems } = useCart()
+  const { products: wishlistProducts } = useWishlist()
   const { data: session, status } = useSession()
   const pathname = usePathname()
   const [searchQuery, setSearchQuery] = useState('')
@@ -139,6 +141,11 @@ export default function DesktopHeader() {
                 title={wishlist.title}
               >
                 <Heart className={`h-6 w-6 ${isActive('/wishlist') ? 'fill-red-500 text-red-500' : ''}`} />
+                {wishlistProducts.length > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full min-w-[1.25rem] h-5 px-1.5 flex items-center justify-center">
+                    {wishlistProducts.length}
+                  </span>
+                )}
                 {isActive('/wishlist') && (
                   <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-6 h-1 bg-orange-500 rounded-full" />
                 )}

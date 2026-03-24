@@ -1,6 +1,13 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
+import {
+  createContext,
+  useContext,
+  useCallback,
+  useEffect,
+  useState,
+  ReactNode
+} from 'react'
 import { useSession } from 'next-auth/react'
 
 export interface WishlistProduct {
@@ -11,7 +18,21 @@ export interface WishlistProduct {
   isAvailable: boolean
 }
 
-export function useWishlist() {
+interface WishlistContextType {
+  productIds: string[]
+  products: WishlistProduct[]
+  isInWishlist: (productId: string) => boolean
+  add: (productId: string) => Promise<void>
+  remove: (productId: string) => Promise<void>
+  toggle: (productId: string) => Promise<void>
+  refresh: () => Promise<void>
+  loading: boolean
+  isAuthenticated: boolean
+}
+
+const WishlistContext = createContext<WishlistContextType | undefined>(undefined)
+
+export function WishlistProvider({ children }: { children: ReactNode }) {
   const { data: session, status } = useSession()
   const [productIds, setProductIds] = useState<Set<string>>(new Set())
   const [products, setProducts] = useState<WishlistProduct[]>([])
@@ -68,9 +89,10 @@ export function useWishlist() {
     async (productId: string) => {
       if (!session?.user) return
       try {
-        const res = await fetch(`/api/wishlist?productId=${encodeURIComponent(productId)}`, {
-          method: 'DELETE'
-        })
+        const res = await fetch(
+          `/api/wishlist?productId=${encodeURIComponent(productId)}`,
+          { method: 'DELETE' }
+        )
         if (res.ok) {
           setProductIds((prev) => {
             const next = new Set(prev)
@@ -96,11 +118,11 @@ export function useWishlist() {
   )
 
   const isInWishlist = useCallback(
-    (productId: string) => productIds.has(productId),
+    (id: string) => productIds.has(id),
     [productIds]
   )
 
-  return {
+  const value: WishlistContextType = {
     productIds: Array.from(productIds),
     products,
     isInWishlist,
@@ -111,4 +133,16 @@ export function useWishlist() {
     loading,
     isAuthenticated: !!session?.user
   }
+
+  return (
+    <WishlistContext.Provider value={value}>{children}</WishlistContext.Provider>
+  )
+}
+
+export function useWishlist() {
+  const context = useContext(WishlistContext)
+  if (context === undefined) {
+    throw new Error('useWishlist must be used within a WishlistProvider')
+  }
+  return context
 }
