@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { ChevronRight } from 'lucide-react'
 import { CategoryWithCount } from '@/types'
+import { useI18n } from '@/i18n/I18nContext'
 
 const CATEGORY_ICONS: Record<string, string> = {
   'Пиде': '🥟',
@@ -26,6 +27,9 @@ export interface CategoriesSectionProps {
  * Կատեգորիաների ցուցադրման հատված — /api/categories, քարտեր, սեղմելով՝ filter կամ scroll.
  */
 export function CategoriesSection({ onSelectCategory, productsSectionId = 'products-section' }: CategoriesSectionProps) {
+  const { t } = useI18n()
+  const c = t.home.categories
+  const ariaCategories = t.home.ariaCategories
   const [categories, setCategories] = useState<CategoryWithCount[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -59,9 +63,9 @@ export function CategoriesSection({ onSelectCategory, productsSectionId = 'produ
 
   if (loading) {
     return (
-      <section className="py-12 lg:py-16 bg-white" aria-label="Կատեգորիաներ">
+      <section className="py-12 lg:py-16 bg-white" aria-label={ariaCategories}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6 text-center">Категории</h2>
+          <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6 text-center">{c.title}</h2>
           <div className="flex justify-center py-12">
             <div className="animate-spin rounded-full h-12 w-12 border-4 border-orange-500 border-t-transparent" />
           </div>
@@ -72,18 +76,18 @@ export function CategoriesSection({ onSelectCategory, productsSectionId = 'produ
 
   if (error || categories.length === 0) {
     return (
-      <section className="py-12 lg:py-16 bg-white" aria-label="Կատեգորիաներ">
+      <section className="py-12 lg:py-16 bg-white" aria-label={ariaCategories}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6 text-center">Категории</h2>
+          <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6 text-center">{c.title}</h2>
           <p className="text-center text-gray-500 py-8">
-            {error ? 'Не удалось загрузить категории.' : 'Категории пока не добавлены.'}
+            {error ? c.loadError : c.empty}
           </p>
           <div className="text-center">
             <Link
               href="/products"
               className="inline-flex items-center text-orange-500 font-semibold hover:text-orange-600"
             >
-              Перейти в меню <ChevronRight className="w-5 h-5 ml-1" />
+              {c.goToMenu} <ChevronRight className="w-5 h-5 ml-1" />
             </Link>
           </div>
         </div>
@@ -92,11 +96,11 @@ export function CategoriesSection({ onSelectCategory, productsSectionId = 'produ
   }
 
   return (
-    <section className="py-12 lg:py-16 bg-white" aria-label="Կատեգորիաներ">
+    <section className="py-12 lg:py-16 bg-white" aria-label={ariaCategories}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-10">
-          <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">Категории</h2>
-          <p className="text-gray-600 max-w-xl mx-auto">Выберите категорию и перейдите к товарам</p>
+          <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">{c.title}</h2>
+          <p className="text-gray-600 max-w-xl mx-auto">{c.subtitle}</p>
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6">
           {categories.map((cat) => {
@@ -117,7 +121,7 @@ export function CategoriesSection({ onSelectCategory, productsSectionId = 'produ
                   <span className="text-sm text-gray-500 mt-1 line-clamp-2">{cat.description}</span>
                 )}
                 <span className="text-sm text-orange-600 font-semibold mt-2">
-                  {count} {count === 1 ? 'товар' : count < 5 ? 'товара' : 'товаров'}
+                  {c.itemsCount(count)}
                 </span>
               </button>
             )
@@ -128,7 +132,7 @@ export function CategoriesSection({ onSelectCategory, productsSectionId = 'produ
             href="/products"
             className="inline-flex items-center text-orange-500 font-semibold hover:text-orange-600 transition-colors"
           >
-            Смотреть всё меню <ChevronRight className="w-5 h-5 ml-1" />
+            {c.viewAllMenu} <ChevronRight className="w-5 h-5 ml-1" />
           </Link>
         </div>
       </div>

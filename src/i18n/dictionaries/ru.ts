@@ -100,6 +100,97 @@ export const ru: AppMessages = {
     terms: 'Условия использования',
     copyright: 'Copyright © 2025. Все права защищены.',
     createdBy: 'Создано',
+    refundPolicy: 'Политика возврата',
+    deliveryPolicy: 'Политика доставки',
+    refundShort: 'Возврат',
+    deliveryShort: 'Доставка',
+    addressZoravar: 'Зоравар Андраник 151/2',
+    addressEznik: 'Езник Когбаци 83',
+    hoursWeek: 'Пн–Вс: 10:00 – 22:00',
+    hoursDelivery: 'Доставка: 11:00 – 21:00',
+    ariaPhone: 'Телефон',
+    ariaEmail: 'Эл. почта',
+  },
+  home: {
+    ariaBrandBanner: 'Брендовый баннер',
+    ariaCategories: 'Категории',
+    ariaBestSellers: 'Хиты продаж',
+    ariaPromo: 'Скидки и спецпредложения',
+    productsLoading: 'Загружаем меню…',
+    categoryEmptyTitle: (category: string) =>
+      `Товары в категории «${category}» скоро появятся`,
+    categoryEmptyHint: 'Пока посмотрите другие категории',
+    showFirstCategory: (name: string) => `Показать «${name}»`,
+    showCategories: 'Показать категории',
+    viewFullMenu: 'Посмотреть всё меню',
+    whyUsTitle: 'Почему выбирают нас?',
+    whyUsSubtitle:
+      'Мы создали идеальное сочетание традиций и инноваций для вашего удовольствия',
+    featureFastTitle: 'Быстро',
+    featureFastDesc: 'Готовим за 15–20 минут',
+    featureFastBadge: '⚡ Молниеносно',
+    featureDeliveryTitle: 'Доставка',
+    featureDeliveryDesc: 'По всему Еревану',
+    featureDeliveryBadge: '🚚 30 мин',
+    featureQualityTitle: 'Качество',
+    featureQualityDesc: 'Только свежие ингредиенты',
+    featureQualityBadge: '🌟 Премиум',
+    featureSupportTitle: 'Поддержка',
+    featureSupportDesc: '+374 95-044-888',
+    featureSupportBadge: '💬 24/7',
+    testimonialsTitle: 'Что говорят наши клиенты',
+    testimonialsSubtitle:
+      'Более 1000 довольных клиентов уже попробовали наши пиде',
+    testimonial1Quote:
+      '«Невероятно вкусные пиде! Заказываю уже третий раз. Быстрая доставка и всегда свежие продукты. Рекомендую всем!»',
+    testimonial1Name: 'Анна Меликян',
+    testimonial1Role: 'Постоянный клиент',
+    testimonial1Initial: 'А',
+    testimonial2Quote:
+      '«Лучшие пиде в Ереване! Качество на высоте, цены адекватные. Особенно нравится мясная пиде с соусом.»',
+    testimonial2Name: 'Давид Арутюнян',
+    testimonial2Role: 'Гурман',
+    testimonial2Initial: 'Д',
+    testimonial3Quote:
+      '«Отличный сервис! Заказал комбо на двоих — всё было готово за 20 минут. Пиде очень вкусные и сытные.»',
+    testimonial3Name: 'Саргис Петросян',
+    testimonial3Role: 'Студент',
+    testimonial3Initial: 'С',
+    statHappyClients: 'Довольных клиентов',
+    statUniqueFlavors: 'Уникальных вкусов',
+    statDeliveryMinutes: 'Минут доставка',
+    statRating: 'Рейтинг клиентов',
+    ctaTitle: 'Готовы попробовать?',
+    ctaSubtitle: 'Закажите сейчас и получите скидку 10% на первый заказ!',
+    ctaOrderNow: 'Заказать сейчас',
+    ctaLearnMore: 'Узнать больше',
+    categories: {
+      title: 'Категории',
+      subtitle: 'Выберите категорию и перейдите к товарам',
+      loadError: 'Не удалось загрузить категории.',
+      empty: 'Категории пока не добавлены.',
+      goToMenu: 'Перейти в меню',
+      viewAllMenu: 'Смотреть всё меню',
+      itemsCount: (n: number) => {
+        const mod10 = n % 10
+        const mod100 = n % 100
+        if (mod10 === 1 && mod100 !== 11) return `${n} товар`
+        if (mod10 >= 2 && mod10 <= 4 && (mod100 < 10 || mod100 >= 20)) {
+          return `${n} товара`
+        }
+        return `${n} товаров`
+      },
+    },
+    bestSellers: {
+      title: 'Хиты продаж',
+      subtitle: 'Самые популярные и избранные позиции',
+      viewAll: 'Смотреть все',
+    },
+    promo: {
+      title: 'Скидки / Спецпредложения',
+      subtitle: 'Акции, скидки и специальные предложения',
+      viewAll: 'Смотреть все',
+    },
   },
   products: {
     allCategories: 'Все',

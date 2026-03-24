@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Phone, MapPin, Clock } from "lucide-react";
 import { useState, useEffect } from "react";
+import { useI18n } from "@/i18n/I18nContext";
 import { useCart } from "@/hooks/useCart";
 import { useWishlist } from "@/hooks/useWishlist";
 import { Product, ProductWithCategory, CategoryWithCount } from "@/types";
@@ -16,6 +17,8 @@ import { PromoSection } from "@/components/home/PromoSection";
 const ADDED_TO_CART_FEEDBACK_MS = 2000
 
 export default function Home() {
+  const { t } = useI18n()
+  const h = t.home
   const [products, setProducts] = useState<ProductWithCategory[]>([])
   const [bannerProduct, setBannerProduct] = useState<Product | null>(null)
   const [categories, setCategories] = useState<CategoryWithCount[]>([])
@@ -84,7 +87,7 @@ export default function Home() {
       }
       
       setBannerProduct(bannerData)
-    } catch (error) {
+    } catch {
       setBannerProduct(null)
     } finally {
       setLoading(false)
@@ -127,21 +130,6 @@ export default function Home() {
         return next
       })
     }, ADDED_TO_CART_FEEDBACK_MS)
-  }
-
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case 'HIT':
-        return { text: 'ХИТ ПРОДАЖ', color: 'bg-red-500' }
-      case 'NEW':
-        return { text: 'НОВИНКА', color: 'bg-green-500' }
-      case 'CLASSIC':
-        return { text: 'КЛАССИКА', color: 'bg-blue-500' }
-      case 'BANNER':
-        return { text: 'БАННЕР', color: 'bg-purple-500' }
-      default:
-        return { text: 'ПОПУЛЯРНОЕ', color: 'bg-orange-500' }
-    }
   }
 
   const getFilteredProducts = () => {
@@ -250,28 +238,30 @@ export default function Home() {
             <div className="flex justify-center py-20">
               <div className="flex flex-col items-center space-y-4">
                 <div className="animate-spin rounded-full h-16 w-16 border-4 border-orange-500 border-t-transparent"></div>
-                <p className="text-gray-600">Загружаем меню...</p>
+                <p className="text-gray-600">{h.productsLoading}</p>
               </div>
             </div>
           ) : getFilteredProducts().length === 0 ? (
             <div className="text-center py-20">
               <div className="text-6xl mb-4">🍽️</div>
               <h3 className="text-2xl font-bold text-gray-900 mb-2">
-                Товары в категории "{activeCategory}" скоро появятся
+                {h.categoryEmptyTitle(activeCategory)}
               </h3>
               <p className="text-gray-600 mb-6">
-                Пока что посмотрите другие категории
+                {h.categoryEmptyHint}
               </p>
               <button
                 onClick={() => setActiveCategory(categoryNames[0] ?? '')}
                 className="bg-orange-500 text-white px-6 py-3 rounded-xl font-semibold hover:bg-orange-600 transition-colors"
               >
-                {categoryNames.length > 0 ? `Показать «${categoryNames[0]}»` : 'Показать категории'}
+                {categoryNames.length > 0
+                  ? h.showFirstCategory(categoryNames[0])
+                  : h.showCategories}
               </button>
             </div>
           ) : (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 gap-y-8 md:gap-15">
-              {getFilteredProducts().map((product, index) => (
+              {getFilteredProducts().map((product) => (
                 <div
                   key={product.id}
                   className="transform hover:scale-105 transition-transform duration-300"
@@ -296,7 +286,7 @@ export default function Home() {
               href="/products"
               className="group inline-flex items-center bg-orange-500 text-white px-8 py-4 rounded-2xl font-bold text-lg hover:bg-orange-600 transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl"
             >
-              <span>Посмотреть все меню</span>
+              <span>{h.viewFullMenu}</span>
               <svg className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
@@ -311,10 +301,10 @@ export default function Home() {
           {/* Section header */}
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-              Почему выбирают нас?
+              {h.whyUsTitle}
             </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Мы создали идеальное сочетание традиций и инноваций для вашего удовольствия
+              {h.whyUsSubtitle}
             </p>
           </div>
 
@@ -325,11 +315,11 @@ export default function Home() {
               <div className="w-16 h-16 bg-orange-500 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
                 <Clock className="h-8 w-8 text-white" />
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-3 text-center">Быстро</h3>
-              <p className="text-gray-600 text-center mb-4">Готовим за 15-20 минут</p>
+              <h3 className="text-xl font-bold text-gray-900 mb-3 text-center">{h.featureFastTitle}</h3>
+              <p className="text-gray-600 text-center mb-4">{h.featureFastDesc}</p>
               <div className="text-center">
                 <span className="inline-block bg-orange-100 text-orange-600 px-3 py-1 rounded-full text-sm font-semibold">
-                  ⚡ Молниеносно
+                  {h.featureFastBadge}
                 </span>
               </div>
             </div>
@@ -339,11 +329,11 @@ export default function Home() {
               <div className="w-16 h-16 bg-red-500 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
                 <MapPin className="h-8 w-8 text-white" />
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-3 text-center">Доставка</h3>
-              <p className="text-gray-600 text-center mb-4">По всему Еревану</p>
+              <h3 className="text-xl font-bold text-gray-900 mb-3 text-center">{h.featureDeliveryTitle}</h3>
+              <p className="text-gray-600 text-center mb-4">{h.featureDeliveryDesc}</p>
             <div className="text-center">
                 <span className="inline-block bg-red-100 text-red-600 px-3 py-1 rounded-full text-sm font-semibold">
-                  🚚 30 мин
+                  {h.featureDeliveryBadge}
                 </span>
               </div>
             </div>
@@ -355,11 +345,11 @@ export default function Home() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-3 text-center">Качество</h3>
-              <p className="text-gray-600 text-center mb-4">Только свежие ингредиенты</p>
+              <h3 className="text-xl font-bold text-gray-900 mb-3 text-center">{h.featureQualityTitle}</h3>
+              <p className="text-gray-600 text-center mb-4">{h.featureQualityDesc}</p>
             <div className="text-center">
                 <span className="inline-block bg-green-100 text-green-600 px-3 py-1 rounded-full text-sm font-semibold">
-                  🌟 Премиум
+                  {h.featureQualityBadge}
                 </span>
               </div>
             </div>
@@ -369,11 +359,11 @@ export default function Home() {
               <div className="w-16 h-16 bg-blue-500 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
                 <Phone className="h-8 w-8 text-white" />
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-3 text-center">Поддержка</h3>
-              <p className="text-gray-600 text-center mb-4">+374 95-044-888</p>
+              <h3 className="text-xl font-bold text-gray-900 mb-3 text-center">{h.featureSupportTitle}</h3>
+              <p className="text-gray-600 text-center mb-4">{h.featureSupportDesc}</p>
             <div className="text-center">
                 <span className="inline-block bg-blue-100 text-blue-600 px-3 py-1 rounded-full text-sm font-semibold">
-                  💬 24/7
+                  {h.featureSupportBadge}
                 </span>
               </div>
             </div>
@@ -389,10 +379,10 @@ export default function Home() {
           {/* Section header */}
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-              Что говорят наши клиенты
+              {h.testimonialsTitle}
             </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Более 1000 довольных клиентов уже попробовали наши пиде
+              {h.testimonialsSubtitle}
             </p>
           </div>
 
@@ -410,15 +400,15 @@ export default function Home() {
                 </div>
               </div>
               <p className="text-gray-600 mb-6 italic">
-                "Невероятно вкусные пиде! Заказываю уже третий раз. Быстрая доставка и всегда свежие продукты. Рекомендую всем!"
+                {h.testimonial1Quote}
               </p>
               <div className="flex items-center">
                 <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center mr-4">
-                  <span className="text-orange-500 font-bold text-lg">А</span>
+                  <span className="text-orange-500 font-bold text-lg">{h.testimonial1Initial}</span>
                 </div>
                 <div>
-                  <h4 className="font-semibold text-gray-900">Анна Меликян</h4>
-                  <p className="text-sm text-gray-500">Постоянный клиент</p>
+                  <h4 className="font-semibold text-gray-900">{h.testimonial1Name}</h4>
+                  <p className="text-sm text-gray-500">{h.testimonial1Role}</p>
                 </div>
               </div>
             </div>
@@ -435,15 +425,15 @@ export default function Home() {
                 </div>
               </div>
               <p className="text-gray-600 mb-6 italic">
-                "Лучшие пиде в Ереване! Качество на высоте, цены адекватные. Особенно нравится мясная пиде с соусом."
+                {h.testimonial2Quote}
               </p>
               <div className="flex items-center">
                 <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mr-4">
-                  <span className="text-red-500 font-bold text-lg">Д</span>
+                  <span className="text-red-500 font-bold text-lg">{h.testimonial2Initial}</span>
                 </div>
                 <div>
-                  <h4 className="font-semibold text-gray-900">Давид Арутюнян</h4>
-                  <p className="text-sm text-gray-500">Гурман</p>
+                  <h4 className="font-semibold text-gray-900">{h.testimonial2Name}</h4>
+                  <p className="text-sm text-gray-500">{h.testimonial2Role}</p>
                 </div>
               </div>
             </div>
@@ -460,15 +450,15 @@ export default function Home() {
                 </div>
               </div>
               <p className="text-gray-600 mb-6 italic">
-                "Отличный сервис! Заказал комбо на двоих - все было готово за 20 минут. Пиде очень вкусные и сытные."
+                {h.testimonial3Quote}
               </p>
               <div className="flex items-center">
                 <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mr-4">
-                  <span className="text-blue-500 font-bold text-lg">С</span>
+                  <span className="text-blue-500 font-bold text-lg">{h.testimonial3Initial}</span>
                 </div>
                 <div>
-                  <h4 className="font-semibold text-gray-900">Саргис Петросян</h4>
-                  <p className="text-sm text-gray-500">Студент</p>
+                  <h4 className="font-semibold text-gray-900">{h.testimonial3Name}</h4>
+                  <p className="text-sm text-gray-500">{h.testimonial3Role}</p>
                 </div>
               </div>
             </div>
@@ -478,19 +468,19 @@ export default function Home() {
           <div className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             <div>
               <div className="text-4xl font-bold text-orange-500 mb-2">1000+</div>
-              <div className="text-gray-600">Довольных клиентов</div>
+              <div className="text-gray-600">{h.statHappyClients}</div>
             </div>
             <div>
               <div className="text-4xl font-bold text-orange-500 mb-2">15+</div>
-              <div className="text-gray-600">Уникальных вкусов</div>
+              <div className="text-gray-600">{h.statUniqueFlavors}</div>
             </div>
             <div>
               <div className="text-4xl font-bold text-orange-500 mb-2">20</div>
-              <div className="text-gray-600">Минут доставка</div>
+              <div className="text-gray-600">{h.statDeliveryMinutes}</div>
             </div>
             <div>
               <div className="text-4xl font-bold text-orange-500 mb-2">4.9</div>
-              <div className="text-gray-600">Рейтинг клиентов</div>
+              <div className="text-gray-600">{h.statRating}</div>
             </div>
           </div>
         </div>
@@ -500,23 +490,23 @@ export default function Home() {
       <section className="hidden lg:block py-20 bg-orange-500 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-4xl md:text-5xl font-bold mb-6">
-            Готовы попробовать?
+            {h.ctaTitle}
           </h2>
           <p className="text-xl text-orange-100 mb-8 max-w-2xl mx-auto">
-            Закажите сейчас и получите скидку 10% на первый заказ!
+            {h.ctaSubtitle}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link 
               href="/products"
               className="bg-white text-orange-500 px-8 py-4 rounded-xl font-bold text-lg hover:bg-gray-100 hover:scale-105 transition-all duration-300 shadow-lg"
             >
-              Заказать сейчас
+              {h.ctaOrderNow}
             </Link>
             <Link 
               href="/contact"
               className="border-2 border-white text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-white hover:text-orange-500 hover:scale-105 transition-all duration-300"
             >
-              Узнать больше
+              {h.ctaLearnMore}
             </Link>
           </div>
         </div>

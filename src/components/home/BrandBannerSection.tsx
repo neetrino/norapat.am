@@ -17,6 +17,7 @@ export interface BrandBannerSectionProps {
 export function BrandBannerSection({ bannerProduct, onAddToCart }: BrandBannerSectionProps) {
   const { t } = useI18n()
   const bb = t.brandBanner
+  const homeAria = t.home.ariaBrandBanner
   const handleAdd = (e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
@@ -24,7 +25,7 @@ export function BrandBannerSection({ bannerProduct, onAddToCart }: BrandBannerSe
   }
 
   return (
-    <section className="relative bg-orange-500 text-white overflow-hidden" aria-label="Բրենդային բաններ">
+    <section className="relative bg-orange-500 text-white overflow-hidden" aria-label={homeAria}>
       <div className="absolute inset-0">
         <div className="absolute top-10 left-10 w-20 h-20 bg-white/10 rounded-full animate-pulse" />
         <div className="absolute top-32 right-20 w-16 h-16 bg-yellow-200/20 rounded-full animate-bounce" />

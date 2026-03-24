@@ -8,7 +8,7 @@ import { LanguageSwitcher } from '@/components/LanguageSwitcher'
 
 export default function Footer() {
   const { t } = useI18n()
-  const { nav, footer: footerCopy } = t
+  const { nav, footer: f } = t
   return (
     <footer className="bg-white border-t border-gray-200 text-gray-900 py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -26,13 +26,13 @@ export default function Footer() {
               />
             </div>
             <p className="text-gray-600 mb-4">
-              {footerCopy.tagline}
+              {f.tagline}
             </p>
             <div className="flex flex-wrap items-center gap-3">
-              <a href="tel:+37495044888" className="text-gray-600 hover:text-orange-500 transition-colors" aria-label="Հեռախոս">
+              <a href="tel:+37495044888" className="text-gray-600 hover:text-orange-500 transition-colors" aria-label={f.ariaPhone}>
                 <Phone className="h-5 w-5" />
               </a>
-              <a href="mailto:info@pideh.am" className="text-gray-600 hover:text-orange-500 transition-colors" aria-label="Էլ. փոստ">
+              <a href="mailto:info@pideh.am" className="text-gray-600 hover:text-orange-500 transition-colors" aria-label={f.ariaEmail}>
                 <Mail className="h-5 w-5" />
               </a>
               <a href="https://www.facebook.com" target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-orange-500 transition-colors" aria-label="Facebook">
@@ -46,7 +46,7 @@ export default function Footer() {
 
           {/* Quick Links */}
           <div>
-            <h4 className="text-lg font-semibold mb-4 text-gray-900">{footerCopy.navHeading}</h4>
+            <h4 className="text-lg font-semibold mb-4 text-gray-900">{f.navHeading}</h4>
             <ul className="space-y-2">
               <li>
                 <Link href="/" className="text-gray-600 hover:text-orange-500 transition-colors">
@@ -70,12 +70,12 @@ export default function Footer() {
               </li>
               <li>
                 <Link href="/refund" className="text-gray-600 hover:text-orange-500 transition-colors">
-                  Վերադարձի քաղաքականություն
+                  {f.refundPolicy}
                 </Link>
               </li>
               <li>
                 <Link href="/delivery" className="text-gray-600 hover:text-orange-500 transition-colors">
-                  Առաքման քաղաքականություն
+                  {f.deliveryPolicy}
                 </Link>
               </li>
             </ul>
@@ -83,7 +83,7 @@ export default function Footer() {
 
           {/* Contact Info */}
           <div>
-            <h4 className="text-lg font-semibold mb-4 text-gray-900">{footerCopy.contactsHeading}</h4>
+            <h4 className="text-lg font-semibold mb-4 text-gray-900">{f.contactsHeading}</h4>
             <div className="space-y-3">
               <div className="flex items-center space-x-2">
                 <Phone className="h-4 w-4 text-orange-500" />
@@ -106,7 +106,7 @@ export default function Footer() {
                     rel="noopener noreferrer"
                     className="text-gray-600 hover:text-orange-500 transition-colors"
                   >
-                    Զորավար Անդրանիկ 151/2
+                    {f.addressZoravar}
                   </a>
                 </div>
                 <div className="flex items-center space-x-2">
@@ -117,15 +117,15 @@ export default function Footer() {
                     rel="noopener noreferrer"
                     className="text-gray-600 hover:text-orange-500 transition-colors"
                   >
-                    Եզնիկ Կողբացի 83
+                    {f.addressEznik}
                   </a>
                 </div>
               </div>
               <div className="flex items-center space-x-2">
                 <Clock className="h-4 w-4 text-orange-500" />
                 <div className="text-gray-600">
-                  <div>Երկ–կիր: 10:00 – 22:00</div>
-                  <div className="text-sm">Առաքում՝ 11:00 – 21:00</div>
+                  <div>{f.hoursWeek}</div>
+                  <div className="text-sm">{f.hoursDelivery}</div>
                 </div>
               </div>
             </div>
@@ -140,20 +140,20 @@ export default function Footer() {
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <div className="flex flex-wrap justify-center md:justify-start gap-x-6 gap-y-2 text-sm">
               <Link href="/privacy" className="text-gray-500 hover:text-orange-500 transition-colors">
-                {footerCopy.privacy}
+                {f.privacy}
               </Link>
               <Link href="/terms" className="text-gray-500 hover:text-orange-500 transition-colors">
-                {footerCopy.terms}
+                {f.terms}
               </Link>
               <Link href="/refund" className="text-gray-500 hover:text-orange-500 transition-colors">
-                Վերադարձ
+                {f.refundShort}
               </Link>
               <Link href="/delivery" className="text-gray-500 hover:text-orange-500 transition-colors">
-                Առաքում
+                {f.deliveryShort}
               </Link>
             </div>
             <p className="text-sm font-light tracking-wide text-gray-500">
-              {footerCopy.copyright} {footerCopy.createdBy}{' '}
+              {f.copyright} {f.createdBy}{' '}
               <a 
                 href="https://neetrino.com" 
                 target="_blank" 

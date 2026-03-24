@@ -104,6 +104,83 @@ export interface AppMessages {
     terms: string
     copyright: string
     createdBy: string
+    refundPolicy: string
+    deliveryPolicy: string
+    refundShort: string
+    deliveryShort: string
+    addressZoravar: string
+    addressEznik: string
+    hoursWeek: string
+    hoursDelivery: string
+    ariaPhone: string
+    ariaEmail: string
+  }
+  home: {
+    ariaBrandBanner: string
+    ariaCategories: string
+    ariaBestSellers: string
+    ariaPromo: string
+    productsLoading: string
+    categoryEmptyTitle: (category: string) => string
+    categoryEmptyHint: string
+    showFirstCategory: (name: string) => string
+    showCategories: string
+    viewFullMenu: string
+    whyUsTitle: string
+    whyUsSubtitle: string
+    featureFastTitle: string
+    featureFastDesc: string
+    featureFastBadge: string
+    featureDeliveryTitle: string
+    featureDeliveryDesc: string
+    featureDeliveryBadge: string
+    featureQualityTitle: string
+    featureQualityDesc: string
+    featureQualityBadge: string
+    featureSupportTitle: string
+    featureSupportDesc: string
+    featureSupportBadge: string
+    testimonialsTitle: string
+    testimonialsSubtitle: string
+    testimonial1Quote: string
+    testimonial1Name: string
+    testimonial1Role: string
+    testimonial1Initial: string
+    testimonial2Quote: string
+    testimonial2Name: string
+    testimonial2Role: string
+    testimonial2Initial: string
+    testimonial3Quote: string
+    testimonial3Name: string
+    testimonial3Role: string
+    testimonial3Initial: string
+    statHappyClients: string
+    statUniqueFlavors: string
+    statDeliveryMinutes: string
+    statRating: string
+    ctaTitle: string
+    ctaSubtitle: string
+    ctaOrderNow: string
+    ctaLearnMore: string
+    categories: {
+      title: string
+      subtitle: string
+      loadError: string
+      empty: string
+      goToMenu: string
+      viewAllMenu: string
+      itemsCount: (n: number) => string
+    }
+    bestSellers: {
+      title: string
+      subtitle: string
+      viewAll: string
+    }
+    promo: {
+      title: string
+      subtitle: string
+      viewAll: string
+    }
   }
   products: {
     allCategories: string
