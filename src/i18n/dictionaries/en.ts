@@ -327,6 +327,7 @@ export const en: AppMessages = {
     addressZoravar: 'Zoravar Andranik 151/2',
     addressEznik: 'Eznik Koghbatsi 83',
     onMap: 'On map',
+    mapTitle: 'Find us on the map',
     faqTitle: 'Frequently asked questions',
     faqPrepQ: 'How long does it take to prepare an order?',
     faqPrepA: 'Usually 15–20 minutes. May be a bit longer during peak hours.',

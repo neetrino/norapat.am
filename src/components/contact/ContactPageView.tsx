@@ -1,6 +1,7 @@
 'use client'
 
 import Footer from '@/components/Footer'
+import { MapEmbed } from '@/components/MapEmbed'
 import { useI18n } from '@/i18n/I18nContext'
 import {
   Phone,
@@ -150,6 +151,13 @@ export function ContactPageView() {
               </a>
             </div>
           </div>
+        </div>
+
+        <div className="mb-16">
+          <h2 className="text-3xl font-bold text-center text-gray-900 mb-8">
+            {c.mapTitle}
+          </h2>
+          <MapEmbed />
         </div>
 
         <div className="mb-16">

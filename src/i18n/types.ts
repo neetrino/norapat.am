@@ -315,6 +315,7 @@ export interface AppMessages {
     addressZoravar: string
     addressEznik: string
     onMap: string
+    mapTitle: string
     faqTitle: string
     faqPrepQ: string
     faqPrepA: string
