@@ -380,7 +380,7 @@ function ProductsPageContent() {
                 </div>
                 
                 {/* Продукты категории */}
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 gap-y-8 md:gap-15 overflow-visible">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 gap-y-12 md:gap-10 overflow-visible">
                   {categoryProducts.map((product) => (
                     <ProductCard
                       key={product.id}
@@ -398,7 +398,7 @@ function ProductsPageContent() {
           </div>
         ) : (
           // Показываем продукты в обычной сетке (для конкретной категории или поиска)
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 gap-y-8 md:gap-15 overflow-visible">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 gap-y-12 md:gap-10 overflow-visible">
             {filteredProducts.map((product) => (
               <ProductCard
                 key={product.id}

@@ -12,7 +12,7 @@ export function SimilarProducts({ products }: SimilarProductsProps) {
   const { isInWishlist, toggle: toggleWishlist } = useWishlist()
   if (products.length === 0) return null
   return (
-    <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 overflow-visible">
+    <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 overflow-visible">
       {products.map((p) => (
         <ProductCard
           key={p.id}

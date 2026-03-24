@@ -71,7 +71,7 @@ export function BestSellersSection({ onAddToCart, addedToCart, isInWishlist, onT
         </div>
 
         <div className="overflow-x-auto pb-2 pt-20 -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-thin">
-          <div className="flex sm:grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 min-w-max sm:min-w-0 overflow-visible">
+          <div className="flex sm:grid sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 min-w-max sm:min-w-0 overflow-visible">
             {products.map((product) => (
               <div
                 key={product.id}

@@ -16,6 +16,7 @@ import { BestSellersSection } from "@/components/home/BestSellersSection";
 import { PromoSection } from "@/components/home/PromoSection";
 import { ActionsSection } from "@/components/home/ActionsSection";
 const ADDED_TO_CART_FEEDBACK_MS = 2000
+const HOME_PRODUCTS_LIMIT = 8
 
 export default function Home() {
   const { t, locale } = useI18n()
@@ -268,8 +269,8 @@ export default function Home() {
               </button>
             </div>
           ) : (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 gap-y-8 md:gap-15 overflow-visible">
-              {getFilteredProducts().map((product) => (
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 gap-y-12 md:gap-10 overflow-visible">
+              {getFilteredProducts().slice(0, HOME_PRODUCTS_LIMIT).map((product) => (
                 <div
                   key={product.id}
                   className="overflow-visible"
