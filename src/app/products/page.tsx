@@ -368,7 +368,7 @@ function ProductsPageContent() {
         {/* Products Display */}
         {selectedCategory === allCategories && !debouncedSearchQuery ? (
           // Показываем продукты сгруппированными по категориям
-          <div className="space-y-16 mt-8">
+          <div className="space-y-16 mt-24">
             {groupedProducts.map(({ category, products: categoryProducts }) => (
               <div key={category}>
                 {/* Заголовок категории */}
@@ -398,7 +398,7 @@ function ProductsPageContent() {
           </div>
         ) : (
           // Показываем продукты в обычной сетке (для конкретной категории или поиска)
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 gap-y-16 md:gap-12 overflow-visible mt-8">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 gap-y-16 md:gap-12 overflow-visible mt-24">
             {filteredProducts.map((product) => (
               <ProductCard
                 key={product.id}
