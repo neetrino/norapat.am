@@ -14,7 +14,7 @@ import { dictionaries } from './dictionaries'
 const STORAGE_KEY = 'pideh-locale'
 
 function isAppLocale(value: string | null): value is AppLocale {
-  return value === 'hy' || value === 'en' || value === 'ru'
+  return value === 'hy'
 }
 
 type I18nContextValue = {
@@ -51,8 +51,7 @@ export function I18nProvider({ children }: { children: ReactNode }) {
   const t = useMemo(() => dictionaries[locale], [locale])
 
   useEffect(() => {
-    const htmlLang = locale === 'hy' ? 'hy' : locale === 'ru' ? 'ru' : 'en'
-    document.documentElement.lang = htmlLang
+    document.documentElement.lang = 'hy'
   }, [locale])
 
   const value = useMemo(

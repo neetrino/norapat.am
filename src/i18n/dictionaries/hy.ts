@@ -4,8 +4,6 @@ export const hy: AppMessages = {
   languageSwitcher: {
     label: 'Լեզու',
     hy: 'Հայ',
-    en: 'EN',
-    ru: 'RU',
   },
   brandBanner: {
     badge: 'Թարմ պիդե ամեն օր',

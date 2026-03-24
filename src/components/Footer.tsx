@@ -4,7 +4,6 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { Phone, Mail, MapPin, Clock, Facebook, Instagram } from 'lucide-react'
 import { useI18n } from '@/i18n/I18nContext'
-import { LanguageSwitcher } from '@/components/LanguageSwitcher'
 
 export default function Footer() {
   const { t } = useI18n()
@@ -134,9 +133,6 @@ export default function Footer() {
 
         {/* Bottom */}
         <div className="border-t border-gray-200 mt-8 pt-8">
-          <div className="relative flex justify-center md:justify-end mb-6">
-            <LanguageSwitcher placement="top" />
-          </div>
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <div className="flex flex-wrap justify-center md:justify-start gap-x-6 gap-y-2 text-sm">
               <Link href="/privacy" className="text-gray-500 hover:text-orange-500 transition-colors">

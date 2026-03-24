@@ -5,7 +5,6 @@ import Image from 'next/image'
 import { Search } from 'lucide-react'
 import { useState } from 'react'
 import { useI18n } from '@/i18n/I18nContext'
-import { LanguageSwitcher } from '@/components/LanguageSwitcher'
 
 export default function MobileHeader() {
   const { t } = useI18n()
@@ -17,9 +16,7 @@ export default function MobileHeader() {
     <header className="bg-white/95 backdrop-blur-xl shadow-lg fixed top-0 left-0 right-0 z-[100] border-b border-gray-200" style={{ position: 'fixed' }}>
       <div className="px-4 py-1.5">
         <div className="flex items-center gap-2">
-          <div className="flex-1 flex justify-start min-w-0 z-[101]">
-            <LanguageSwitcher variant="compact" placement="bottom" />
-          </div>
+          <div className="flex-1 flex justify-start min-w-0 z-[101]" />
           <div className="flex-shrink-0">
             <Link href="/" className="hover:opacity-80 transition-all duration-300 hover:scale-105 block">
               <Image 
@@ -35,7 +32,7 @@ export default function MobileHeader() {
           </div>
 
           {/* Mobile Search Button */}
-          <div className="flex-1 flex justify-end">
+          <div className="flex-1 flex justify-end min-w-0">
           <button
             onClick={() => setIsSearchOpen(!isSearchOpen)}
             className="p-3 text-gray-900 hover:text-orange-500 hover:bg-orange-50 rounded-xl transition-all duration-300 active:scale-95"

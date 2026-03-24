@@ -6,11 +6,10 @@ import { PRODUCT_DISPLAY_NAMES } from './productDisplayNames'
  */
 export function getProductDisplayName(
   name: string | null | undefined,
-  locale: AppLocale
+  _locale: AppLocale
 ): string {
   if (name == null || name === '') {
     return ''
   }
-  const row = PRODUCT_DISPLAY_NAMES[name]
-  return row ? row[locale] : name
+  return PRODUCT_DISPLAY_NAMES[name] ?? name
 }

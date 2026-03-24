@@ -9,7 +9,6 @@ import { useSession, signOut } from 'next-auth/react'
 import { useCart } from '@/hooks/useCart'
 import { useHydration } from '@/hooks/useHydration'
 import { useI18n } from '@/i18n/I18nContext'
-import { LanguageSwitcher } from '@/components/LanguageSwitcher'
 
 export default function DesktopHeader() {
   const { t } = useI18n()
@@ -99,8 +98,6 @@ export default function DesktopHeader() {
               />
             </div>
           </div>
-
-          <LanguageSwitcher className="hidden lg:flex" placement="bottom" />
 
           {/* Right side */}
           <div className="flex items-center space-x-4">

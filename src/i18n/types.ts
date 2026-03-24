@@ -2,14 +2,12 @@
  * Բազմալեզու հաղորդագրությունների կառուցվածք։
  */
 
-export type AppLocale = 'hy' | 'en' | 'ru'
+export type AppLocale = 'hy'
 
 export interface AppMessages {
   languageSwitcher: {
     label: string
     hy: string
-    en: string
-    ru: string
   }
   brandBanner: {
     badge: string
