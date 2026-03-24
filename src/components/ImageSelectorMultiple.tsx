@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Search, X, Image as ImageIcon, Check, Loader2 } from 'lucide-react'
+import { Search, X, Image as ImageIcon, Check, Loader2, ChevronUp, ChevronDown } from 'lucide-react'
 import Image from 'next/image'
 
 interface ImageSelectorMultipleProps {
@@ -58,6 +58,7 @@ export default function ImageSelectorMultiple({
   const handleFileUpload = async (files: FileList) => {
     if (!files.length) return
     setUploading(true)
+    const uploadedPaths: string[] = []
     try {
       for (let i = 0; i < files.length; i++) {
         const file = files[i]
@@ -69,8 +70,11 @@ export default function ImageSelectorMultiple({
         if (response.ok) {
           const result = await response.json()
           setImages((prev) => [...prev, { name: file.name, path: result.path }])
-          if (i === 0) onChange([...value, result.path])
+          uploadedPaths.push(result.path)
         }
+      }
+      if (uploadedPaths.length > 0) {
+        onChange([...value, ...uploadedPaths])
       }
     } catch (error) {
       console.error('Upload error:', error)
@@ -86,6 +90,14 @@ export default function ImageSelectorMultiple({
 
   const removeImage = (index: number) => {
     onChange(value.filter((_, i) => i !== index))
+  }
+
+  const moveImage = (index: number, direction: 'up' | 'down') => {
+    const newValue = [...value]
+    const targetIndex = direction === 'up' ? index - 1 : index + 1
+    if (targetIndex < 0 || targetIndex >= value.length) return
+    ;[newValue[index], newValue[targetIndex]] = [newValue[targetIndex], newValue[index]]
+    onChange(newValue)
   }
 
   return (
@@ -105,7 +117,7 @@ export default function ImageSelectorMultiple({
               value.map((path, index) => (
                 <div
                   key={`${path}-${index}`}
-                  className="relative group w-20 h-20 rounded-lg overflow-hidden border-2 border-gray-200"
+                  className="relative group w-20 h-20 rounded-lg overflow-hidden border-2 border-gray-200 flex items-center"
                 >
                   <Image
                     src={path}
@@ -114,6 +126,26 @@ export default function ImageSelectorMultiple({
                     sizes="80px"
                     className="object-cover"
                   />
+                  <div className="absolute left-0 top-0 bottom-0 flex flex-col justify-center gap-0.5 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity rounded-l">
+                    <button
+                      type="button"
+                      onClick={() => moveImage(index, 'up')}
+                      disabled={index === 0}
+                      className="p-0.5 text-white hover:bg-white/20 disabled:opacity-30 disabled:cursor-not-allowed"
+                      aria-label="Move up"
+                    >
+                      <ChevronUp className="h-4 w-4" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => moveImage(index, 'down')}
+                      disabled={index === value.length - 1}
+                      className="p-0.5 text-white hover:bg-white/20 disabled:opacity-30 disabled:cursor-not-allowed"
+                      aria-label="Move down"
+                    >
+                      <ChevronDown className="h-4 w-4" />
+                    </button>
+                  </div>
                   <button
                     type="button"
                     onClick={() => removeImage(index)}
@@ -121,6 +153,9 @@ export default function ImageSelectorMultiple({
                   >
                     <X className="h-3 w-3" />
                   </button>
+                  <span className="absolute bottom-0 left-0 right-0 bg-black/60 text-white text-xs text-center py-0.5">
+                    {index + 1}
+                  </span>
                 </div>
               ))
             )}
