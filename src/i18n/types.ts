@@ -289,4 +289,43 @@ export interface AppMessages {
     DELIVERED: string
     CANCELLED: string
   }
+  contactPage: {
+    heroTitle: string
+    heroSubtitle: string
+    phoneTitle: string
+    phoneHours: string
+    callBtn: string
+    emailTitle: string
+    emailResponse: string
+    writeBtn: string
+    hoursTitle: string
+    deliveryHours: string
+    quickOrderTitle: string
+    quickOrderSubtitle: string
+    callPhoneBtn: string
+    branchesTitle: string
+    addressZoravar: string
+    addressEznik: string
+    onMap: string
+    faqTitle: string
+    faqPrepQ: string
+    faqPrepA: string
+    faqDeliveryQ: string
+    faqDeliveryA: string
+    faqAdvanceQ: string
+    faqAdvanceA: string
+    faqPaymentQ: string
+    faqPaymentA: string
+    faqDiscountQ: string
+    faqDiscountA: string
+    faqContactQ: string
+    faqContactA: string
+    testimonialsTitle: string
+    testimonial1Quote: string
+    testimonial1Name: string
+    testimonial2Quote: string
+    testimonial2Name: string
+    testimonial3Quote: string
+    testimonial3Name: string
+  }
 }

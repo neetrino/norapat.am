@@ -1,4 +1,4 @@
-import type { AppLocale } from '../types'
+import type { AppLocale, AppMessages } from '../types'
 import { hy } from './hy'
 import { en } from './en'
 import { ru } from './ru'
