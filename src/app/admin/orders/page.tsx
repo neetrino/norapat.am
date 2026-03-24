@@ -355,8 +355,10 @@ export default function AdminOrdersPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                <Search className="inline h-4 w-4 mr-1" />
-                Поиск
+                <span className="inline-flex items-center gap-1">
+                  <Search className="inline h-4 w-4 shrink-0" aria-hidden />
+                  <span className="underline underline-offset-2">Поиск</span>
+                </span>
               </label>
               <input
                 type="text"
