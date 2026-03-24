@@ -1,8 +1,9 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import Image from 'next/image'
-import { X, ZoomIn } from 'lucide-react'
+import { X, ZoomIn, ChevronLeft, ChevronRight } from 'lucide-react'
 import { ProductImageWithLocalizedAlt } from './ProductImageWithLocalizedAlt'
 import { getProductDisplayName } from '@/i18n/getProductDisplayName'
 import { useI18n } from '@/i18n/I18nContext'
@@ -24,6 +25,22 @@ export function ProductImageGallery({
   const { locale } = useI18n()
   const [selectedIndex, setSelectedIndex] = useState(0)
   const [isZoomOpen, setIsZoomOpen] = useState(false)
+
+  const handleClose = useCallback(() => setIsZoomOpen(false), [])
+
+  useEffect(() => {
+    if (!isZoomOpen) return
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') handleClose()
+    }
+    window.addEventListener('keydown', onKeyDown)
+    const prevOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => {
+      window.removeEventListener('keydown', onKeyDown)
+      document.body.style.overflow = prevOverflow
+    }
+  }, [isZoomOpen, handleClose])
 
   const displayImages = images.length > 0
     ? images.filter((src) => src && src !== 'no-image')
@@ -102,66 +119,87 @@ export function ProductImageGallery({
         </div>
       )}
 
-      {/* Zoom modal */}
-      {isZoomOpen && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4"
-          role="dialog"
-          aria-modal
-          aria-label="Zoomed image"
-          onClick={() => setIsZoomOpen(false)}
-        >
-          <button
-            type="button"
-            onClick={() => setIsZoomOpen(false)}
-            className="absolute top-4 right-4 p-2 text-white hover:bg-white/20 rounded-full transition-colors"
-            aria-label="Close zoom"
-          >
-            <X className="h-8 w-8" />
-          </button>
-
+      {/* Zoom modal — портал в body для правильного fixed позиционирования */}
+      {isZoomOpen &&
+        typeof document !== 'undefined' &&
+        createPortal(
           <div
-            className="relative w-full max-w-4xl aspect-square max-h-[90vh]"
-            onClick={(e) => e.stopPropagation()}
+            className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-black/80 p-4 animate-zoom-backdrop"
+            role="dialog"
+            aria-modal
+            aria-label="Zoomed image"
+            onClick={handleClose}
           >
-            <Image
-              src={currentImage!}
-              alt={altText}
-              fill
-              sizes="(max-width: 896px) 100vw, 896px"
-              className="object-contain"
-              onClick={() => setIsZoomOpen(false)}
-            />
-          </div>
+            {/* Close button */}
+            <button
+              type="button"
+              onClick={handleClose}
+              className="absolute top-4 right-4 z-10 p-2.5 bg-white/10 hover:bg-white/25 rounded-full transition-all duration-200"
+              aria-label="Close zoom"
+            >
+              <X className="h-6 w-6 text-white" />
+            </button>
 
-          {displayImages.length > 1 && (
-            <>
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation()
-                  handlePrev()
-                }}
-                className="absolute left-4 top-1/2 -translate-y-1/2 p-2 text-white hover:bg-white/20 rounded-full transition-colors"
-                aria-label="Previous image"
-              >
-                <span className="text-3xl">‹</span>
-              </button>
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation()
-                  handleNext()
-                }}
-                className="absolute right-4 top-1/2 -translate-y-1/2 p-2 text-white hover:bg-white/20 rounded-full transition-colors"
-                aria-label="Next image"
-              >
-                <span className="text-3xl">›</span>
-              </button>
-            </>
-          )}
-        </div>
-      )}
+            {/* Image card container */}
+            <div
+              className="relative flex flex-col items-center w-full max-w-2xl max-h-[85vh] overflow-y-auto animate-zoom-content"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Image container with subtle frame */}
+              <div className="relative w-full aspect-square max-h-[60vh] min-h-[200px] flex-shrink-0 bg-white/5 rounded-2xl overflow-hidden shadow-2xl ring-1 ring-white/20">
+                <Image
+                  src={currentImage!}
+                  alt={altText}
+                  fill
+                  sizes="(max-width: 896px) 100vw, 672px"
+                  className="object-contain p-2"
+                  priority
+                />
+              </div>
+
+              {/* Product name caption */}
+              <div className="mt-4 px-4 py-3 flex-shrink-0 bg-white/10 backdrop-blur-sm rounded-xl max-w-full">
+                <p className="text-white text-lg font-semibold text-center truncate" title={altText}>
+                  {altText}
+                </p>
+                {displayImages.length > 1 && (
+                  <p className="text-white/70 text-sm text-center mt-1">
+                    {selectedIndex + 1} / {displayImages.length}
+                  </p>
+                )}
+              </div>
+            </div>
+
+            {/* Navigation arrows */}
+            {displayImages.length > 1 && (
+              <>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    handlePrev()
+                  }}
+                  className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 p-3 bg-white/10 hover:bg-white/25 rounded-full transition-all duration-200 z-10"
+                  aria-label="Previous image"
+                >
+                  <ChevronLeft className="h-8 w-8 text-white" />
+                </button>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    handleNext()
+                  }}
+                  className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 p-3 bg-white/10 hover:bg-white/25 rounded-full transition-all duration-200 z-10"
+                  aria-label="Next image"
+                >
+                  <ChevronRight className="h-8 w-8 text-white" />
+                </button>
+              </>
+            )}
+          </div>,
+          document.body
+        )}
     </div>
   )
 }
