@@ -61,7 +61,7 @@ const ProductCard = memo(({ product, onAddToCart, variant = 'default', addedToCa
         
         {/* 3D Floating Product - No top border */}
         {product.image && product.image !== 'no-image' ? (
-          <div className="relative w-full h-full overflow-visible">
+          <div className="relative w-full h-full overflow-visible z-0 group-hover:z-30">
             {/* 3D Product Image with floating effect - scaled image overflows freely */}
             <div
               className="absolute -top-16 left-1/2 -translate-x-1/2 w-full max-w-[220px] h-[calc(100%+6rem)] overflow-visible [&>*]:!overflow-visible"
