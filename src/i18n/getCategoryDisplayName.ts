@@ -1,10 +1,15 @@
 import type { AppLocale } from './types'
 
 /**
- * DB `category.name` values (admin) → display labels (Armenian).
- * Unknown names pass through unchanged.
+ * Category name → display (Armenian). Armenian names pass through.
  */
 const CATEGORY_LABELS: Record<string, string> = {
+  Պիդե: 'Պիդե',
+  Կոմբո: 'Կոմբո',
+  Սնաք: 'Սնաք',
+  Սոուսներ: 'Սոուսներ',
+  Ըմպելիքներ: 'Ըմպելիքներ',
+  // Legacy Russian (if any)
   Пиде: 'Պիդե',
   Комбо: 'Կոմբո',
   Снэк: 'Սնաք',

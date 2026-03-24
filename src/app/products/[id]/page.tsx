@@ -284,17 +284,17 @@ export default async function ProductPage({
                 <span className="text-lg text-gray-500">{t.perServing}</span>
               </div>
 
-              {/* Stock Status: Առկա է / Առկա չէ */}
+              {/* Stock Status */}
               <div className="flex items-center gap-2 mb-6">
                 {product.isAvailable ? (
                   <span className="inline-flex items-center gap-2 px-3 py-1.5 bg-green-100 text-green-800 rounded-lg text-sm font-medium">
                     <Check className="h-4 w-4" />
-                    Առկա է
+                    {t.stockAvailable}
                   </span>
                 ) : (
                   <span className="inline-flex items-center gap-2 px-3 py-1.5 bg-gray-100 text-gray-600 rounded-lg text-sm font-medium">
                     <XCircle className="h-4 w-4" />
-                    Առկա չէ
+                    {t.stockUnavailable}
                   </span>
                 )}
               </div>
@@ -326,7 +326,7 @@ export default async function ProductPage({
                 <div className="flex items-center space-x-3">
                   <Clock className="h-6 w-6 text-orange-500" />
                   <div>
-                    <div className="font-semibold text-gray-900">15-20 мин</div>
+                    <div className="font-semibold text-gray-900">{t.prepTimeValue}</div>
                     <div className="text-sm text-gray-600">{t.prepTimeShort}</div>
                   </div>
                 </div>
@@ -336,7 +336,7 @@ export default async function ProductPage({
                 <div className="flex items-center space-x-3">
                   <MapPin className="h-6 w-6 text-orange-500" />
                   <div>
-                    <div className="font-semibold text-gray-900">30 мин</div>
+                    <div className="font-semibold text-gray-900">{t.deliveryTimeValue}</div>
                     <div className="text-sm text-gray-600">{t.delivery}</div>
                   </div>
                 </div>

@@ -327,6 +327,8 @@ export const hy: AppMessages = {
     badgeClassic: 'ԴԱՍԱԿԱՆ',
     productInfo: 'Ապրանքի մասին տեղեկություն.',
     prepTime: 'Պատրաստման ժամանակ՝ 15-20 րոպե',
+    prepTimeValue: '15-20 ր',
+    deliveryTimeValue: '30 ր',
     weight: 'Քաշ՝ ~300գ',
     freshIngredients: 'Միայն թարմ բաղադրիչներ',
     noPreservatives: 'Առանց կոնսերվանտների',
@@ -340,6 +342,8 @@ export const hy: AppMessages = {
     all: 'Բոլորը',
     shortDescription: 'Կարճ նկարագրություն',
     fullDescription: 'Լիարժեք նկարագրություն',
+    stockAvailable: 'Առկա է',
+    stockUnavailable: 'Առկա չէ',
   },
   productQuantity: {
     quantity: 'Քանակ.',

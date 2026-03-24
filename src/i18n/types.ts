@@ -310,6 +310,8 @@ export interface AppMessages {
     badgeClassic: string
     productInfo: string
     prepTime: string
+    prepTimeValue: string
+    deliveryTimeValue: string
     weight: string
     freshIngredients: string
     noPreservatives: string
@@ -323,6 +325,8 @@ export interface AppMessages {
     all: string
     shortDescription: string
     fullDescription: string
+    stockAvailable: string
+    stockUnavailable: string
   }
   productQuantity: {
     quantity: string
