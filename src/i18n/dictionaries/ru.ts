@@ -191,6 +191,12 @@ export const ru: AppMessages = {
       subtitle: 'Акции, скидки и специальные предложения',
       viewAll: 'Смотреть все',
     },
+    actions: {
+      title: 'Акции',
+      subtitle: 'Временные акции, баннеры и специальные предложения',
+      viewAll: 'Смотреть все',
+      ariaLabel: 'Акции и предложения',
+    },
   },
   aboutPage: {
     heroTitle: 'О Pideh Armenia',

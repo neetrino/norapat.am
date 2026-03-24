@@ -179,6 +179,12 @@ export const en: AppMessages = {
       subtitle: 'Promotions, discounts, and specials',
       viewAll: 'View all',
     },
+    actions: {
+      title: 'Campaigns',
+      subtitle: 'Time-limited campaigns, banners and special offers',
+      viewAll: 'View all',
+      ariaLabel: 'Campaigns and offers',
+    },
   },
   aboutPage: {
     heroTitle: 'About Pideh Armenia',

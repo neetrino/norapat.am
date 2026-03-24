@@ -181,6 +181,12 @@ export interface AppMessages {
       subtitle: string
       viewAll: string
     }
+    actions: {
+      title: string
+      subtitle: string
+      viewAll: string
+      ariaLabel: string
+    }
   }
   aboutPage: {
     heroTitle: string

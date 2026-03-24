@@ -14,6 +14,7 @@ import { BrandBannerSection } from "@/components/home/BrandBannerSection";
 import { CategoriesSection } from "@/components/home/CategoriesSection";
 import { BestSellersSection } from "@/components/home/BestSellersSection";
 import { PromoSection } from "@/components/home/PromoSection";
+import { ActionsSection } from "@/components/home/ActionsSection";
 
 const ADDED_TO_CART_FEEDBACK_MS = 2000
 
@@ -168,6 +169,9 @@ export default function Home() {
         isInWishlist={isInWishlist}
         onToggleWishlist={toggleWishlist}
       />
+
+      {/* 4.1. Ակցիաներ — ժամանակավոր ակցիաներ, բաննեռներ (02-FUNCTIONAL 1.4) */}
+      <ActionsSection />
 
       {/* 5. Products Showcase Section */}
       <section id="products-section" className="py-16 lg:py-20 bg-white scroll-mt-24">

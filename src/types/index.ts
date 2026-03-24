@@ -1,7 +1,27 @@
-import { User, Product, Order, OrderItem, OrderStatus, ProductStatus, Category } from '@prisma/client'
+import {
+  User,
+  Product,
+  Order,
+  OrderItem,
+  OrderStatus,
+  ProductStatus,
+  Category,
+  Campaign,
+  CampaignLinkType,
+} from '@prisma/client'
 
 // Экспортируем типы из Prisma
-export { Product, User, Order, OrderItem, OrderStatus, ProductStatus, Category }
+export {
+  Product,
+  User,
+  Order,
+  OrderItem,
+  OrderStatus,
+  ProductStatus,
+  Category,
+  Campaign,
+  CampaignLinkType,
+}
 
 // Расширенные типы для приложения
 export interface ProductWithIngredients extends Product {

@@ -10,6 +10,7 @@ import {
   ShoppingCart,
   Tag,
   Percent,
+  Megaphone,
   Settings,
   LogOut,
   Menu,
@@ -25,6 +26,7 @@ const SIDEBAR_NAV_ITEMS = [
   { href: '/admin/orders', label: 'Պատվերներ', icon: ShoppingCart },
   { href: '/admin/categories', label: 'Կատեգորիաներ', icon: Tag },
   { href: '/admin/promo', label: 'Պրոմո կոդեր', icon: Percent },
+  { href: '/admin/campaigns', label: 'Ակցիաներ', icon: Megaphone },
   { href: '/admin/settings', label: 'Կարգավորումներ', icon: Settings },
 ]
 

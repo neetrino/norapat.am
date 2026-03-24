@@ -184,6 +184,12 @@ export const hy: AppMessages = {
       subtitle: 'Ակցիաներ, զեղչեր, հատուկ առաջարկներ',
       viewAll: 'Դիտել բոլորը',
     },
+    actions: {
+      title: 'Ակցիաներ',
+      subtitle: 'Ժամանակավոր ակցիաներ, բաննեռներ և առաջարկներ',
+      viewAll: 'Դիտել բոլորը',
+      ariaLabel: 'Ակցիաներ և առաջարկներ',
+    },
   },
   aboutPage: {
     heroTitle: 'Pideh Armenia-ի մասին',
