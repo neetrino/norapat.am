@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import type { Prisma } from '@prisma/client'
 import { prisma } from '@/lib/prisma'
 
-// GET /api/products - получить все товары
+// GET /api/products - ստանալ բոլոր ապրանքները
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
       whereClause.isAvailable = true
     }
 
-    if (category && category !== 'Все') {
+    if (category && category !== 'Բոլորը') {
       whereClause.category = {
         name: category
       }

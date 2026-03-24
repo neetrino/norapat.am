@@ -16,8 +16,8 @@ export default function DeleteAccountModal({ isOpen, onClose, onConfirm, isLoadi
   const [error, setError] = useState('')
 
   const handleConfirm = async () => {
-    if (confirmText !== 'УДАЛИТЬ') {
-      setError('Пожалуйста, введите "УДАЛИТЬ" для подтверждения')
+    if (confirmText !== 'ՋՆՋԵԼ') {
+      setError('Հաստատելու համար մուտքագրեք «ՋՆՋԵԼ»')
       return
     }
 
@@ -25,9 +25,9 @@ export default function DeleteAccountModal({ isOpen, onClose, onConfirm, isLoadi
 
     try {
       await onConfirm()
-      // Не закрываем модальное окно здесь, так как происходит перенаправление
+      // Մոդալը չփակել, քանի որ տեղի է ունենում վերահղում
     } catch (error) {
-      setError('Произошла ошибка при удалении аккаунта. Попробуйте еще раз.')
+      setError('Սխալ տեղի ունեցավ հաշիվը ջնջելիս։ Փորձեք կրկին։')
       console.error('Delete account error:', error)
     }
   }
@@ -51,7 +51,7 @@ export default function DeleteAccountModal({ isOpen, onClose, onConfirm, isLoadi
             <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
               <AlertTriangle className="h-5 w-5 text-red-600" />
             </div>
-            <h2 className="text-xl font-bold text-gray-900">Удаление аккаунта</h2>
+            <h2 className="text-xl font-bold text-gray-900">Հաշվի ջնջում</h2>
           </div>
           <button
             onClick={handleClose}
@@ -68,12 +68,12 @@ export default function DeleteAccountModal({ isOpen, onClose, onConfirm, isLoadi
             <div className="flex items-start space-x-3">
               <AlertTriangle className="h-5 w-5 text-red-600 mt-0.5 flex-shrink-0" />
               <div>
-                <h3 className="font-semibold text-red-800 mb-2">Внимание! Это действие необратимо</h3>
+                <h3 className="font-semibold text-red-800 mb-2">Ուշադրություն՛ Այս գործողությունը անդարձելի է</h3>
                 <ul className="text-sm text-red-700 space-y-1">
-                  <li>• Ваш аккаунт будет удален навсегда</li>
-                  <li>• История заказов останется в системе (анонимно)</li>
-                  <li>• Вы не сможете восстановить аккаунт</li>
-                  <li>• Все персональные данные будут удалены</li>
+                  <li>• Ձեր հաշիվը կջնջվի ընդմիշտ</li>
+                  <li>• Պատվերների պատմությունը կմնա համակարգում (անանուն)</li>
+                  <li>• Հաշիվը հնարավոր չի լինի վերականգնել</li>
+                  <li>• Բոլոր անձնական տվյալները կջնջվեն</li>
                 </ul>
               </div>
             </div>
@@ -81,7 +81,7 @@ export default function DeleteAccountModal({ isOpen, onClose, onConfirm, isLoadi
 
           <div className="space-y-3">
             <p className="text-gray-700">
-              Если вы уверены, что хотите удалить свой аккаунт, введите <strong>"УДАЛИТЬ"</strong> в поле ниже:
+              Եթե համոզված եք, որ ցանկանում եք ջնջել հաշիվը, մուտքագրեք <strong>«ՋՆՋԵԼ»</strong> ներքևի դաշտում՝
             </p>
             
             <div>
@@ -89,7 +89,7 @@ export default function DeleteAccountModal({ isOpen, onClose, onConfirm, isLoadi
                 type="text"
                 value={confirmText}
                 onChange={(e) => setConfirmText(e.target.value)}
-                placeholder="Введите УДАЛИТЬ"
+                placeholder="Մուտքագրեք ՋՆՋԵԼ"
                 disabled={isLoading}
                 className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-red-500 disabled:opacity-50 disabled:cursor-not-allowed"
               />
@@ -110,22 +110,22 @@ export default function DeleteAccountModal({ isOpen, onClose, onConfirm, isLoadi
             disabled={isLoading}
             className="px-6 py-3 text-gray-700 bg-gray-100 rounded-xl hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Отмена
+            Չեղարկել
           </button>
           <button
             onClick={handleConfirm}
-            disabled={isLoading || confirmText !== 'УДАЛИТЬ'}
+            disabled={isLoading || confirmText !== 'ՋՆՋԵԼ'}
             className="px-6 py-3 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
           >
             {isLoading ? (
               <>
                 <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                <span>Удаление...</span>
+                <span>Ջնջում...</span>
               </>
             ) : (
               <>
                 <Trash2 className="h-4 w-4" />
-                <span>Удалить аккаунт</span>
+                <span>Ջնջել հաշիվը</span>
               </>
             )}
           </button>

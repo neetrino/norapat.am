@@ -88,12 +88,12 @@ const statusBorderColors = {
 }
 
 const statusLabels = {
-  PENDING: 'Ожидает',
-  CONFIRMED: 'Подтвержден',
-  PREPARING: 'Готовится',
-  READY: 'Готов',
-  DELIVERED: 'Доставлен',
-  CANCELLED: 'Отменен'
+  PENDING: 'Սպասում',
+  CONFIRMED: 'Հաստատված',
+  PREPARING: 'Պատրաստվում',
+  READY: 'Պատրաստ',
+  DELIVERED: 'Առաքված',
+  CANCELLED: 'Չեղարկված'
 }
 
 export default function AdminOrdersPage() {
@@ -121,7 +121,7 @@ export default function AdminOrdersPage() {
     pages: 0
   })
 
-  // Проверяем права доступа
+  // Ստուգել մուտքի իրավունքները
   useEffect(() => {
     if (status === 'loading') return
     
@@ -131,7 +131,7 @@ export default function AdminOrdersPage() {
     }
   }, [session, status, router])
 
-  // Загружаем заказы
+  // Բեռնել պատվերները
   const fetchOrders = async () => {
     try {
       setLoading(true)
@@ -156,7 +156,7 @@ export default function AdminOrdersPage() {
       setOrders(data.orders)
       setPagination(data.pagination)
       
-      // Рассчитываем статистику
+      // Հաշվել վիճակագրությունը
       const totalRevenue = data.orders.reduce((sum, order) => sum + order.totalAmount, 0)
       const pendingOrders = data.orders.filter(order => order.status === 'PENDING').length
       const completedOrders = data.orders.filter(order => order.status === 'DELIVERED').length
@@ -174,13 +174,13 @@ export default function AdminOrdersPage() {
     }
   }
 
-  // Открываем модальное окно с деталями заказа
+  // Բացել պատվերի մանրամասնությամբ մոդալ պատուհան
   const openOrderDetails = (order: OrderWithDetails) => {
     setSelectedOrder(order)
     setShowModal(true)
   }
 
-  // Закрываем модальное окно
+  // Փակել մոդալ պատուհանը
   const closeModal = () => {
     setShowModal(false)
     setSelectedOrder(null)
@@ -190,7 +190,7 @@ export default function AdminOrdersPage() {
     fetchOrders()
   }, [currentPage, statusFilter, filterGroup])
 
-  // Изменяем статус заказа
+  // Փոխել պատվերի կարգավիճակը
   const updateOrderStatus = async (orderId: string, newStatus: string) => {
     try {
       const response = await fetch(`/api/admin/orders/${orderId}/status`, {
@@ -205,14 +205,14 @@ export default function AdminOrdersPage() {
         throw new Error('Failed to update order status')
       }
 
-      // Обновляем локальное состояние
+      // Թարմացնել լոկալ state-ը
       setOrders(prevOrders =>
         prevOrders.map(order =>
           order.id === orderId ? { ...order, status: newStatus as any } : order
         )
       )
 
-      // Обновляем выбранный заказ в модальном окне
+      // Թարմացնել ընտրված պատվերը մոդալ պատուհանում
       if (selectedOrder && selectedOrder.id === orderId) {
         setSelectedOrder(prev => prev ? { ...prev, status: newStatus as any } : null)
       }
@@ -221,7 +221,7 @@ export default function AdminOrdersPage() {
     }
   }
 
-  // Получаем иконку для статуса
+  // Ստանալ կարգավիճակի պատկերը
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'PENDING': return <Clock className="h-4 w-4" />
@@ -234,7 +234,7 @@ export default function AdminOrdersPage() {
     }
   }
 
-  // Фильтруем заказы по поисковому запросу
+  // Զտել պատվերները որոնման հարցման համաձայն
   const filteredOrders = orders.filter(order => {
     if (!searchTerm) return true
     
@@ -254,7 +254,7 @@ export default function AdminOrdersPage() {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <RefreshCw className="h-8 w-8 animate-spin mx-auto mb-4 text-orange-500" />
-          <p className="text-gray-600">Загрузка заказов...</p>
+          <p className="text-gray-600">Բեռնում պատվերներ...</p>
         </div>
       </div>
     )
@@ -267,7 +267,7 @@ export default function AdminOrdersPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       
-      {/* Отступ для fixed хедера */}
+      {/* Բացատ ֆիքսված header-ի համար */}
       <div className="lg:hidden h-16"></div>
       <div className="hidden lg:block h-24"></div>
       
@@ -293,7 +293,7 @@ export default function AdminOrdersPage() {
               className="flex items-center gap-2"
             >
               <RefreshCw className="h-4 w-4" />
-              Обновить
+              Թարմացնել
             </Button>
             <Button className="flex items-center gap-2 bg-orange-500 hover:bg-orange-600">
               <Download className="h-4 w-4" />
@@ -307,7 +307,7 @@ export default function AdminOrdersPage() {
           <div className="bg-white rounded-2xl shadow-lg p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Всего заказов</p>
+                <p className="text-sm font-medium text-gray-600">Ընդամենը պատվերներ</p>
                 <p className="text-3xl font-bold text-gray-900">{stats.totalOrders}</p>
               </div>
               <div className="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center">
@@ -319,7 +319,7 @@ export default function AdminOrdersPage() {
           <div className="bg-white rounded-2xl shadow-lg p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Ожидают</p>
+                <p className="text-sm font-medium text-gray-600">Սպասում</p>
                 <p className="text-3xl font-bold text-gray-900">{stats.pendingOrders}</p>
               </div>
               <div className="w-12 h-12 bg-yellow-100 rounded-xl flex items-center justify-center">
@@ -331,7 +331,7 @@ export default function AdminOrdersPage() {
           <div className="bg-white rounded-2xl shadow-lg p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Завершены</p>
+                <p className="text-sm font-medium text-gray-600">Ավարտված</p>
                 <p className="text-3xl font-bold text-gray-900">{stats.completedOrders}</p>
               </div>
               <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
@@ -343,7 +343,7 @@ export default function AdminOrdersPage() {
           <div className="bg-white rounded-2xl shadow-lg p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Выручка</p>
+                <p className="text-sm font-medium text-gray-600">Եկամուտ</p>
                 <p className="text-3xl font-bold text-gray-900">{stats.totalRevenue.toLocaleString()} ֏</p>
               </div>
               <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
@@ -410,7 +410,7 @@ export default function AdminOrdersPage() {
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 <span className="inline-flex items-center gap-1">
                   <Search className="inline h-4 w-4 shrink-0" aria-hidden />
-                  <span className="underline underline-offset-2">Поиск</span>
+                  <span className="underline underline-offset-2">Որոնում</span>
                 </span>
               </label>
               <input
@@ -418,27 +418,27 @@ export default function AdminOrdersPage() {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full px-4 py-3 bg-white border-2 border-gray-500 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors text-gray-900 font-medium"
-                placeholder="Поиск по имени, email, телефону или ID..."
+                placeholder="Որոնում՝ անուն, email, հեռախոս կամ ID..."
               />
             </div>
             
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 <Filter className="inline h-4 w-4 mr-1" />
-                Статус (детальный)
+                Կարգավիճակ (մանրամասն)
               </label>
               <select
                 value={filterGroup !== 'all' ? '' : statusFilter}
                 onChange={(e) => { setStatusFilter(e.target.value); setFilterGroup('all'); setCurrentPage(1) }}
                 className="w-full px-4 py-3 bg-white border-2 border-gray-500 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors text-gray-900 font-medium"
               >
-                <option value="">Все статусы</option>
-                <option value="PENDING">Ожидает</option>
-                <option value="CONFIRMED">Подтвержден</option>
-                <option value="PREPARING">Готовится</option>
-                <option value="READY">Готов</option>
-                <option value="DELIVERED">Доставлен</option>
-                <option value="CANCELLED">Отменен</option>
+                <option value="">Բոլոր կարգավիճակները</option>
+                <option value="PENDING">Սպասում</option>
+                <option value="CONFIRMED">Հաստատված</option>
+                <option value="PREPARING">Պատրաստվում</option>
+                <option value="READY">Պատրաստ</option>
+                <option value="DELIVERED">Առաքված</option>
+                <option value="CANCELLED">Չեղարկված</option>
               </select>
             </div>
           </div>
@@ -448,7 +448,7 @@ export default function AdminOrdersPage() {
         <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
           <div className="p-6 border-b border-gray-300">
             <h2 className="text-xl font-semibold text-gray-900">
-              Заказы ({filteredOrders.length})
+              Պատվերներ ({filteredOrders.length})
             </h2>
           </div>
           
@@ -456,11 +456,11 @@ export default function AdminOrdersPage() {
             {filteredOrders.length === 0 ? (
               <div className="text-center py-12 text-gray-500">
                 <ShoppingCart className="h-12 w-12 mx-auto mb-4 text-gray-300" />
-                <p className="text-lg">Заказы не найдены</p>
+                <p className="text-lg">Պատվերներ չեն գտնվել</p>
                 <p className="text-sm mt-2">
                   {searchTerm || statusFilter || filterGroup !== 'all'
-                    ? 'Попробуйте изменить фильтры поиска'
-                    : 'Пока нет заказов'
+                    ? 'Փորձեք փոխել որոնման ֆիլտրերը'
+                    : 'Դեռ պատվերներ չկան'
                   }
                 </p>
               </div>
@@ -468,7 +468,7 @@ export default function AdminOrdersPage() {
               filteredOrders.map((order) => (
                 <div key={order.id} className="p-6 hover:bg-gray-50 transition-colors">
                   <div className="flex items-center justify-between">
-                    {/* Order Info - только главное */}
+                    {/* Պատվերի ինֆո - միայն հիմնական */}
                     <div className="flex items-center space-x-4">
                       <div className="w-12 h-12 bg-orange-50 rounded-xl flex items-center justify-center">
                         <ShoppingCart className="h-6 w-6 text-orange-500" />
@@ -477,44 +477,41 @@ export default function AdminOrdersPage() {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center space-x-3 mb-2">
                           <h3 className="text-lg font-semibold text-gray-900">
-                            Заказ #{order.id.slice(-8)}
+                            Պատվեր #{order.id.slice(-8)}
                           </h3>
                         </div>
                         
-                        {/* Только основная информация */}
+                        {/* Միայն հիմնական ինֆո */}
                         <div className="flex items-center space-x-6 text-sm">
-                          {/* Сумма - в начале, большая и заметная */}
+                          {/* Գումար */}
                           <div>
-                            <span className="text-gray-500 text-xs">Сумма:</span>
+                            <span className="text-gray-500 text-xs">Գումար:</span>
                             <div className="text-lg font-bold text-orange-600">
                               {order.totalAmount.toLocaleString()} ֏
                             </div>
                           </div>
                           
-                          {/* Количество товаров - тоже заметное */}
                           <div>
-                            <span className="text-gray-500 text-xs">Товаров:</span>
+                            <span className="text-gray-500 text-xs">Ապրանքներ:</span>
                             <div className="text-base font-semibold text-gray-900">
                               {order.items.length} шт.
                             </div>
                           </div>
                           
-                          {/* Время */}
                           <div>
-                            <span className="text-gray-500 text-xs">Время:</span>
+                            <span className="text-gray-500 text-xs">Ժամանակ:</span>
                             <div className="text-sm font-medium text-gray-900">
-                              {new Date(order.createdAt).toLocaleDateString('ru-RU')} {new Date(order.createdAt).toLocaleTimeString('ru-RU', { 
+                              {new Date(order.createdAt).toLocaleDateString('hy-AM')} {new Date(order.createdAt).toLocaleTimeString('hy-AM', { 
                                 hour: '2-digit', 
                                 minute: '2-digit' 
                               })}
                             </div>
                           </div>
                           
-                          {/* Клиент - в конце */}
                           <div>
-                            <span className="text-gray-500 text-xs">Клиент:</span>
+                            <span className="text-gray-500 text-xs">Հաճախորդ:</span>
                             <div className="text-sm font-medium text-gray-900">
-                              {order.user?.name || order.name || 'Гость'}
+                              {order.user?.name || order.name || 'Հյուր'}
                             </div>
                           </div>
                         </div>
@@ -529,22 +526,22 @@ export default function AdminOrdersPage() {
                         className="flex items-center gap-2"
                       >
                         <Eye className="h-4 w-4" />
-                        Детали
+                        Մանրամասներ
                       </Button>
                       
-                      {/* Объединенный статус и смена статуса */}
+                      {/* Կարգավիճակի ընտրություն */}
                       <div className="relative">
                         <select
                           value={order.status}
                           onChange={(e) => updateOrderStatus(order.id, e.target.value)}
                           className={`px-4 py-2 rounded-xl border-0 focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors cursor-pointer appearance-none pr-10 ${statusColors[order.status]} font-medium`}
                         >
-                          <option value="PENDING">⏳ Ожидает</option>
-                          <option value="CONFIRMED">✅ Подтвержден</option>
-                          <option value="PREPARING">👨‍🍳 Готовится</option>
-                          <option value="READY">📦 Готов</option>
-                          <option value="DELIVERED">🚚 Доставлен</option>
-                          <option value="CANCELLED">❌ Отменен</option>
+                          <option value="PENDING">⏳ Սպասում</option>
+                          <option value="CONFIRMED">✅ Հաստատված</option>
+                          <option value="PREPARING">👨‍🍳 Պատրաստվում</option>
+                          <option value="READY">📦 Պատրաստ</option>
+                          <option value="DELIVERED">🚚 Առաքված</option>
+                          <option value="CANCELLED">❌ Չեղարկված</option>
                         </select>
                         <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
                           <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -560,7 +557,7 @@ export default function AdminOrdersPage() {
           </div>
         </div>
 
-        {/* Пагинация */}
+        {/* Էջավորում */}
         {pagination.pages > 1 && (
           <div className="flex items-center justify-center gap-2 mt-8">
             <Button
@@ -570,12 +567,12 @@ export default function AdminOrdersPage() {
               className="flex items-center gap-2"
             >
               <ChevronRight className="h-4 w-4 rotate-180" />
-              Назад
+              Հետ
             </Button>
             
             <div className="flex items-center gap-2">
               <span className="text-sm text-gray-600">
-                Страница {currentPage} из {pagination.pages}
+                Էջ {currentPage} {pagination.pages}-ից
               </span>
             </div>
             
@@ -585,19 +582,19 @@ export default function AdminOrdersPage() {
               disabled={currentPage === pagination.pages}
               className="flex items-center gap-2"
             >
-              Вперед
+              Առաջ
               <ChevronRight className="h-4 w-4" />
             </Button>
           </div>
         )}
 
-        {/* Модальное окно с деталями заказа */}
+        {/* Պատվերի մանրամասնությամբ մոդալ պատուհան */}
         {showModal && selectedOrder && (
           <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center p-4 z-50">
             <div className="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-gray-200">
               <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between rounded-t-2xl">
                 <h2 className="text-xl font-semibold text-gray-900">
-                  Заказ #{selectedOrder.id.slice(-8)}
+                  Պատվեր #{selectedOrder.id.slice(-8)}
                 </h2>
                 <Button
                   onClick={closeModal}
@@ -605,46 +602,46 @@ export default function AdminOrdersPage() {
                   className="flex items-center gap-2"
                 >
                   <X className="h-4 w-4" />
-                  Закрыть
+                  Փակել
                 </Button>
               </div>
 
               <div className="p-6 space-y-6">
-                {/* Статус и основная информация */}
+                {/* Կարգավիճակ և հիմնական ինֆո */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className={`${statusBackgroundColors[selectedOrder.status]} ${statusBorderColors[selectedOrder.status]} border rounded-2xl p-4`}>
                     <div className="flex items-center gap-2 mb-3">
                       {getStatusIcon(selectedOrder.status)}
-                      <span className="font-medium text-gray-900">Статус</span>
+                      <span className="font-medium text-gray-900">Կարգավիճակ</span>
                     </div>
                     <select
                       value={selectedOrder.status}
                       onChange={(e) => updateOrderStatus(selectedOrder.id, e.target.value)}
                       className={`w-full px-3 py-2 bg-white border-2 ${statusBorderColors[selectedOrder.status]} rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors text-gray-900 font-medium`}
                     >
-                      <option value="PENDING">⏳ Ожидает</option>
-                      <option value="CONFIRMED">✅ Подтвержден</option>
-                      <option value="PREPARING">👨‍🍳 Готовится</option>
-                      <option value="READY">📦 Готов</option>
-                      <option value="DELIVERED">🚚 Доставлен</option>
-                      <option value="CANCELLED">❌ Отменен</option>
+                      <option value="PENDING">⏳ Սպասում</option>
+                      <option value="CONFIRMED">✅ Հաստատված</option>
+                      <option value="PREPARING">👨‍🍳 Պատրաստվում</option>
+                      <option value="READY">📦 Պատրաստ</option>
+                      <option value="DELIVERED">🚚 Առաքված</option>
+                      <option value="CANCELLED">❌ Չեղարկված</option>
                     </select>
                   </div>
 
                   <div className="bg-blue-50 rounded-2xl p-4">
                     <div className="flex items-center gap-2 mb-3">
                       <Calendar className="h-4 w-4 text-blue-500" />
-                      <span className="font-medium text-gray-900">Время заказа</span>
+                      <span className="font-medium text-gray-900">Պատվերի ժամանակ</span>
                     </div>
                     <div className="text-sm font-medium text-gray-900">
-                      {new Date(selectedOrder.createdAt).toLocaleString('ru-RU')}
+                      {new Date(selectedOrder.createdAt).toLocaleString('hy-AM')}
                     </div>
                   </div>
 
                   <div className="bg-green-50 rounded-2xl p-4">
                     <div className="flex items-center gap-2 mb-3">
                       <CreditCard className="h-4 w-4 text-green-500" />
-                      <span className="font-medium text-gray-900">Сумма</span>
+                      <span className="font-medium text-gray-900">Գումար</span>
                     </div>
                     <div className="text-lg font-semibold text-orange-600">
                       {selectedOrder.totalAmount.toLocaleString()} ֏
@@ -653,15 +650,15 @@ export default function AdminOrdersPage() {
                   </div>
                 </div>
 
-                {/* Информация о клиенте и доставке */}
+                {/* Հաճախորդի և առաքման ինֆո */}
                 <div className="bg-gray-50 border border-gray-200 rounded-2xl p-6">
                   <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
                     <UserIcon className="h-5 w-5 text-orange-500" />
-                    Информация о клиенте и доставке
+                    Հաճախորդի և առաքման ինֆո
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     <div>
-                      <p className="text-sm text-gray-600 mb-1">Имя</p>
+                      <p className="text-sm text-gray-600 mb-1">Անուն</p>
                       <p className="font-medium text-gray-900">{selectedOrder.user.name}</p>
                     </div>
                     <div>
@@ -670,7 +667,7 @@ export default function AdminOrdersPage() {
                     </div>
                     {selectedOrder.user.phone && (
                       <div>
-                        <p className="text-sm text-gray-600 mb-1">Телефон</p>
+                        <p className="text-sm text-gray-600 mb-1">Հեռախոս</p>
                         <p className="font-medium text-gray-900 flex items-center gap-1">
                           <Phone className="h-4 w-4" />
                           {selectedOrder.user.phone}
@@ -678,21 +675,21 @@ export default function AdminOrdersPage() {
                       </div>
                     )}
                     <div>
-                      <p className="text-sm text-gray-600 mb-1">Адрес доставки</p>
+                      <p className="text-sm text-gray-600 mb-1">Առաքման հասցե</p>
                       <p className="font-medium text-gray-900">{selectedOrder.deliveryAddress}</p>
                     </div>
                     <div>
-                      <p className="text-sm text-gray-600 mb-1">Время доставки</p>
+                      <p className="text-sm text-gray-600 mb-1">Առաքման ժամանակ</p>
                       <p className="font-medium text-gray-900">{selectedOrder.deliveryTime}</p>
                     </div>
                   </div>
                 </div>
 
-                {/* Товары в заказе */}
+                {/* Ապրանքներ պատվերում */}
                 <div className="bg-gray-50 border border-gray-200 rounded-2xl p-6">
                   <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
                     <Package className="h-5 w-5 text-orange-500" />
-                    Товары в заказе
+                    Ապրանքներ պատվերում
                   </h3>
                   <div className="space-y-3">
                     {selectedOrder.items.map((item, index) => (

@@ -19,7 +19,7 @@ export default function MobileBottomNav() {
   const { data: session, status } = useSession()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
-  // Все хуки вызываются до любого return (Rules of Hooks)
+  // Բոլոր հուկերը կանչվում են return-ից առաջ (Rules of Hooks)
   useEffect(() => {
     if (isMenuOpen) {
       document.body.style.overflow = 'hidden'

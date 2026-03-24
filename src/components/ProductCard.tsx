@@ -248,7 +248,7 @@ const ProductCard = memo(({ product, onAddToCart, variant = 'default', addedToCa
         {/* Action Section */}
         <div className={`relative ${isCompact ? 'space-y-3' : 'space-y-4'}`}>
           {isCompact ? (
-            // Компактный вариант (кнопка только если передан onAddToCart)
+            // Կոմպակտ տարբերակ (կոճակ միայն onAddToCart-ի դեպքում)
             <div className="flex flex-col space-y-3">
               {onAddToCart && (
                 <button
@@ -287,7 +287,7 @@ const ProductCard = memo(({ product, onAddToCart, variant = 'default', addedToCa
               )}
             </div>
           ) : (
-            // Обычный вариант
+            // Ստանդարտ տարբերակ
             <div className="flex justify-between items-center">
               <div className="flex items-center space-x-3">
                 {/* Rating Stars */}

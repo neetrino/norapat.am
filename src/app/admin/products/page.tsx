@@ -51,7 +51,7 @@ export default function AdminProducts() {
   }
 
   const handleDelete = async (productId: string) => {
-    if (!confirm('Вы уверены, что хотите удалить этот товар?')) return
+    if (!confirm('Համոզվա՞ծ եք, որ ցանկանում եք ջնջել այս ապրանքը:')) return
 
     try {
       const response = await fetch(`/api/products/${productId}`, {
@@ -61,11 +61,11 @@ export default function AdminProducts() {
       if (response.ok) {
         setProducts(products.filter(p => p.id !== productId))
       } else {
-        alert('Ошибка при удалении товара')
+        alert('Սխալ ապրանքը ջնջելիս')
       }
     } catch (error) {
       console.error('Error deleting product:', error)
-      alert('Ошибка при удалении товара')
+      alert('Սխալ ապրանքը ջնջելիս')
     }
   }
 
@@ -74,7 +74,7 @@ export default function AdminProducts() {
                          product.description.toLowerCase().includes(searchTerm.toLowerCase())
     const matchesCategory = !selectedCategory || product.category?.name === selectedCategory
     
-    // Фильтр по статусу: "all" - все товары, "special" - только особые (HIT, NEW, CLASSIC, BANNER)
+    // Ֆիլտր ըստ կարգավիճակի: "all" - բոլոր ապրանքներ, "special" - միայն հատուկ (HIT, NEW, CLASSIC, BANNER)
     const matchesStatus = !selectedStatus || 
                          (selectedStatus === 'all') || 
                          (selectedStatus === 'special' && ['HIT', 'NEW', 'CLASSIC', 'BANNER'].includes(product.status))
@@ -84,7 +84,7 @@ export default function AdminProducts() {
 
   const categories = [...new Set(products.map(p => p.category?.name).filter(Boolean))]
   
-  // Статистика по статусам
+  // Վիճակագրություն ըստ կարգավիճակների
   const statusStats = {
     total: products.length,
     regular: products.filter(p => p.status === 'REGULAR').length,
@@ -98,26 +98,26 @@ export default function AdminProducts() {
     switch (productStatus) {
       case 'HIT':
         return { 
-          text: 'ХИТ', 
+          text: 'ՀԻԹ', 
           className: 'bg-red-100 text-red-800 border-red-200' 
         }
       case 'NEW':
         return { 
-          text: 'НОВИНКА', 
+          text: 'ՆՈՐԻՆՔ', 
           className: 'bg-green-100 text-green-800 border-green-200' 
         }
       case 'CLASSIC':
         return { 
-          text: 'КЛАССИКА', 
+          text: 'ԿԼԱՍԻԿ', 
           className: 'bg-blue-100 text-blue-800 border-blue-200' 
         }
       case 'BANNER':
         return { 
-          text: 'БАННЕР', 
+          text: 'ԲԱՆՆԵՐ', 
           className: 'bg-purple-100 text-purple-800 border-purple-200' 
         }
       default:
-        return null // Обычные товары без лейбла
+        return null // Սովորական ապրանքներ առանց պիտակի
     }
   }
 
@@ -126,7 +126,7 @@ export default function AdminProducts() {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-orange-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600">Загрузка...</p>
+          <p className="text-gray-600">Բեռնում...</p>
         </div>
       </div>
     )
@@ -139,7 +139,7 @@ export default function AdminProducts() {
   return (
     <div className="min-h-screen bg-gray-50">
       
-      {/* Отступ для fixed хедера */}
+      {/* Բացատ ֆիքսված header-ի համար */}
       <div className="lg:hidden h-16"></div>
       <div className="hidden lg:block h-24"></div>
       
@@ -155,7 +155,7 @@ export default function AdminProducts() {
               Վերադարձ
             </Link>
             <div className="h-8 w-px bg-gray-300"></div>
-            <h1 className="text-3xl font-bold text-gray-900">Управление товарами</h1>
+            <h1 className="text-3xl font-bold text-gray-900">Ապրանքների կառավարում</h1>
           </div>
           
           <Link 
@@ -174,7 +174,7 @@ export default function AdminProducts() {
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 <span className="inline-flex items-center gap-1">
                   <Search className="inline h-4 w-4 shrink-0" aria-hidden />
-                  <span className="underline underline-offset-2">Поиск</span>
+                  <span className="underline underline-offset-2">Որոնում</span>
                 </span>
               </label>
               <input
@@ -182,14 +182,14 @@ export default function AdminProducts() {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors"
-                placeholder="Поиск по названию или описанию..."
+                placeholder="Որոնում՝ անվանում կամ նկարագրություն..."
               />
             </div>
             
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 <Filter className="inline h-4 w-4 mr-1" />
-                Категория
+                Կատեգորիա
               </label>
               <select
                 value={selectedCategory}
@@ -197,7 +197,7 @@ export default function AdminProducts() {
                 className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors text-gray-900 bg-white"
                 style={{ color: '#111827' }}
               >
-                <option value="" style={{ color: '#111827', backgroundColor: 'white' }}>Все категории</option>
+                <option value="" style={{ color: '#111827', backgroundColor: 'white' }}>Բոլոր կատեգորիաները</option>
                 {categories.map(category => (
                   <option key={category} value={category} style={{ color: '#111827', backgroundColor: 'white' }}>{category}</option>
                 ))}
@@ -207,7 +207,7 @@ export default function AdminProducts() {
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 <Filter className="inline h-4 w-4 mr-1" />
-                Статус
+                Կարգավիճակ
               </label>
               <select
                 value={selectedStatus}
@@ -215,8 +215,8 @@ export default function AdminProducts() {
                 className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors text-gray-900 bg-white"
                 style={{ color: '#111827' }}
               >
-                <option value="" style={{ color: '#111827', backgroundColor: 'white' }}>Все</option>
-                <option value="special" style={{ color: '#111827', backgroundColor: 'white' }}>Особые</option>
+                <option value="" style={{ color: '#111827', backgroundColor: 'white' }}>Բոլորը</option>
+                <option value="special" style={{ color: '#111827', backgroundColor: 'white' }}>Հատուկ</option>
               </select>
             </div>
           </div>
@@ -227,30 +227,30 @@ export default function AdminProducts() {
           <div className="p-6 border-b border-gray-300">
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-semibold text-gray-900">
-                Товары ({filteredProducts.length})
+                Ապրանքներ ({filteredProducts.length})
               </h2>
               
-              {/* Статистика по статусам */}
+              {/* Վիճակագրություն ըստ կարգավիճակների */}
               <div className="flex items-center space-x-4 text-sm">
-                <span className="text-gray-500">Всего: {statusStats.total}</span>
+                <span className="text-gray-500">Ընդամենը: {statusStats.total}</span>
                 {statusStats.hit > 0 && (
                   <span className="px-2 py-1 bg-red-100 text-red-800 rounded-full text-xs font-semibold">
-                    Хиты: {statusStats.hit}
+                    Հիթեր: {statusStats.hit}
                   </span>
                 )}
                 {statusStats.new > 0 && (
                   <span className="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs font-semibold">
-                    Новинки: {statusStats.new}
+                    Նորինք: {statusStats.new}
                   </span>
                 )}
                 {statusStats.classic > 0 && (
                   <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-semibold">
-                    Классика: {statusStats.classic}
+                    Կլասիկ: {statusStats.classic}
                   </span>
                 )}
                 {statusStats.banner > 0 && (
                   <span className="px-2 py-1 bg-purple-100 text-purple-800 rounded-full text-xs font-semibold">
-                    Баннер: {statusStats.banner}
+                    Բաններ: {statusStats.banner}
                   </span>
                 )}
               </div>
@@ -283,16 +283,16 @@ export default function AdminProducts() {
                       {product.description}
                     </p>
                     <div className="flex items-center space-x-4 text-sm text-gray-500">
-                      <span>Категория: {product.category?.name || 'Без категории'}</span>
-                      <span>Цена: {product.price} ֏</span>
+                      <span>Կատեգորիա: {product.category?.name || 'Առանց կատեգորիայի'}</span>
+                      <span>Գին: {product.price} ֏</span>
                       <span className={`px-2 py-1 rounded-full text-xs ${
                         product.isAvailable 
                           ? 'bg-green-100 text-green-800' 
                           : 'bg-red-100 text-red-800'
                       }`}>
-                        {product.isAvailable ? 'Доступен' : 'Недоступен'}
+                        {product.isAvailable ? 'Առկա' : 'Առկա չէ'}
                       </span>
-                      {/* Статус товара */}
+                      {/* Ապրանքի կարգավիճակ */}
                       {(() => {
                         const statusBadge = getStatusBadge(product.status)
                         return statusBadge ? (
@@ -309,7 +309,7 @@ export default function AdminProducts() {
                     <Link
                       href={`/admin/products/${product.id}/edit`}
                       className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                      title="Редактировать"
+                      title="Խմբագրել"
                     >
                       <Edit className="h-5 w-5" />
                     </Link>
@@ -317,7 +317,7 @@ export default function AdminProducts() {
                     <button
                       onClick={() => handleDelete(product.id)}
                       className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                      title="Удалить"
+                      title="Ջնջել"
                     >
                       <Trash2 className="h-5 w-5" />
                     </button>
@@ -330,7 +330,7 @@ export default function AdminProducts() {
           {filteredProducts.length === 0 && (
             <div className="text-center py-12 text-gray-500">
               <Package className="h-12 w-12 mx-auto mb-4 text-gray-300" />
-              <p>Товары не найдены</p>
+              <p>Ապրանքներ չեն գտնվել</p>
             </div>
           )}
         </div>

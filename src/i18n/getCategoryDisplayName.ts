@@ -9,12 +9,6 @@ const CATEGORY_LABELS: Record<string, string> = {
   Սնաք: 'Սնաք',
   Սոուսներ: 'Սոուսներ',
   Ըմպելիքներ: 'Ըմպելիքներ',
-  // Legacy Russian (if any)
-  Пиде: 'Պիդե',
-  Комбо: 'Կոմբո',
-  Снэк: 'Սնաք',
-  Соусы: 'Սոուսներ',
-  Напитки: 'Ըմպելիքներ',
 }
 
 export function getCategoryDisplayName(

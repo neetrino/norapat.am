@@ -27,10 +27,10 @@ export default function Error({ error, reset }: ErrorProps) {
         </div>
         <div>
           <h1 className="text-xl font-semibold text-gray-900 mb-1">
-            Что-то пошло не так
+            Ինչ-որ բան սխալ է
           </h1>
           <p className="text-gray-600 text-sm">
-            Произошла ошибка. Попробуйте обновить страницу или вернуться на главную.
+            Սխալ տեղի ունեցավ։ Փորձեք թարմացնել էջը կամ վերադառնալ գլխավոր էջ։
           </p>
         </div>
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
@@ -40,14 +40,14 @@ export default function Error({ error, reset }: ErrorProps) {
             className="inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-orange-500 text-white font-medium hover:bg-orange-600 transition-colors"
           >
             <RefreshCw className="w-4 h-4" />
-            Попробовать снова
+            Փորձել կրկին
           </button>
           <Link
             href="/"
             className="inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl border border-gray-300 text-gray-700 font-medium hover:bg-gray-50 transition-colors"
           >
             <Home className="w-4 h-4" />
-            На главную
+            Գլխավոր էջ
           </Link>
         </div>
       </div>

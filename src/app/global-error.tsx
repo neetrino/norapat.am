@@ -29,10 +29,10 @@ export default function GlobalError({ error, reset }: GlobalErrorProps) {
           }}
         >
           <h1 style={{ fontSize: '1.25rem', fontWeight: 600, color: '#111', marginBottom: 8 }}>
-            Что-то пошло не так
+            Ինչ-որ բան սխալ է
           </h1>
           <p style={{ color: '#666', fontSize: '0.875rem', marginBottom: 24 }}>
-            Произошла серьёзная ошибка. Обновите страницу.
+            Լուրջ սխալ տեղի ունեցավ։ Թարմացրեք էջը։
           </p>
           <button
             type="button"
@@ -47,7 +47,7 @@ export default function GlobalError({ error, reset }: GlobalErrorProps) {
               cursor: 'pointer',
             }}
           >
-            Обновить страницу
+            Թարմացնել էջը
           </button>
         </div>
       </body>

@@ -8,13 +8,6 @@ import { useI18n } from '@/i18n/I18nContext'
 import { getCategoryDisplayName } from '@/i18n/getCategoryDisplayName'
 
 const CATEGORY_ICONS: Record<string, string> = {
-  // Russian (legacy)
-  'Пиде': '🥟',
-  'Комбо': '🍱',
-  'Снэк': '🍟',
-  'Соусы': '🥫',
-  'Напитки': '🥤',
-  // Armenian (актуальные имена из API)
   'Պիդե': '🥟',
   'Կոմբո': '🍱',
   'Սնաք': '🍟',

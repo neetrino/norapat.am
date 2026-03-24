@@ -35,9 +35,9 @@ export default function RegisterPage() {
     setIsLoading(true)
     setError('')
 
-    // Валидация
+    // Վալիդացիա
     if (formData.password !== formData.confirmPassword) {
-      setError('Пароли не совпадают')
+      setError('Գաղտնաբառերը չեն համընկնում')
       setIsLoading(false)
       return
     }
@@ -49,7 +49,7 @@ export default function RegisterPage() {
     }
 
     if (!formData.acceptTerms) {
-      setError('Необходимо принять условия использования и политику конфиденциальности')
+      setError('Անհրաժեշտ է ընդունել օգտագործման պայմանները և գաղտնիության քաղաքականությունը')
       setIsLoading(false)
       return
     }
@@ -71,7 +71,7 @@ export default function RegisterPage() {
       const data = await response.json()
 
       if (response.ok) {
-        // Автоматический вход после регистрации
+        // Ավտոմատ մուտք գրանցումից հետո
         const result = await signIn('credentials', {
           email: formData.email,
           password: formData.password,
@@ -81,13 +81,13 @@ export default function RegisterPage() {
         if (result?.ok) {
           router.push('/')
         } else {
-          setError('Регистрация прошла успешно, но произошла ошибка при входе')
+          setError('Գրանցումը հաջող էր, սակայն սխալ տեղի ունեցավ մուտք գործելիս')
         }
       } else {
-        setError(data.error || 'Произошла ошибка при регистрации')
+        setError(data.error || 'Սխալ տեղի ունեցավ գրանցման ժամանակ')
       }
     } catch (error) {
-      setError('Произошла ошибка при регистрации')
+      setError('Սխալ տեղի ունեցավ գրանցման ժամանակ')
     } finally {
       setIsLoading(false)
     }
@@ -96,14 +96,14 @@ export default function RegisterPage() {
   return (
     <div className="min-h-screen bg-white">
       
-      {/* Отступ для fixed хедера */}
+      {/* Բացատ ֆիքսված header-ի համար */}
       <div className="lg:hidden h-16"></div>
       
       <div className="max-w-md mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="bg-white rounded-2xl shadow-lg p-8">
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Регистрация</h1>
-            <p className="text-gray-600">Создайте аккаунт для управления заказами</p>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Գրանցում</h1>
+            <p className="text-gray-600">Ստեղծեք հաշիվ պատվերները կառավարելու համար</p>
           </div>
 
           {error && (
@@ -116,7 +116,7 @@ export default function RegisterPage() {
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 <User className="inline h-4 w-4 mr-1" />
-                Имя *
+                Անուն *
               </label>
               <input
                 type="text"
@@ -124,7 +124,7 @@ export default function RegisterPage() {
                 value={formData.name}
                 onChange={handleInputChange}
                 className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors text-gray-800 bg-white"
-                placeholder="Введите ваше имя"
+                placeholder="Մուտքագրեք ձեր անունը"
                 required
               />
             </div>
@@ -148,7 +148,7 @@ export default function RegisterPage() {
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 <Phone className="inline h-4 w-4 mr-1" />
-                Телефон
+                Հեռախոս
               </label>
               <input
                 type="tel"
@@ -163,7 +163,7 @@ export default function RegisterPage() {
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 <Lock className="inline h-4 w-4 mr-1" />
-                Пароль *
+                Գաղտնաբառ *
               </label>
               <div className="relative">
                 <input
@@ -172,7 +172,7 @@ export default function RegisterPage() {
                   value={formData.password}
                   onChange={handleInputChange}
                   className="w-full px-4 py-3 pr-12 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors text-gray-800 bg-white"
-                  placeholder="Минимум 6 символов"
+                  placeholder="Նվազագույնը 6 նիշ"
                   required
                 />
                 <button
@@ -188,7 +188,7 @@ export default function RegisterPage() {
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 <Lock className="inline h-4 w-4 mr-1" />
-                Подтвердите пароль *
+                Հաստատեք գաղտնաբառը *
               </label>
               <div className="relative">
                 <input
@@ -197,7 +197,7 @@ export default function RegisterPage() {
                   value={formData.confirmPassword}
                   onChange={handleInputChange}
                   className="w-full px-4 py-3 pr-12 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors text-gray-800 bg-white"
-                  placeholder="Повторите пароль"
+                  placeholder="Կրկնեք գաղտնաբառը"
                   required
                 />
                 <button
@@ -220,9 +220,9 @@ export default function RegisterPage() {
                 required
               />
               <label className="text-sm text-gray-700">
-                Я принимаю{' '}
+                Ընդունում եմ{' '}
                 <Link href="/privacy" className="text-orange-500 hover:text-orange-600 underline">
-                  условия использования и политику конфиденциальности
+                  օգտագործման պայմանները և գաղտնիության քաղաքականությունը
                 </Link>
               </label>
             </div>
@@ -232,15 +232,15 @@ export default function RegisterPage() {
               disabled={isLoading}
               className="w-full bg-orange-500 text-white py-4 rounded-xl font-semibold hover:bg-orange-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isLoading ? 'Регистрируем...' : 'Зарегистрироваться'}
+              {isLoading ? 'Գրանցում...' : 'Գրանցվել'}
             </button>
           </form>
 
           <div className="mt-6 text-center">
             <p className="text-gray-600">
-              Уже есть аккаунт?{' '}
+              Արդեն հաշիվ ունե՞ք{' '}
               <Link href="/login" className="text-orange-500 hover:text-orange-600 font-semibold">
-                Войти
+                Մուտք
               </Link>
             </p>
           </div>

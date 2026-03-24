@@ -8,15 +8,15 @@ export async function POST(request: NextRequest) {
   try {
     const { name, email, phone, password } = await request.json()
 
-    // Валидация обязательных полей
+    // Պարտադիր դաշտերի վալիդացիա
     if (!name || !email || !password) {
       return NextResponse.json(
-        { error: 'Имя, email и пароль обязательны для заполнения' },
+        { error: 'Անունը, email-ը և գաղտնաբառը պարտադիր են' },
         { status: 400 }
       )
     }
 
-    // Валидация пароля
+    // Գաղտնաբառի վալիդացիա
     if (password.length < 6) {
       return NextResponse.json(
         { error: 'Գաղտնաբառը պետք է պարունակի առնվազն 6 նիշ' },
@@ -24,30 +24,30 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Проверяем, что пароль не пустой
+    // Ստուգել, որ գաղտնաբառը դատարկ չէ
     if (password.trim().length === 0) {
       return NextResponse.json(
-        { error: 'Пароль не может быть пустым' },
+        { error: 'Գաղտնաբառը չի կարող դատարկ լինել' },
         { status: 400 }
       )
     }
 
-    // Проверяем, существует ли пользователь
+    // Ստուգել, արդյոք օգտատերը գոյություն ունի
     const existingUser = await prisma.user.findUnique({
       where: { email }
     })
 
     if (existingUser) {
       return NextResponse.json(
-        { error: 'Пользователь с таким email уже существует' },
+        { error: 'Օգտատեր այս email-ով արդեն գոյություն ունի' },
         { status: 400 }
       )
     }
 
-    // Хешируем пароль
+    // Հեշավորել գաղտնաբառը
     const hashedPassword = await bcrypt.hash(password, 12)
 
-    // Создаем пользователя
+    // Ստեղծել օգտատիրոջ
     const user = await prisma.user.create({
       data: {
         name,
@@ -58,17 +58,17 @@ export async function POST(request: NextRequest) {
       }
     })
 
-    // Возвращаем пользователя без пароля
+    // Վերադարձնել օգտատիրոջն առանց գաղտնաբառի
     const { password: _, ...userWithoutPassword } = user
 
     return NextResponse.json(
-      { message: 'Пользователь успешно создан', user: userWithoutPassword },
+      { message: 'Օգտատերն հաջողությամբ ստեղծվել է', user: userWithoutPassword },
       { status: 201 }
     )
   } catch (error) {
     console.error('Registration error:', error)
     return NextResponse.json(
-      { error: 'Внутренняя ошибка сервера' },
+      { error: 'Սերվերի ներքին սխալ' },
       { status: 500 }
     )
   }

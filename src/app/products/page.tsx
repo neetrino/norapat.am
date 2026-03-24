@@ -11,7 +11,7 @@ import ProductCard from '@/components/ProductCard'
 import { useI18n } from '@/i18n/I18nContext'
 import { getCategoryDisplayName } from '@/i18n/getCategoryDisplayName'
 
-const CATEGORY_ORDER = ['Комбо', 'Пиде', 'Снэк', 'Соусы', 'Напитки'] as const
+const CATEGORY_ORDER = ['Կոմբո', 'Պիդե', 'Սնաք', 'Սոուսներ', 'Ըմպելիքներ'] as const
 
 function ProductsPageContent() {
   const { t, locale } = useI18n()
@@ -117,7 +117,7 @@ function ProductsPageContent() {
     fetchProducts()
   }, [fetchProducts])
 
-  // Группировка товаров по категориям
+  // Խմբավորել ապրանքները ըստ կատեգորիաների
   const groupProductsByCategory = useCallback((products: Product[]) => {
     const grouped: Record<string, Product[]> = {}
     
@@ -129,7 +129,7 @@ function ProductsPageContent() {
       grouped[categoryName].push(product)
     })
 
-    // Сортируем категории: сначала приоритетные, потом остальные
+    // Կարգավորել կատեգորիաները՝ նախ առաջնահերթ, ապա մնացած
     const prioritySet = new Set<string>([...CATEGORY_ORDER])
     const priorityCategories = CATEGORY_ORDER.filter((cat) => grouped[cat])
     const otherCategories = Object.keys(grouped).filter((cat) => !prioritySet.has(cat))
@@ -145,7 +145,7 @@ function ProductsPageContent() {
     addItem(product, 1)
     setAddedToCart(prev => new Set(prev).add(product.id))
     
-    // Убираем подсветку через 2 секунды
+    // Հեռացնել ընդգծումը 2 վայրկյանից
     setTimeout(() => {
       setAddedToCart(prev => {
         const newSet = new Set(prev)
@@ -155,12 +155,12 @@ function ProductsPageContent() {
     }, 2000)
   }, [addItem])
 
-  // Мемоизируем сгруппированные продукты
+  // Մեմոիզացնել խմբավորված ապրանքները
   const groupedProducts = useMemo(() => {
     return groupProductsByCategory(filteredProducts)
   }, [filteredProducts, groupProductsByCategory])
 
-  // Компонент скелетона для карточки товара
+  // Սկելետոնի կոմպոնենտ ապրանքի քարտի համար
   const ProductSkeleton = () => (
     <div className="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100 animate-pulse">
       <div className="h-56 bg-gray-200"></div>
@@ -209,7 +209,7 @@ function ProductsPageContent() {
 
   return (
     <div className="min-h-screen bg-white overflow-visible">
-      {/* Отступ для fixed хедера */}
+      {/* Բացատ ֆիքսված header-ի համար */}
       <div className="lg:hidden h-16"></div>
       <div className="hidden lg:block h-24"></div>
 
@@ -281,9 +281,9 @@ function ProductsPageContent() {
             {/* Mobile - 2 rows */}
             <div className="lg:hidden">
               <div className="space-y-3">
-                {/* First row - Все, Пиде, Комбо - 3 большие кнопки */}
+                {/* Առաջին շարք - Բոլորը, Պիդե, Կոմբո - 3 մեծ կոճակ */}
                 <div className="grid grid-cols-3 gap-3">
-                  {[allCategories, 'Пиде', 'Комбо'].map((category) => (
+                  {[allCategories, 'Պիդե', 'Կոմբո'].map((category) => (
                     <button
                       key={category}
                       onClick={() => setSelectedCategory(category)}
@@ -303,10 +303,10 @@ function ProductsPageContent() {
                   ))}
                 </div>
                 
-                {/* Second row - остальные категории */}
+                {/* Երկրորդ շարք - մնացած կատեգորիաներ */}
                 <div className="flex flex-wrap gap-2 justify-center">
                   {categories
-                    .filter(cat => !['Пиде', 'Комбо'].includes(cat.name))
+                    .filter(cat => !['Պիդե', 'Կոմբո'].includes(cat.name))
                     .map((category) => (
                     <button
                       key={`mobile-${category.id}`}
@@ -329,7 +329,7 @@ function ProductsPageContent() {
             
             {/* Desktop - single row */}
             <div className="hidden lg:flex flex-wrap gap-4">
-              {/* Кнопка "Все" */}
+              {/* «Բոլորը» կոճակ */}
               <button
                 onClick={() => setSelectedCategory(allCategories)}
                 className={`px-6 py-3 rounded-2xl font-semibold transition-all duration-300 hover:scale-105 ${
@@ -344,7 +344,7 @@ function ProductsPageContent() {
                 {allCategories}
               </button>
               
-              {/* Динамические категории */}
+              {/* Դինամիկ կատեգորիաներ */}
               {categories.map((category) => (
                 <button
                   key={`desktop-${category.id}`}
@@ -367,11 +367,11 @@ function ProductsPageContent() {
 
         {/* Products Display */}
         {selectedCategory === allCategories && !debouncedSearchQuery ? (
-          // Показываем продукты сгруппированными по категориям
+          // Ցուցադրել ապրանքները խմբավորված ըստ կատեգորիաների
           <div className="space-y-16 mt-24">
             {groupedProducts.map(({ category, products: categoryProducts }) => (
               <div key={category}>
-                {/* Заголовок категории */}
+                {/* Կատեգորիայի վերնագիր */}
                 <div className="flex items-center mb-6">
                   <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mr-4">
                     {getCategoryDisplayName(category, locale)}
@@ -379,7 +379,7 @@ function ProductsPageContent() {
                   <div className="flex-1 h-px bg-gradient-to-r from-orange-200 to-transparent"></div>
                 </div>
                 
-                {/* Продукты категории */}
+                {/* Կատեգորիայի ապրանքներ */}
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 gap-y-16 md:gap-12 overflow-visible">
                   {categoryProducts.map((product) => (
                     <ProductCard
@@ -397,7 +397,7 @@ function ProductsPageContent() {
             ))}
           </div>
         ) : (
-          // Показываем продукты в обычной сетке (для конкретной категории или поиска)
+          // Ցուցադրել ապրանքները ստանդարտ ցանցում (կոնկրետ կատեգորիայի կամ որոնման համար)
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 gap-y-16 md:gap-12 overflow-visible mt-24">
             {filteredProducts.map((product) => (
               <ProductCard

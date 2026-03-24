@@ -100,7 +100,7 @@ export default function Home() {
     addItem(product, 1)
     setAddedToCart(prev => new Set(prev).add(product.id))
     
-    // Убираем подсветку через 2 секунды
+    // Հեռացնել ընդգծումը 2 վայրկյանից
     setTimeout(() => {
       setAddedToCart(prev => {
         const next = new Set(prev)
@@ -144,7 +144,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-white overflow-visible">
-      {/* Отступ для fixed хедера */}
+      {/* Բացատ ֆիքսված header-ի համար */}
       <div className="lg:hidden h-16"></div>
       <div className="hidden lg:block h-24"></div>
 
@@ -184,7 +184,7 @@ export default function Home() {
               {/* Mobile - 2 rows with better design */}
               <div className="lg:hidden">
                 <div className="space-y-3">
-                  {/* First row - Пиде и Комбо занимают весь ряд */}
+                  {/* Առաջին շարք - Պիդե և Կոմբո */}
                   <div className="grid grid-cols-2 gap-3">
                     {categoryNames.slice(0, 2).map((category) => (
                       <button

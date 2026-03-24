@@ -11,7 +11,7 @@ import { ProductImageGallery } from '@/components/ProductImageGallery'
 import { prisma } from '@/lib/prisma'
 import { hy } from '@/i18n/dictionaries'
 
-// Server Component - данные загружаются на сервере
+// Server Component - տվյալները բեռնվում են սերվերից
 export default async function ProductPage({
   params
 }: {
@@ -21,9 +21,9 @@ export default async function ProductPage({
   const t = hy.productPage
 
   try {
-    // Загружаем данные на сервере - ОПТИМИЗИРОВАННЫЙ ЗАПРОС
+    // Բեռնել տվյալները սերվերից - օպտիմիզացված հարցում
     const [product, similarProducts] = await Promise.all([
-      // Основной продукт
+      // Հիմնական ապրանք
       prisma.product.findUnique({
         where: { id },
         select: {
@@ -51,7 +51,7 @@ export default async function ProductPage({
         }
       }),
       
-      // Похожие товары - ТОЛЬКО 4, а не все!
+      // Նմանատիպ ապրանքներ - միայն 4 հատ
       prisma.product.findMany({
         where: {
           isAvailable: true,

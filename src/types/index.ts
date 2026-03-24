@@ -78,22 +78,22 @@ export interface ContactFormData {
   message: string
 }
 
-// Константы
+// Հաստատուններ
 export const ORDER_STATUS_LABELS: Record<OrderStatus, string> = {
-  PENDING: 'Ожидает подтверждения',
-  CONFIRMED: 'Подтвержден',
-  PREPARING: 'Готовится',
-  READY: 'Готов к выдаче',
-  DELIVERED: 'Доставлен',
-  CANCELLED: 'Отменен'
+  PENDING: 'Սպասում հաստատման',
+  CONFIRMED: 'Հաստատված',
+  PREPARING: 'Պատրաստվում',
+  READY: 'Պատրաստ',
+  DELIVERED: 'Առաքված',
+  CANCELLED: 'Չեղարկված'
 }
 
 export const PRODUCT_STATUS_LABELS: Record<ProductStatus, string> = {
-  REGULAR: 'Обычный',
-  HIT: 'Хит продаж',
-  NEW: 'Новинка',
-  CLASSIC: 'Классика',
-  BANNER: 'Баннер'
+  REGULAR: 'Սովորական',
+  HIT: 'Վաճառքի հիթ',
+  NEW: 'Նորինք',
+  CLASSIC: 'Կլասիկ',
+  BANNER: 'Բաններ'
 }
 
 export const PAYMENT_METHODS = {
@@ -120,4 +120,4 @@ export interface CategoryWithCount extends Category {
 }
 
 // Старые типы категорий для обратной совместимости
-export type CategoryName = 'Комбо' | 'Пиде' | 'Снэк' | 'Соусы' | 'Напитки'
+export type CategoryName = 'Կոմբո' | 'Պիդե' | 'Սնաք' | 'Սոուսներ' | 'Ըմպելիքներ'

@@ -81,11 +81,11 @@ export default function CategoriesPage() {
         setFormData({ name: '', description: '', isActive: true })
       } else {
         const error = await response.json()
-        alert(error.error || 'Ошибка при создании категории')
+        alert(error.error || 'Սխալ կատեգորիա ստեղծելիս')
       }
     } catch (error) {
       console.error('Error creating category:', error)
-      alert('Ошибка при создании категории')
+      alert('Սխալ կատեգորիա ստեղծելիս')
     }
   }
 
@@ -106,16 +106,16 @@ export default function CategoriesPage() {
         setFormData({ name: '', description: '', isActive: true })
       } else {
         const error = await response.json()
-        alert(error.error || 'Ошибка при обновлении категории')
+        alert(error.error || 'Սխալ կատեգորիա թարմացնելիս')
       }
     } catch (error) {
       console.error('Error updating category:', error)
-      alert('Ошибка при обновлении категории')
+      alert('Սխալ կատեգորիա թարմացնելիս')
     }
   }
 
   const handleDelete = async (categoryId: string) => {
-    if (!confirm('Вы уверены, что хотите удалить эту категорию?')) return
+    if (!confirm('Համոզվա՞ծ եք, որ ցանկանում եք ջնջել այս կատեգորիան:')) return
 
     try {
       const response = await fetch(`/api/admin/categories/${categoryId}`, {
@@ -126,11 +126,11 @@ export default function CategoriesPage() {
         await fetchCategories()
       } else {
         const error = await response.json()
-        alert(error.error || 'Ошибка при удалении категории')
+        alert(error.error || 'Սխալ կատեգորիա ջնջելիս')
       }
     } catch (error) {
       console.error('Error deleting category:', error)
-      alert('Ошибка при удалении категории')
+      alert('Սխալ կատեգորիա ջնջելիս')
     }
   }
 
@@ -154,7 +154,7 @@ export default function CategoriesPage() {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-orange-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600">Загрузка...</p>
+          <p className="text-gray-600">Բեռնում...</p>
         </div>
       </div>
     )
@@ -167,7 +167,7 @@ export default function CategoriesPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       
-      {/* Отступ для fixed хедера */}
+      {/* Բացատ ֆիքսված header-ի համար */}
       <div className="lg:hidden h-16"></div>
       <div className="hidden lg:block h-24"></div>
       
@@ -176,8 +176,8 @@ export default function CategoriesPage() {
         <div className="mb-8">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">Управление категориями</h1>
-              <p className="text-gray-600">Добавляйте, редактируйте и удаляйте категории товаров</p>
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">Կատեգորիաների կառավարում</h1>
+              <p className="text-gray-600">Ավելացրեք, խմբագրեք և ջնջեք ապրանքների կատեգորիաները</p>
             </div>
             <Link 
               href="/admin"
@@ -202,7 +202,7 @@ export default function CategoriesPage() {
                 }`}
               >
                 {showInactive ? <Eye className="h-4 w-4 mr-2" /> : <EyeOff className="h-4 w-4 mr-2" />}
-                {showInactive ? 'Показать все' : 'Скрыть неактивные'}
+                {showInactive ? 'Ցուցադրել բոլորը' : 'Թաքցնել ոչ ակտիվները'}
               </button>
             </div>
             
@@ -211,7 +211,7 @@ export default function CategoriesPage() {
               className="flex items-center px-6 py-3 bg-orange-500 hover:bg-orange-600 text-white rounded-xl transition-colors"
             >
               <Plus className="h-5 w-5 mr-2" />
-              Добавить категорию
+              Ավելացնել կատեգորիա
             </button>
           </div>
         </div>
@@ -220,33 +220,33 @@ export default function CategoriesPage() {
         {(isCreating || editingCategory) && (
           <div className="bg-white rounded-2xl shadow-lg p-6 mb-8">
             <h2 className="text-xl font-semibold text-gray-900 mb-6">
-              {isCreating ? 'Создать категорию' : 'Редактировать категорию'}
+              {isCreating ? 'Ստեղծել կատեգորիա' : 'Խմբագրել կատեգորիա'}
             </h2>
             
             <form onSubmit={isCreating ? handleCreate : handleUpdate} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Название категории *
+                  Կատեգորիայի անվանում *
                 </label>
                 <input
                   type="text"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-                  placeholder="Введите название категории"
+                  placeholder="Մուտքագրեք կատեգորիայի անվանումը"
                   required
                 />
               </div>
               
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Описание
+                  Նկարագրություն
                 </label>
                 <textarea
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-                  placeholder="Введите описание категории"
+                  placeholder="Մուտքագրեք կատեգորիայի նկարագրությունը"
                   rows={3}
                 />
               </div>
@@ -260,7 +260,7 @@ export default function CategoriesPage() {
                   className="h-4 w-4 text-orange-600 focus:ring-orange-500 border-gray-300 rounded"
                 />
                 <label htmlFor="isActive" className="ml-2 text-sm text-gray-700">
-                  Активная категория
+                  Ակտիվ կատեգորիա
                 </label>
               </div>
               
@@ -269,14 +269,14 @@ export default function CategoriesPage() {
                   type="submit"
                   className="px-6 py-3 bg-orange-500 hover:bg-orange-600 text-white rounded-xl transition-colors"
                 >
-                  {isCreating ? 'Создать' : 'Сохранить'}
+                  {isCreating ? 'Ստեղծել' : 'Պահպանել'}
                 </button>
                 <button
                   type="button"
                   onClick={cancelEdit}
                   className="px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl transition-colors"
                 >
-                  Отмена
+                  Չեղարկել
                 </button>
               </div>
             </form>
@@ -287,14 +287,14 @@ export default function CategoriesPage() {
         <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
           <div className="px-6 py-4 border-b border-gray-200">
             <h2 className="text-lg font-semibold text-gray-900">
-              Категории ({categories.length})
+              Կատեգորիաներ ({categories.length})
             </h2>
           </div>
           
           {categories.length === 0 ? (
             <div className="p-8 text-center">
               <Package className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <p className="text-gray-500">Категории не найдены</p>
+              <p className="text-gray-500">Կատեգորիաներ չեն գտնվել</p>
             </div>
           ) : (
             <div className="divide-y divide-gray-200">
@@ -311,7 +311,7 @@ export default function CategoriesPage() {
                             ? 'bg-green-100 text-green-800' 
                             : 'bg-red-100 text-red-800'
                         }`}>
-                          {category.isActive ? 'Активна' : 'Неактивна'}
+                          {category.isActive ? 'Ակտիվ' : 'Ոչ ակտիվ'}
                         </span>
                       </div>
                       
@@ -320,8 +320,8 @@ export default function CategoriesPage() {
                       )}
                       
                       <div className="flex items-center gap-4 text-sm text-gray-500">
-                        <span>Товаров: {category._count.products}</span>
-                        <span>Создана: {new Date(category.createdAt).toLocaleDateString()}</span>
+                        <span>Ապրանքներ: {category._count.products}</span>
+                        <span>Ստեղծվել է: {new Date(category.createdAt).toLocaleDateString('hy-AM')}</span>
                       </div>
                     </div>
                     
@@ -329,14 +329,14 @@ export default function CategoriesPage() {
                       <button
                         onClick={() => startEdit(category)}
                         className="p-2 text-gray-400 hover:text-orange-500 transition-colors"
-                        title="Редактировать"
+                        title="Խմբագրել"
                       >
                         <Edit className="h-4 w-4" />
                       </button>
                       <button
                         onClick={() => handleDelete(category.id)}
                         className="p-2 text-gray-400 hover:text-red-500 transition-colors"
-                        title="Удалить"
+                        title="Ջնջել"
                         disabled={category._count.products > 0}
                       >
                         <Trash2 className="h-4 w-4" />
