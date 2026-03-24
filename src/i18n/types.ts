@@ -182,6 +182,52 @@ export interface AppMessages {
       viewAll: string
     }
   }
+  aboutPage: {
+    heroTitle: string
+    heroSubtitle: string
+    storyTitle: string
+    storyP1: string
+    storyP2: string
+    storyP3: string
+    valuesTitle: string
+    valueLoveTitle: string
+    valueLoveDesc: string
+    valueQualityTitle: string
+    valueQualityDesc: string
+    valueSpeedTitle: string
+    valueSpeedDesc: string
+    valueCommunityTitle: string
+    valueCommunityDesc: string
+    teamTitle: string
+    teamChefTitle: string
+    teamChefDesc: string
+    teamManagerTitle: string
+    teamManagerDesc: string
+    teamDeliveryTitle: string
+    teamDeliveryDesc: string
+    statsTitle: string
+    statOrdersValue: string
+    statOrdersLabel: string
+    statFlavorsValue: string
+    statFlavorsLabel: string
+    statBranchesValue: string
+    statBranchesLabel: string
+    statPrepValue: string
+    statPrepLabel: string
+    processTitle: string
+    processStep1Title: string
+    processStep1Desc: string
+    processStep2Title: string
+    processStep2Desc: string
+    processStep3Title: string
+    processStep3Desc: string
+    processStep4Title: string
+    processStep4Desc: string
+    ctaTitle: string
+    ctaSubtitle: string
+    ctaMenu: string
+    ctaContact: string
+  }
   products: {
     allCategories: string
     uncategorized: string

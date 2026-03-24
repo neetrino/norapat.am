@@ -180,6 +180,63 @@ export const en: AppMessages = {
       viewAll: 'View all',
     },
   },
+  aboutPage: {
+    heroTitle: 'About Pideh Armenia',
+    heroSubtitle:
+      'We craft unique Armenian pide by pairing traditional recipes with modern flavors.',
+    storyTitle: 'Our story',
+    storyP1:
+      'Pideh Armenia was born from a love of Armenian cuisine and a desire to bring something new to the local market. We created Armenian pide with fillings that today’s food lovers crave.',
+    storyP2:
+      'Every “boat” is shaped by hand and made with fresh ingredients only. No frozen shortcuts or preservatives—just natural products and time-honored methods.',
+    storyP3:
+      'In a short time we became a favorite for those who value quality, taste, and originality. Our mission is to bring new flavors to Yerevan while keeping respect for tradition.',
+    valuesTitle: 'Our values',
+    valueLoveTitle: 'Passion',
+    valueLoveDesc:
+      'Every dish is made with care and attention to detail',
+    valueQualityTitle: 'Quality',
+    valueQualityDesc:
+      'We use the best ingredients and trusted recipes',
+    valueSpeedTitle: 'Speed',
+    valueSpeedDesc:
+      'We cook fast without compromising on quality or taste',
+    valueCommunityTitle: 'Community',
+    valueCommunityDesc:
+      'We create a place where people who love great food come together',
+    teamTitle: 'Our team',
+    teamChefTitle: 'Head chef',
+    teamChefDesc:
+      '15 years of experience in Yerevan’s top restaurants. Knows the secrets of perfect dough and toppings.',
+    teamManagerTitle: 'Manager',
+    teamManagerDesc:
+      'Makes sure service stays excellent—always ready to help you choose and answer questions.',
+    teamDeliveryTitle: 'Delivery',
+    teamDeliveryDesc:
+      'Fast, careful delivery across Yerevan. Your order arrives hot and fresh.',
+    statsTitle: 'Pideh Armenia in numbers',
+    statOrdersValue: '500+',
+    statOrdersLabel: 'Orders per day',
+    statFlavorsValue: '15',
+    statFlavorsLabel: 'Unique flavors',
+    statBranchesValue: '2',
+    statBranchesLabel: 'Branches in Yerevan',
+    statPrepValue: '15–20',
+    statPrepLabel: 'Minutes to prepare',
+    processTitle: 'How we make it',
+    processStep1Title: 'Picking ingredients',
+    processStep1Desc: 'Every morning we choose only fresh produce',
+    processStep2Title: 'Making the dough',
+    processStep2Desc: 'We mix dough the traditional way',
+    processStep3Title: 'Shaping',
+    processStep3Desc: 'We hand-shape the boats and add the filling',
+    processStep4Title: 'Baking',
+    processStep4Desc: 'We bake until golden and crisp',
+    ctaTitle: 'Ready to taste?',
+    ctaSubtitle: 'Order now or get in touch for a special request',
+    ctaMenu: 'View menu',
+    ctaContact: 'Contact us',
+  },
   products: {
     allCategories: 'All',
     uncategorized: 'Uncategorized',
