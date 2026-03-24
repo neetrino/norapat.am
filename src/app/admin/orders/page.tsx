@@ -104,6 +104,7 @@ export default function AdminOrdersPage() {
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
   const [statusFilter, setStatusFilter] = useState('')
+  const [filterGroup, setFilterGroup] = useState<'all' | 'new' | 'in_progress' | 'delivered' | 'cancelled'>('all')
   const [currentPage, setCurrentPage] = useState(1)
   const [selectedOrder, setSelectedOrder] = useState<OrderWithDetails | null>(null)
   const [showModal, setShowModal] = useState(false)
@@ -139,7 +140,9 @@ export default function AdminOrdersPage() {
         limit: '20'
       })
       
-      if (statusFilter) {
+      if (filterGroup !== 'all') {
+        params.append('filter', filterGroup)
+      } else if (statusFilter) {
         params.append('status', statusFilter)
       }
 
@@ -185,7 +188,7 @@ export default function AdminOrdersPage() {
 
   useEffect(() => {
     fetchOrders()
-  }, [currentPage, statusFilter])
+  }, [currentPage, statusFilter, filterGroup])
 
   // Изменяем статус заказа
   const updateOrderStatus = async (orderId: string, newStatus: string) => {
@@ -352,6 +355,56 @@ export default function AdminOrdersPage() {
 
         {/* Filters */}
         <div className="bg-white rounded-2xl shadow-lg p-6 mb-8">
+          {/* Quick filter chips - Նոր, Ընթացքում, Առաքված, Չեղարկված */}
+          <div className="mb-6">
+            <label className="block text-sm font-medium text-gray-700 mb-3">
+              <Filter className="inline h-4 w-4 mr-1" />
+              Ֆիլտրել ըստ
+            </label>
+            <div className="flex flex-wrap gap-2">
+              <Button
+                variant={filterGroup === 'all' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => { setFilterGroup('all'); setStatusFilter(''); setCurrentPage(1) }}
+                className={filterGroup === 'all' ? 'bg-orange-500 hover:bg-orange-600' : ''}
+              >
+                Բոլորը
+              </Button>
+              <Button
+                variant={filterGroup === 'new' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => { setFilterGroup('new'); setStatusFilter(''); setCurrentPage(1) }}
+                className={filterGroup === 'new' ? 'bg-yellow-500 hover:bg-yellow-600' : ''}
+              >
+                Նոր
+              </Button>
+              <Button
+                variant={filterGroup === 'in_progress' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => { setFilterGroup('in_progress'); setStatusFilter(''); setCurrentPage(1) }}
+                className={filterGroup === 'in_progress' ? 'bg-blue-500 hover:bg-blue-600' : ''}
+              >
+                Ընթացքում
+              </Button>
+              <Button
+                variant={filterGroup === 'delivered' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => { setFilterGroup('delivered'); setStatusFilter(''); setCurrentPage(1) }}
+                className={filterGroup === 'delivered' ? 'bg-green-500 hover:bg-green-600' : ''}
+              >
+                Առաքված
+              </Button>
+              <Button
+                variant={filterGroup === 'cancelled' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => { setFilterGroup('cancelled'); setStatusFilter(''); setCurrentPage(1) }}
+                className={filterGroup === 'cancelled' ? 'bg-red-500 hover:bg-red-600' : ''}
+              >
+                Չեղարկված
+              </Button>
+            </div>
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -372,11 +425,11 @@ export default function AdminOrdersPage() {
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 <Filter className="inline h-4 w-4 mr-1" />
-                Статус
+                Статус (детальный)
               </label>
               <select
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
+                value={filterGroup !== 'all' ? '' : statusFilter}
+                onChange={(e) => { setStatusFilter(e.target.value); setFilterGroup('all'); setCurrentPage(1) }}
                 className="w-full px-4 py-3 bg-white border-2 border-gray-500 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors text-gray-900 font-medium"
               >
                 <option value="">Все статусы</option>
@@ -405,7 +458,7 @@ export default function AdminOrdersPage() {
                 <ShoppingCart className="h-12 w-12 mx-auto mb-4 text-gray-300" />
                 <p className="text-lg">Заказы не найдены</p>
                 <p className="text-sm mt-2">
-                  {searchTerm || statusFilter 
+                  {searchTerm || statusFilter || filterGroup !== 'all'
                     ? 'Попробуйте изменить фильтры поиска'
                     : 'Пока нет заказов'
                   }

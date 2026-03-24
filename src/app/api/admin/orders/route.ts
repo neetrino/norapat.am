@@ -27,12 +27,33 @@ export async function GET(request: NextRequest) {
     // Получаем параметры запроса
     const { searchParams } = new URL(request.url)
     const status = searchParams.get('status')
+    const filter = searchParams.get('filter') // new | in_progress | delivered | cancelled
     const page = parseInt(searchParams.get('page') || '1')
     const limit = parseInt(searchParams.get('limit') || '10')
     const skip = (page - 1) * limit
 
-    // Строим фильтр по статусу
-    const whereClause = status ? { status } : {}
+    // Строим фильтр по статусу (приоритет: filter > status)
+    let whereClause: { status?: string | { in: string[] } } = {}
+    if (filter) {
+      switch (filter) {
+        case 'new':
+          whereClause = { status: 'PENDING' }
+          break
+        case 'in_progress':
+          whereClause = { status: { in: ['CONFIRMED', 'PREPARING', 'READY'] } }
+          break
+        case 'delivered':
+          whereClause = { status: 'DELIVERED' }
+          break
+        case 'cancelled':
+          whereClause = { status: 'CANCELLED' }
+          break
+        default:
+          break
+      }
+    } else if (status) {
+      whereClause = { status }
+    }
 
     // Получаем заказы с пагинацией
     const [orders, totalCount] = await Promise.all([
