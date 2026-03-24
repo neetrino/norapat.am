@@ -124,7 +124,11 @@ export function ProductImageGallery({
         typeof document !== 'undefined' &&
         createPortal(
           <div
-            className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-black/80 p-4 animate-zoom-backdrop"
+            className="fixed inset-0 z-[9999] flex flex-col items-center justify-center p-4 animate-zoom-backdrop"
+            style={{
+              background: 'radial-gradient(ellipse 90% 90% at 50% 45%, rgba(40, 18, 18, 0.92) 0%, rgba(20, 8, 8, 0.96) 40%, rgba(12, 4, 4, 0.98) 70%, rgba(5, 2, 2, 0.99) 100%)',
+              backdropFilter: 'blur(16px)',
+            }}
             role="dialog"
             aria-modal
             aria-label="Zoomed image"
