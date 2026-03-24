@@ -44,7 +44,7 @@ export function BestSellersSection({ onAddToCart, addedToCart, isInWishlist, onT
 
   if (loading) {
     return (
-      <section className="py-12 lg:py-16 bg-white" aria-label={ariaBest}>
+      <section className="py-16 lg:py-20 bg-white" aria-label={ariaBest}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-center py-12">
             <div className="animate-spin rounded-full h-12 w-12 border-4 border-orange-500 border-t-transparent" />
@@ -59,9 +59,9 @@ export function BestSellersSection({ onAddToCart, addedToCart, isInWishlist, onT
   }
 
   return (
-    <section className="py-12 lg:py-16 bg-gradient-to-b from-orange-50/60 to-white overflow-visible" aria-label={ariaBest}>
+    <section className="py-16 lg:py-20 bg-gradient-to-b from-orange-50/60 to-white overflow-visible" aria-label={ariaBest}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 overflow-visible">
-        <div className="text-center mb-8 lg:mb-10">
+        <div className="text-center mb-10 lg:mb-12">
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-2">
             {bs.title}
           </h2>
@@ -71,7 +71,7 @@ export function BestSellersSection({ onAddToCart, addedToCart, isInWishlist, onT
         </div>
 
         <div className="overflow-x-auto pb-2 pt-20 -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-thin">
-          <div className="flex sm:grid sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 min-w-max sm:min-w-0 overflow-visible">
+          <div className="flex sm:grid sm:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-10 min-w-max sm:min-w-0 overflow-visible">
             {products.map((product) => (
               <div
                 key={product.id}

@@ -51,7 +51,7 @@ export function ActionsSection() {
 
   if (loading) {
     return (
-      <section className="py-12 lg:py-16 bg-gray-50" aria-label={ac.ariaLabel}>
+      <section className="py-16 lg:py-20 bg-gray-50" aria-label={ac.ariaLabel}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-center py-12">
             <div className="animate-spin rounded-full h-12 w-12 border-4 border-orange-500 border-t-transparent" />
@@ -70,11 +70,11 @@ export function ActionsSection() {
 
   return (
     <section
-      className="py-12 lg:py-16 bg-gradient-to-b from-orange-50/60 to-white"
+      className="py-16 lg:py-20 bg-gradient-to-b from-orange-50/60 to-white"
       aria-label={ac.ariaLabel}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-8 lg:mb-10">
+        <div className="text-center mb-10 lg:mb-12">
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-2">
             {ac.title}
           </h2>

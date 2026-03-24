@@ -64,7 +64,7 @@ export function CategoriesSection({ onSelectCategory, productsSectionId = 'produ
 
   if (loading) {
     return (
-      <section className="py-12 lg:py-16 bg-white" aria-label={ariaCategories}>
+      <section className="py-16 lg:py-20 bg-white" aria-label={ariaCategories}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6 text-center">{c.title}</h2>
           <div className="flex justify-center py-12">
@@ -77,7 +77,7 @@ export function CategoriesSection({ onSelectCategory, productsSectionId = 'produ
 
   if (error || categories.length === 0) {
     return (
-      <section className="py-12 lg:py-16 bg-white" aria-label={ariaCategories}>
+      <section className="py-16 lg:py-20 bg-white" aria-label={ariaCategories}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6 text-center">{c.title}</h2>
           <p className="text-center text-gray-500 py-8">
@@ -97,9 +97,9 @@ export function CategoriesSection({ onSelectCategory, productsSectionId = 'produ
   }
 
   return (
-    <section className="py-12 lg:py-16 bg-white" aria-label={ariaCategories}>
+    <section className="py-16 lg:py-20 bg-white" aria-label={ariaCategories}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-10">
+        <div className="text-center mb-12">
           <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">{c.title}</h2>
           <p className="text-gray-600 max-w-xl mx-auto">{c.subtitle}</p>
         </div>

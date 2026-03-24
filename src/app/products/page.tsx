@@ -216,7 +216,7 @@ function ProductsPageContent() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
         {/* Search and Filter */}
-        <div className="bg-white rounded-2xl shadow-lg p-6 mb-8">
+        <div className="bg-white rounded-2xl shadow-lg p-6 mb-12">
 
           <div className="flex flex-col md:flex-row gap-4 mb-6">
             <div className="flex-1 lg:w-80 relative">
@@ -368,7 +368,7 @@ function ProductsPageContent() {
         {/* Products Display */}
         {selectedCategory === allCategories && !debouncedSearchQuery ? (
           // Показываем продукты сгруппированными по категориям
-          <div className="space-y-12">
+          <div className="space-y-16 mt-8">
             {groupedProducts.map(({ category, products: categoryProducts }) => (
               <div key={category}>
                 {/* Заголовок категории */}
@@ -380,7 +380,7 @@ function ProductsPageContent() {
                 </div>
                 
                 {/* Продукты категории */}
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 gap-y-12 md:gap-10 overflow-visible">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 gap-y-16 md:gap-12 overflow-visible">
                   {categoryProducts.map((product) => (
                     <ProductCard
                       key={product.id}
@@ -398,7 +398,7 @@ function ProductsPageContent() {
           </div>
         ) : (
           // Показываем продукты в обычной сетке (для конкретной категории или поиска)
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 gap-y-12 md:gap-10 overflow-visible">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 gap-y-16 md:gap-12 overflow-visible mt-8">
             {filteredProducts.map((product) => (
               <ProductCard
                 key={product.id}

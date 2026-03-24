@@ -64,7 +64,7 @@ const ProductCard = memo(({ product, onAddToCart, variant = 'default', addedToCa
           <div className="relative w-full h-full overflow-visible z-0 group-hover:z-30">
             {/* 3D Product Image with floating effect - scaled image overflows freely */}
             <div
-              className="absolute -top-16 left-1/2 -translate-x-1/2 w-full max-w-[220px] h-[calc(100%+6rem)] overflow-visible [&>*]:!overflow-visible"
+              className="absolute -top-8 left-1/2 -translate-x-1/2 w-full max-w-[220px] h-[calc(100%+4rem)] overflow-visible [&>*]:!overflow-visible"
               style={{ transform: 'perspective(1000px) rotateX(6deg) rotateY(-2deg)' }}
             >
               <div className="relative w-full h-full transition-transform duration-500 ease-out origin-bottom group-hover:scale-[1.25] group-hover:-translate-y-3 z-10">
@@ -130,7 +130,7 @@ const ProductCard = memo(({ product, onAddToCart, variant = 'default', addedToCa
           </div>
         ) : (
             <div 
-              className={`absolute -top-12 left-1/2 transform -translate-x-1/2 w-full max-w-[200px] h-[calc(100%+4rem)] flex items-center justify-center ${
+              className={`absolute -top-8 left-1/2 transform -translate-x-1/2 w-full max-w-[200px] h-[calc(100%+3rem)] flex items-center justify-center ${
                 isCompact ? 'text-6xl' : 'text-8xl'
               }`}
             style={{

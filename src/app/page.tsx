@@ -174,13 +174,13 @@ export default function Home() {
       <ActionsSection />
 
       {/* 5. Products Showcase Section */}
-      <section id="products-section" className="py-16 lg:py-20 bg-white scroll-mt-24">
+      <section id="products-section" className="py-20 lg:py-24 bg-white scroll-mt-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Section header */}
           <div className="text-center mb-12">
             
             {/* Category tabs - Mobile 2 rows, Desktop single row */}
-            <div className="mb-16">
+            <div className="mb-20">
               {/* Mobile - 2 rows with better design */}
               <div className="lg:hidden">
                 <div className="space-y-3">
@@ -238,7 +238,7 @@ export default function Home() {
           </div>
 
           {/* Products grid */}
-          <div className="mt-24">
+          <div className="mt-32">
           {loading ? (
             <div className="flex justify-center py-20">
               <div className="flex flex-col items-center space-y-4">
@@ -269,7 +269,7 @@ export default function Home() {
               </button>
             </div>
           ) : (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 gap-y-12 md:gap-10 overflow-visible">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 gap-y-16 md:gap-12 overflow-visible">
               {getFilteredProducts().slice(0, HOME_PRODUCTS_LIMIT).map((product) => (
                 <div
                   key={product.id}
@@ -305,7 +305,7 @@ export default function Home() {
       </section>
 
       {/* Features Section - Hidden on mobile and tablet */}
-      <section className="hidden lg:block py-20 bg-white">
+      <section className="hidden lg:block py-24 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Section header */}
           <div className="text-center mb-16">
@@ -383,7 +383,7 @@ export default function Home() {
 
 
       {/* Testimonials Section - Hidden on mobile and tablet */}
-      <section className="hidden lg:block py-20 bg-orange-50">
+      <section className="hidden lg:block py-24 bg-orange-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Section header */}
           <div className="text-center mb-16">
@@ -496,7 +496,7 @@ export default function Home() {
       </section>
 
       {/* CTA Section - Hidden on mobile and tablet */}
-      <section className="hidden lg:block py-20 bg-orange-500 text-white">
+      <section className="hidden lg:block py-24 bg-orange-500 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-4xl md:text-5xl font-bold mb-6">
             {h.ctaTitle}

@@ -183,7 +183,7 @@ export default function WishlistPage() {
                 />
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 overflow-visible">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-10 overflow-visible">
                 {gridItems.map((item) =>
                   item.kind === 'product' ? (
                     <ProductCard
