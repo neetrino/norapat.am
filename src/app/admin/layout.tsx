@@ -11,7 +11,6 @@ import {
   Tag,
   Percent,
   Settings,
-  ExternalLink,
   LogOut,
   Menu,
   X,
@@ -77,13 +76,6 @@ export default function AdminLayout({
             </Link>
           </div>
           <div className="flex items-center gap-2">
-            <Link
-              href="/"
-              className="flex items-center gap-1.5 px-3 py-2 text-sm text-gray-600 hover:text-orange-500 hover:bg-orange-50 rounded-lg transition-colors"
-            >
-              <ExternalLink className="h-4 w-4" />
-              <span className="hidden sm:inline">Կայք</span>
-            </Link>
             <button
               type="button"
               onClick={() => signOut({ callbackUrl: '/' })}
