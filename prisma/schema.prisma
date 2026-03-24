@@ -41,7 +41,9 @@ model Product {
   name          String
   description   String
   price         Float
+  originalPrice Float?         // Հին գին (եթե զեղչ կա)
   image         String
+  images        String[]       @default([]) // Մի քանի նկար (gallery)
   categoryId    String
   ingredients   String[]
   isAvailable   Boolean        @default(true)

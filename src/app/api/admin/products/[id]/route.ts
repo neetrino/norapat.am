@@ -87,7 +87,7 @@ export async function PUT(
 
     // Получаем данные из запроса
     const body = await request.json()
-    const { name, description, price, categoryId, image, ingredients, isAvailable, status } = body
+    const { name, description, price, originalPrice, categoryId, image, images, ingredients, isAvailable, status } = body
 
     // Проверяем существование товара
     const existingProduct = await prisma.product.findUnique({
@@ -134,18 +134,19 @@ export async function PUT(
       }
     }
 
-    // Обновляем товар
     const updatedProduct = await prisma.product.update({
       where: { id },
       data: {
         ...(name && { name }),
         ...(description && { description }),
         ...(price !== undefined && { price }),
+        ...(originalPrice !== undefined && { originalPrice: originalPrice === null || originalPrice === '' ? null : Number(originalPrice) }),
         ...(categoryId && { categoryId }),
-        ...(image !== undefined && { image: image || 'no-image' }), // Специальное значение для отсутствия изображения
+        ...(image !== undefined && { image: image || 'no-image' }),
+        ...(images !== undefined && { images: Array.isArray(images) ? images : [] }),
         ...(ingredients && { ingredients }),
         ...(isAvailable !== undefined && { isAvailable }),
-        ...(status !== undefined && { status: status || 'REGULAR' }) // Если статус пустой, то REGULAR
+        ...(status !== undefined && { status: status || 'REGULAR' })
       },
       include: {
         category: {

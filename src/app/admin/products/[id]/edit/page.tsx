@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { ArrowLeft, Save, X, Trash2 } from 'lucide-react'
 import Link from 'next/link'
 import { Product, Category } from '@/types'
-import ImageSelector from '@/components/ImageSelector'
+import ImageSelectorMultiple from '@/components/ImageSelectorMultiple'
 
 const statuses = [
   { value: 'HIT', label: 'Хит продаж' },
@@ -35,8 +35,10 @@ export default function EditProductPage({ params }: EditProductPageProps) {
     name: '',
     description: '',
     price: '',
+    originalPrice: '',
     categoryId: '',
     image: '',
+    images: [] as string[],
     ingredients: '',
     isAvailable: true,
     status: ''
@@ -91,12 +93,19 @@ export default function EditProductPage({ params }: EditProductPageProps) {
         setProduct(productData)
         
         // Заполняем форму данными товара
+        const productImages = productData.images && productData.images.length > 0
+          ? productData.images
+          : productData.image && productData.image !== 'no-image'
+          ? [productData.image]
+          : []
         setFormData({
           name: productData.name || '',
           description: productData.description || '',
           price: productData.price?.toString() || '',
+          originalPrice: productData.originalPrice != null ? productData.originalPrice.toString() : '',
           categoryId: productData.categoryId || productData.category?.id || '',
           image: productData.image || '',
+          images: productImages,
           ingredients: productData.ingredients?.join(', ') || '',
           isAvailable: productData.isAvailable ?? true,
           status: productData.status === 'REGULAR' ? '' : (productData.status || '')
@@ -129,7 +138,7 @@ export default function EditProductPage({ params }: EditProductPageProps) {
     return null
   }
 
-  const handleInputChange = (field: string, value: string | boolean) => {
+  const handleInputChange = (field: string, value: string | boolean | string[]) => {
     setFormData(prev => ({
       ...prev,
       [field]: value
@@ -146,7 +155,10 @@ export default function EditProductPage({ params }: EditProductPageProps) {
       const productData = {
         ...formData,
         price: parseFloat(formData.price),
-        ingredients: formData.ingredients ? formData.ingredients.split(',').map(i => i.trim()) : []
+        originalPrice: formData.originalPrice ? parseFloat(formData.originalPrice) : null,
+        ingredients: formData.ingredients ? formData.ingredients.split(',').map(i => i.trim()) : [],
+        image: formData.images?.length ? formData.images[0] : formData.image || 'no-image',
+        images: formData.images || []
       }
 
       const response = await fetch(`/api/admin/products/${productId}`, {
@@ -348,14 +360,30 @@ export default function EditProductPage({ params }: EditProductPageProps) {
                   </select>
                 </div>
 
-                {/* Изображение */}
+                {/* Original Price (Հին գին) */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Հին գին (֏) — для скидки
+                  </label>
+                  <Input
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value={formData.originalPrice}
+                    onChange={(e) => handleInputChange('originalPrice', e.target.value)}
+                    placeholder="Оставьте пустым, если нет скидки"
+                    className="w-full"
+                  />
+                </div>
+
+                {/* Multiple images */}
                 <div className="md:col-span-2">
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Изображение товара
+                    Նկարներ (մի քանի)
                   </label>
-                  <ImageSelector
-                    value={formData.image}
-                    onChange={(imagePath) => handleInputChange('image', imagePath)}
+                  <ImageSelectorMultiple
+                    value={formData.images}
+                    onChange={(imagePaths) => handleInputChange('images', imagePaths)}
                   />
                 </div>
 

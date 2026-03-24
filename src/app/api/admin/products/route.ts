@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
 
     // Получаем данные из запроса
     const body = await request.json()
-    const { name, description, price, categoryId, image, ingredients, isAvailable = true, status = 'REGULAR' } = body
+    const { name, description, price, originalPrice, categoryId, image, images, ingredients, isAvailable = true, status = 'REGULAR' } = body
 
     // Валидация обязательных полей
     if (!name || !description || !price || !categoryId) {
@@ -71,11 +71,13 @@ export async function POST(request: NextRequest) {
         name,
         description,
         price,
+        originalPrice: originalPrice != null ? Number(originalPrice) : null,
         categoryId,
-        image: image || '', // Пустая строка для отсутствия изображения
+        image: image || (Array.isArray(images) && images.length ? images[0] : ''),
+        images: Array.isArray(images) ? images : [],
         ingredients: ingredients || [],
         isAvailable,
-        status: status || 'REGULAR' // Если статус не выбран, то REGULAR
+        status: status || 'REGULAR'
       },
       include: {
         category: {

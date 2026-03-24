@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { ArrowLeft, Save, X } from 'lucide-react'
 import Link from 'next/link'
-import ImageSelector from '@/components/ImageSelector'
+import ImageSelectorMultiple from '@/components/ImageSelectorMultiple'
 import { Category } from '@/types'
 
 const statuses = [
@@ -27,8 +27,9 @@ export default function NewProductPage() {
     name: '',
     description: '',
     price: '',
+    originalPrice: '',
     categoryId: '',
-    image: '',
+    images: [] as string[],
     ingredients: '',
     isAvailable: true,
     status: ''
@@ -73,7 +74,7 @@ export default function NewProductPage() {
     return null
   }
 
-  const handleInputChange = (field: string, value: string | boolean) => {
+  const handleInputChange = (field: string, value: string | boolean | string[]) => {
     setFormData(prev => ({
       ...prev,
       [field]: value
@@ -90,7 +91,10 @@ export default function NewProductPage() {
       const productData = {
         ...formData,
         price: parseFloat(formData.price),
-        ingredients: formData.ingredients ? formData.ingredients.split(',').map(i => i.trim()) : []
+        originalPrice: formData.originalPrice ? parseFloat(formData.originalPrice) : null,
+        ingredients: formData.ingredients ? formData.ingredients.split(',').map(i => i.trim()) : [],
+        image: formData.images?.length ? formData.images[0] : 'no-image',
+        images: formData.images || []
       }
 
       const response = await fetch('/api/admin/products', {
@@ -201,6 +205,21 @@ export default function NewProductPage() {
                   />
                 </div>
 
+                {/* Հին գին */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Հին գին (֏) — для скидки
+                  </label>
+                  <Input
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value={formData.originalPrice}
+                    onChange={(e) => handleInputChange('originalPrice', e.target.value)}
+                    placeholder="Пусто = нет скидки"
+                  />
+                </div>
+
                 {/* Категория */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -240,14 +259,14 @@ export default function NewProductPage() {
                   </select>
                 </div>
 
-                {/* Изображение */}
+                {/* Նկարներ */}
                 <div className="md:col-span-2">
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Изображение товара
+                    Նկարներ (մի քանի)
                   </label>
-                  <ImageSelector
-                    value={formData.image}
-                    onChange={(imagePath) => handleInputChange('image', imagePath)}
+                  <ImageSelectorMultiple
+                    value={formData.images}
+                    onChange={(imagePaths) => handleInputChange('images', imagePaths)}
                   />
                 </div>
 

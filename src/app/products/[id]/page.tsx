@@ -1,13 +1,13 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft, Star, Clock, MapPin, Phone, Zap } from 'lucide-react'
+import { ArrowLeft, Star, Clock, MapPin, Phone, Zap, Check, XCircle } from 'lucide-react'
 import Footer from '@/components/Footer'
 import ProductQuantityControls from '@/components/ProductQuantityControls'
 import { SimilarProducts } from '@/components/SimilarProducts'
 import { CategoryDisplayName } from '@/components/CategoryDisplayName'
 import { ProductCategoryLine } from '@/components/ProductCategoryLine'
 import { ProductDisplayName } from '@/components/ProductDisplayName'
-import { ProductImageWithLocalizedAlt } from '@/components/ProductImageWithLocalizedAlt'
+import { ProductImageGallery } from '@/components/ProductImageGallery'
 import { prisma } from '@/lib/prisma'
 
 // Server Component - данные загружаются на сервере
@@ -23,10 +23,7 @@ export default async function ProductPage({
     const [product, similarProducts] = await Promise.all([
       // Основной продукт
       prisma.product.findUnique({
-        where: {
-          id,
-          isAvailable: true
-        },
+        where: { id },
         select: {
           id: true,
           name: true,
@@ -41,6 +38,8 @@ export default async function ProductPage({
             }
           },
           image: true,
+          images: true,
+          originalPrice: true,
           ingredients: true,
           isAvailable: true,
           status: true,
@@ -111,54 +110,22 @@ export default async function ProductPage({
         </Link>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
-          {/* Product Image */}
+          {/* Product Image Gallery (multiple images + zoom) */}
           <div className="space-y-4">
-            <div className="bg-white rounded-2xl shadow-lg overflow-visible group relative">
-              <div className="relative h-96 overflow-visible">
-                {/* 3D Product Container */}
-                {product.image && product.image !== 'no-image' ? (
-                  <div className="relative w-full h-full">
-                    {/* 3D Product Image with floating effect */}
-                    <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 w-[calc(100%+1rem)] h-[calc(100%+1rem)]">
-                      {/* 3D Shadow Layer */}
-                      <div 
-                        className="absolute inset-0 bg-gradient-to-br from-gray-200/20 to-gray-300/15 rounded-3xl transform translate-y-2 translate-x-1 group-hover:translate-y-3 group-hover:translate-x-2 transition-all duration-700"
-                        style={{
-                          filter: 'none',
-                        }}
-                      />
-                      
-                        {/* Main 3D Product Image - Оптимизированное изображение */}
-                        <ProductImageWithLocalizedAlt
-                          src={product.image}
-                          productName={product.name}
-                          fill
-                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                          priority
-                          className="relative w-full h-full object-contain group-hover:scale-125 group-hover:-translate-y-3 group-hover:rotate-2 transition-all duration-700 ease-out"
-                          style={{
-                            filter: 'none',
-                            transform: 'perspective(1000px) rotateX(5deg) rotateY(-2deg)',
-                            imageRendering: 'crisp-edges',
-                            imageRendering: '-webkit-optimize-contrast',
-                          }}
-                        />
-                    </div>
-                  </div>
-                ) : (
-                  <div 
-                    className="absolute -top-8 left-1/2 transform -translate-x-1/2 w-[calc(100%+3rem)] h-[calc(100%+3rem)] flex items-center justify-center opacity-70 group-hover:opacity-90 transition-opacity duration-500 text-8xl"
-                    style={{
-                      filter: 'none',
-                      transform: 'perspective(1000px) rotateX(5deg) rotateY(-2deg)',
-                    }}
-                  >
-                    🥟
-                  </div>
-                )}
-                
-                {/* 3D Floating Badges */}
-                <div className="absolute top-12 left-4 flex flex-col gap-2 z-20">
+            <div className="bg-white rounded-2xl shadow-lg overflow-visible group relative p-4">
+              <div className="relative">
+                <ProductImageGallery
+                  images={
+                    (product.images && product.images.length > 0)
+                      ? product.images
+                      : product.image && product.image !== 'no-image'
+                      ? [product.image]
+                      : []
+                  }
+                  productName={product.name}
+                />
+                {/* Badges overlay */}
+                <div className="absolute top-4 left-4 flex flex-col gap-2 z-20 pointer-events-none">
                   {/* 3D Category Badge */}
                   <div 
                     className="bg-gradient-to-r from-orange-500 to-red-500 text-white px-4 py-2 rounded-2xl text-xs font-bold shadow-2xl transform group-hover:scale-110 group-hover:-translate-y-1 transition-all duration-500"
@@ -211,9 +178,10 @@ export default async function ProductPage({
                   )}
                 </div>
 
+                </div>
               </div>
               
-              {/* 3D Floating Decorative Elements - positioned inside container */}
+              {/* Decorative Elements */}
               <div 
                 className="absolute top-2 right-2 w-6 h-6 bg-gradient-to-br from-orange-400 to-red-500 rounded-full opacity-30 group-hover:opacity-60 transition-all duration-500 group-hover:scale-110"
                 style={{
@@ -283,10 +251,30 @@ export default async function ProductPage({
                 <span className="text-gray-600">(4.9) • 127 отзывов</span>
               </div>
 
-              {/* Price */}
-              <div className="flex items-center space-x-4 mb-8">
+              {/* Price: Ներկա արժեք / Հին գին / Զեղչված գին */}
+              <div className="flex flex-wrap items-center gap-3 mb-8">
+                {product.originalPrice != null && product.originalPrice > product.price && (
+                  <span className="text-xl text-gray-500 line-through">
+                    {product.originalPrice} ֏
+                  </span>
+                )}
                 <span className="text-4xl font-bold text-orange-500">{product.price} ֏</span>
                 <span className="text-lg text-gray-500">за порцию</span>
+              </div>
+
+              {/* Stock Status: Առկա է / Առկա չէ */}
+              <div className="flex items-center gap-2 mb-6">
+                {product.isAvailable ? (
+                  <span className="inline-flex items-center gap-2 px-3 py-1.5 bg-green-100 text-green-800 rounded-lg text-sm font-medium">
+                    <Check className="h-4 w-4" />
+                    Առկա է
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center gap-2 px-3 py-1.5 bg-gray-100 text-gray-600 rounded-lg text-sm font-medium">
+                    <XCircle className="h-4 w-4" />
+                    Առկա չէ
+                  </span>
+                )}
               </div>
             </div>
 
