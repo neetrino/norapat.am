@@ -301,6 +301,70 @@ export interface AppMessages {
     DELIVERED: string
     CANCELLED: string
   }
+  productPage: {
+    breadcrumbHome: string
+    breadcrumbMenu: string
+    backToCatalog: string
+    badgeHit: string
+    badgeNew: string
+    badgeClassic: string
+    productInfo: string
+    prepTime: string
+    weight: string
+    freshIngredients: string
+    noPreservatives: string
+    reviews: string
+    perServing: string
+    ingredients: string
+    prepTimeShort: string
+    delivery: string
+    support: string
+    similarProducts: string
+    all: string
+  }
+  productQuantity: {
+    quantity: string
+    addToCart: string
+    addedToCart: string
+  }
+  checkoutPage: {
+    backToCart: string
+    backToCartShort: string
+    title: string
+    titleShort: string
+    deliveryData: string
+    guestOrder: string
+    name: string
+    phone: string
+    address: string
+    addressPlaceholder: string
+    namePlaceholder: string
+    deliveryTime: string
+    asap: string
+    paymentMethod: string
+    cash: string
+    cashDesc: string
+    cashDescFull: string
+    card: string
+    cardDesc: string
+    cardDescFull: string
+    comment: string
+    commentPlaceholder: string
+    yourOrder: string
+    total: string
+    freeDelivery: string
+    submit: string
+    submitting: string
+    agreeTerms: string
+    guestHint: string
+    errorName: string
+    errorPhone: string
+    errorPhoneFormat: string
+    errorAddress: string
+    alertEmptyCart: string
+    alertOrderError: string
+    qtyUnit: string
+  }
   contactPage: {
     heroTitle: string
     heroSubtitle: string

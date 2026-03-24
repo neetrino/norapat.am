@@ -9,6 +9,7 @@ import { ProductCategoryLine } from '@/components/ProductCategoryLine'
 import { ProductDisplayName } from '@/components/ProductDisplayName'
 import { ProductImageGallery } from '@/components/ProductImageGallery'
 import { prisma } from '@/lib/prisma'
+import { hy } from '@/i18n/dictionaries'
 
 // Server Component - данные загружаются на сервере
 export default async function ProductPage({
@@ -17,6 +18,7 @@ export default async function ProductPage({
   params: Promise<{ id: string }>
 }) {
   const { id } = await params
+  const t = hy.productPage
 
   try {
     // Загружаем данные на сервере - ОПТИМИЗИРОВАННЫЙ ЗАПРОС
@@ -88,9 +90,9 @@ export default async function ProductPage({
       <div className="bg-white pt-20 md:pt-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <nav className="flex items-center space-x-2 text-sm">
-            <Link href="/" className="text-gray-500 hover:text-orange-500">Главная</Link>
+            <Link href="/" className="text-gray-500 hover:text-orange-500">{t.breadcrumbHome}</Link>
             <span className="text-gray-400">/</span>
-            <Link href="/products" className="text-gray-500 hover:text-orange-500">Меню</Link>
+            <Link href="/products" className="text-gray-500 hover:text-orange-500">{t.breadcrumbMenu}</Link>
             <span className="text-gray-400">/</span>
             <span className="text-gray-900 font-medium">
               <ProductDisplayName name={product.name} />
@@ -106,7 +108,7 @@ export default async function ProductPage({
           className="inline-flex items-center text-gray-600 hover:text-orange-500 mb-8 group"
         >
           <ArrowLeft className="h-4 w-4 mr-2 group-hover:-translate-x-1 transition-transform" />
-          Назад к каталогу
+          {t.backToCatalog}
         </Link>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
@@ -147,7 +149,7 @@ export default async function ProductPage({
                       }}
                     >
                       <Star className="w-3 h-3" />
-                      ХИТ ПРОДАЖ
+                      {t.badgeHit}
                     </div>
                   )}
                   
@@ -160,7 +162,7 @@ export default async function ProductPage({
                       }}
                     >
                       <Zap className="w-3 h-3" />
-                      НОВИНКА
+                      {t.badgeNew}
                     </div>
                   )}
                   
@@ -173,7 +175,7 @@ export default async function ProductPage({
                       }}
                     >
                       <Star className="w-3 h-3" />
-                      КЛАССИКА
+                      {t.badgeClassic}
                     </div>
                   )}
                 </div>
@@ -206,24 +208,24 @@ export default async function ProductPage({
             {/* Additional Info */}
             <div style={{ marginTop: '50px' }}>
               <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-                <h4 className="text-lg font-semibold text-gray-900 mb-4">Информация о товаре:</h4>
+                <h4 className="text-lg font-semibold text-gray-900 mb-4">{t.productInfo}</h4>
                 <ul className="space-y-2 text-gray-700">
                   <ProductCategoryLine apiName={product.category?.name} />
                   <li className="flex items-center">
                     <span className="w-2 h-2 bg-orange-500 rounded-full mr-3"></span>
-                    Время приготовления: 15-20 минут
+                    {t.prepTime}
                   </li>
                   <li className="flex items-center">
                     <span className="w-2 h-2 bg-orange-500 rounded-full mr-3"></span>
-                    Вес: ~300г
+                    {t.weight}
                   </li>
                   <li className="flex items-center">
                     <span className="w-2 h-2 bg-orange-500 rounded-full mr-3"></span>
-                    Только свежие ингредиенты
+                    {t.freshIngredients}
                   </li>
                   <li className="flex items-center">
                     <span className="w-2 h-2 bg-orange-500 rounded-full mr-3"></span>
-                    Без консервантов
+                    {t.noPreservatives}
                   </li>
                 </ul>
               </div>
@@ -246,7 +248,7 @@ export default async function ProductPage({
                     <Star key={i} className="h-5 w-5 fill-current" />
                   ))}
                 </div>
-                <span className="text-gray-600">(4.9) • 127 отзывов</span>
+                <span className="text-gray-600">{t.reviews}</span>
               </div>
 
               {/* Price: Ներկա արժեք / Հին գին / Զեղչված գին */}
@@ -257,7 +259,7 @@ export default async function ProductPage({
                   </span>
                 )}
                 <span className="text-4xl font-bold text-orange-500">{product.price} ֏</span>
-                <span className="text-lg text-gray-500">за порцию</span>
+                <span className="text-lg text-gray-500">{t.perServing}</span>
               </div>
 
               {/* Stock Status: Առկա է / Առկա չէ */}
@@ -278,7 +280,7 @@ export default async function ProductPage({
 
             {/* Ingredients */}
             <div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">Ингредиенты:</h3>
+              <h3 className="text-xl font-semibold text-gray-900 mb-4">{t.ingredients}</h3>
               <div className="flex flex-wrap gap-3">
                 {product.ingredients.map((ingredient, index) => (
                   <span
@@ -303,7 +305,7 @@ export default async function ProductPage({
                   <Clock className="h-6 w-6 text-orange-500" />
                   <div>
                     <div className="font-semibold text-gray-900">15-20 мин</div>
-                    <div className="text-sm text-gray-600">Время приготовления</div>
+                    <div className="text-sm text-gray-600">{t.prepTimeShort}</div>
                   </div>
                 </div>
               </div>
@@ -313,7 +315,7 @@ export default async function ProductPage({
                   <MapPin className="h-6 w-6 text-orange-500" />
                   <div>
                     <div className="font-semibold text-gray-900">30 мин</div>
-                    <div className="text-sm text-gray-600">Доставка</div>
+                    <div className="text-sm text-gray-600">{t.delivery}</div>
                   </div>
                 </div>
               </div>
@@ -323,7 +325,7 @@ export default async function ProductPage({
                   <Phone className="h-6 w-6 text-orange-500" />
                   <div>
                     <div className="font-semibold text-gray-900">24/7</div>
-                    <div className="text-sm text-gray-600">Поддержка</div>
+                    <div className="text-sm text-gray-600">{t.support}</div>
                   </div>
                 </div>
               </div>
@@ -336,14 +338,14 @@ export default async function ProductPage({
           <section className="mb-16">
             <div className="flex items-center space-x-4 mb-8">
               <h2 className="text-3xl font-bold text-gray-900">
-                Похожие товары
+                {t.similarProducts}
               </h2>
               <div className="w-1 h-8 bg-gradient-to-b from-orange-500 to-red-500 rounded-full"></div>
               <Link 
                 href="/products" 
                 className="group text-orange-500 hover:text-orange-600 text-lg font-bold flex items-center space-x-2 transition-colors duration-300 ml-2"
               >
-                <span>Все</span>
+                <span>{t.all}</span>
                 <ArrowLeft className="h-5 w-5 rotate-180 group-hover:translate-x-1 transition-transform duration-300" style={{ strokeWidth: 3 }} />
               </Link>
             </div>

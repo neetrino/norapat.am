@@ -4,12 +4,15 @@ import { useState, useCallback } from 'react'
 import { ShoppingCart, Plus, Minus } from 'lucide-react'
 import { Product } from '@/types'
 import { useCart } from '@/hooks/useCart'
+import { useI18n } from '@/i18n/I18nContext'
 
 interface ProductQuantityControlsProps {
   product: Product
 }
 
 export default function ProductQuantityControls({ product }: ProductQuantityControlsProps) {
+  const { t } = useI18n()
+  const pq = t.productQuantity
   const [quantity, setQuantity] = useState(1)
   const [addedToCart, setAddedToCart] = useState(false)
   const { addItem } = useCart()
@@ -24,7 +27,7 @@ export default function ProductQuantityControls({ product }: ProductQuantityCont
   return (
     <>
       <div className="flex items-center space-x-6">
-        <label className="text-lg font-medium text-gray-900">Количество:</label>
+        <label className="text-lg font-medium text-gray-900">{pq.quantity}</label>
         <div className={`flex items-center border-2 rounded-xl overflow-hidden bg-white shadow-sm ${!product.isAvailable ? 'opacity-60 border-gray-200' : 'border-gray-300'}`}>
           <button
             onClick={() => setQuantity(Math.max(1, quantity - 1))}
@@ -61,8 +64,8 @@ export default function ProductQuantityControls({ product }: ProductQuantityCont
             {!product.isAvailable
               ? 'Առկա չէ'
               : addedToCart
-              ? '✓ Добавлено в корзину!'
-              : 'Добавить в корзину'}
+              ? pq.addedToCart
+              : pq.addToCart}
           </span>
         </button>
       </div>
