@@ -5,6 +5,9 @@ import { signIn, getSession } from 'next-auth/react'
 import Link from 'next/link'
 import { Eye, EyeOff, Mail, Lock } from 'lucide-react'
 import Footer from '@/components/Footer'
+import { publicUiHy } from '@/lib/publicUiHy'
+
+const a = publicUiHy.auth
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
@@ -26,7 +29,7 @@ export default function LoginPage() {
       })
 
       if (result?.error) {
-        setError('Неверный email или пароль')
+        setError(a.invalidCredentials)
       } else {
         const session = await getSession()
         if (session?.user?.role === 'ADMIN') {
@@ -36,7 +39,7 @@ export default function LoginPage() {
         }
       }
     } catch (error) {
-      setError('Произошла ошибка при входе')
+      setError(a.loginError)
     } finally {
       setIsLoading(false)
     }
@@ -51,8 +54,8 @@ export default function LoginPage() {
       <div className="max-w-md mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="bg-white rounded-2xl shadow-lg p-8">
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Вход в аккаунт</h1>
-            <p className="text-gray-600">Войдите, чтобы управлять заказами</p>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">{a.loginTitle}</h1>
+            <p className="text-gray-600">{a.loginSubtitle}</p>
           </div>
 
           {error && (
@@ -65,7 +68,7 @@ export default function LoginPage() {
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 <Mail className="inline h-4 w-4 mr-1" />
-                Email
+                {a.email}
               </label>
               <input
                 type="email"
@@ -80,7 +83,7 @@ export default function LoginPage() {
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 <Lock className="inline h-4 w-4 mr-1" />
-                Пароль
+                {a.password}
               </label>
               <div className="relative">
                 <input
@@ -88,7 +91,7 @@ export default function LoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="w-full px-4 py-3 pr-12 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors text-gray-800 bg-white"
-                  placeholder="Введите пароль"
+                  placeholder={a.passwordPlaceholder}
                   required
                 />
                 <button
@@ -106,15 +109,15 @@ export default function LoginPage() {
               disabled={isLoading}
               className="w-full bg-orange-500 text-white py-4 rounded-xl font-semibold hover:bg-orange-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isLoading ? 'Входим...' : 'Войти'}
+              {isLoading ? a.signingIn : a.login}
             </button>
           </form>
 
           <div className="mt-6 text-center">
             <p className="text-gray-600">
-              Нет аккаунта?{' '}
+              {a.noAccount}{' '}
               <Link href="/register" className="text-orange-500 hover:text-orange-600 font-semibold">
-                Зарегистрироваться
+                {a.registerLink}
               </Link>
             </p>
           </div>

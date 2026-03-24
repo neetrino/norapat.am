@@ -1,0 +1,148 @@
+/**
+ * Հանրային խանութի UI տեքստեր (հայերեն)։
+ * Կոդի անունները՝ անգլերեն, ցուցադրվող տեքստը՝ հայերեն։
+ */
+
+export const ALL_CATEGORIES = 'Բոլորը' as const
+
+export const publicUiHy = {
+  nav: {
+    home: 'Գլխավոր',
+    menu: 'Մենյու',
+    about: 'Մեր մասին',
+    contact: 'Կապ',
+    navigation: 'Նավիգացիա',
+  },
+  auth: {
+    login: 'Մուտք',
+    register: 'Գրանցում',
+    logoutTitle: 'Ելք',
+    admin: 'Ադմին',
+    loginTitle: 'Մուտք հաշիվ',
+    loginSubtitle: 'Մուտք գործեք՝ պատվերները կառավարելու համար',
+    email: 'Էլ. փոստ',
+    password: 'Գաղտնաբառ',
+    passwordPlaceholder: 'Մուտքագրեք գաղտնաբառը',
+    signingIn: 'Մուտք...',
+    invalidCredentials: 'Սխալ էլ. փոստ կամ գաղտնաբառ',
+    loginError: 'Մուտքի սխալ',
+    noAccount: 'Հաշիվ չունե՞ք',
+    registerLink: 'Գրանցվել',
+  },
+  cartPage: {
+    emptyTitle: 'Զամբյուղը դատարկ է',
+    emptyHint: 'Ավելացրեք ապրանքներ մեր մենյուից՝ պատվեր ձևակերպելու համար',
+    goToMenu: 'Գնալ մենյու',
+    backToMenu: 'Հետ մենյու',
+    title: 'Զամբյուղ',
+    clearing: 'Մաքրում...',
+    clearCart: 'Մաքրել զամբյուղը',
+    itemsInCart: (n: number) => `Ապրանքներ զամբյուղում (${n})`,
+    remove: 'Հեռացնել',
+    total: 'Ընդամենը',
+    itemsLine: (qty: number) => `Ապրանքներ (${qty} հատ)`,
+    delivery: 'Առաքում',
+    free: 'Անվճար',
+    toPay: 'Վճարման ենթակա',
+    checkout: 'Պատվիրել',
+    continueShopping: 'Շարունակել գնումները',
+  },
+  search: {
+    short: 'Որոնում...',
+    menu: 'Որոնում մենյուում...',
+    productsPage:
+      'Որոնում՝ անվանում, նկարագրություն կամ բաղադրիչներ...',
+  },
+  cart: {
+    label: 'Զամբյուղ',
+  },
+  profile: {
+    label: 'Պրոֆիլ',
+  },
+  wishlist: {
+    title: 'Նախընտրած',
+    pageTitle: 'Նախընտրած',
+    pageDescription: 'Պահված ուտեստներ և կոմբոներ Pideh Armenia մենյուից',
+    loginPrompt:
+      'Մուտք գործեք հաշիվ, որպեսզի պահեք ուտեստները և տեսնեք դրանք այստեղ։',
+    backToMenu: 'Մենյու',
+    emptyHint:
+      'Այստեղ կհայտնվեն այն ուտեստները, որոնք նշեք սրտիկով մենյուում։',
+    goToMenu: 'Գնալ մենյու',
+    productUnavailable:
+      'Ապրանքը հասանելի չէ մենյուում — հեռացրեք նախընտրածից։',
+    removeFromWishlist: 'Հանել նախընտրածից',
+  },
+  footer: {
+    tagline:
+      'Հայկական պիդե — նոր համ։ Թարմ, համեղ, արագ։ Ավանդական ձև՝ ժամանակակից լցոնումներով։ 15 եզակի համ իրական գուրմանների համար։',
+    navHeading: 'Նավիգացիա',
+    contactsHeading: 'Կապ',
+    privacy: 'Գաղտնիության քաղաքականություն',
+    terms: 'Օգտագործման պայմաններ',
+    copyright: 'Copyright © 2025. Բոլոր իրավունքները պաշտպանված են։',
+    createdBy: 'Ստեղծել է',
+  },
+  products: {
+    uncategorized: 'Առանց կատեգորիայի',
+    searchNoResultsTitle: (query: string) =>
+      `«${query}» հարցման համար արդյունք չի գտնվել`,
+    searchNoResultsHint:
+      'Որոնումը կատարվել է ամբողջ մենյուում։ Փոխեք հարցումը կամ ընտրեք կատեգորիա։',
+    clearSearch: 'Մաքրել որոնումը',
+    showAllProducts: 'Ցուցադրել բոլոր ապրանքները',
+    categoryEmpty: (category: string) =>
+      `«${category}» կատեգորիայում ապրանքներ չեն գտնվել`,
+    tryAnotherCategory: 'Փորձեք այլ կատեգորիա',
+  },
+  productCard: {
+    uncategorized: 'Առանց կատեգորիայի',
+    badgeHit: 'ԼԱՎԱԳՈՒՅՆ ՎԱՃԱՌՔ',
+    badgeNew: 'ՆՈՐՈՒԹ',
+    badgeClassic: 'ԴԱՍԱԿԱՆ',
+    addToCartTitle: 'Զամբյուղում',
+    inCart: 'Զամբյուղում',
+    add: 'Ավելացնել',
+    wishlistAdd: 'Ավելացնել նախընտրածում',
+    wishlistRemove: 'Հանել նախընտրածից',
+  },
+  legal: {
+    privacyShort: 'Գաղտնիություն',
+    termsShort: 'Պայմաններ',
+  },
+  profilePage: {
+    loading: 'Բեռնում...',
+    back: 'Հետ',
+    backHome: 'Գլխավոր էջ',
+    titleMobile: 'Պրոֆիլ',
+    titleDesktop: 'Իմ պրոֆիլը',
+    userDefault: 'Օգտատեր',
+    notSet: 'Նշված չէ',
+    logout: 'Ելք հաշվից',
+    deleteAccount: 'Ջնջել հաշիվը',
+    profileInfo: 'Պրոֆիլի տվյալներ',
+    name: 'Անուն',
+    email: 'Էլ. փոստ',
+    phone: 'Հեռախոս',
+    address: 'Հասցե',
+    editProfile: 'Խմբագրել պրոֆիլը',
+    wishlistHeading: 'Նախընտրած ապրանքներ',
+    openWishlist: 'Բացել նախընտրածի էջը',
+    wishlistEmpty: 'Դեռ ապրանքներ ավելացված չեն',
+    removeWishlistAria: 'Հանել նախընտրածից',
+    ordersHistory: 'Պատվերների պատմություն',
+    noOrders: 'Դեռ պատվերներ չունեք',
+    placeOrder: 'Պատվիրել',
+    orderLabel: 'Պատվեր',
+    qtyTimes: 'հատ ×',
+    reorder: 'Կրկնել պատվերը',
+  },
+  orderStatus: {
+    PENDING: 'Սպասում է հաստատման',
+    CONFIRMED: 'Հաստատված',
+    PREPARING: 'Պատրաստվում է',
+    READY: 'Պատրաստ է',
+    DELIVERED: 'Առաքված',
+    CANCELLED: 'Չեղարկված',
+  },
+} as const

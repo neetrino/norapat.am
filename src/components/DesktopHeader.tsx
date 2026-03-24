@@ -8,6 +8,9 @@ import { useState } from 'react'
 import { useSession, signOut } from 'next-auth/react'
 import { useCart } from '@/hooks/useCart'
 import { useHydration } from '@/hooks/useHydration'
+import { publicUiHy } from '@/lib/publicUiHy'
+
+const { nav, auth, search, wishlist } = publicUiHy
 
 export default function DesktopHeader() {
   const isHydrated = useHydration()
@@ -26,10 +29,10 @@ export default function DesktopHeader() {
 
   // Навигационные ссылки
   const navLinks = [
-    { href: '/', label: 'Главная' },
-    { href: '/products', label: 'Меню' },
-    { href: '/about', label: 'О нас' },
-    { href: '/contact', label: 'Контакты' },
+    { href: '/', label: nav.home },
+    { href: '/products', label: nav.menu },
+    { href: '/about', label: nav.about },
+    { href: '/contact', label: nav.contact },
   ]
 
   return (
@@ -83,7 +86,7 @@ export default function DesktopHeader() {
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" />
               <input
                 type="text"
-                placeholder="Поиск..."
+                placeholder={search.short}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyPress={(e) => {
@@ -133,7 +136,7 @@ export default function DesktopHeader() {
                     : 'text-gray-900 hover:text-red-500 hover:bg-red-50'
                   }
                 `}
-                title="Избранное"
+                title={wishlist.title}
               >
                 <Heart className={`h-6 w-6 ${isActive('/wishlist') ? 'fill-red-500 text-red-500' : ''}`} />
                 {isActive('/wishlist') && (
@@ -159,7 +162,7 @@ export default function DesktopHeader() {
                       }
                     `}
                   >
-                    Админ
+                    {auth.admin}
                     {isActive('/admin') && (
                       <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-6 h-1 bg-orange-500 rounded-full" />
                     )}
@@ -187,7 +190,7 @@ export default function DesktopHeader() {
                 <button
                   onClick={() => signOut({ callbackUrl: '/' })}
                   className="p-2 text-gray-900 hover:text-orange-500 transition-colors"
-                  title="Выйти"
+                  title={auth.logoutTitle}
                 >
                   <LogOut className="h-5 w-5" />
                 </button>
@@ -204,7 +207,7 @@ export default function DesktopHeader() {
                     }
                   `}
                 >
-                  Войти
+                  {auth.login}
                   
                   {/* Активный индикатор для входа */}
                   {isActive('/login') && (
@@ -221,7 +224,7 @@ export default function DesktopHeader() {
                     }
                   `}
                 >
-                  Регистрация
+                  {auth.register}
                   
                   {/* Активный индикатор для регистрации */}
                   {isActive('/register') && (

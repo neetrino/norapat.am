@@ -8,6 +8,9 @@ import { useCart } from '@/hooks/useCart'
 import { useHydration } from '@/hooks/useHydration'
 import { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
+import { publicUiHy } from '@/lib/publicUiHy'
+
+const { nav, cart, profile, auth, legal } = publicUiHy
 
 export default function MobileBottomNav() {
   const pathname = usePathname()
@@ -41,23 +44,23 @@ export default function MobileBottomNav() {
 
   // Ссылки для меню
   const menuLinks = [
-    { href: '/', label: 'Главная' },
-    { href: '/products', label: 'Меню' },
-    { href: '/about', label: 'О нас' },
-    { href: '/contact', label: 'Контакты' },
+    { href: '/', label: nav.home },
+    { href: '/products', label: nav.menu },
+    { href: '/about', label: nav.about },
+    { href: '/contact', label: nav.contact },
   ]
 
   // Навигационные элементы в зависимости от состояния авторизации
   const navItems = session ? [
-    { href: '/', label: 'Главная', icon: Home },
-    { href: '/products', label: 'Меню', icon: Menu, isMenu: true },
-    { href: '/cart', label: 'Корзина', icon: ShoppingCart, showBadge: true },
-    { href: '/profile', label: 'Профиль', icon: User },
+    { href: '/', label: nav.home, icon: Home },
+    { href: '/products', label: nav.menu, icon: Menu, isMenu: true },
+    { href: '/cart', label: cart.label, icon: ShoppingCart, showBadge: true },
+    { href: '/profile', label: profile.label, icon: User },
   ] : [
-    { href: '/', label: 'Главная', icon: Home },
-    { href: '/products', label: 'Меню', icon: Menu, isMenu: true },
-    { href: '/cart', label: 'Корзина', icon: ShoppingCart, showBadge: true },
-    { href: '/login', label: 'Войти', icon: LogIn },
+    { href: '/', label: nav.home, icon: Home },
+    { href: '/products', label: nav.menu, icon: Menu, isMenu: true },
+    { href: '/cart', label: cart.label, icon: ShoppingCart, showBadge: true },
+    { href: '/login', label: auth.login, icon: LogIn },
   ]
 
   const menuOverlay = isMenuOpen && isHydrated && createPortal(
@@ -77,7 +80,7 @@ export default function MobileBottomNav() {
             <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
               <Menu className="w-5 h-5" />
             </div>
-            <h2 className="text-2xl font-bold">Навигация</h2>
+            <h2 className="text-2xl font-bold">{nav.navigation}</h2>
           </div>
           <button
             onClick={(e) => {
@@ -127,7 +130,7 @@ export default function MobileBottomNav() {
               className="text-xs text-gray-400 hover:text-orange-500 transition-colors duration-200 underline decoration-dotted underline-offset-2"
               onClick={() => setIsMenuOpen(false)}
             >
-              Политика конфиденциальности
+              {legal.privacyShort}
             </Link>
             <span className="text-xs text-gray-300">•</span>
             <Link 
@@ -135,7 +138,7 @@ export default function MobileBottomNav() {
               className="text-xs text-gray-400 hover:text-orange-500 transition-colors duration-200 underline decoration-dotted underline-offset-2"
               onClick={() => setIsMenuOpen(false)}
             >
-              Условия использования
+              {legal.termsShort}
             </Link>
           </div>
           

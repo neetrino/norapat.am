@@ -5,6 +5,9 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { ShoppingCart, Star, Zap, Heart } from 'lucide-react'
 import { Product } from '@/types'
+import { publicUiHy } from '@/lib/publicUiHy'
+
+const pc = publicUiHy.productCard
 
 interface ProductCardProps {
   product: Product
@@ -38,7 +41,7 @@ const ProductCard = memo(({ product, onAddToCart, variant = 'default', addedToCa
         {onToggleWishlist && (
           <button
             type="button"
-            aria-label={isInWishlist ? 'Remove from wishlist' : 'Add to wishlist'}
+            aria-label={isInWishlist ? pc.wishlistRemove : pc.wishlistAdd}
             onClick={(e) => {
               e.preventDefault()
               e.stopPropagation()
@@ -144,7 +147,7 @@ const ProductCard = memo(({ product, onAddToCart, variant = 'default', addedToCa
                 backdropFilter: 'blur(10px)',
               }}
             >
-              {product.category?.name || 'Без категории'}
+              {product.category?.name || pc.uncategorized}
             </div>
           )}
           
@@ -158,7 +161,7 @@ const ProductCard = memo(({ product, onAddToCart, variant = 'default', addedToCa
               }}
             >
               <Star className="w-3 h-3" />
-              ХИТ ПРОДАЖ
+              {pc.badgeHit}
             </div>
           )}
           
@@ -171,7 +174,7 @@ const ProductCard = memo(({ product, onAddToCart, variant = 'default', addedToCa
               }}
             >
               <Zap className="w-3 h-3" />
-              НОВИНКА
+              {pc.badgeNew}
             </div>
           )}
           
@@ -184,7 +187,7 @@ const ProductCard = memo(({ product, onAddToCart, variant = 'default', addedToCa
               }}
             >
               <Star className="w-3 h-3" />
-              КЛАССИКА
+              {pc.badgeClassic}
             </div>
           )}
         </div>
@@ -243,19 +246,19 @@ const ProductCard = memo(({ product, onAddToCart, variant = 'default', addedToCa
                       : '0 8px 25px rgba(255, 107, 53, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1)',
                     backdropFilter: 'blur(10px)',
                   }}
-                  title="В корзину"
+                  title={pc.addToCartTitle}
                 >
                   {isAdded ? (
                     <span className="flex items-center relative z-10">
                       <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                       </svg>
-                      В корзине
+                      {pc.inCart}
                     </span>
                   ) : (
                     <span className="flex items-center relative z-10">
                       <ShoppingCart className="w-4 h-4 mr-2" />
-                      Добавить
+                      {pc.add}
                     </span>
                   )}
                 </button>
@@ -292,7 +295,7 @@ const ProductCard = memo(({ product, onAddToCart, variant = 'default', addedToCa
                       : '0 15px 35px rgba(255, 107, 53, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1)',
                     backdropFilter: 'blur(10px)',
                   }}
-                  title="В корзину"
+                  title={pc.addToCartTitle}
                 >
                 {/* 3D Button Background Animation - Removed white overlay */}
                 {/* <div className="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl" /> */}
@@ -302,12 +305,12 @@ const ProductCard = memo(({ product, onAddToCart, variant = 'default', addedToCa
                     <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                     </svg>
-                    В корзине
+                    {pc.inCart}
                   </span>
                 ) : (
                   <span className="flex items-center relative z-10">
                     <ShoppingCart className="w-5 h-5 mr-2" />
-                    Добавить
+                    {pc.add}
                   </span>
                 )}
                 </button>

@@ -2,20 +2,22 @@
 
 import { useState, useEffect, useMemo, useCallback, useRef, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
-import Link from 'next/link'
-import { Search, Filter, ShoppingCart } from 'lucide-react'
+import { Search } from 'lucide-react'
 import { useCart } from '@/hooks/useCart'
 import { useWishlist } from '@/hooks/useWishlist'
 import { Product, Category } from '@/types'
 import Footer from '@/components/Footer'
 import ProductCard from '@/components/ProductCard'
+import { ALL_CATEGORIES, publicUiHy } from '@/lib/publicUiHy'
+
+const productsCopy = publicUiHy.products
 
 function ProductsPageContent() {
   const searchParams = useSearchParams()
   const [products, setProducts] = useState<Product[]>([])
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([])
   const [categories, setCategories] = useState<Category[]>([])
-  const [selectedCategory, setSelectedCategory] = useState<string>('Все')
+  const [selectedCategory, setSelectedCategory] = useState<string>(ALL_CATEGORIES)
   const [searchQuery, setSearchQuery] = useState('')
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('')
   const [loading, setLoading] = useState(true)
@@ -64,7 +66,7 @@ function ProductsPageContent() {
       )
     } else {
       // Если нет поискового запроса, показываем товары выбранной категории
-      if (selectedCategory !== 'Все') {
+      if (selectedCategory !== ALL_CATEGORIES) {
         filtered = filtered.filter(product => product.category?.name === selectedCategory)
       }
       // Если выбрано "Все", показываем все товары без фильтрации
@@ -89,7 +91,7 @@ function ProductsPageContent() {
     if (searchParam) {
       setSearchQuery(searchParam)
       setDebouncedSearchQuery(searchParam)
-      setSelectedCategory('Все') // Сбрасываем категорию при поиске
+      setSelectedCategory(ALL_CATEGORIES)
     }
   }, [searchParams])
 
@@ -124,7 +126,7 @@ function ProductsPageContent() {
     const grouped: Record<string, Product[]> = {}
     
     products.forEach(product => {
-      const categoryName = product.category?.name || 'Без категории'
+      const categoryName = product.category?.name || productsCopy.uncategorized
       if (!grouped[categoryName]) {
         grouped[categoryName] = []
       }
@@ -226,7 +228,7 @@ function ProductsPageContent() {
               }`} />
               <input
                 type="text"
-                placeholder="Поиск по названию, описанию или ингредиентам..."
+                placeholder={publicUiHy.search.productsPage}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full pl-12 pr-4 py-4 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-lg text-gray-900 placeholder-gray-500 bg-gray-50 transition-all duration-300 shadow-sm hover:shadow-md focus:bg-white"
@@ -246,7 +248,7 @@ function ProductsPageContent() {
               <div className="space-y-3">
                 {/* First row - Все, Пиде, Комбо - 3 большие кнопки */}
                 <div className="grid grid-cols-3 gap-3">
-                  {['Все', 'Пиде', 'Комбо'].map((category) => (
+                  {[ALL_CATEGORIES, 'Пиде', 'Комбо'].map((category) => (
                     <button
                       key={category}
                       onClick={() => setSelectedCategory(category)}
@@ -292,17 +294,17 @@ function ProductsPageContent() {
             <div className="hidden lg:flex flex-wrap gap-4">
               {/* Кнопка "Все" */}
               <button
-                onClick={() => setSelectedCategory('Все')}
+                onClick={() => setSelectedCategory(ALL_CATEGORIES)}
                 className={`px-6 py-3 rounded-2xl font-semibold transition-all duration-300 hover:scale-105 ${
-                  selectedCategory === 'Все'
+                  selectedCategory === ALL_CATEGORIES
                     ? 'bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-lg'
                     : 'bg-gray-100 text-gray-700 hover:bg-orange-100 hover:text-orange-600'
                 }`}
-                style={selectedCategory === 'Все' ? {
+                style={selectedCategory === ALL_CATEGORIES ? {
                   boxShadow: '0 8px 25px rgba(255, 107, 53, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1)',
                 } : {}}
               >
-                Все
+                {ALL_CATEGORIES}
               </button>
               
               {/* Динамические категории */}
@@ -327,7 +329,7 @@ function ProductsPageContent() {
         </div>
 
         {/* Products Display */}
-        {selectedCategory === 'Все' && !debouncedSearchQuery ? (
+        {selectedCategory === ALL_CATEGORIES && !debouncedSearchQuery ? (
           // Показываем продукты сгруппированными по категориям
           <div className="space-y-12">
             {groupedProducts.map(({ category, products: categoryProducts }) => (
@@ -380,30 +382,30 @@ function ProductsPageContent() {
             {debouncedSearchQuery ? (
               <>
                 <h3 className="text-2xl font-bold text-gray-900 mb-2">
-                  По запросу "{debouncedSearchQuery}" ничего не найдено
+                  {productsCopy.searchNoResultsTitle(debouncedSearchQuery)}
                 </h3>
                 <p className="text-gray-600 mb-6">
-                  Поиск выполнен по всему меню. Попробуйте изменить поисковый запрос или выбрать категорию
+                  {productsCopy.searchNoResultsHint}
                 </p>
                 <div className="flex flex-col sm:flex-row gap-3 justify-center">
                   <button
                     onClick={() => setSearchQuery('')}
                     className="bg-gray-500 text-white px-6 py-3 rounded-xl font-semibold hover:bg-gray-600 transition-colors"
                   >
-                    Очистить поиск
+                    {productsCopy.clearSearch}
                   </button>
                   <button
-                    onClick={() => setSelectedCategory('Все')}
+                    onClick={() => setSelectedCategory(ALL_CATEGORIES)}
                     className="bg-orange-500 text-white px-6 py-3 rounded-xl font-semibold hover:bg-orange-600 transition-colors"
                   >
-                    Показать все товары
+                    {productsCopy.showAllProducts}
                   </button>
                 </div>
               </>
             ) : (
               <>
-                <p className="text-gray-500 text-lg">Товары в категории "{selectedCategory}" не найдены</p>
-                <p className="text-gray-400">Попробуйте выбрать другую категорию</p>
+                <p className="text-gray-500 text-lg">{productsCopy.categoryEmpty(selectedCategory)}</p>
+                <p className="text-gray-400">{productsCopy.tryAnotherCategory}</p>
               </>
             )}
           </div>

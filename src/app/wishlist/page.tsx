@@ -9,6 +9,9 @@ import { useCart } from '@/hooks/useCart'
 import Footer from '@/components/Footer'
 import ProductCard from '@/components/ProductCard'
 import type { Product, ProductWithCategory } from '@/types'
+import { publicUiHy } from '@/lib/publicUiHy'
+
+const { wishlist: wishlistCopy, auth } = publicUiHy
 
 const CART_FEEDBACK_MS = 2000
 
@@ -100,15 +103,15 @@ export default function WishlistPage() {
           <div className="w-24 h-24 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-6">
             <Heart className="h-12 w-12 text-orange-500" />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-3">Избранное</h1>
+          <h1 className="text-2xl font-bold text-gray-900 mb-3">{wishlistCopy.pageTitle}</h1>
           <p className="text-gray-600 mb-8">
-            Войдите в аккаунт, чтобы сохранять блюда и видеть их здесь.
+            {wishlistCopy.loginPrompt}
           </p>
           <Link
             href="/login"
             className="inline-flex items-center justify-center bg-orange-500 text-white px-8 py-3 rounded-xl font-semibold hover:bg-orange-600 transition-colors"
           >
-            Войти
+            {auth.login}
           </Link>
         </div>
         <div className="hidden lg:block">
@@ -146,12 +149,12 @@ export default function WishlistPage() {
               className="flex items-center text-gray-600 hover:text-orange-500 transition-colors"
             >
               <ArrowLeft className="h-5 w-5 mr-2 shrink-0" />
-              <span className="font-medium">К меню</span>
+              <span className="font-medium">{wishlistCopy.backToMenu}</span>
             </Link>
           </div>
           <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 flex items-center gap-2">
             <Heart className="h-8 w-8 text-red-500 fill-red-500" />
-            Избранное
+            {wishlistCopy.pageTitle}
           </h1>
         </div>
 
@@ -161,13 +164,13 @@ export default function WishlistPage() {
               <Heart className="h-14 w-14 text-gray-300" />
             </div>
             <p className="text-lg text-gray-600 mb-8">
-              Здесь появятся блюда, которые вы отметите сердечком в меню.
+              {wishlistCopy.emptyHint}
             </p>
             <Link
               href="/products"
               className="inline-flex items-center bg-orange-500 text-white px-8 py-3 rounded-xl font-semibold hover:bg-orange-600 transition-colors"
             >
-              Перейти к меню
+              {wishlistCopy.goToMenu}
             </Link>
           </div>
         ) : (
@@ -204,14 +207,14 @@ export default function WishlistPage() {
                         {item.wishlist.name}
                       </p>
                       <p className="text-sm text-amber-700 mb-4">
-                        Товар недоступен в меню — удалите из избранного.
+                        {wishlistCopy.productUnavailable}
                       </p>
                       <button
                         type="button"
                         onClick={() => removeFromWishlist(item.wishlist.id)}
                         className="mt-auto w-full py-2 rounded-xl border border-red-200 text-red-600 font-medium hover:bg-red-50 transition-colors"
                       >
-                        Удалить из избранного
+                        {wishlistCopy.removeFromWishlist}
                       </button>
                     </div>
                   )

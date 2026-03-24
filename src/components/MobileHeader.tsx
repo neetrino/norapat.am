@@ -4,6 +4,9 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { Search } from 'lucide-react'
 import { useState } from 'react'
+import { publicUiHy } from '@/lib/publicUiHy'
+
+const { search } = publicUiHy
 
 export default function MobileHeader() {
   const [searchQuery, setSearchQuery] = useState('')
@@ -46,7 +49,7 @@ export default function MobileHeader() {
                   <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-500" />
                   <input
                     type="text"
-                    placeholder="Поиск по меню..."
+                    placeholder={search.menu}
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="w-full pl-12 pr-4 py-4 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-base text-gray-900 placeholder-gray-500 bg-gray-50 transition-all duration-300 shadow-sm hover:shadow-md focus:bg-white"

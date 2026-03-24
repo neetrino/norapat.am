@@ -26,6 +26,9 @@ import DeleteAccountModal from '@/components/DeleteAccountModal'
 import { useCart } from '@/hooks/useCart'
 import { useWishlist } from '@/hooks/useWishlist'
 import type { Product } from '@/types'
+import { publicUiHy } from '@/lib/publicUiHy'
+
+const { profilePage, orderStatus } = publicUiHy
 
 interface Order {
   id: string
@@ -179,17 +182,17 @@ export default function ProfilePage() {
   const getStatusInfo = (status: string) => {
     switch (status) {
       case 'PENDING':
-        return { text: 'Ожидает подтверждения', color: 'text-yellow-600', bg: 'bg-yellow-100' }
+        return { text: orderStatus.PENDING, color: 'text-yellow-600', bg: 'bg-yellow-100' }
       case 'CONFIRMED':
-        return { text: 'Подтвержден', color: 'text-blue-600', bg: 'bg-blue-100' }
+        return { text: orderStatus.CONFIRMED, color: 'text-blue-600', bg: 'bg-blue-100' }
       case 'PREPARING':
-        return { text: 'Готовится', color: 'text-orange-600', bg: 'bg-orange-100' }
+        return { text: orderStatus.PREPARING, color: 'text-orange-600', bg: 'bg-orange-100' }
       case 'READY':
-        return { text: 'Готов к выдаче', color: 'text-purple-600', bg: 'bg-purple-100' }
+        return { text: orderStatus.READY, color: 'text-purple-600', bg: 'bg-purple-100' }
       case 'DELIVERED':
-        return { text: 'Доставлен', color: 'text-green-600', bg: 'bg-green-100' }
+        return { text: orderStatus.DELIVERED, color: 'text-green-600', bg: 'bg-green-100' }
       case 'CANCELLED':
-        return { text: 'Отменен', color: 'text-red-600', bg: 'bg-red-100' }
+        return { text: orderStatus.CANCELLED, color: 'text-red-600', bg: 'bg-red-100' }
       default:
         return { text: status, color: 'text-gray-600', bg: 'bg-gray-100' }
     }
@@ -238,7 +241,7 @@ export default function ProfilePage() {
       <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-orange-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600">Загрузка...</p>
+          <p className="text-gray-600">{profilePage.loading}</p>
         </div>
       </div>
     )
@@ -263,9 +266,9 @@ export default function ProfilePage() {
               className="flex items-center text-gray-600 hover:text-orange-500 transition-colors"
             >
               <ArrowLeft className="h-5 w-5 mr-2" />
-              Назад
+              {profilePage.back}
             </Link>
-            <h1 className="text-xl font-bold text-gray-900">Профиль</h1>
+            <h1 className="text-xl font-bold text-gray-900">{profilePage.titleMobile}</h1>
             <div className="w-10"></div> {/* Spacer for centering */}
           </div>
           
@@ -276,7 +279,7 @@ export default function ProfilePage() {
                 <User className="h-8 w-8 text-white" />
               </div>
               <div className="flex-1">
-                <h2 className="text-lg font-bold text-gray-900">{userProfile.name || 'Пользователь'}</h2>
+                <h2 className="text-lg font-bold text-gray-900">{userProfile.name || profilePage.userDefault}</h2>
                 <p className="text-sm text-gray-600">{userProfile.email}</p>
               </div>
               <button 
@@ -290,11 +293,11 @@ export default function ProfilePage() {
             <div className="grid grid-cols-2 gap-4 text-sm mb-4">
               <div className="flex items-center space-x-2">
                 <Phone className="h-4 w-4 text-gray-400" />
-                <span className="text-gray-600">{userProfile.phone || 'Не указан'}</span>
+                <span className="text-gray-600">{userProfile.phone || profilePage.notSet}</span>
               </div>
               <div className="flex items-center space-x-2">
                 <MapPin className="h-4 w-4 text-gray-400" />
-                <span className="text-gray-600 truncate">{userProfile.address || 'Не указан'}</span>
+                <span className="text-gray-600 truncate">{userProfile.address || profilePage.notSet}</span>
               </div>
             </div>
             
@@ -304,7 +307,7 @@ export default function ProfilePage() {
               className="w-full text-gray-600 text-sm py-2 rounded-lg font-normal hover:text-orange-500 hover:bg-orange-50 transition-all duration-200 flex items-center justify-center space-x-1 border border-gray-200 hover:border-orange-200 mb-2"
             >
               <LogOut className="h-3 w-3" />
-              <span>Выйти из аккаунта</span>
+              <span>{profilePage.logout}</span>
             </button>
             
             {/* Mobile Delete Account Button */}
@@ -313,7 +316,7 @@ export default function ProfilePage() {
               className="w-full text-gray-400 text-sm py-2 rounded-lg font-normal hover:text-red-500 hover:bg-red-50 transition-all duration-200 flex items-center justify-center space-x-1 border border-gray-200 hover:border-red-200"
             >
               <Trash2 className="h-3 w-3" />
-              <span>Удалить аккаунт</span>
+              <span>{profilePage.deleteAccount}</span>
             </button>
           </div>
         </div>
@@ -325,31 +328,31 @@ export default function ProfilePage() {
             className="flex items-center text-gray-600 hover:text-orange-500 transition-colors"
           >
             <ArrowLeft className="h-5 w-5 mr-2" />
-            На главную
+            {profilePage.backHome}
           </Link>
           <div className="h-8 w-px bg-gray-300"></div>
-          <h1 className="text-3xl font-bold text-gray-900">Мой профиль</h1>
+          <h1 className="text-3xl font-bold text-gray-900">{profilePage.titleDesktop}</h1>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-8">
           {/* Profile Info - Desktop Only */}
           <div className="hidden lg:block lg:col-span-1">
             <div className="bg-white rounded-2xl shadow-lg p-6">
-              <h2 className="text-xl font-semibold text-gray-900 mb-6">Информация о профиле</h2>
+              <h2 className="text-xl font-semibold text-gray-900 mb-6">{profilePage.profileInfo}</h2>
               
               <div className="space-y-4">
                 <div className="flex items-center space-x-3">
                   <User className="h-5 w-5 text-gray-400" />
                   <div>
-                    <p className="text-sm text-gray-600">Имя</p>
-                    <p className="font-medium text-gray-900">{userProfile.name || 'Не указано'}</p>
+                    <p className="text-sm text-gray-600">{profilePage.name}</p>
+                    <p className="font-medium text-gray-900">{userProfile.name || profilePage.notSet}</p>
                   </div>
                 </div>
                 
                 <div className="flex items-center space-x-3">
                   <Mail className="h-5 w-5 text-gray-400" />
                   <div>
-                    <p className="text-sm text-gray-600">Email</p>
+                    <p className="text-sm text-gray-600">{profilePage.email}</p>
                     <p className="font-medium text-gray-900">{userProfile.email}</p>
                   </div>
                 </div>
@@ -357,16 +360,16 @@ export default function ProfilePage() {
                 <div className="flex items-center space-x-3">
                   <Phone className="h-5 w-5 text-gray-400" />
                   <div>
-                    <p className="text-sm text-gray-600">Телефон</p>
-                    <p className="font-medium text-gray-900">{userProfile.phone || 'Не указан'}</p>
+                    <p className="text-sm text-gray-600">{profilePage.phone}</p>
+                    <p className="font-medium text-gray-900">{userProfile.phone || profilePage.notSet}</p>
                   </div>
                 </div>
                 
                 <div className="flex items-center space-x-3">
                   <MapPin className="h-5 w-5 text-gray-400" />
                   <div>
-                    <p className="text-sm text-gray-600">Адрес</p>
-                    <p className="font-medium text-gray-900">{userProfile.address || 'Не указан'}</p>
+                    <p className="text-sm text-gray-600">{profilePage.address}</p>
+                    <p className="font-medium text-gray-900">{userProfile.address || profilePage.notSet}</p>
                   </div>
                 </div>
               </div>
@@ -377,7 +380,7 @@ export default function ProfilePage() {
                   className="w-full bg-orange-500 text-white py-3 rounded-xl font-semibold hover:bg-orange-600 transition-colors flex items-center justify-center"
                 >
                   <Edit className="h-5 w-5 mr-2" />
-                  Редактировать профиль
+                  {profilePage.editProfile}
                 </button>
                 
                 <button
@@ -385,7 +388,7 @@ export default function ProfilePage() {
                   className="w-full text-gray-600 text-sm py-2 rounded-lg font-normal hover:text-orange-500 hover:bg-orange-50 transition-all duration-200 flex items-center justify-center space-x-1 border border-gray-200 hover:border-orange-200 mb-2"
                 >
                   <LogOut className="h-3 w-3" />
-                  <span>Выйти из аккаунта</span>
+                  <span>{profilePage.logout}</span>
                 </button>
                 
                 <button
@@ -393,7 +396,7 @@ export default function ProfilePage() {
                   className="w-full text-gray-400 text-sm py-2 rounded-lg font-normal hover:text-red-500 hover:bg-red-50 transition-all duration-200 flex items-center justify-center space-x-1 border border-gray-200 hover:border-red-200"
                 >
                   <Trash2 className="h-3 w-3" />
-                  <span>Удалить аккаунт</span>
+                  <span>{profilePage.deleteAccount}</span>
                 </button>
               </div>
             </div>
@@ -405,13 +408,13 @@ export default function ProfilePage() {
               <h2 className="text-lg md:text-xl font-semibold text-gray-900 mb-4 md:mb-6 flex flex-wrap items-center justify-between gap-2">
                 <span className="flex items-center gap-2">
                   <Heart className="h-5 w-5 text-orange-500" />
-                  Նախընտրած ապրանքներ
+                  {profilePage.wishlistHeading}
                 </span>
                 <Link
                   href="/wishlist"
                   className="text-sm font-medium text-orange-600 hover:text-orange-700 hover:underline"
                 >
-                  Открыть страницу избранного
+                  {profilePage.openWishlist}
                 </Link>
               </h2>
               {wishlistLoading ? (
@@ -419,7 +422,7 @@ export default function ProfilePage() {
                   <div className="w-8 h-8 border-2 border-orange-500 border-t-transparent rounded-full animate-spin" />
                 </div>
               ) : wishlistProducts.length === 0 ? (
-                <p className="text-gray-500 text-center py-6">Դեռ ապրանքներ ավելացված չեն</p>
+                <p className="text-gray-500 text-center py-6">{profilePage.wishlistEmpty}</p>
               ) : (
                 <ul className="space-y-3">
                   {wishlistProducts.map((p) => (
@@ -441,7 +444,7 @@ export default function ProfilePage() {
                         type="button"
                         onClick={() => removeFromWishlist(p.id)}
                         className="p-2 text-gray-400 hover:text-red-500 rounded-lg hover:bg-red-50"
-                        aria-label="Remove from wishlist"
+                        aria-label={profilePage.removeWishlistAria}
                       >
                         <Trash2 className="h-5 w-5" />
                       </button>
@@ -452,17 +455,17 @@ export default function ProfilePage() {
             </div>
 
             <div className="bg-white rounded-2xl shadow-lg p-4 md:p-6">
-              <h2 className="text-lg md:text-xl font-semibold text-gray-900 mb-4 md:mb-6">История заказов</h2>
+              <h2 className="text-lg md:text-xl font-semibold text-gray-900 mb-4 md:mb-6">{profilePage.ordersHistory}</h2>
               
               {orders.length === 0 ? (
                 <div className="text-center py-12 text-gray-500">
                   <Package className="h-12 w-12 mx-auto mb-4 text-gray-300" />
-                  <p>У вас пока нет заказов</p>
+                  <p>{profilePage.noOrders}</p>
                   <Link 
                     href="/products"
                     className="inline-block mt-4 bg-orange-500 text-white px-6 py-3 rounded-lg hover:bg-orange-600 transition-colors"
                   >
-                    Сделать заказ
+                    {profilePage.placeOrder}
                   </Link>
                 </div>
               ) : (
@@ -473,9 +476,9 @@ export default function ProfilePage() {
                       <div key={order.id} className="border border-gray-200 rounded-xl p-3 md:p-4">
                         <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-3 md:mb-4">
                           <div className="mb-2 md:mb-0">
-                            <h3 className="font-semibold text-gray-900 text-sm md:text-base">Заказ #{order.id.slice(-8)}</h3>
+                            <h3 className="font-semibold text-gray-900 text-sm md:text-base">{profilePage.orderLabel} #{order.id.slice(-8)}</h3>
                             <p className="text-xs md:text-sm text-gray-600">
-                              {new Date(order.createdAt).toLocaleDateString('ru-RU', {
+                              {new Date(order.createdAt).toLocaleDateString('hy-AM', {
                                 year: 'numeric',
                                 month: 'short',
                                 day: 'numeric',
@@ -509,7 +512,7 @@ export default function ProfilePage() {
                               </div>
                               <div className="flex-1 min-w-0">
                                 <p className="font-medium text-gray-900 text-sm md:text-base truncate">{item.product?.name ?? '—'}</p>
-                                <p className="text-xs md:text-sm text-gray-600">{item.quantity} шт. × {item.price} ֏</p>
+                                <p className="text-xs md:text-sm text-gray-600">{item.quantity} {profilePage.qtyTimes} {item.price} ֏</p>
                               </div>
                               <p className="font-semibold text-gray-900 text-sm md:text-base flex-shrink-0">{item.quantity * item.price} ֏</p>
                             </div>
@@ -523,7 +526,7 @@ export default function ProfilePage() {
                             className="flex items-center justify-center gap-2 w-full md:w-auto text-sm font-medium text-orange-600 hover:text-orange-700 hover:bg-orange-50 py-2 px-4 rounded-lg transition-colors disabled:opacity-50"
                           >
                             <RotateCcw className="h-4 w-4" />
-                            {reorderingId === order.id ? 'Загрузка...' : 'Повторить заказ'}
+                            {reorderingId === order.id ? profilePage.loading : profilePage.reorder}
                           </button>
                         </div>
                       </div>

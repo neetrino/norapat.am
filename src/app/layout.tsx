@@ -13,9 +13,10 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Pideh Armenia - Армянские пиде новый вкус",
-  description: "Традиционная форма с современными начинками. 15 уникальных вкуса для настоящих гурманов! Доставка по Еревану.",
-  keywords: "пиде, армянские пиде, мини-пиццы, доставка еды, Ереван, Армения",
+  title: "Pideh Armenia — հայկական պիդե, նոր համ",
+  description:
+    "Ավանդական ձև՝ ժամանակակից լցոնումներով։ 15 եզակի համ իրական գուրմանների համար։ Առաքում Երևանում։",
+  keywords: "պիդե, հայկական պիդե, մինի պիցցա, ուտելիքի առաքում, Երևան, Հայաստան",
   icons: {
     icon: '/logo.png',
     shortcut: '/logo.png',
@@ -29,7 +30,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ru" data-scroll-behavior="smooth" suppressHydrationWarning>
+    <html lang="hy" data-scroll-behavior="smooth" suppressHydrationWarning>
       <body className={`${inter.variable} font-sans antialiased overflow-x-hidden`}>
         <ServiceWorkerProvider />
         <ClientProviders>

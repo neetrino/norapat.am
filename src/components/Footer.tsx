@@ -1,6 +1,9 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { Phone, Mail, MapPin, Clock, Facebook, Instagram } from 'lucide-react'
+import { publicUiHy } from '@/lib/publicUiHy'
+
+const { nav, footer: footerCopy } = publicUiHy
 
 export default function Footer() {
   return (
@@ -20,8 +23,7 @@ export default function Footer() {
               />
             </div>
             <p className="text-gray-600 mb-4">
-              Армянские пиде - новый вкус. Свежие, вкусные, быстрые!
-              Традиционная форма с современными начинками. 15 уникальных вкусов для настоящих гурманов.
+              {footerCopy.tagline}
             </p>
             <div className="flex flex-wrap items-center gap-3">
               <a href="tel:+37495044888" className="text-gray-600 hover:text-orange-500 transition-colors" aria-label="Հեռախոս">
@@ -41,26 +43,26 @@ export default function Footer() {
 
           {/* Quick Links */}
           <div>
-            <h4 className="text-lg font-semibold mb-4 text-gray-900">Навигация</h4>
+            <h4 className="text-lg font-semibold mb-4 text-gray-900">{footerCopy.navHeading}</h4>
             <ul className="space-y-2">
               <li>
                 <Link href="/" className="text-gray-600 hover:text-orange-500 transition-colors">
-                  Главная
+                  {nav.home}
                 </Link>
               </li>
               <li>
                 <Link href="/products" className="text-gray-600 hover:text-orange-500 transition-colors">
-                  Меню
+                  {nav.menu}
                 </Link>
               </li>
               <li>
                 <Link href="/about" className="text-gray-600 hover:text-orange-500 transition-colors">
-                  О нас
+                  {nav.about}
                 </Link>
               </li>
               <li>
                 <Link href="/contact" className="text-gray-600 hover:text-orange-500 transition-colors">
-                  Контакты
+                  {nav.contact}
                 </Link>
               </li>
               <li>
@@ -78,7 +80,7 @@ export default function Footer() {
 
           {/* Contact Info */}
           <div>
-            <h4 className="text-lg font-semibold mb-4 text-gray-900">Контакты</h4>
+            <h4 className="text-lg font-semibold mb-4 text-gray-900">{footerCopy.contactsHeading}</h4>
             <div className="space-y-3">
               <div className="flex items-center space-x-2">
                 <Phone className="h-4 w-4 text-orange-500" />
@@ -96,31 +98,31 @@ export default function Footer() {
                 <div className="flex items-center space-x-2">
                   <MapPin className="h-4 w-4 text-orange-500" />
                   <a 
-                    href="https://maps.google.com/?q=ул.+Зоравар+Андраник+151/2,+Ереван,+Армения"
+                    href="https://maps.google.com/?q=Zoravar+Andranik+151%2F2,+Yerevan,+Armenia"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-gray-600 hover:text-orange-500 transition-colors"
                   >
-                    ул. Зоравар Андраник 151/2
+                    Զորավար Անդրանիկ 151/2
                   </a>
                 </div>
                 <div className="flex items-center space-x-2">
                   <MapPin className="h-4 w-4 text-orange-500" />
                   <a 
-                    href="https://maps.google.com/?q=ул.+Езник+Кохбаци+83,+Ереван,+Армения"
+                    href="https://maps.google.com/?q=Eznik+Koghbatsi+83,+Yerevan,+Armenia"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-gray-600 hover:text-orange-500 transition-colors"
                   >
-                    ул. Езник Кохбаци 83
+                    Եզնիկ Կողբացի 83
                   </a>
                 </div>
               </div>
               <div className="flex items-center space-x-2">
                 <Clock className="h-4 w-4 text-orange-500" />
                 <div className="text-gray-600">
-                  <div>Пн-Вс: 10:00 - 22:00</div>
-                  <div className="text-sm">Доставка: 11:00 - 21:00</div>
+                  <div>Երկ–կիր: 10:00 – 22:00</div>
+                  <div className="text-sm">Առաքում՝ 11:00 – 21:00</div>
                 </div>
               </div>
             </div>
@@ -132,10 +134,10 @@ export default function Footer() {
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <div className="flex flex-wrap justify-center md:justify-start gap-x-6 gap-y-2 text-sm">
               <Link href="/privacy" className="text-gray-500 hover:text-orange-500 transition-colors">
-                Политика конфиденциальности
+                {footerCopy.privacy}
               </Link>
               <Link href="/terms" className="text-gray-500 hover:text-orange-500 transition-colors">
-                Условия использования
+                {footerCopy.terms}
               </Link>
               <Link href="/refund" className="text-gray-500 hover:text-orange-500 transition-colors">
                 Վերադարձ
@@ -145,7 +147,7 @@ export default function Footer() {
               </Link>
             </div>
             <p className="text-sm font-light tracking-wide text-gray-500">
-              Copyright © 2025. All Rights Reserved. Created by{' '}
+              {footerCopy.copyright} {footerCopy.createdBy}{' '}
               <a 
                 href="https://neetrino.com" 
                 target="_blank" 
