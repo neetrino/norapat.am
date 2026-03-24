@@ -29,6 +29,7 @@ export default async function ProductPage({
         select: {
           id: true,
           name: true,
+          shortDescription: true,
           description: true,
           price: true,
           categoryId: true,
@@ -58,6 +59,7 @@ export default async function ProductPage({
         select: {
           id: true,
           name: true,
+          shortDescription: true,
           description: true,
           price: true,
           categoryId: true,
@@ -239,7 +241,23 @@ export default async function ProductPage({
               <h1 className="text-4xl font-bold text-gray-900 mb-4">
                 <ProductDisplayName name={product.name} />
               </h1>
-              <p className="text-xl text-gray-600 mb-6 leading-relaxed">{product.description}</p>
+              {product.shortDescription ? (
+                <>
+                  <p className="text-xl text-gray-600 mb-4 leading-relaxed">
+                    {product.shortDescription}
+                  </p>
+                  <div className="mb-6">
+                    <h3 className="text-sm font-semibold text-gray-500 mb-2">
+                      {t.fullDescription}
+                    </h3>
+                    <p className="text-gray-600 leading-relaxed">{product.description}</p>
+                  </div>
+                </>
+              ) : (
+                <p className="text-xl text-gray-600 mb-6 leading-relaxed">
+                  {product.description}
+                </p>
+              )}
               
               {/* Rating */}
               <div className="flex items-center space-x-2 mb-6">

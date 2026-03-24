@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
 
     // Получаем данные из запроса
     const body = await request.json()
-    const { name, description, price, originalPrice, categoryId, image, images, ingredients, isAvailable = true, status = 'REGULAR' } = body
+    const { name, shortDescription, description, price, originalPrice, categoryId, image, images, ingredients, isAvailable = true, status = 'REGULAR' } = body
 
     // Валидация обязательных полей
     if (!name || !description || !price || !categoryId) {
@@ -69,6 +69,7 @@ export async function POST(request: NextRequest) {
     const product = await prisma.product.create({
       data: {
         name,
+        shortDescription: shortDescription?.trim() || null,
         description,
         price,
         originalPrice: originalPrice != null ? Number(originalPrice) : null,

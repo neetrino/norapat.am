@@ -33,6 +33,7 @@ export default function EditProductPage({ params }: EditProductPageProps) {
   const [productId, setProductId] = useState<string | null>(null)
   const [formData, setFormData] = useState({
     name: '',
+    shortDescription: '',
     description: '',
     price: '',
     originalPrice: '',
@@ -100,6 +101,7 @@ export default function EditProductPage({ params }: EditProductPageProps) {
           : []
         setFormData({
           name: productData.name || '',
+          shortDescription: productData.shortDescription || '',
           description: productData.description || '',
           price: productData.price?.toString() || '',
           originalPrice: productData.originalPrice != null ? productData.originalPrice.toString() : '',
@@ -290,15 +292,30 @@ export default function EditProductPage({ params }: EditProductPageProps) {
                   />
                 </div>
 
-                {/* Описание */}
+                {/* Կարճ նկարագրություն */}
                 <div className="md:col-span-2">
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Описание *
+                    Կարճ նկարագրություն
+                  </label>
+                  <Input
+                    value={formData.shortDescription}
+                    onChange={(e) => handleInputChange('shortDescription', e.target.value)}
+                    placeholder="Կարճ ամփոփ նկարագրություն (նախաբան, քարտերում)"
+                  />
+                  <p className="text-sm text-gray-500 mt-1">
+                    Կարճ ամփոփ, 1–2 նախադասություն
+                  </p>
+                </div>
+
+                {/* Լիարժեք նկարագրություն */}
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Լիարժեք նկարագրություն *
                   </label>
                   <textarea
                     value={formData.description}
                     onChange={(e) => handleInputChange('description', e.target.value)}
-                    placeholder="Введите описание товара"
+                    placeholder="Մանրամասն նկարագրություն ապրանքի մասին"
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent text-gray-900 bg-white"
                     rows={3}
                     required

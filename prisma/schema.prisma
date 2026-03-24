@@ -37,9 +37,10 @@ model Category {
 }
 
 model Product {
-  id            String         @id @default(cuid())
-  name          String
-  description   String
+  id              String         @id @default(cuid())
+  name            String
+  shortDescription String?      // Կարճ նկարագրություն (preview)
+  description     String        // Լիարժեք նկարագրություն
   price         Float
   originalPrice Float?         // Հին գին (եթե զեղչ կա)
   image         String

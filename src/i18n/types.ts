@@ -321,6 +321,8 @@ export interface AppMessages {
     support: string
     similarProducts: string
     all: string
+    shortDescription: string
+    fullDescription: string
   }
   productQuantity: {
     quantity: string

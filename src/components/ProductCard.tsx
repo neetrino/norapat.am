@@ -234,10 +234,10 @@ const ProductCard = memo(({ product, onAddToCart, variant = 'default', addedToCa
           </p>
         ) : null}
         
-        {/* Description for non-compact */}
+        {/* Description for non-compact (shortDescription preferred) */}
         {!isCompact && (
           <p className="text-gray-600 text-sm mb-4 line-clamp-2 opacity-80 group-hover:opacity-100 transition-opacity duration-300">
-            {product.description}
+            {product.shortDescription ?? product.description}
           </p>
         )}
         

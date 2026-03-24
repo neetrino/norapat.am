@@ -338,6 +338,8 @@ export const hy: AppMessages = {
     support: 'Աջակցություն',
     similarProducts: 'Կապված ապրանքներ',
     all: 'Բոլորը',
+    shortDescription: 'Կարճ նկարագրություն',
+    fullDescription: 'Լիարժեք նկարագրություն',
   },
   productQuantity: {
     quantity: 'Քանակ.',
