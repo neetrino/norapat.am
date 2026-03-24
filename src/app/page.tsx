@@ -15,6 +15,7 @@ import { CategoriesSection } from "@/components/home/CategoriesSection";
 import { BestSellersSection } from "@/components/home/BestSellersSection";
 import { PromoSection } from "@/components/home/PromoSection";
 import { ActionsSection } from "@/components/home/ActionsSection";
+import { MapEmbed } from "@/components/MapEmbed";
 
 const ADDED_TO_CART_FEEDBACK_MS = 2000
 
@@ -518,6 +519,16 @@ export default function Home() {
               {h.ctaLearnMore}
             </Link>
           </div>
+        </div>
+      </section>
+
+      {/* Քարտեզ (embed) - Map section */}
+      <section className="py-16 lg:py-20 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className="text-3xl font-bold text-center text-gray-900 mb-8">
+            {t.contactPage.mapTitle}
+          </h2>
+          <MapEmbed />
         </div>
       </section>
 
