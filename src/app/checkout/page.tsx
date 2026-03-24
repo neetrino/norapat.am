@@ -150,15 +150,10 @@ export default function CheckoutPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
-    if (!validateForm()) {
-      return
-    }
 
-    // Валидируем корзину перед отправкой
+    if (!validateForm()) return
+
     await validateCart()
-    
-    // Проверяем, что корзина не пуста после валидации
     if (items.length === 0) {
       alert(cp.alertEmptyCart)
       router.push('/products')
@@ -167,42 +162,66 @@ export default function CheckoutPage() {
 
     setIsSubmitting(true)
 
+    const orderPayload = {
+      ...formData,
+      email: session?.user?.email,
+      items: items.map(item => ({
+        productId: item.product.id,
+        quantity: item.quantity,
+        price: item.product.price
+      })),
+      total: finalTotal,
+      promoCode: promoDiscount > 0 ? promoCode.trim().toUpperCase() : undefined
+    }
+
     try {
-      const orderData = {
-        ...formData,
-        items: items.map(item => ({
-          productId: item.product.id,
-          quantity: item.quantity,
-          price: item.product.price
-        })),
-        total: finalTotal,
-        promoCode: promoDiscount > 0 ? promoCode.trim().toUpperCase() : undefined
+      if (formData.paymentMethod === 'idram') {
+        const response = await fetch('/api/payment/idram/init', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(orderPayload)
+        })
+        const data = await response.json()
+
+        if (!response.ok) {
+          throw new Error(data.error || 'Idram init failed')
+        }
+
+        clearCart()
+
+        const form = document.createElement('form')
+        form.method = 'POST'
+        form.action = data.paymentUrl
+        form.style.display = 'none'
+        Object.entries(data.paymentParams).forEach(([k, v]) => {
+          if (v) {
+            const input = document.createElement('input')
+            input.type = 'hidden'
+            input.name = k
+            input.value = String(v)
+            form.appendChild(input)
+          }
+        })
+        document.body.appendChild(form)
+        form.submit()
+        return
       }
 
       const response = await fetch('/api/orders', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(orderData),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(orderPayload)
       })
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}))
-        console.error('Order creation failed:', {
-          status: response.status,
-          statusText: response.statusText,
-          error: errorData
-        })
-        throw new Error(`Failed to create order: ${errorData.error || response.statusText}`)
+        throw new Error(errorData.error || response.statusText)
       }
-      
-      // Clear cart first
+
       clearCart()
-      // Force redirect to success page using window.location
       window.location.href = '/order-success'
     } catch (error) {
-      console.error('Error submitting order:', error)
+      console.error('Order submit error:', error)
       alert(cp.alertOrderError)
     } finally {
       setIsSubmitting(false)
@@ -416,6 +435,37 @@ export default function CheckoutPage() {
                     )}
                   </div>
                 </label>
+
+                <label className={`relative p-4 border-2 rounded-xl cursor-pointer transition-all duration-300 ${
+                  formData.paymentMethod === 'idram' 
+                    ? 'border-orange-500 bg-orange-50' 
+                    : 'border-gray-300'
+                }`}>
+                  <input
+                    type="radio"
+                    name="paymentMethod"
+                    value="idram"
+                    checked={formData.paymentMethod === 'idram'}
+                    onChange={handleInputChange}
+                    className="sr-only"
+                  />
+                  <div className="flex items-center space-x-3">
+                    <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
+                      <span className="text-lg font-bold text-orange-600">ID</span>
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="text-base font-semibold text-gray-900">{cp.idram}</h3>
+                      <p className="text-sm text-gray-600">{cp.idramDesc}</p>
+                    </div>
+                    {formData.paymentMethod === 'idram' && (
+                      <div className="w-6 h-6 bg-orange-500 rounded-full flex items-center justify-center">
+                        <svg className="h-4 w-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                        </svg>
+                      </div>
+                    )}
+                  </div>
+                </label>
               </div>
             </div>
 
@@ -613,7 +663,7 @@ export default function CheckoutPage() {
                       <CreditCard className="inline h-4 w-4 mr-1" />
                       {cp.paymentMethod} *
                     </label>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       <label className={`relative p-6 border-2 rounded-xl cursor-pointer transition-all duration-300 hover:shadow-lg ${
                         formData.paymentMethod === 'cash' 
                           ? 'border-orange-500 bg-orange-50 shadow-md' 
@@ -667,6 +717,37 @@ export default function CheckoutPage() {
                           <h3 className="text-lg font-semibold text-gray-900 mb-2">{cp.card}</h3>
                           <p className="text-sm text-gray-600">{cp.cardDescFull}</p>
                           {formData.paymentMethod === 'card' && (
+                            <div className="absolute top-4 right-4">
+                              <div className="w-6 h-6 bg-orange-500 rounded-full flex items-center justify-center">
+                                <svg className="h-4 w-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                </svg>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </label>
+
+                      <label className={`relative p-6 border-2 rounded-xl cursor-pointer transition-all duration-300 hover:shadow-lg ${
+                        formData.paymentMethod === 'idram' 
+                          ? 'border-orange-500 bg-orange-50 shadow-md' 
+                          : 'border-gray-300 hover:border-orange-300'
+                      }`}>
+                        <input
+                          type="radio"
+                          name="paymentMethod"
+                          value="idram"
+                          checked={formData.paymentMethod === 'idram'}
+                          onChange={handleInputChange}
+                          className="sr-only"
+                        />
+                        <div className="text-center">
+                          <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <span className="text-2xl font-bold text-orange-600">ID</span>
+                          </div>
+                          <h3 className="text-lg font-semibold text-gray-900 mb-2">{cp.idram}</h3>
+                          <p className="text-sm text-gray-600">{cp.idramDescFull}</p>
+                          {formData.paymentMethod === 'idram' && (
                             <div className="absolute top-4 right-4">
                               <div className="w-6 h-6 bg-orange-500 rounded-full flex items-center justify-center">
                                 <svg className="h-4 w-4 text-white" fill="currentColor" viewBox="0 0 20 20">
