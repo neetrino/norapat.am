@@ -134,8 +134,8 @@ export default function Footer() {
 
         {/* Bottom */}
         <div className="border-t border-gray-200 mt-8 pt-8">
-          <div className="flex justify-center md:justify-end mb-6">
-            <LanguageSwitcher />
+          <div className="relative flex justify-center md:justify-end mb-6">
+            <LanguageSwitcher placement="top" />
           </div>
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <div className="flex flex-wrap justify-center md:justify-start gap-x-6 gap-y-2 text-sm">

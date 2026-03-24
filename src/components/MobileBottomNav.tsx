@@ -122,10 +122,13 @@ export default function MobileBottomNav() {
           </div>
         </div>
 
-        {/* Bottom Info */}
-        <div className="p-6 bg-white border-t border-gray-200">
-          <div className="flex justify-center mb-4">
-            <LanguageSwitcher />
+        {/* Bottom Info — stopPropagation՝ որպեսզի լեզվի ընտրիչի սեղմումը չփակի մենյուի overlay-ը */}
+        <div
+          className="p-6 bg-white border-t border-gray-200"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="relative z-[10020] flex justify-center mb-4">
+            <LanguageSwitcher placement="top" />
           </div>
           {/* Legal Links */}
           <div className="flex justify-center space-x-4 mb-4">

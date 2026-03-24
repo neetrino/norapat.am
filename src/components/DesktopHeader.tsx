@@ -100,7 +100,7 @@ export default function DesktopHeader() {
             </div>
           </div>
 
-          <LanguageSwitcher className="hidden lg:flex" />
+          <LanguageSwitcher className="hidden lg:flex" placement="bottom" />
 
           {/* Right side */}
           <div className="flex items-center space-x-4">

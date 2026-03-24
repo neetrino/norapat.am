@@ -18,7 +18,7 @@ export default function MobileHeader() {
       <div className="px-4 py-1.5">
         <div className="flex items-center gap-2">
           <div className="flex-1 flex justify-start min-w-0 z-[101]">
-            <LanguageSwitcher variant="compact" />
+            <LanguageSwitcher variant="compact" placement="bottom" />
           </div>
           <div className="flex-shrink-0">
             <Link href="/" className="hover:opacity-80 transition-all duration-300 hover:scale-105 block">
