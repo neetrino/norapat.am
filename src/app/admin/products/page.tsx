@@ -152,7 +152,7 @@ export default function AdminProducts() {
               className="flex items-center text-gray-600 hover:text-orange-500 transition-colors"
             >
               <ArrowLeft className="h-5 w-5 mr-2" />
-              Назад к админке
+              Վերադարձ
             </Link>
             <div className="h-8 w-px bg-gray-300"></div>
             <h1 className="text-3xl font-bold text-gray-900">Управление товарами</h1>
@@ -163,7 +163,7 @@ export default function AdminProducts() {
             className="flex items-center bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition-colors"
           >
             <Plus className="h-5 w-5 mr-2" />
-            Добавить товар
+            Ավելացնել ապրանք
           </Link>
         </div>
 

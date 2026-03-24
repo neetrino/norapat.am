@@ -280,10 +280,10 @@ export default function AdminOrdersPage() {
               className="flex items-center text-gray-600 hover:text-orange-500 transition-colors"
             >
               <ArrowLeft className="h-5 w-5 mr-2" />
-              Назад к админке
+              Վերադարձ
             </Link>
             <div className="h-8 w-px bg-gray-300"></div>
-            <h1 className="text-3xl font-bold text-gray-900">Управление заказами</h1>
+            <h1 className="text-3xl font-bold text-gray-900">Պատվերների կառավարում</h1>
           </div>
           
           <div className="flex items-center space-x-3">
@@ -297,7 +297,7 @@ export default function AdminOrdersPage() {
             </Button>
             <Button className="flex items-center gap-2 bg-orange-500 hover:bg-orange-600">
               <Download className="h-4 w-4" />
-              Экспорт
+              Export
             </Button>
           </div>
         </div>

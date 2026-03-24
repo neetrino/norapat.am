@@ -184,7 +184,7 @@ export default function CategoriesPage() {
               className="flex items-center px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-xl transition-colors"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
-              Назад к админке
+              Վերադարձ
             </Link>
           </div>
         </div>

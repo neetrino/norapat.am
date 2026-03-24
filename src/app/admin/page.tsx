@@ -106,8 +106,8 @@ export default function AdminDashboard() {
     <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Админ-панель</h1>
-          <p className="text-gray-600">Управление товарами, заказами и пользователями</p>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Կառավարման վահանակ</h1>
+          <p className="text-gray-600">Ապրանքների, պատվերների և օգտատերերի կառավարում</p>
         </div>
 
         {/* Stats Cards */}
@@ -115,7 +115,7 @@ export default function AdminDashboard() {
           <div className="bg-white rounded-2xl shadow-lg p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Товары</p>
+                <p className="text-sm font-medium text-gray-600">Ապրանքներ</p>
                 <p className="text-3xl font-bold text-gray-900">{stats.totalProducts}</p>
               </div>
               <div className="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center">

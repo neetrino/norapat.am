@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
     // Валидация пароля
     if (password.length < 6) {
       return NextResponse.json(
-        { error: 'Пароль должен содержать минимум 6 символов' },
+        { error: 'Գաղտնաբառը պետք է պարունակի առնվազն 6 նիշ' },
         { status: 400 }
       )
     }

@@ -43,7 +43,7 @@ export default function RegisterPage() {
     }
 
     if (formData.password.length < 6) {
-      setError('Пароль должен содержать минимум 6 символов')
+      setError('Գաղտնաբառը պետք է պարունակի առնվազն 6 նիշ')
       setIsLoading(false)
       return
     }
