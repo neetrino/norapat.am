@@ -1,30 +1,60 @@
-# OS
-.DS_Store
-Thumbs.db
+# ─── Dependencies ───────────────────────────────────────────────────────────
+node_modules/
+.pnpm-store/
 
-# Env and secrets
+# ─── Environment & Secrets ──────────────────────────────────────────────────
 .env
 .env.*
 !.env.example
 
-# Dependencies (if scripts use Node/npm)
-node_modules/
-
-# Build output
+# ─── Build & Output ─────────────────────────────────────────────────────────
 .next/
 dist/
 build/
-coverage/
+out/
+*.tsbuildinfo
 
-# Logs and temp
+# ─── Testing & Coverage ──────────────────────────────────────────────────────
+coverage/
+.nyc_output/
+*.lcov
+.puppeteer/
+playwright-report/
+test-results/
+
+# ─── Logs & Temporary Files ──────────────────────────────────────────────────
 *.log
 npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 tmp/
 temp/
 .cache/
 
-# IDE (optional, uncomment if needed)
-# .idea/
-# .vscode/
-# *.swp
-# *.swo
+# ─── OS ─────────────────────────────────────────────────────────────────────
+.DS_Store
+.DS_Store?
+._*
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# ─── IDE ─────────────────────────────────────────────────────────────────────
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# ─── Vercel ──────────────────────────────────────────────────────────────────
+.vercel
+
+# ─── Prisma (generated client) ───────────────────────────────────────────────
+# prisma/migrations/ — НЕ игнорируем, они в репо
+# node_modules/.prisma/ — внутри node_modules
+
+# ─── Misc ────────────────────────────────────────────────────────────────────
+*.pem
+.ssl/
+*.local
