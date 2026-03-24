@@ -246,6 +246,14 @@ export const hy: AppMessages = {
     allCategories: 'Բոլորը',
     uncategorized: 'Առանց կատեգորիայի',
     categoryLabel: 'Կատեգորիա',
+    sortLabel: 'Տեսակավորում',
+    sortNewest: 'Նորույթով',
+    sortPriceAsc: 'Գնի աճ',
+    sortPriceDesc: 'Գնի նվազում',
+    sortPopular: 'Լավագույն վաճառք',
+    priceRange: 'Գնի սահման',
+    priceFrom: 'Սկսած',
+    priceTo: 'Մինչև',
     searchNoResultsTitle: (query: string) =>
       `«${query}» հարցման համար արդյունք չի գտնվել`,
     searchNoResultsHint:

@@ -241,6 +241,14 @@ export const en: AppMessages = {
     allCategories: 'All',
     uncategorized: 'Uncategorized',
     categoryLabel: 'Category',
+    sortLabel: 'Sort by',
+    sortNewest: 'Newest',
+    sortPriceAsc: 'Price: low to high',
+    sortPriceDesc: 'Price: high to low',
+    sortPopular: 'Popular',
+    priceRange: 'Price range',
+    priceFrom: 'From',
+    priceTo: 'To',
     searchNoResultsTitle: (query: string) =>
       `No results for "${query}"`,
     searchNoResultsHint:

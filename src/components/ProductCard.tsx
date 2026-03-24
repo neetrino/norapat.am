@@ -215,10 +215,24 @@ const ProductCard = memo(({ product, onAddToCart, variant = 'default', addedToCa
       <div className={`relative ${isCompact ? 'p-4 -mt-3' : 'p-6 -mt-5'}`}>
         {/* Product Name */}
         <h3 className={`font-bold text-gray-900 line-clamp-2 group-hover:text-orange-600 transition-colors duration-300 ${
-          isCompact ? 'text-sm mb-3' : 'text-xl mb-4'
+          isCompact ? 'text-sm mb-2' : 'text-xl mb-4'
         }`}>
           {getProductDisplayName(product.name, locale)}
         </h3>
+
+        {/* Main attributes (compact): category + ingredients preview */}
+        {isCompact && (product.category?.name || product.ingredients?.length) ? (
+          <p className="text-gray-500 text-xs mb-3 line-clamp-2">
+            {[
+              product.category?.name && getCategoryDisplayName(product.category.name, locale),
+              product.ingredients?.length
+                ? product.ingredients.slice(0, 3).join(', ')
+                : null
+            ]
+              .filter(Boolean)
+              .join(' • ')}
+          </p>
+        ) : null}
         
         {/* Description for non-compact */}
         {!isCompact && (

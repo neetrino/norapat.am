@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo, useCallback, useRef, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
-import { Search } from 'lucide-react'
+import { Search, ArrowDownUp, SlidersHorizontal } from 'lucide-react'
 import { useCart } from '@/hooks/useCart'
 import { useWishlist } from '@/hooks/useWishlist'
 import { Product, Category } from '@/types'
@@ -25,6 +25,9 @@ function ProductsPageContent() {
   const [selectedCategory, setSelectedCategory] = useState<string>(allCategories)
   const [searchQuery, setSearchQuery] = useState('')
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('')
+  const [sortOrder, setSortOrder] = useState<string>('newest')
+  const [minPrice, setMinPrice] = useState<string>('')
+  const [maxPrice, setMaxPrice] = useState<string>('')
   const [loading, setLoading] = useState(true)
   const [searching, setSearching] = useState(false)
   const [addedToCart, setAddedToCart] = useState<Set<string>>(new Set())
@@ -32,17 +35,26 @@ function ProductsPageContent() {
   const { isInWishlist, toggle: toggleWishlist } = useWishlist()
   const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
-  const fetchProducts = async () => {
+  const fetchProducts = useCallback(async () => {
     try {
-      const response = await fetch('/api/products')
+      setLoading(true)
+      const params = new URLSearchParams()
+      if (selectedCategory !== allCategories) params.set('category', selectedCategory)
+      if (debouncedSearchQuery) params.set('search', debouncedSearchQuery)
+      params.set('sort', sortOrder)
+      if (minPrice) params.set('minPrice', minPrice)
+      if (maxPrice) params.set('maxPrice', maxPrice)
+      const url = `/api/products${params.toString() ? `?${params.toString()}` : ''}`
+      const response = await fetch(url)
       const data = await response.json()
       setProducts(data)
+      setFilteredProducts(data)
     } catch (error) {
       console.error('Error fetching products:', error)
     } finally {
       setLoading(false)
     }
-  }
+  }, [selectedCategory, allCategories, debouncedSearchQuery, sortOrder, minPrice, maxPrice])
 
   const fetchCategories = async () => {
     try {
@@ -54,44 +66,23 @@ function ProductsPageContent() {
     }
   }
 
-  const filterProducts = useCallback(() => {
-    let filtered = products
-
-    // Если есть поисковый запрос, ищем по всем товарам
-    if (debouncedSearchQuery) {
-      filtered = filtered.filter(product =>
-        product.name.toLowerCase().includes(debouncedSearchQuery.toLowerCase()) ||
-        product.description.toLowerCase().includes(debouncedSearchQuery.toLowerCase()) ||
-        product.ingredients.some(ingredient => 
-          ingredient.toLowerCase().includes(debouncedSearchQuery.toLowerCase())
-        )
-      )
-    } else {
-      // Если нет поискового запроса, показываем товары выбранной категории
-      if (selectedCategory !== allCategories) {
-        filtered = filtered.filter(product => product.category?.name === selectedCategory)
-      }
-      // Если выбрано "Все", показываем все товары без фильтрации
-    }
-
-    setFilteredProducts(filtered)
-  }, [products, selectedCategory, debouncedSearchQuery, allCategories])
-
   useEffect(() => {
-    const loadData = async () => {
-      await Promise.all([
-        fetchProducts(),
-        fetchCategories()
-      ])
+    const loadCategories = async () => {
+      try {
+        const response = await fetch('/api/categories')
+        const data = await response.json()
+        setCategories(data)
+      } catch (error) {
+        console.error('Error fetching categories:', error)
+      }
     }
-    loadData()
+    loadCategories()
   }, [])
 
   useEffect(() => {
     setSelectedCategory(allCategories)
   }, [locale, allCategories])
 
-  // Обработка URL параметров для поиска
   useEffect(() => {
     const searchParam = searchParams.get('search')
     if (searchParam) {
@@ -101,16 +92,15 @@ function ProductsPageContent() {
     }
   }, [searchParams, allCategories])
 
-  // Debounce search query
   useEffect(() => {
     if (searchTimeoutRef.current) {
       clearTimeout(searchTimeoutRef.current)
     }
-    
+
     if (searchQuery !== debouncedSearchQuery) {
       setSearching(true)
     }
-    
+
     searchTimeoutRef.current = setTimeout(() => {
       setDebouncedSearchQuery(searchQuery)
       setSearching(false)
@@ -124,8 +114,8 @@ function ProductsPageContent() {
   }, [searchQuery, debouncedSearchQuery])
 
   useEffect(() => {
-    filterProducts()
-  }, [filterProducts])
+    fetchProducts()
+  }, [fetchProducts])
 
   // Группировка товаров по категориям
   const groupProductsByCategory = useCallback((products: Product[]) => {
@@ -245,6 +235,44 @@ function ProductsPageContent() {
                   <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-orange-500"></div>
                 </div>
               )}
+            </div>
+            <div className="flex flex-wrap items-center gap-3">
+              <div className="flex items-center gap-2">
+                <ArrowDownUp className="h-5 w-5 text-gray-500" />
+                <select
+                  value={sortOrder}
+                  onChange={(e) => setSortOrder(e.target.value)}
+                  className="px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-gray-50 text-gray-900 font-medium"
+                >
+                  <option value="newest">{productsCopy.sortNewest}</option>
+                  <option value="price_asc">{productsCopy.sortPriceAsc}</option>
+                  <option value="price_desc">{productsCopy.sortPriceDesc}</option>
+                  <option value="popular">{productsCopy.sortPopular}</option>
+                </select>
+              </div>
+              <div className="flex items-center gap-2">
+                <SlidersHorizontal className="h-5 w-5 text-gray-500" />
+                <input
+                  type="number"
+                  placeholder={productsCopy.priceFrom}
+                  value={minPrice}
+                  onChange={(e) => setMinPrice(e.target.value)}
+                  min={0}
+                  step={100}
+                  className="w-24 px-3 py-2 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-gray-50 text-gray-900"
+                />
+                <span className="text-gray-500">—</span>
+                <input
+                  type="number"
+                  placeholder={productsCopy.priceTo}
+                  value={maxPrice}
+                  onChange={(e) => setMaxPrice(e.target.value)}
+                  min={0}
+                  step={100}
+                  className="w-24 px-3 py-2 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-gray-50 text-gray-900"
+                />
+                <span className="text-gray-600 text-sm">֏</span>
+              </div>
             </div>
           </div>
 

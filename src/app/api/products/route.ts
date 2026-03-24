@@ -10,6 +10,9 @@ export async function GET(request: NextRequest) {
     const search = searchParams.get('search')
     const status = searchParams.get('status')
     const idsParam = searchParams.get('ids')
+    const sort = searchParams.get('sort') ?? 'newest'
+    const minPrice = searchParams.get('minPrice')
+    const maxPrice = searchParams.get('maxPrice')
 
     const whereClause: Prisma.ProductWhereInput = {}
 
@@ -39,9 +42,33 @@ export async function GET(request: NextRequest) {
       ]
     }
 
+    const minVal = minPrice != null && minPrice !== '' ? Number.parseFloat(minPrice) : null
+    const maxVal = maxPrice != null && maxPrice !== '' ? Number.parseFloat(maxPrice) : null
+    const hasMin = minVal != null && !Number.isNaN(minVal)
+    const hasMax = maxVal != null && !Number.isNaN(maxVal)
+    if (hasMin || hasMax) {
+      whereClause.price = {
+        ...(hasMin ? { gte: minVal } : {}),
+        ...(hasMax ? { lte: maxVal } : {})
+      } as Prisma.FloatFilter
+    }
+
+    type OrderOption = { price?: 'asc' | 'desc'; createdAt?: 'asc' | 'desc' }
+    let orderBy: OrderOption | OrderOption[] = { createdAt: 'desc' }
+
+    if (sort === 'price_asc') {
+      orderBy = { price: 'asc' }
+    } else if (sort === 'price_desc') {
+      orderBy = { price: 'desc' }
+    } else if (sort === 'newest') {
+      orderBy = { createdAt: 'desc' }
+    } else if (sort === 'popular') {
+      orderBy = { createdAt: 'desc' }
+    }
+
     const products = await prisma.product.findMany({
       where: whereClause,
-      orderBy: { createdAt: 'desc' },
+      orderBy,
       select: {
         id: true,
         name: true,

@@ -253,6 +253,14 @@ export const ru: AppMessages = {
     allCategories: 'Все',
     uncategorized: 'Без категории',
     categoryLabel: 'Категория',
+    sortLabel: 'Сортировка',
+    sortNewest: 'Сначала новые',
+    sortPriceAsc: 'Цена: по возрастанию',
+    sortPriceDesc: 'Цена: по убыванию',
+    sortPopular: 'Популярные',
+    priceRange: 'Диапазон цен',
+    priceFrom: 'От',
+    priceTo: 'До',
     searchNoResultsTitle: (query: string) =>
       `По запросу «${query}» ничего не найдено`,
     searchNoResultsHint:

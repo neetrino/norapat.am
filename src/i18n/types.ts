@@ -232,6 +232,14 @@ export interface AppMessages {
     allCategories: string
     uncategorized: string
     categoryLabel: string
+    sortLabel: string
+    sortNewest: string
+    sortPriceAsc: string
+    sortPriceDesc: string
+    sortPopular: string
+    priceRange: string
+    priceFrom: string
+    priceTo: string
     searchNoResultsTitle: (query: string) => string
     searchNoResultsHint: string
     clearSearch: string
