@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { Phone, ShoppingCart } from 'lucide-react'
 import { Product } from '@/types'
+import { useI18n } from '@/i18n/I18nContext'
 
 export interface BrandBannerSectionProps {
   bannerProduct: Product | null
@@ -14,6 +15,8 @@ export interface BrandBannerSectionProps {
  * Տվյալները parent-ից (page) — bannerProduct from /api/products/banner.
  */
 export function BrandBannerSection({ bannerProduct, onAddToCart }: BrandBannerSectionProps) {
+  const { t } = useI18n()
+  const bb = t.brandBanner
   const handleAdd = (e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
@@ -34,18 +37,18 @@ export function BrandBannerSection({ bannerProduct, onAddToCart }: BrandBannerSe
         <div className="flex items-center justify-between">
           <div className="flex-1 pr-4">
             <h1 className="text-3xl font-bold leading-tight mb-3">
-              <span className="block text-white">Армянские</span>
-              <span className="block text-yellow-200">пиде</span>
+              <span className="block text-white">{bb.titleWhite}</span>
+              <span className="block text-yellow-200">{bb.titleAccent}</span>
             </h1>
-            <p className="text-base text-orange-100 mb-4 font-medium">15 уникальных вкусов</p>
+            <p className="text-base text-orange-100 mb-4 font-medium">{bb.mobileTagline}</p>
             <div className="flex gap-6 text-sm">
               <div className="text-center">
                 <div className="text-xl font-bold text-yellow-200">15+</div>
-                <div className="text-orange-100 font-medium">Вкусов</div>
+                <div className="text-orange-100 font-medium">{bb.statFlavors}</div>
               </div>
               <div className="text-center">
                 <div className="text-xl font-bold text-yellow-200">20</div>
-                <div className="text-orange-100 font-medium">Минут</div>
+                <div className="text-orange-100 font-medium">{bb.statMinutes}</div>
               </div>
             </div>
           </div>
@@ -77,7 +80,7 @@ export function BrandBannerSection({ bannerProduct, onAddToCart }: BrandBannerSe
                 >
                   <span className="flex items-center justify-center gap-1">
                     <ShoppingCart className="w-3 h-3" />
-                    Добавить
+                    {bb.add}
                   </span>
                 </button>
               </div>
@@ -86,8 +89,8 @@ export function BrandBannerSection({ bannerProduct, onAddToCart }: BrandBannerSe
                 <div className="relative w-24 h-24 mx-auto mb-2 bg-white/20 rounded-lg flex items-center justify-center">
                   <span className="text-2xl">🥟</span>
                 </div>
-                <h3 className="text-sm font-bold mb-1 text-white">Армянские пиде</h3>
-                <p className="text-xs text-orange-100">Вкусные и свежие</p>
+                <h3 className="text-sm font-bold mb-1 text-white">{bb.cardTitle}</h3>
+                <p className="text-xs text-orange-100">{bb.cardSubtitle}</p>
               </div>
             )}
           </div>
@@ -99,18 +102,18 @@ export function BrandBannerSection({ bannerProduct, onAddToCart }: BrandBannerSe
         <div className="flex items-center justify-between">
           <div className="flex-1 pr-8">
             <h1 className="text-4xl font-bold leading-tight mb-4">
-              <span className="block text-white">Армянские</span>
-              <span className="block text-yellow-200">пиде</span>
+              <span className="block text-white">{bb.titleWhite}</span>
+              <span className="block text-yellow-200">{bb.titleAccent}</span>
             </h1>
-            <p className="text-lg text-orange-100 mb-6 font-medium">15 уникальных вкусов</p>
+            <p className="text-lg text-orange-100 mb-6 font-medium">{bb.mobileTagline}</p>
             <div className="flex gap-8 text-base">
               <div className="text-center">
                 <div className="text-2xl font-bold text-yellow-200">15+</div>
-                <div className="text-orange-100 font-medium">Вкусов</div>
+                <div className="text-orange-100 font-medium">{bb.statFlavors}</div>
               </div>
               <div className="text-center">
                 <div className="text-2xl font-bold text-yellow-200">20</div>
-                <div className="text-orange-100 font-medium">Минут</div>
+                <div className="text-orange-100 font-medium">{bb.statMinutes}</div>
               </div>
             </div>
           </div>
@@ -142,7 +145,7 @@ export function BrandBannerSection({ bannerProduct, onAddToCart }: BrandBannerSe
                 >
                   <span className="flex items-center justify-center gap-2">
                     <ShoppingCart className="w-4 h-4" />
-                    Добавить
+                    {bb.add}
                   </span>
                 </button>
               </div>
@@ -151,8 +154,8 @@ export function BrandBannerSection({ bannerProduct, onAddToCart }: BrandBannerSe
                 <div className="relative w-32 h-32 mx-auto mb-3 bg-white/20 rounded-2xl flex items-center justify-center">
                   <span className="text-4xl">🥟</span>
                 </div>
-                <h3 className="text-base font-bold mb-2 text-white">Армянские пиде</h3>
-                <p className="text-sm text-orange-100">Вкусные и свежие</p>
+                <h3 className="text-base font-bold mb-2 text-white">{bb.cardTitle}</h3>
+                <p className="text-sm text-orange-100">{bb.cardSubtitle}</p>
               </div>
             )}
           </div>
@@ -165,31 +168,32 @@ export function BrandBannerSection({ bannerProduct, onAddToCart }: BrandBannerSe
           <div className="space-y-6">
             <div className="inline-flex items-center px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full text-sm font-medium animate-fade-in">
               <span className="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse" />
-              Свежие пиде каждый день
+              {bb.badge}
             </div>
             <h1 className="text-4xl md:text-6xl font-bold leading-tight">
-              <span className="block text-white animate-slide-up">Армянские</span>
-              <span className="block text-yellow-200 animate-slide-up-delay">пиде</span>
+              <span className="block text-white animate-slide-up">{bb.titleWhite}</span>
+              <span className="block text-yellow-200 animate-slide-up-delay">{bb.titleAccent}</span>
               <span className="block text-2xl md:text-3xl font-normal text-orange-100 mt-3 animate-fade-in-delay">
-                новый вкус
+                {bb.tagline}
               </span>
             </h1>
             <p className="text-lg md:text-xl text-orange-100 leading-relaxed max-w-lg animate-fade-in-delay-2">
-              Традиционная форма с современными начинками.{' '}
-              <span className="font-semibold text-yellow-200">15 уникальных вкусов</span> для настоящих гурманов!
+              {bb.descriptionBefore}
+              <span className="font-semibold text-yellow-200">{bb.descriptionHighlight}</span>
+              {bb.descriptionAfter}
             </p>
             <div className="flex flex-wrap gap-6 animate-fade-in-delay-3">
               <div className="text-center">
                 <div className="text-2xl font-bold text-yellow-200">15+</div>
-                <div className="text-sm text-orange-100">Вкусов</div>
+                <div className="text-sm text-orange-100">{bb.statFlavors}</div>
               </div>
               <div className="text-center">
                 <div className="text-2xl font-bold text-yellow-200">20</div>
-                <div className="text-sm text-orange-100">Минут</div>
+                <div className="text-sm text-orange-100">{bb.statMinutes}</div>
               </div>
               <div className="text-center">
                 <div className="text-2xl font-bold text-yellow-200">24/7</div>
-                <div className="text-sm text-orange-100">Доставка</div>
+                <div className="text-sm text-orange-100">{bb.statDelivery}</div>
               </div>
             </div>
             <div className="flex flex-col sm:flex-row gap-3 animate-fade-in-delay-4">
@@ -198,7 +202,7 @@ export function BrandBannerSection({ bannerProduct, onAddToCart }: BrandBannerSe
                 className="group bg-white text-orange-500 px-6 py-3 rounded-xl font-bold text-base hover:bg-yellow-100 hover:scale-105 transition-all duration-300 text-center shadow-lg hover:shadow-xl"
               >
                 <span className="flex items-center justify-center">
-                  Посмотреть меню
+                    {bb.viewMenu}
                   <svg className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                   </svg>
@@ -210,7 +214,7 @@ export function BrandBannerSection({ bannerProduct, onAddToCart }: BrandBannerSe
               >
                 <span className="flex items-center justify-center">
                   <Phone className="mr-2 w-4 h-4 group-hover:rotate-12 transition-transform" />
-                  Связаться с нами
+                  {bb.contactUs}
                 </span>
               </Link>
             </div>
@@ -274,19 +278,19 @@ export function BrandBannerSection({ bannerProduct, onAddToCart }: BrandBannerSe
                     className="bg-yellow-400 text-orange-800 px-6 py-3 rounded-xl font-bold hover:scale-105 active:bg-green-500 active:text-white transition-all duration-300 shadow-lg"
                   >
                     <ShoppingCart className="inline w-5 h-5 mr-2" />
-                    Быстрый заказ
+                    {bb.quickOrder}
                   </button>
                 </>
               ) : (
                 <>
-                  <h3 className="text-2xl font-bold mb-2">Армянские пиде</h3>
-                  <p className="text-orange-100 mb-4 opacity-80">Вкусные и свежие</p>
+                  <h3 className="text-2xl font-bold mb-2">{bb.cardTitle}</h3>
+                  <p className="text-orange-100 mb-4 opacity-80">{bb.cardSubtitle}</p>
                   <Link
                     href="/products"
                     className="bg-yellow-400 text-orange-800 px-6 py-3 rounded-xl font-bold hover:scale-105 active:bg-green-500 active:text-white transition-all duration-300 shadow-lg inline-block"
                   >
                     <ShoppingCart className="inline w-5 h-5 mr-2" />
-                    Посмотреть меню
+                    {bb.viewMenuBtn}
                   </Link>
                 </>
               )}
@@ -295,13 +299,13 @@ export function BrandBannerSection({ bannerProduct, onAddToCart }: BrandBannerSe
               <div className="w-12 h-12 bg-white/30 rounded-lg flex items-center justify-center mb-2">
                 <span className="text-2xl">🍕</span>
               </div>
-              <div className="text-xs font-semibold">15+ вкусов</div>
+              <div className="text-xs font-semibold">{bb.floatFlavors}</div>
             </div>
             <div className="absolute -bottom-4 -right-4 bg-white/20 backdrop-blur-sm rounded-xl p-3 text-center border border-white/30 animate-float-delay">
               <div className="w-12 h-12 bg-white/30 rounded-lg flex items-center justify-center mb-2">
                 <span className="text-2xl">🚚</span>
               </div>
-              <div className="text-xs font-semibold">Быстрая доставка</div>
+              <div className="text-xs font-semibold">{bb.fastDelivery}</div>
             </div>
           </div>
         </div>

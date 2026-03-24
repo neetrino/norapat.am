@@ -8,11 +8,12 @@ import { useState } from 'react'
 import { useSession, signOut } from 'next-auth/react'
 import { useCart } from '@/hooks/useCart'
 import { useHydration } from '@/hooks/useHydration'
-import { publicUiHy } from '@/lib/publicUiHy'
-
-const { nav, auth, search, wishlist } = publicUiHy
+import { useI18n } from '@/i18n/I18nContext'
+import { LanguageSwitcher } from '@/components/LanguageSwitcher'
 
 export default function DesktopHeader() {
+  const { t } = useI18n()
+  const { nav, auth, search, wishlist } = t
   const isHydrated = useHydration()
   const { getTotalItems } = useCart()
   const { data: session, status } = useSession()
@@ -98,6 +99,8 @@ export default function DesktopHeader() {
               />
             </div>
           </div>
+
+          <LanguageSwitcher className="hidden lg:flex" />
 
           {/* Right side */}
           <div className="flex items-center space-x-4">

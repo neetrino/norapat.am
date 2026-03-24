@@ -26,9 +26,7 @@ import DeleteAccountModal from '@/components/DeleteAccountModal'
 import { useCart } from '@/hooks/useCart'
 import { useWishlist } from '@/hooks/useWishlist'
 import type { Product } from '@/types'
-import { publicUiHy } from '@/lib/publicUiHy'
-
-const { profilePage, orderStatus } = publicUiHy
+import { useI18n } from '@/i18n/I18nContext'
 
 interface Order {
   id: string
@@ -48,6 +46,9 @@ interface Order {
 }
 
 export default function ProfilePage() {
+  const { t, locale } = useI18n()
+  const { profilePage, orderStatus } = t
+  const dateLocale = locale === 'hy' ? 'hy-AM' : locale === 'ru' ? 'ru-RU' : 'en-US'
   const { data: session, status } = useSession()
   const router = useRouter()
   const { addItem: addToCart } = useCart()
@@ -478,7 +479,7 @@ export default function ProfilePage() {
                           <div className="mb-2 md:mb-0">
                             <h3 className="font-semibold text-gray-900 text-sm md:text-base">{profilePage.orderLabel} #{order.id.slice(-8)}</h3>
                             <p className="text-xs md:text-sm text-gray-600">
-                              {new Date(order.createdAt).toLocaleDateString('hy-AM', {
+                              {new Date(order.createdAt).toLocaleDateString(dateLocale, {
                                 year: 'numeric',
                                 month: 'short',
                                 day: 'numeric',

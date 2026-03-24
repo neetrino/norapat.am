@@ -9,9 +9,7 @@ import { useCart } from '@/hooks/useCart'
 import Footer from '@/components/Footer'
 import ProductCard from '@/components/ProductCard'
 import type { Product, ProductWithCategory } from '@/types'
-import { publicUiHy } from '@/lib/publicUiHy'
-
-const { wishlist: wishlistCopy, auth } = publicUiHy
+import { useI18n } from '@/i18n/I18nContext'
 
 const CART_FEEDBACK_MS = 2000
 
@@ -20,6 +18,8 @@ type WishlistGridItem =
   | { kind: 'unavailable'; wishlist: WishlistProduct }
 
 export default function WishlistPage() {
+  const { t } = useI18n()
+  const { wishlist: wishlistCopy, auth } = t
   const { data: session, status: sessionStatus } = useSession()
   const {
     products: wishlistRows,

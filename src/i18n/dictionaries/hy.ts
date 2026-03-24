@@ -1,11 +1,34 @@
-/**
- * Հանրային խանութի UI տեքստեր (հայերեն)։
- * Կոդի անունները՝ անգլերեն, ցուցադրվող տեքստը՝ հայերեն։
- */
+import type { AppMessages } from '../types'
 
-export const ALL_CATEGORIES = 'Բոլորը' as const
-
-export const publicUiHy = {
+export const hy: AppMessages = {
+  languageSwitcher: {
+    label: 'Լեզու',
+    hy: 'Հայ',
+    en: 'EN',
+    ru: 'RU',
+  },
+  brandBanner: {
+    badge: 'Թարմ պիդե ամեն օր',
+    titleWhite: 'Հայկական',
+    titleAccent: 'պիդե',
+    tagline: 'նոր համ',
+    descriptionBefore: 'Ավանդական ձև՝ ժամանակակից լցոնումներով։ ',
+    descriptionHighlight: '15 եզակի համ',
+    descriptionAfter: ' իրական գուրմանների համար։',
+    statFlavors: 'Համեր',
+    statMinutes: 'Րոպե',
+    statDelivery: 'Առաքում',
+    mobileTagline: '15 եզակի համ',
+    viewMenu: 'Դիտել մենյու',
+    contactUs: 'Կապ մեզ հետ',
+    cardTitle: 'Հայկական պիդե',
+    cardSubtitle: 'Համեղ և թարմ',
+    viewMenuBtn: 'Դիտել մենյու',
+    add: 'Ավելացնել',
+    quickOrder: 'Արագ պատվեր',
+    floatFlavors: '15+ համեր',
+    fastDelivery: 'Արագ առաքում',
+  },
   nav: {
     home: 'Գլխավոր',
     menu: 'Մենյու',
@@ -50,15 +73,10 @@ export const publicUiHy = {
   search: {
     short: 'Որոնում...',
     menu: 'Որոնում մենյուում...',
-    productsPage:
-      'Որոնում՝ անվանում, նկարագրություն կամ բաղադրիչներ...',
+    productsPage: 'Որոնում՝ անվանում, նկարագրություն կամ բաղադրիչներ...',
   },
-  cart: {
-    label: 'Զամբյուղ',
-  },
-  profile: {
-    label: 'Պրոֆիլ',
-  },
+  cart: { label: 'Զամբյուղ' },
+  profile: { label: 'Պրոֆիլ' },
   wishlist: {
     title: 'Նախընտրած',
     pageTitle: 'Նախընտրած',
@@ -84,6 +102,7 @@ export const publicUiHy = {
     createdBy: 'Ստեղծել է',
   },
   products: {
+    allCategories: 'Բոլորը',
     uncategorized: 'Առանց կատեգորիայի',
     searchNoResultsTitle: (query: string) =>
       `«${query}» հարցման համար արդյունք չի գտնվել`,
@@ -145,4 +164,4 @@ export const publicUiHy = {
     DELIVERED: 'Առաքված',
     CANCELLED: 'Չեղարկված',
   },
-} as const
+}

@@ -3,6 +3,7 @@
 import { ReactNode } from 'react'
 import { SessionProvider } from 'next-auth/react'
 import { CartProvider } from '@/hooks/useCart'
+import { I18nProvider } from '@/i18n/I18nContext'
 
 interface ClientProvidersProps {
   children: ReactNode
@@ -15,9 +16,11 @@ export default function ClientProviders({ children }: ClientProvidersProps) {
       refetchOnWindowFocus={false}
       refetchWhenOffline={false}
     >
-      <CartProvider>
-        {children}
-      </CartProvider>
+      <I18nProvider>
+        <CartProvider>
+          {children}
+        </CartProvider>
+      </I18nProvider>
     </SessionProvider>
   )
 }

@@ -8,11 +8,12 @@ import { useCart } from '@/hooks/useCart'
 import { useHydration } from '@/hooks/useHydration'
 import { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
-import { publicUiHy } from '@/lib/publicUiHy'
-
-const { nav, cart, profile, auth, legal } = publicUiHy
+import { useI18n } from '@/i18n/I18nContext'
+import { LanguageSwitcher } from '@/components/LanguageSwitcher'
 
 export default function MobileBottomNav() {
+  const { t } = useI18n()
+  const { nav, cart, profile, auth, legal } = t
   const pathname = usePathname()
   const isHydrated = useHydration()
   const { getTotalItems } = useCart()
@@ -123,6 +124,9 @@ export default function MobileBottomNav() {
 
         {/* Bottom Info */}
         <div className="p-6 bg-white border-t border-gray-200">
+          <div className="flex justify-center mb-4">
+            <LanguageSwitcher />
+          </div>
           {/* Legal Links */}
           <div className="flex justify-center space-x-4 mb-4">
             <Link 

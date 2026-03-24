@@ -5,11 +5,11 @@ import { signIn, getSession } from 'next-auth/react'
 import Link from 'next/link'
 import { Eye, EyeOff, Mail, Lock } from 'lucide-react'
 import Footer from '@/components/Footer'
-import { publicUiHy } from '@/lib/publicUiHy'
-
-const a = publicUiHy.auth
+import { useI18n } from '@/i18n/I18nContext'
 
 export default function LoginPage() {
+  const { t } = useI18n()
+  const a = t.auth
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)

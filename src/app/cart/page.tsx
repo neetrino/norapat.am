@@ -5,12 +5,12 @@ import Link from 'next/link'
 import { ArrowLeft, ShoppingCart, Minus, Trash2, ShoppingBag } from 'lucide-react'
 import { useCart } from '@/hooks/useCart'
 import Footer from '@/components/Footer'
-import { publicUiHy } from '@/lib/publicUiHy'
-
-const c = publicUiHy.cartPage
-const uncategorized = publicUiHy.productCard.uncategorized
+import { useI18n } from '@/i18n/I18nContext'
 
 export default function CartPage() {
+  const { t } = useI18n()
+  const c = t.cartPage
+  const uncategorized = t.productCard.uncategorized
   const { items, updateQuantity, removeItem, getTotalPrice, clearCart } = useCart()
   const [isClearing, setIsClearing] = useState(false)
 

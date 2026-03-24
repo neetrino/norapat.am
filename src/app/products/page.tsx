@@ -8,16 +8,20 @@ import { useWishlist } from '@/hooks/useWishlist'
 import { Product, Category } from '@/types'
 import Footer from '@/components/Footer'
 import ProductCard from '@/components/ProductCard'
-import { ALL_CATEGORIES, publicUiHy } from '@/lib/publicUiHy'
+import { useI18n } from '@/i18n/I18nContext'
 
-const productsCopy = publicUiHy.products
+const CATEGORY_ORDER = ['Комбо', 'Пиде', 'Снэк', 'Соусы', 'Напитки'] as const
 
 function ProductsPageContent() {
+  const { t, locale } = useI18n()
+  const productsCopy = t.products
+  const allCategories = t.products.allCategories
+  const searchCopy = t.search
   const searchParams = useSearchParams()
   const [products, setProducts] = useState<Product[]>([])
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([])
   const [categories, setCategories] = useState<Category[]>([])
-  const [selectedCategory, setSelectedCategory] = useState<string>(ALL_CATEGORIES)
+  const [selectedCategory, setSelectedCategory] = useState<string>(allCategories)
   const [searchQuery, setSearchQuery] = useState('')
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('')
   const [loading, setLoading] = useState(true)
@@ -26,9 +30,6 @@ function ProductsPageContent() {
   const { addItem } = useCart()
   const { isInWishlist, toggle: toggleWishlist } = useWishlist()
   const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null)
-
-  // Порядок категорий для сортировки (приоритетные категории)
-  const categoryOrder = ['Комбо', 'Пиде', 'Снэк', 'Соусы', 'Напитки']
 
   const fetchProducts = async () => {
     try {
@@ -66,14 +67,14 @@ function ProductsPageContent() {
       )
     } else {
       // Если нет поискового запроса, показываем товары выбранной категории
-      if (selectedCategory !== ALL_CATEGORIES) {
+      if (selectedCategory !== allCategories) {
         filtered = filtered.filter(product => product.category?.name === selectedCategory)
       }
       // Если выбрано "Все", показываем все товары без фильтрации
     }
 
     setFilteredProducts(filtered)
-  }, [products, selectedCategory, debouncedSearchQuery])
+  }, [products, selectedCategory, debouncedSearchQuery, allCategories])
 
   useEffect(() => {
     const loadData = async () => {
@@ -85,15 +86,19 @@ function ProductsPageContent() {
     loadData()
   }, [])
 
+  useEffect(() => {
+    setSelectedCategory(allCategories)
+  }, [locale, allCategories])
+
   // Обработка URL параметров для поиска
   useEffect(() => {
     const searchParam = searchParams.get('search')
     if (searchParam) {
       setSearchQuery(searchParam)
       setDebouncedSearchQuery(searchParam)
-      setSelectedCategory(ALL_CATEGORIES)
+      setSelectedCategory(allCategories)
     }
-  }, [searchParams])
+  }, [searchParams, allCategories])
 
   // Debounce search query
   useEffect(() => {
@@ -134,15 +139,16 @@ function ProductsPageContent() {
     })
 
     // Сортируем категории: сначала приоритетные, потом остальные
-    const priorityCategories = categoryOrder.filter(cat => grouped[cat])
-    const otherCategories = Object.keys(grouped).filter(cat => !categoryOrder.includes(cat))
+    const prioritySet = new Set<string>([...CATEGORY_ORDER])
+    const priorityCategories = CATEGORY_ORDER.filter((cat) => grouped[cat])
+    const otherCategories = Object.keys(grouped).filter((cat) => !prioritySet.has(cat))
     const sortedCategories = [...priorityCategories, ...otherCategories]
     
     return sortedCategories.map(category => ({
       category,
       products: grouped[category]
     }))
-  }, [])
+  }, [productsCopy.uncategorized])
 
   const handleAddToCart = useCallback((product: Product) => {
     addItem(product, 1)
@@ -228,7 +234,7 @@ function ProductsPageContent() {
               }`} />
               <input
                 type="text"
-                placeholder={publicUiHy.search.productsPage}
+                placeholder={searchCopy.productsPage}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full pl-12 pr-4 py-4 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-lg text-gray-900 placeholder-gray-500 bg-gray-50 transition-all duration-300 shadow-sm hover:shadow-md focus:bg-white"
@@ -248,7 +254,7 @@ function ProductsPageContent() {
               <div className="space-y-3">
                 {/* First row - Все, Пиде, Комбо - 3 большие кнопки */}
                 <div className="grid grid-cols-3 gap-3">
-                  {[ALL_CATEGORIES, 'Пиде', 'Комбо'].map((category) => (
+                  {[allCategories, 'Пиде', 'Комбо'].map((category) => (
                     <button
                       key={category}
                       onClick={() => setSelectedCategory(category)}
@@ -294,17 +300,17 @@ function ProductsPageContent() {
             <div className="hidden lg:flex flex-wrap gap-4">
               {/* Кнопка "Все" */}
               <button
-                onClick={() => setSelectedCategory(ALL_CATEGORIES)}
+                onClick={() => setSelectedCategory(allCategories)}
                 className={`px-6 py-3 rounded-2xl font-semibold transition-all duration-300 hover:scale-105 ${
-                  selectedCategory === ALL_CATEGORIES
+                  selectedCategory === allCategories
                     ? 'bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-lg'
                     : 'bg-gray-100 text-gray-700 hover:bg-orange-100 hover:text-orange-600'
                 }`}
-                style={selectedCategory === ALL_CATEGORIES ? {
+                style={selectedCategory === allCategories ? {
                   boxShadow: '0 8px 25px rgba(255, 107, 53, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1)',
                 } : {}}
               >
-                {ALL_CATEGORIES}
+                {allCategories}
               </button>
               
               {/* Динамические категории */}
@@ -329,7 +335,7 @@ function ProductsPageContent() {
         </div>
 
         {/* Products Display */}
-        {selectedCategory === ALL_CATEGORIES && !debouncedSearchQuery ? (
+        {selectedCategory === allCategories && !debouncedSearchQuery ? (
           // Показываем продукты сгруппированными по категориям
           <div className="space-y-12">
             {groupedProducts.map(({ category, products: categoryProducts }) => (
@@ -395,7 +401,7 @@ function ProductsPageContent() {
                     {productsCopy.clearSearch}
                   </button>
                   <button
-                    onClick={() => setSelectedCategory(ALL_CATEGORIES)}
+                    onClick={() => setSelectedCategory(allCategories)}
                     className="bg-orange-500 text-white px-6 py-3 rounded-xl font-semibold hover:bg-orange-600 transition-colors"
                   >
                     {productsCopy.showAllProducts}

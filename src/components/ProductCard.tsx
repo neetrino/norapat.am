@@ -5,9 +5,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { ShoppingCart, Star, Zap, Heart } from 'lucide-react'
 import { Product } from '@/types'
-import { publicUiHy } from '@/lib/publicUiHy'
-
-const pc = publicUiHy.productCard
+import { useI18n } from '@/i18n/I18nContext'
 
 interface ProductCardProps {
   product: Product
@@ -19,6 +17,8 @@ interface ProductCardProps {
 }
 
 const ProductCard = memo(({ product, onAddToCart, variant = 'default', addedToCart, isInWishlist, onToggleWishlist }: ProductCardProps) => {
+  const { t } = useI18n()
+  const pc = t.productCard
   const isCompact = variant === 'compact'
   const isAdded = addedToCart?.has(product.id) || false
 

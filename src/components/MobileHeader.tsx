@@ -4,21 +4,24 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { Search } from 'lucide-react'
 import { useState } from 'react'
-import { publicUiHy } from '@/lib/publicUiHy'
-
-const { search } = publicUiHy
+import { useI18n } from '@/i18n/I18nContext'
+import { LanguageSwitcher } from '@/components/LanguageSwitcher'
 
 export default function MobileHeader() {
+  const { t } = useI18n()
+  const { search } = t
   const [searchQuery, setSearchQuery] = useState('')
   const [isSearchOpen, setIsSearchOpen] = useState(false)
 
   return (
     <header className="bg-white/95 backdrop-blur-xl shadow-lg fixed top-0 left-0 right-0 z-[100] border-b border-gray-200" style={{ position: 'fixed' }}>
       <div className="px-4 py-1.5">
-        <div className="relative flex justify-between items-center">
-          {/* Mobile Logo - Absolutely Centered */}
-          <div className="absolute left-1/2 transform -translate-x-1/2">
-            <Link href="/" className="hover:opacity-80 transition-all duration-300 hover:scale-105">
+        <div className="flex items-center gap-2">
+          <div className="flex-1 flex justify-start min-w-0 z-[101]">
+            <LanguageSwitcher variant="compact" />
+          </div>
+          <div className="flex-shrink-0">
+            <Link href="/" className="hover:opacity-80 transition-all duration-300 hover:scale-105 block">
               <Image 
                 src="/logo.png" 
                 alt="Pideh Armenia Logo" 
@@ -32,12 +35,14 @@ export default function MobileHeader() {
           </div>
 
           {/* Mobile Search Button */}
+          <div className="flex-1 flex justify-end">
           <button
             onClick={() => setIsSearchOpen(!isSearchOpen)}
-            className="p-3 text-gray-900 hover:text-orange-500 hover:bg-orange-50 rounded-xl transition-all duration-300 active:scale-95 ml-auto"
+            className="p-3 text-gray-900 hover:text-orange-500 hover:bg-orange-50 rounded-xl transition-all duration-300 active:scale-95"
           >
             <Search className="h-5 w-5" />
           </button>
+          </div>
         </div>
 
         {/* Mobile Search Bar */}
