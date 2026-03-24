@@ -7,6 +7,7 @@ import { ShoppingCart, Star, Zap, Heart } from 'lucide-react'
 import { Product } from '@/types'
 import { useI18n } from '@/i18n/I18nContext'
 import { getCategoryDisplayName } from '@/i18n/getCategoryDisplayName'
+import { getProductDisplayName } from '@/i18n/getProductDisplayName'
 
 interface ProductCardProps {
   product: Product
@@ -86,7 +87,7 @@ const ProductCard = memo(({ product, onAddToCart, variant = 'default', addedToCa
               {/* Main 3D Product Image - Enhanced mobile app style with Next.js Image */}
               <Image 
                 src={product.image} 
-                alt={product.name}
+                alt={getProductDisplayName(product.name, locale)}
                 fill
                 sizes="(max-width: 768px) 50vw, (max-width: 1200px) 25vw, 20vw"
                 className="relative w-full h-full object-contain group-hover:scale-110 group-hover:-translate-y-2 group-hover:rotate-1 transition-all duration-500 ease-out"
@@ -216,7 +217,7 @@ const ProductCard = memo(({ product, onAddToCart, variant = 'default', addedToCa
         <h3 className={`font-bold text-gray-900 line-clamp-2 group-hover:text-orange-600 transition-colors duration-300 ${
           isCompact ? 'text-sm mb-3' : 'text-xl mb-4'
         }`}>
-          {product.name}
+          {getProductDisplayName(product.name, locale)}
         </h3>
         
         {/* Description for non-compact */}

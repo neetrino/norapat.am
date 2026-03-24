@@ -27,6 +27,7 @@ import { useCart } from '@/hooks/useCart'
 import { useWishlist } from '@/hooks/useWishlist'
 import type { Product } from '@/types'
 import { useI18n } from '@/i18n/I18nContext'
+import { getProductDisplayName } from '@/i18n/getProductDisplayName'
 
 interface Order {
   id: string
@@ -504,7 +505,7 @@ export default function ProfilePage() {
                                 {item.product?.image ? (
                                   <img 
                                     src={item.product.image} 
-                                    alt={item.product.name}
+                                    alt={getProductDisplayName(item.product.name, locale)}
                                     className="w-full h-full object-cover"
                                   />
                                 ) : (

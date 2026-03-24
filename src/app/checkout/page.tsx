@@ -7,6 +7,8 @@ import { ArrowLeft, MapPin, Clock, CreditCard, Phone, User } from 'lucide-react'
 import { useCart } from '@/hooks/useCart'
 import { useSession } from 'next-auth/react'
 import Footer from '@/components/Footer'
+import { useI18n } from '@/i18n/I18nContext'
+import { getProductDisplayName } from '@/i18n/getProductDisplayName'
 
 interface UserProfile {
   id: string
@@ -17,6 +19,7 @@ interface UserProfile {
 }
 
 export default function CheckoutPage() {
+  const { locale } = useI18n()
   const router = useRouter()
   const { items, getTotalPrice, clearCart, validateCart } = useCart()
   const { data: session, status } = useSession()
@@ -436,7 +439,9 @@ export default function CheckoutPage() {
                 {items.map((item) => (
                   <div key={item.product.id} className="flex justify-between items-center py-2">
                     <div className="flex-1">
-                      <div className="font-medium text-gray-900 text-sm">{item.product.name}</div>
+                      <div className="font-medium text-gray-900 text-sm">
+                        {getProductDisplayName(item.product.name, locale)}
+                      </div>
                       <div className="text-xs text-gray-600">{item.quantity} шт.</div>
                     </div>
                     <div className="font-semibold text-gray-900 text-sm">
@@ -701,7 +706,9 @@ export default function CheckoutPage() {
                   {items.map((item) => (
                     <div key={item.product.id} className="flex justify-between items-center py-2">
                       <div className="flex-1">
-                        <div className="font-medium text-gray-900">{item.product.name}</div>
+                        <div className="font-medium text-gray-900">
+                          {getProductDisplayName(item.product.name, locale)}
+                        </div>
                         <div className="text-sm text-gray-600">{item.quantity} шт.</div>
                       </div>
                       <div className="font-semibold text-gray-900">

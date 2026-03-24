@@ -1,12 +1,13 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import Image from 'next/image'
 import { ArrowLeft, Star, Clock, MapPin, Phone, Zap } from 'lucide-react'
 import Footer from '@/components/Footer'
 import ProductQuantityControls from '@/components/ProductQuantityControls'
 import { SimilarProducts } from '@/components/SimilarProducts'
 import { CategoryDisplayName } from '@/components/CategoryDisplayName'
 import { ProductCategoryLine } from '@/components/ProductCategoryLine'
+import { ProductDisplayName } from '@/components/ProductDisplayName'
+import { ProductImageWithLocalizedAlt } from '@/components/ProductImageWithLocalizedAlt'
 import { prisma } from '@/lib/prisma'
 
 // Server Component - данные загружаются на сервере
@@ -92,7 +93,9 @@ export default async function ProductPage({
             <span className="text-gray-400">/</span>
             <Link href="/products" className="text-gray-500 hover:text-orange-500">Меню</Link>
             <span className="text-gray-400">/</span>
-            <span className="text-gray-900 font-medium">{product.name}</span>
+            <span className="text-gray-900 font-medium">
+              <ProductDisplayName name={product.name} />
+            </span>
           </nav>
         </div>
       </div>
@@ -126,9 +129,9 @@ export default async function ProductPage({
                       />
                       
                         {/* Main 3D Product Image - Оптимизированное изображение */}
-                        <Image
+                        <ProductImageWithLocalizedAlt
                           src={product.image}
-                          alt={product.name}
+                          productName={product.name}
                           fill
                           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                           priority
@@ -265,7 +268,9 @@ export default async function ProductPage({
           {/* Product Info */}
           <div className="space-y-8">
             <div>
-              <h1 className="text-4xl font-bold text-gray-900 mb-4">{product.name}</h1>
+              <h1 className="text-4xl font-bold text-gray-900 mb-4">
+                <ProductDisplayName name={product.name} />
+              </h1>
               <p className="text-xl text-gray-600 mb-6 leading-relaxed">{product.description}</p>
               
               {/* Rating */}

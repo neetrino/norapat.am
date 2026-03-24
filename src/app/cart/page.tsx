@@ -7,6 +7,7 @@ import { useCart } from '@/hooks/useCart'
 import Footer from '@/components/Footer'
 import { useI18n } from '@/i18n/I18nContext'
 import { getCategoryDisplayName } from '@/i18n/getCategoryDisplayName'
+import { getProductDisplayName } from '@/i18n/getProductDisplayName'
 
 export default function CartPage() {
   const { t, locale } = useI18n()
@@ -135,7 +136,7 @@ export default function CartPage() {
                       {item.product.image && item.product.image !== 'no-image' ? (
                         <img 
                           src={item.product.image} 
-                          alt={item.product.name}
+                          alt={getProductDisplayName(item.product.name, locale)}
                           className="w-full h-full object-contain"
                           onError={(e) => {
                             e.currentTarget.style.display = 'none';
@@ -157,7 +158,7 @@ export default function CartPage() {
                     {/* Product Info */}
                     <div className="flex-1 min-w-0">
                       <h3 className="text-base font-semibold text-gray-900 mb-1 leading-tight">
-                        {item.product.name}
+                        {getProductDisplayName(item.product.name, locale)}
                       </h3>
                       <p className="text-sm text-gray-600 mb-2">
                         {item.product.category?.name
@@ -231,7 +232,7 @@ export default function CartPage() {
                         {item.product.image && item.product.image !== 'no-image' ? (
                           <img 
                             src={item.product.image} 
-                            alt={item.product.name}
+                            alt={getProductDisplayName(item.product.name, locale)}
                             className="w-full h-full object-contain"
                             onError={(e) => {
                               e.currentTarget.style.display = 'none';
@@ -253,7 +254,7 @@ export default function CartPage() {
                       {/* Product Info */}
                       <div className="flex-1 min-w-0">
                         <h3 className="text-lg font-semibold text-gray-900 mb-1">
-                          {item.product.name}
+                          {getProductDisplayName(item.product.name, locale)}
                         </h3>
                         <p className="text-sm text-gray-600 mb-2">
                           {item.product.category?.name
