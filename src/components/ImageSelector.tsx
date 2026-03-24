@@ -110,8 +110,8 @@ export default function ImageSelector({ value, onChange, className = '' }: Image
             onChange(result.path)
           }
         } else {
-          const error = await response.json()
-          alert(`Ошибка загрузки ${file.name}: ${error.message}`)
+          const data = await response.json()
+          alert(`Ошибка загрузки ${file.name}: ${data.error ?? 'Unknown error'}`)
         }
       }
     } catch (error) {

@@ -11,6 +11,7 @@
     "db:seed": "tsx scripts/seed.ts",
     "db:seed-additional": "tsx scripts/seed-additional.ts",
     "db:seed-40": "tsx scripts/seed-40-products.ts",
+    "migrate:images-to-r2": "tsx scripts/migrate-images-to-r2.ts",
     "create-admin": "tsx scripts/create-admin.ts",
     "db:migrate": "prisma migrate dev",
     "db:studio": "prisma studio",
@@ -22,6 +23,7 @@
     "auto-import": "tsx scripts/auto-import.ts"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.1015.0",
     "@hookform/resolvers": "^5.2.2",
     "@prisma/client": "^6.16.2",
     "@types/bcryptjs": "^2.4.6",
@@ -46,6 +48,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "dotenv": "^17.3.1",
     "eslint": "^9",
     "eslint-config-next": "15.5.3",
     "puppeteer": "^24.22.0",

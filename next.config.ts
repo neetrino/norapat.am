@@ -23,7 +23,17 @@ const nextConfig: NextConfig = {
     minimumCacheTTL: 31536000, // 1 год
     dangerouslyAllowSVG: true,
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
-    qualities: [75, 85, 100], // Добавляем поддержку quality=85
+    qualities: [75, 85, 100],
+    remotePatterns:
+      process.env.R2_PUBLIC_URL && process.env.R2_PUBLIC_URL.startsWith('https')
+        ? [
+            {
+              protocol: 'https',
+              hostname: new URL(process.env.R2_PUBLIC_URL).hostname,
+              pathname: '/**',
+            },
+          ]
+        : [],
   },
   experimental: {
     optimizePackageImports: ['lucide-react'],
