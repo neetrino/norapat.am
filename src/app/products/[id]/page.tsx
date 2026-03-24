@@ -46,7 +46,8 @@ export default async function ProductPage({
           ingredients: true,
           isAvailable: true,
           status: true,
-          createdAt: true
+          createdAt: true,
+          updatedAt: true
         }
       }),
       
@@ -62,6 +63,7 @@ export default async function ProductPage({
           shortDescription: true,
           description: true,
           price: true,
+          originalPrice: true,
           categoryId: true,
           category: {
             select: {
@@ -71,13 +73,15 @@ export default async function ProductPage({
             }
           },
           image: true,
+          images: true,
           ingredients: true,
           isAvailable: true,
           status: true,
-          createdAt: true
+          createdAt: true,
+          updatedAt: true
         },
         orderBy: { createdAt: 'desc' },
-        take: 4 // Берем только 4 похожих товара
+        take: 4
       })
     ])
 
