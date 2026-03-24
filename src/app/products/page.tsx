@@ -208,7 +208,7 @@ function ProductsPageContent() {
   }
 
   return (
-    <div className="min-h-screen bg-white overflow-x-hidden">
+    <div className="min-h-screen bg-white overflow-visible">
       {/* Отступ для fixed хедера */}
       <div className="lg:hidden h-16"></div>
       <div className="hidden lg:block h-24"></div>
@@ -380,7 +380,7 @@ function ProductsPageContent() {
                 </div>
                 
                 {/* Продукты категории */}
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 gap-y-8 md:gap-15">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 gap-y-8 md:gap-15 overflow-visible">
                   {categoryProducts.map((product) => (
                     <ProductCard
                       key={product.id}
@@ -398,7 +398,7 @@ function ProductsPageContent() {
           </div>
         ) : (
           // Показываем продукты в обычной сетке (для конкретной категории или поиска)
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 gap-y-8 md:gap-15">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 gap-y-8 md:gap-15 overflow-visible">
             {filteredProducts.map((product) => (
               <ProductCard
                 key={product.id}
@@ -463,7 +463,7 @@ function ProductsPageContent() {
 export default function ProductsPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-white overflow-x-hidden">
+      <div className="min-h-screen bg-white overflow-visible">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="text-center mb-12">
             <div className="h-12 bg-gray-200 rounded mx-auto mb-4 w-64 animate-pulse"></div>

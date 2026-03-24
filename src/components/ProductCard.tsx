@@ -27,7 +27,7 @@ const ProductCard = memo(({ product, onAddToCart, variant = 'default', addedToCa
   return (
     <Link 
       href={`/products/${product.id}`}
-      className={`relative block bg-white rounded-3xl shadow-2xl overflow-visible hover:shadow-3xl hover:scale-110 transition-all duration-700 cursor-pointer group border-0 transform hover:-translate-y-3 ${
+      className={`relative block bg-white rounded-3xl shadow-2xl overflow-visible hover:shadow-3xl hover:z-[100] transition-all duration-700 cursor-pointer group border-0 ${
         isCompact ? 'rounded-2xl shadow-xl hover:shadow-2xl' : ''
       }`}
       style={{
@@ -61,9 +61,13 @@ const ProductCard = memo(({ product, onAddToCart, variant = 'default', addedToCa
         
         {/* 3D Floating Product - No top border */}
         {product.image && product.image !== 'no-image' ? (
-          <div className="relative w-full h-full">
-            {/* 3D Product Image with floating effect - Mobile App Style */}
-            <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 w-full max-w-[200px] h-[calc(100%+4rem)]">
+          <div className="relative w-full h-full overflow-visible">
+            {/* 3D Product Image with floating effect - scaled image overflows freely */}
+            <div
+              className="absolute -top-16 left-1/2 -translate-x-1/2 w-full max-w-[220px] h-[calc(100%+6rem)] overflow-visible [&>*]:!overflow-visible"
+              style={{ transform: 'perspective(1000px) rotateX(6deg) rotateY(-2deg)' }}
+            >
+              <div className="relative w-full h-full transition-transform duration-500 ease-out origin-bottom group-hover:scale-[1.25] group-hover:-translate-y-3 z-10">
               {/* Enhanced 3D Shadow Layer - Removed for cleaner look */}
               {/* <div 
                 className="absolute inset-0 bg-gradient-to-br from-gray-300/30 to-gray-400/20 rounded-3xl transform translate-y-6 translate-x-4 group-hover:translate-y-8 group-hover:translate-x-5 transition-all duration-700"
@@ -90,10 +94,9 @@ const ProductCard = memo(({ product, onAddToCart, variant = 'default', addedToCa
                 alt={getProductDisplayName(product.name, locale)}
                 fill
                 sizes="(max-width: 768px) 50vw, (max-width: 1200px) 25vw, 20vw"
-                className="relative w-full h-full object-contain group-hover:scale-110 group-hover:-translate-y-2 group-hover:rotate-1 transition-all duration-500 ease-out"
+                className="relative w-full h-full object-contain"
                 style={{
                   filter: 'none',
-                  transform: 'perspective(1000px) rotateX(8deg) rotateY(-3deg)',
                   imageRendering: 'crisp-edges',
                   imageRendering: '-webkit-optimize-contrast',
                 }}
@@ -122,6 +125,7 @@ const ProductCard = memo(({ product, onAddToCart, variant = 'default', addedToCa
                   background: 'linear-gradient(135deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.1) 30%, transparent 70%)',
                 }}
               /> */}
+              </div>
             </div>
           </div>
         ) : (

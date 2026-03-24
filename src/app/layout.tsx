@@ -31,7 +31,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="hy" data-scroll-behavior="smooth" suppressHydrationWarning>
-      <body className={`${inter.variable} font-sans antialiased overflow-x-hidden`}>
+      <body className={`${inter.variable} font-sans antialiased overflow-visible`}>
         <ServiceWorkerProvider />
         <ClientProviders>
           <Header />

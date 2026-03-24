@@ -142,7 +142,7 @@ export default function Home() {
   const categoryNames = categories.map((c) => c.name)
 
   return (
-    <div className="min-h-screen bg-white overflow-x-hidden">
+    <div className="min-h-screen bg-white overflow-visible">
       {/* Отступ для fixed хедера */}
       <div className="lg:hidden h-16"></div>
       <div className="hidden lg:block h-24"></div>
@@ -268,11 +268,11 @@ export default function Home() {
               </button>
             </div>
           ) : (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 gap-y-8 md:gap-15">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 gap-y-8 md:gap-15 overflow-visible">
               {getFilteredProducts().map((product) => (
                 <div
                   key={product.id}
-                  className="transform hover:scale-105 transition-transform duration-300"
+                  className="overflow-visible"
                 >
                   <ProductCard
                     product={product}

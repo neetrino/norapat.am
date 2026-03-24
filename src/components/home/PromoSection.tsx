@@ -59,10 +59,10 @@ export function PromoSection({ onAddToCart, addedToCart, isInWishlist, onToggleW
 
   return (
     <section
-      className="py-12 lg:py-16 bg-gradient-to-b from-amber-50/80 to-white"
+      className="py-12 lg:py-16 bg-gradient-to-b from-amber-50/80 to-white overflow-visible"
       aria-label={ariaPromo}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 overflow-visible">
         <div className="text-center mb-8 lg:mb-10">
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-2">
             {pr.title}
@@ -72,12 +72,12 @@ export function PromoSection({ onAddToCart, addedToCart, isInWishlist, onToggleW
           </p>
         </div>
 
-        <div className="overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-thin">
-          <div className="flex sm:grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 min-w-max sm:min-w-0">
+        <div className="overflow-x-auto pb-2 pt-20 -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-thin">
+          <div className="flex sm:grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 min-w-max sm:min-w-0 overflow-visible">
             {products.map((product) => (
               <div
                 key={product.id}
-                className="w-[280px] sm:w-auto flex-shrink-0 sm:flex-shrink transform hover:scale-[1.02] transition-transform duration-300"
+                className="w-[280px] sm:w-auto flex-shrink-0 sm:flex-shrink overflow-visible"
               >
                 <ProductCard
                   product={product}
