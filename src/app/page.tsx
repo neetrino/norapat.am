@@ -269,7 +269,7 @@ export default function Home() {
               </button>
             </div>
           ) : (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 gap-y-16 md:gap-12 overflow-visible">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8 gap-y-12 md:gap-y-16 overflow-visible">
               {getFilteredProducts().slice(0, HOME_PRODUCTS_LIMIT).map((product) => (
                 <div
                   key={product.id}
