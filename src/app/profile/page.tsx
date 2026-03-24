@@ -402,9 +402,17 @@ export default function ProfilePage() {
           {/* Wishlist & Orders */}
           <div className="lg:col-span-2 space-y-6">
             <div className="bg-white rounded-2xl shadow-lg p-4 md:p-6">
-              <h2 className="text-lg md:text-xl font-semibold text-gray-900 mb-4 md:mb-6 flex items-center gap-2">
-                <Heart className="h-5 w-5 text-orange-500" />
-                Նախընտրած ապրանքներ
+              <h2 className="text-lg md:text-xl font-semibold text-gray-900 mb-4 md:mb-6 flex flex-wrap items-center justify-between gap-2">
+                <span className="flex items-center gap-2">
+                  <Heart className="h-5 w-5 text-orange-500" />
+                  Նախընտրած ապրանքներ
+                </span>
+                <Link
+                  href="/wishlist"
+                  className="text-sm font-medium text-orange-600 hover:text-orange-700 hover:underline"
+                >
+                  Открыть страницу избранного
+                </Link>
               </h2>
               {wishlistLoading ? (
                 <div className="flex justify-center py-8">

@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
-import { ShoppingCart, User, LogOut, Search } from 'lucide-react'
+import { ShoppingCart, User, LogOut, Search, Heart } from 'lucide-react'
 import { usePathname } from 'next/navigation'
 import { useState } from 'react'
 import { useSession, signOut } from 'next-auth/react'
@@ -121,6 +121,26 @@ export default function DesktopHeader() {
                 <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-6 h-1 bg-orange-500 rounded-full"></div>
               )}
             </Link>
+
+            {/* Wishlist — только для авторизованных */}
+            {isHydrated && session?.user && (
+              <Link
+                href="/wishlist"
+                className={`
+                  relative p-3 rounded-xl transition-all duration-300 group
+                  ${isActive('/wishlist')
+                    ? 'text-orange-500 bg-orange-50 shadow-md'
+                    : 'text-gray-900 hover:text-red-500 hover:bg-red-50'
+                  }
+                `}
+                title="Избранное"
+              >
+                <Heart className={`h-6 w-6 ${isActive('/wishlist') ? 'fill-red-500 text-red-500' : ''}`} />
+                {isActive('/wishlist') && (
+                  <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-6 h-1 bg-orange-500 rounded-full" />
+                )}
+              </Link>
+            )}
 
             {/* Auth: до гидратации показываем скелетон, чтобы не было mismatch server/client */}
             {!isHydrated || status === 'loading' ? (
