@@ -14,6 +14,14 @@ import { getCategoryDisplayName } from '@/i18n/getCategoryDisplayName'
 
 const SCROLL_STEP_PX = 320
 
+/**
+ * Full-bleed surface for the category strip (home): one block behind arrows + pills.
+ * Top border: same solid as BrandBannerSection `.promo-food-banner-bg` in globals.css (#a51d1d).
+ * Uses orange-100 — project tokens map orange-50 to #fef2f2 (≈white), so orange-50 reads as “no bg”.
+ */
+const CATEGORY_SECTION_SURFACE_CLASS =
+  'relative w-full border-t-[3px] border-t-[#a51d1d] border-b border-orange-200/70 bg-orange-100 shadow-[inset_0_-1px_0_0_rgba(238,49,36,0.08)]'
+
 export interface CategoriesSectionProps {
   activeCategory?: string
   /** Գլխավորում — ընտրել կատեգորիան (օր. ֆիլտրի համաձայնեցում) */
@@ -94,7 +102,7 @@ export function CategoriesSection({
   if (loading) {
     return (
       <section
-        className="w-full border-b border-orange-100/50 bg-gradient-to-b from-orange-50/70 via-white to-white"
+        className={CATEGORY_SECTION_SURFACE_CLASS}
         aria-label={ariaCategories}
       >
         <div className="flex w-full justify-center px-4 py-8 sm:px-6 lg:px-8">
@@ -110,7 +118,7 @@ export function CategoriesSection({
   if (error || categories.length === 0) {
     return (
       <section
-        className="w-full border-b border-orange-100/50 bg-gradient-to-b from-orange-50/70 via-white to-white"
+        className={CATEGORY_SECTION_SURFACE_CLASS}
         aria-label={ariaCategories}
       >
         <div className="w-full px-4 py-8 text-center text-gray-600 sm:px-6 lg:px-8">
@@ -128,7 +136,7 @@ export function CategoriesSection({
 
   return (
     <section
-      className="w-full border-b border-orange-100/60 bg-gradient-to-b from-orange-50/80 via-white to-white shadow-[inset_0_-1px_0_0_rgba(238,49,36,0.06)]"
+      className={CATEGORY_SECTION_SURFACE_CLASS}
       aria-label={ariaCategories}
     >
       <div className="flex min-w-0 items-center gap-2 px-3 py-5 sm:gap-2.5 sm:px-5 lg:px-8">
