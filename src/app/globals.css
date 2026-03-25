@@ -11,6 +11,12 @@
   --brand-primary: #EE3124;
   --brand-black: #000000;
   --brand-white: #FFFFFF;
+  /* BrandBannerSection — խորը կարմիր թեմա (կանաչ օրինակի փոխարեն) */
+  --brand-banner-bg: #8b1414;
+  --brand-banner-bg-mid: #a02828;
+  --brand-banner-bg-deep: #4a0a0a;
+  --brand-banner-accent: #ffb703;
+  --brand-banner-glow: #c43c3c;
 }
 
 @theme inline {
@@ -219,21 +225,21 @@ html {
   animation: slideInUp 0.3s ease-out;
 }
 
-/* Hero banner (BrandBannerSection) — սպիտակ կենտրոր, նվազագույն կարմիր անկյուններ */
-.brand-banner-corner-tl {
+/* Hero banner (BrandBannerSection) — խորը կարմիր, լուսավոր անկյուններ */
+.brand-banner-section .brand-banner-corner-tl {
   background: radial-gradient(
     ellipse 85% 85% at 0% 0%,
-    color-mix(in srgb, var(--brand-primary) 24%, transparent) 0%,
-    color-mix(in srgb, var(--brand-primary) 7%, transparent) 44%,
+    color-mix(in srgb, var(--brand-banner-glow) 32%, transparent) 0%,
+    color-mix(in srgb, var(--brand-banner-glow) 10%, transparent) 44%,
     transparent 72%
   );
 }
 
-.brand-banner-corner-br {
+.brand-banner-section .brand-banner-corner-br {
   background: radial-gradient(
     ellipse 90% 90% at 100% 100%,
-    color-mix(in srgb, var(--brand-primary) 20%, transparent) 0%,
-    color-mix(in srgb, var(--brand-primary) 6%, transparent) 46%,
+    color-mix(in srgb, var(--brand-banner-bg-mid) 28%, transparent) 0%,
+    color-mix(in srgb, var(--brand-banner-bg-mid) 8%, transparent) 46%,
     transparent 75%
   );
 }
