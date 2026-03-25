@@ -103,18 +103,18 @@ export function BrandBannerSection() {
             </div>
           </div>
 
-          <div className="hero-col-enter-delay relative mx-auto flex w-full max-w-lg items-center justify-center py-4 lg:max-w-none lg:py-0">
+          <div className="hero-col-enter-delay relative mx-auto flex w-full max-w-2xl items-center justify-center py-4 lg:max-w-none lg:py-0">
             <div
-              className="hero-pizza-shadow pointer-events-none absolute bottom-[6%] left-1/2 z-0 h-10 w-[min(72%,280px)] -translate-x-1/2 rounded-[100%] bg-orange-900/20 blur-2xl"
+              className="hero-pizza-shadow pointer-events-none absolute bottom-[5%] left-1/2 z-0 h-12 w-[min(78%,380px)] -translate-x-1/2 rounded-[100%] bg-orange-900/20 blur-2xl"
               aria-hidden
             />
-            <div className="hero-pizza-bob relative z-10 aspect-[4/3] w-full max-w-[420px]">
+            <div className="hero-pizza-bob relative z-10 aspect-[4/3] w-full max-w-[580px]">
               <Image
                 src={HERO_PIZZA_SRC}
                 alt={`${bb.titleAccent} — ${bb.heroFeaturedLabel}`}
                 fill
                 priority
-                sizes="(max-width: 1024px) 90vw, 420px"
+                sizes="(max-width: 640px) 94vw, (max-width: 1024px) 80vw, 580px"
                 className="object-contain object-center mix-blend-multiply drop-shadow-[0_20px_40px_rgba(238,49,36,0.25)]"
               />
             </div>
