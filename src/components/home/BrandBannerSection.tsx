@@ -1,13 +1,16 @@
 'use client'
 
+import Image from 'next/image'
 import Link from 'next/link'
 import { useI18n } from '@/i18n/I18nContext'
-import { PROMO_COPY } from '@/components/home/promo-food-banner/promoFoodBanner.constants'
-import { HeroFoodPlateSvg } from '@/components/home/promo-food-banner/HeroFoodPlateSvg'
+import {
+  HERO_BANNER_PIZZA_IMAGE,
+  PROMO_COPY,
+} from '@/components/home/promo-food-banner/promoFoodBanner.constants'
 import { PromoBannerDeliveryArrow, PromoBannerSparkles } from '@/components/home/promo-food-banner/PromoBannerGraphics'
 
 /**
- * Բրենդային բաններ՝ երկու սյուն, խորը կարմիր տեքստուրա, վեկտորային «թարման» (առանց ֆոտոյի)։
+ * Բրենդային բաններ՝ երկու սյուն, խորը կարմիր տեքստուրա, հերո պատկեր (պիցա)։
  */
 export function BrandBannerSection() {
   const { t } = useI18n()
@@ -79,8 +82,16 @@ export function BrandBannerSection() {
 
             <div className="relative mt-10 flex w-full items-center justify-center sm:mt-12 lg:mt-14">
               <PromoBannerSparkles />
-              <div className="animate-promo-plate-float relative z-[5] flex items-center justify-center">
-                <HeroFoodPlateSvg />
+              <div className="animate-promo-plate-float relative z-[5] flex w-full max-w-[min(100%,420px)] items-center justify-center sm:max-w-[480px]">
+                <Image
+                  src={HERO_BANNER_PIZZA_IMAGE.src}
+                  alt=""
+                  width={HERO_BANNER_PIZZA_IMAGE.width}
+                  height={HERO_BANNER_PIZZA_IMAGE.height}
+                  className="h-auto w-full drop-shadow-[0_20px_50px_rgba(0,0,0,0.35)]"
+                  priority
+                  sizes="(max-width: 640px) 85vw, (max-width: 1024px) 45vw, 480px"
+                />
               </div>
             </div>
           </div>
