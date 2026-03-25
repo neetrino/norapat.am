@@ -9,8 +9,14 @@ import { useCart } from '@/hooks/useCart'
 import { useWishlist } from '@/hooks/useWishlist'
 import { useHydration } from '@/hooks/useHydration'
 import { useI18n } from '@/i18n/I18nContext'
+import type { PublicSiteSettingsState } from '@/hooks/usePublicSiteSettings'
+import { SiteBrandMark } from '@/components/SiteBrandMark'
 
-export default function DesktopHeader() {
+interface DesktopHeaderProps {
+  branding: PublicSiteSettingsState
+}
+
+export default function DesktopHeader({ branding }: DesktopHeaderProps) {
   const { t } = useI18n()
   const { nav, auth, search, wishlist } = t
   const isHydrated = useHydration()
@@ -40,15 +46,7 @@ export default function DesktopHeader() {
     <header className="bg-white shadow-sm fixed top-0 left-0 right-0 z-[60]" style={{ position: 'fixed' }}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center py-4">
-          <Link
-            href="/"
-            className="flex items-center min-h-[3rem] rounded-lg hover:opacity-90 transition-opacity focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-500"
-            aria-label={nav.siteBrand}
-          >
-            <span className="text-2xl sm:text-3xl font-bold text-orange-500 tracking-tight">
-              {nav.siteBrand}
-            </span>
-          </Link>
+          <SiteBrandMark variant="desktop" branding={branding} />
 
           {/* Desktop Navigation */}
           <nav className="flex space-x-2">

@@ -3,10 +3,14 @@
 import Link from 'next/link'
 import { Phone, Mail, MapPin, Clock, Facebook, Instagram } from 'lucide-react'
 import { useI18n } from '@/i18n/I18nContext'
+import { usePublicSiteSettings } from '@/hooks/usePublicSiteSettings'
+import { SiteBrandMark } from '@/components/SiteBrandMark'
 
 export default function Footer() {
   const { t } = useI18n()
   const { nav, footer: f } = t
+  const branding = usePublicSiteSettings()
+
   return (
     <footer className="bg-white border-t border-gray-200 text-gray-900 py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -14,9 +18,7 @@ export default function Footer() {
           {/* Company Info */}
           <div className="md:col-span-2">
             <div className="mb-4">
-              <p className="text-2xl font-bold text-orange-500 tracking-tight">
-                {nav.siteBrand}
-              </p>
+              <SiteBrandMark variant="footer" branding={branding} />
             </div>
             <p className="text-gray-600 mb-4">
               {f.tagline}

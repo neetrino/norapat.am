@@ -3,6 +3,16 @@ import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth'
 import { isR2Configured, uploadToR2 } from '@/lib/r2'
 
+const LOGO_MAX_BYTES = 2 * 1024 * 1024
+
+const MIME_TO_EXT: Record<string, string> = {
+  'image/png': 'png',
+  'image/jpeg': 'jpg',
+  'image/gif': 'gif',
+}
+
+const ALLOWED_LOGO_MIME = new Set(Object.keys(MIME_TO_EXT))
+
 export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions)
@@ -30,21 +40,22 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    if (!file.type.startsWith('image/')) {
+    if (!ALLOWED_LOGO_MIME.has(file.type)) {
       return NextResponse.json(
-        { error: 'File must be an image' },
+        { error: 'Допустимы только PNG, JPG или GIF' },
         { status: 400 }
       )
     }
 
-    if (file.size > 2 * 1024 * 1024) {
+    if (file.size > LOGO_MAX_BYTES) {
       return NextResponse.json(
-        { error: 'File size must be less than 2MB' },
+        { error: 'Размер файла должен быть меньше 2 МБ' },
         { status: 400 }
       )
     }
 
-    const key = 'images/logo.png'
+    const ext = MIME_TO_EXT[file.type] ?? 'png'
+    const key = `images/logo.${ext}`
     const bytes = await file.arrayBuffer()
     const buffer = Buffer.from(bytes)
     const fullUrl = await uploadToR2(key, buffer, file.type)

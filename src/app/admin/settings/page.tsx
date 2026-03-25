@@ -7,6 +7,7 @@ import { Settings, Save, ArrowLeft, Image as ImageIcon } from 'lucide-react'
 import Link from 'next/link'
 import ImageUpload from '@/components/ImageUpload'
 import Footer from '@/components/Footer'
+import { SITE_SETTING_KEYS, type SiteSettingKey } from '@/lib/siteSettings.constants'
 
 interface SiteSettings {
   logo?: string
@@ -15,6 +16,15 @@ interface SiteSettings {
   contactPhone?: string
   contactEmail?: string
   address?: string
+}
+
+async function postSiteSetting(key: SiteSettingKey, value: string): Promise<boolean> {
+  const response = await fetch('/api/admin/settings', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ key, value }),
+  })
+  return response.ok
 }
 
 export default function AdminSettings() {
@@ -55,21 +65,19 @@ export default function AdminSettings() {
     setMessage(null)
 
     try {
-      // Сохраняем каждую настройку отдельно
-      const promises = Object.entries(settings).map(([key, value]) =>
-        fetch('/api/admin/settings', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ key, value }),
-        })
+      const responses = await Promise.all(
+        SITE_SETTING_KEYS.map((key) =>
+          postSiteSetting(key, settings[key] ?? '')
+        )
       )
 
-      await Promise.all(promises)
+      if (responses.some((ok) => !ok)) {
+        setMessage({ type: 'error', text: 'Ошибка при сохранении настроек' })
+        return
+      }
+
       setMessage({ type: 'success', text: 'Настройки успешно сохранены!' })
-    } catch (error) {
-      console.error('Error saving settings:', error)
+    } catch {
       setMessage({ type: 'error', text: 'Ошибка при сохранении настроек' })
     } finally {
       setIsSaving(false)
@@ -77,16 +85,30 @@ export default function AdminSettings() {
   }
 
   const updateSetting = (key: keyof SiteSettings, value: string) => {
-    setSettings(prev => ({ ...prev, [key]: value }))
+    setSettings((prev) => ({ ...prev, [key]: value }))
   }
 
-  const updateLogo = () => {
-    // Логотип обновляется автоматически через API
-    setMessage({ type: 'success', text: 'Логотип успешно обновлен!' })
-    // Обновляем страницу через 1 секунду, чтобы показать новый логотип
-    setTimeout(() => {
-      window.location.reload()
-    }, 1000)
+  const handleLogoUploaded = async (imageUrl: string) => {
+    setSettings((prev) => ({ ...prev, logo: imageUrl }))
+    const ok = await postSiteSetting('logo', imageUrl)
+    setMessage(
+      ok
+        ? { type: 'success', text: 'Логотип загружен и сохранён.' }
+        : {
+            type: 'error',
+            text: 'Не удалось сохранить URL логотипа. Нажмите «Сохранить настройки».',
+          }
+    )
+  }
+
+  const handleLogoRemove = async () => {
+    setSettings((prev) => ({ ...prev, logo: '' }))
+    const ok = await postSiteSetting('logo', '')
+    setMessage(
+      ok
+        ? { type: 'success', text: 'Логотип удалён из настроек.' }
+        : { type: 'error', text: 'Не удалось удалить логотип.' }
+    )
   }
 
   if (status === 'loading' || isLoading) {
@@ -156,15 +178,10 @@ export default function AdminSettings() {
               </p>
 
               <ImageUpload
-                onImageChange={() => {
-                  updateLogo()
-                }}
-                onImageRemove={() => {
-                  setMessage({
-                    type: 'success',
-                    text: 'Превью в форме сброшено.',
-                  })
-                }}
+                currentImage={settings.logo}
+                onImageChange={handleLogoUploaded}
+                onImageRemove={handleLogoRemove}
+                accept="image/png,image/jpeg,image/jpg,image/gif"
                 maxSize={2}
                 className="max-w-md"
               />

@@ -4,8 +4,14 @@ import Link from 'next/link'
 import { Search } from 'lucide-react'
 import { useState } from 'react'
 import { useI18n } from '@/i18n/I18nContext'
+import type { PublicSiteSettingsState } from '@/hooks/usePublicSiteSettings'
+import { SiteBrandMark } from '@/components/SiteBrandMark'
 
-export default function MobileHeader() {
+interface MobileHeaderProps {
+  branding: PublicSiteSettingsState
+}
+
+export default function MobileHeader({ branding }: MobileHeaderProps) {
   const { t } = useI18n()
   const { search, nav } = t
   const [searchQuery, setSearchQuery] = useState('')
@@ -17,15 +23,7 @@ export default function MobileHeader() {
         <div className="flex items-center gap-2">
           <div className="flex-1 flex justify-start min-w-0 z-[101]" />
           <div className="flex-shrink-0">
-            <Link
-              href="/"
-              className="block hover:opacity-90 transition-opacity"
-              aria-label={nav.siteBrand}
-            >
-              <span className="text-lg font-bold text-orange-500 tracking-tight mx-auto block text-center">
-                {nav.siteBrand}
-              </span>
-            </Link>
+            <SiteBrandMark variant="mobile" branding={branding} />
           </div>
 
           {/* Mobile Search Button */}

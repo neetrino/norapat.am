@@ -3,9 +3,11 @@
 import { usePathname } from 'next/navigation'
 import MobileHeader from './MobileHeader'
 import DesktopHeader from './DesktopHeader'
+import { usePublicSiteSettings } from '@/hooks/usePublicSiteSettings'
 
 export default function Header() {
   const pathname = usePathname()
+  const branding = usePublicSiteSettings()
 
   if (pathname?.startsWith('/admin')) {
     return null
@@ -14,10 +16,10 @@ export default function Header() {
   return (
     <>
       <div className="lg:hidden">
-        <MobileHeader />
+        <MobileHeader branding={branding} />
       </div>
       <div className="hidden lg:block">
-        <DesktopHeader />
+        <DesktopHeader branding={branding} />
       </div>
     </>
   )
