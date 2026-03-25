@@ -30,7 +30,7 @@ const ProductCard = memo(({ product, onAddToCart, variant = 'default', addedToCa
   return (
     <Link 
       href={`/products/${product.id}`}
-      className={`relative block w-full rounded-[1.75rem] overflow-hidden cursor-pointer shadow-[0_4px_24px_rgba(0,0,0,0.06),0_1px_3px_rgba(0,0,0,0.04)] ${
+      className={`relative block w-full cursor-pointer overflow-hidden rounded-[1.75rem] shadow-[0_6px_28px_rgba(15,23,42,0.07),0_1px_2px_rgba(15,23,42,0.04)] transition-shadow duration-300 hover:shadow-[0_12px_36px_rgba(15,23,42,0.1),0_2px_6px_rgba(15,23,42,0.05)] ${
         isCompact ? 'rounded-2xl' : ''
       }`}
       style={{
@@ -199,14 +199,14 @@ const ProductCard = memo(({ product, onAddToCart, variant = 'default', addedToCa
       <div className={`relative ${isCompact ? 'p-5 -mt-3' : 'px-7 pb-7 pt-5 -mt-5'}`}>
         {/* Product Name */}
         <h3 className={`font-bold text-slate-800 line-clamp-2 tracking-tight ${
-          isCompact ? 'text-base mb-2' : 'text-xl mb-3'
+          isCompact ? 'mb-2 text-[1.05rem] leading-snug sm:text-base' : 'text-xl mb-3'
         }`}>
           {getProductDisplayName(product.name, locale)}
         </h3>
 
         {/* Main attributes (compact): category + ingredients preview */}
         {isCompact && (product.category?.name || product.ingredients?.length) ? (
-          <p className="text-gray-500 text-xs mb-3 line-clamp-2">
+          <p className="mb-3 line-clamp-2 text-[13px] leading-snug text-slate-600 sm:text-sm">
             {[
               product.category?.name && getCategoryDisplayName(product.category.name, locale),
               product.ingredients?.length

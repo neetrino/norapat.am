@@ -128,6 +128,8 @@ export const hy: AppMessages = {
     showCategories: 'Ցուցադրել կատեգորիաները',
     viewFullMenu: 'Դիտել ամբողջ մենյուն',
     viewEntireShort: 'Դիտել ամբողջը',
+    carouselScrollPrev: 'Ոլորել ձախ',
+    carouselScrollNext: 'Ոլորել աջ',
     whyUsTitle: 'Ինչու՞ ընտրում են մեզ',
     whyUsSubtitle:
       'Ստեղծել ենք ավանդույթների և նորարարության կատարյալ համադրություն ձեր հաճույքի համար',

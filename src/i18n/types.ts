@@ -134,6 +134,8 @@ export interface AppMessages {
     viewFullMenu: string
     /** Հորիզոնական շարքի վերջի նեղ CTA («Դիտել ամբողջը») */
     viewEntireShort: string
+    carouselScrollPrev: string
+    carouselScrollNext: string
     whyUsTitle: string
     whyUsSubtitle: string
     featureFastTitle: string
