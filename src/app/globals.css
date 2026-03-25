@@ -63,6 +63,96 @@ body {
   overflow-y: auto;
 }
 
+/* BrandBannerSection — promo food (vector plate, texture, brush fonts) */
+.font-promo-caveat {
+  font-family: var(--font-promo-caveat), cursive, ui-serif, Georgia, serif;
+}
+
+.font-promo-marker {
+  font-family: var(--font-promo-marker), cursive, ui-sans-serif, system-ui, sans-serif;
+}
+
+.promo-food-banner-bg {
+  position: relative;
+  background-color: #a51d1d;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.12'/%3E%3C/svg%3E");
+  background-size: 280px 280px;
+  background-blend-mode: multiply;
+}
+
+.promo-food-banner-vignette::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse 70% 65% at 50% 45%,
+    transparent 22%,
+    rgba(0, 0, 0, 0.38) 100%
+  );
+}
+
+@keyframes promo-sparkle {
+  0%,
+  100% {
+    opacity: 0.5;
+    transform: scale(0.92);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-promo-sparkle {
+  animation: promo-sparkle 2.8s ease-in-out infinite;
+}
+
+.animate-promo-sparkle-delay {
+  animation: promo-sparkle 2.8s ease-in-out infinite;
+  animation-delay: 0.6s;
+}
+
+@keyframes promo-plate-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.animate-promo-plate-float {
+  animation: promo-plate-float 5s ease-in-out infinite;
+}
+
+.promo-arrow-draw path {
+  stroke-dasharray: 72;
+  stroke-dashoffset: 72;
+  animation: promo-arrow-draw 1.15s ease-out forwards;
+}
+
+.promo-arrow-draw path:nth-child(2) {
+  animation-delay: 0.14s;
+}
+
+@keyframes promo-arrow-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-promo-sparkle,
+  .animate-promo-sparkle-delay,
+  .animate-promo-plate-float,
+  .promo-arrow-draw path {
+    animation: none !important;
+  }
+}
+
 /* Line clamp utilities */
 .line-clamp-2 {
   display: -webkit-box;

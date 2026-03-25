@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Caveat, Inter, Permanent_Marker } from "next/font/google";
 import "./globals.css";
 import ClientProviders from "@/components/ClientProviders";
 import MobileBottomNav from "@/components/MobileBottomNav";
@@ -10,6 +10,17 @@ import Header from "@/components/Header";
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
+});
+
+const promoCaveat = Caveat({
+  subsets: ["latin"],
+  variable: "--font-promo-caveat",
+});
+
+const promoMarker = Permanent_Marker({
+  weight: "400",
+  subsets: ["latin"],
+  variable: "--font-promo-marker",
 });
 
 export const metadata: Metadata = {
@@ -31,7 +42,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="hy" data-scroll-behavior="smooth" suppressHydrationWarning>
-      <body className={`${inter.variable} font-sans antialiased overflow-visible`}>
+      <body
+        className={`${inter.variable} ${promoCaveat.variable} ${promoMarker.variable} font-sans antialiased overflow-visible`}
+      >
         <ServiceWorkerProvider />
         <ClientProviders>
           <Header />
