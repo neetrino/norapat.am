@@ -117,6 +117,8 @@ export const hy: AppMessages = {
     ariaBestSellers: 'Լավագույն ուտեսներ',
     ariaPromo: 'Զեղչեր և հատուկ առաջարկներ',
     productsLoading: 'Բեռնում ենք մենյուն…',
+    showcaseEmptyPromo: 'Այս պահին հատուկ առաջարկներ չկան',
+    showcaseEmptyBest: 'Այս պահին լավագույն ապրանքների ցուցակը դատարկ է',
     categoryEmptyTitle: (category: string) =>
       `«${category}» կատեգորիայում ապրանքները շուտով կհայտնվեն`,
     categoryEmptyHint: 'Մինչ այդ դիտեք այլ կատեգորիաներ',
@@ -263,6 +265,8 @@ export const hy: AppMessages = {
   },
   products: {
     allCategories: 'Բոլորը',
+    tabSpecialOffers: 'Հատուկ առաջարկներ',
+    tabBestProducts: 'Լավագույն ապրանքներ',
     uncategorized: 'Առանց կատեգորիայի',
     categoryLabel: 'Կատեգորիա',
     sortLabel: 'Տեսակավորում',
@@ -276,12 +280,17 @@ export const hy: AppMessages = {
     searchNoResultsTitle: (query: string) =>
       `«${query}» հարցման համար արդյունք չի գտնվել`,
     searchNoResultsHint:
-      'Որոնումը կատարվել է ամբողջ մենյուում։ Փոխեք հարցումը կամ ընտրեք կատեգորիա։',
+      'Փոխեք հարցումը կամ անցեք մյուս ներդիր։',
     clearSearch: 'Մաքրել որոնումը',
     showAllProducts: 'Ցուցադրել բոլոր ապրանքները',
     categoryEmpty: (category: string) =>
       `«${category}» կատեգորիայում ապրանքներ չեն գտնվել`,
     tryAnotherCategory: 'Փորձեք այլ կատեգորիա',
+    tryOtherTab: 'Փորձեք մյուս ներդիրը',
+    segmentEmptyPromo:
+      'Այս բաժնում դեռ հատուկ առաջարկներ չկան։ Կառավարման վահանակում նշեք ապրանքները «Վաճառքի հիթ» կամ «Նորինք» կարգավիճակով։',
+    segmentEmptyBest:
+      'Այս բաժնում դեռ ընտրված լավագույն ապրանքներ չկան։ Կառավարման վահանակում նշեք ապրանքները «Հիթ», «Նորինք» կամ «Դասական» կարգավիճակով։',
   },
   productCard: {
     uncategorized: 'Առանց կատեգորիայի',

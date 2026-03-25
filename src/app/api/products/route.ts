@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import type { Prisma } from '@prisma/client'
+import { ProductStatus } from '@prisma/client'
 import { prisma } from '@/lib/prisma'
+
+const PRODUCT_STATUS_VALUES = new Set<string>(Object.values(ProductStatus))
 
 // GET /api/products - ստանալ բոլոր ապրանքները
 export async function GET(request: NextRequest) {
@@ -9,6 +12,7 @@ export async function GET(request: NextRequest) {
     const category = searchParams.get('category')
     const search = searchParams.get('search')
     const status = searchParams.get('status')
+    const statusInParam = searchParams.get('statusIn')
     const idsParam = searchParams.get('ids')
     const sort = searchParams.get('sort') ?? 'newest'
     const minPrice = searchParams.get('minPrice')
@@ -31,8 +35,16 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    if (status) {
-      whereClause.status = status
+    if (statusInParam) {
+      const parsed = statusInParam
+        .split(',')
+        .map((s) => s.trim())
+        .filter((s): s is ProductStatus => PRODUCT_STATUS_VALUES.has(s))
+      if (parsed.length > 0) {
+        whereClause.status = { in: parsed }
+      }
+    } else if (status && PRODUCT_STATUS_VALUES.has(status)) {
+      whereClause.status = status as ProductStatus
     }
 
     if (search && !idsParam) {

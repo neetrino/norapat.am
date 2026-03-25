@@ -121,6 +121,8 @@ export interface AppMessages {
     ariaBestSellers: string
     ariaPromo: string
     productsLoading: string
+    showcaseEmptyPromo: string
+    showcaseEmptyBest: string
     categoryEmptyTitle: (category: string) => string
     categoryEmptyHint: string
     showFirstCategory: (name: string) => string
@@ -248,6 +250,8 @@ export interface AppMessages {
   }
   products: {
     allCategories: string
+    tabSpecialOffers: string
+    tabBestProducts: string
     uncategorized: string
     categoryLabel: string
     sortLabel: string
@@ -264,6 +268,9 @@ export interface AppMessages {
     showAllProducts: string
     categoryEmpty: (category: string) => string
     tryAnotherCategory: string
+    tryOtherTab: string
+    segmentEmptyPromo: string
+    segmentEmptyBest: string
   }
   productCard: {
     uncategorized: string
