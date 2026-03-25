@@ -13,10 +13,10 @@ type AboutCopy = AppMessages['aboutPage']
 
 export function AboutHero({ a }: { a: AboutCopy }) {
   return (
-    <section className="bg-orange-500 text-white py-24 pt-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <h1 className="text-5xl md:text-7xl font-bold mb-8">{a.heroTitle}</h1>
-        <p className="text-xl md:text-2xl text-orange-100 max-w-4xl mx-auto leading-relaxed">
+    <section className="promo-food-banner-bg promo-food-banner-vignette relative flex min-h-[min(50vh,26rem)] items-center justify-center overflow-hidden py-14 text-white sm:min-h-[min(52vh,30rem)] sm:py-16 md:py-20">
+      <div className="relative z-10 mx-auto w-full max-w-7xl px-4 text-center sm:px-6 lg:px-8">
+        <h1 className="mb-8 text-5xl font-bold md:text-7xl">{a.heroTitle}</h1>
+        <p className="mx-auto max-w-4xl text-xl leading-relaxed text-white/90 md:text-2xl">
           {a.heroSubtitle}
         </p>
       </div>
@@ -108,17 +108,19 @@ export function AboutStats({ a }: { a: AboutCopy }) {
     { value: a.statPrepValue, label: a.statPrepLabel },
   ]
   return (
-    <div className="bg-orange-500 rounded-3xl p-16 text-white text-center mb-16">
-      <h2 className="text-4xl font-bold mb-12">{a.statsTitle}</h2>
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-        {stats.map(({ value, label }) => (
-          <div key={label} className="group">
-            <div className="text-6xl font-bold mb-4 group-hover:scale-110 transition-transform">
-              {value}
+    <div className="promo-food-banner-bg promo-food-banner-vignette relative mb-16 overflow-hidden rounded-3xl text-white">
+      <div className="relative z-10 flex min-h-[min(42vh,24rem)] flex-col justify-center gap-10 px-6 py-12 text-center sm:px-10 sm:py-14 md:min-h-[26rem] md:px-14 md:py-16">
+        <h2 className="text-4xl font-bold">{a.statsTitle}</h2>
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
+          {stats.map(({ value, label }) => (
+            <div key={label} className="group">
+              <div className="mb-4 text-6xl font-bold transition-transform group-hover:scale-110">
+                {value}
+              </div>
+              <div className="text-xl text-white/90">{label}</div>
             </div>
-            <div className="text-xl text-orange-100">{label}</div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     </div>
   )
