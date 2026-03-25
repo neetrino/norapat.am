@@ -250,8 +250,6 @@ export interface AppMessages {
   }
   products: {
     allCategories: string
-    tabSpecialOffers: string
-    tabBestProducts: string
     uncategorized: string
     categoryLabel: string
     sortLabel: string
@@ -268,9 +266,8 @@ export interface AppMessages {
     showAllProducts: string
     categoryEmpty: (category: string) => string
     tryAnotherCategory: string
-    tryOtherTab: string
-    segmentEmptyPromo: string
-    segmentEmptyBest: string
+    /** Մենյու՝ «Բոլորը», առանց կատեգորիայի ֆիլտրի, դատարկ ցուցակ */
+    catalogEmpty: string
   }
   productCard: {
     uncategorized: string

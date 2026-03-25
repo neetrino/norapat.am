@@ -5,25 +5,22 @@ import { useSearchParams } from 'next/navigation'
 import { Search, ArrowDownUp, SlidersHorizontal } from 'lucide-react'
 import { useCart } from '@/hooks/useCart'
 import { useWishlist } from '@/hooks/useWishlist'
-import { Product } from '@/types'
+import { Product, type CategoryWithCount } from '@/types'
 import Footer from '@/components/Footer'
 import ProductCard from '@/components/ProductCard'
+import { ProductsPageCategoryChips } from '@/components/ProductsPageCategoryChips'
 import { useI18n } from '@/i18n/I18nContext'
-
-/** Հատուկ առաջարկներ — ինչպես /api/products/promo (HIT, NEW) */
-const PROMO_STATUS_IN = 'HIT,NEW'
-/** Լավագույն ապրանքներ — ինչպես /api/products/featured առանց status (HIT, NEW, CLASSIC) */
-const BEST_STATUS_IN = 'HIT,NEW,CLASSIC'
-
-type ProductSegment = 'promo' | 'best'
+import { getCategoryDisplayName } from '@/i18n/getCategoryDisplayName'
 
 function ProductsPageContent() {
-  const { t } = useI18n()
+  const { t, locale } = useI18n()
   const productsCopy = t.products
   const searchCopy = t.search
   const searchParams = useSearchParams()
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([])
-  const [productSegment, setProductSegment] = useState<ProductSegment>('promo')
+  const [selectedCategoryName, setSelectedCategoryName] = useState<string | null>(null)
+  const [categories, setCategories] = useState<CategoryWithCount[]>([])
+  const [categoriesLoading, setCategoriesLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('')
   const [sortOrder, setSortOrder] = useState<string>('newest')
@@ -40,10 +37,9 @@ function ProductsPageContent() {
     try {
       setLoading(true)
       const params = new URLSearchParams()
-      params.set(
-        'statusIn',
-        productSegment === 'promo' ? PROMO_STATUS_IN : BEST_STATUS_IN
-      )
+      if (selectedCategoryName) {
+        params.set('category', selectedCategoryName)
+      }
       if (debouncedSearchQuery) params.set('search', debouncedSearchQuery)
       params.set('sort', sortOrder)
       if (minPrice) params.set('minPrice', minPrice)
@@ -57,14 +53,32 @@ function ProductsPageContent() {
     } finally {
       setLoading(false)
     }
-  }, [productSegment, debouncedSearchQuery, sortOrder, minPrice, maxPrice])
+  }, [selectedCategoryName, debouncedSearchQuery, sortOrder, minPrice, maxPrice])
+
+  useEffect(() => {
+    const controller = new AbortController()
+    fetch('/api/categories', { signal: controller.signal, cache: 'no-store' })
+      .then((res) => {
+        if (!res.ok) throw new Error('Failed to fetch categories')
+        return res.json()
+      })
+      .then((data: CategoryWithCount[]) => {
+        setCategories(Array.isArray(data) ? data : [])
+      })
+      .catch(() => {
+        setCategories([])
+      })
+      .finally(() => {
+        setCategoriesLoading(false)
+      })
+    return () => controller.abort()
+  }, [])
 
   useEffect(() => {
     const searchParam = searchParams.get('search')
     if (searchParam) {
       setSearchQuery(searchParam)
       setDebouncedSearchQuery(searchParam)
-      setProductSegment('promo')
     }
   }, [searchParams])
 
@@ -120,21 +134,6 @@ function ProductsPageContent() {
     </div>
   )
 
-  const tabButtonClass = (active: boolean) =>
-    `px-6 py-3 rounded-2xl font-semibold transition-all duration-300 hover:scale-105 ${
-      active
-        ? 'bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-lg'
-        : 'bg-gray-100 text-gray-700 hover:bg-orange-100 hover:text-orange-600'
-    }`
-
-  const tabButtonStyle = (active: boolean) =>
-    active
-      ? {
-          boxShadow:
-            '0 8px 25px rgba(255, 107, 53, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1)',
-        }
-      : {}
-
   if (loading) {
     return (
       <div className="min-h-screen bg-white">
@@ -146,9 +145,9 @@ function ProductsPageContent() {
 
           <div className="bg-white rounded-2xl shadow-lg p-6 mb-8 animate-pulse">
             <div className="h-12 bg-gray-200 rounded mb-6"></div>
-            <div className="flex flex-wrap gap-3">
-              {[1, 2].map((i) => (
-                <div key={i} className="h-12 w-40 bg-gray-200 rounded"></div>
+            <div className="flex flex-wrap justify-center gap-3">
+              {[1, 2, 3, 4, 5, 6].map((i) => (
+                <div key={i} className="h-11 w-24 sm:h-12 sm:w-28 bg-gray-200 rounded-2xl" />
               ))}
             </div>
           </div>
@@ -234,24 +233,14 @@ function ProductsPageContent() {
             </div>
           </div>
 
-          <div className="flex flex-wrap justify-center gap-3 lg:gap-4">
-            <button
-              type="button"
-              onClick={() => setProductSegment('promo')}
-              className={tabButtonClass(productSegment === 'promo')}
-              style={tabButtonStyle(productSegment === 'promo')}
-            >
-              {productsCopy.tabSpecialOffers}
-            </button>
-            <button
-              type="button"
-              onClick={() => setProductSegment('best')}
-              className={tabButtonClass(productSegment === 'best')}
-              style={tabButtonStyle(productSegment === 'best')}
-            >
-              {productsCopy.tabBestProducts}
-            </button>
-          </div>
+          <ProductsPageCategoryChips
+            categories={categories}
+            loading={categoriesLoading}
+            selectedCategoryName={selectedCategoryName}
+            onSelectCategory={setSelectedCategoryName}
+            allLabel={productsCopy.allCategories}
+            locale={locale}
+          />
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 gap-y-16 md:gap-12 overflow-visible mt-24">
@@ -290,7 +279,7 @@ function ProductsPageContent() {
                   <button
                     type="button"
                     onClick={() => {
-                      setProductSegment('promo')
+                      setSelectedCategoryName(null)
                       setSearchQuery('')
                       setDebouncedSearchQuery('')
                     }}
@@ -302,12 +291,22 @@ function ProductsPageContent() {
               </>
             ) : (
               <>
-                <p className="text-gray-500 text-lg max-w-lg mx-auto">
-                  {productSegment === 'promo'
-                    ? productsCopy.segmentEmptyPromo
-                    : productsCopy.segmentEmptyBest}
-                </p>
-                <p className="text-gray-400 mt-2">{productsCopy.tryOtherTab}</p>
+                {selectedCategoryName ? (
+                  <>
+                    <p className="text-gray-500 text-lg max-w-lg mx-auto">
+                      {productsCopy.categoryEmpty(
+                        getCategoryDisplayName(selectedCategoryName, locale)
+                      )}
+                    </p>
+                    <p className="text-gray-400 mt-2">
+                      {productsCopy.tryAnotherCategory}
+                    </p>
+                  </>
+                ) : (
+                  <p className="text-gray-500 text-lg max-w-lg mx-auto">
+                    {productsCopy.catalogEmpty}
+                  </p>
+                )}
               </>
             )}
           </div>

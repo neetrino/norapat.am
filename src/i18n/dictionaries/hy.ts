@@ -265,8 +265,6 @@ export const hy: AppMessages = {
   },
   products: {
     allCategories: 'Բոլորը',
-    tabSpecialOffers: 'Հատուկ առաջարկներ',
-    tabBestProducts: 'Լավագույն ապրանքներ',
     uncategorized: 'Առանց կատեգորիայի',
     categoryLabel: 'Կատեգորիա',
     sortLabel: 'Տեսակավորում',
@@ -280,17 +278,14 @@ export const hy: AppMessages = {
     searchNoResultsTitle: (query: string) =>
       `«${query}» հարցման համար արդյունք չի գտնվել`,
     searchNoResultsHint:
-      'Փոխեք հարցումը կամ անցեք մյուս ներդիր։',
+      'Փոխեք հարցումը կամ ընտրեք այլ կատեգորիա։',
     clearSearch: 'Մաքրել որոնումը',
     showAllProducts: 'Ցուցադրել բոլոր ապրանքները',
     categoryEmpty: (category: string) =>
       `«${category}» կատեգորիայում ապրանքներ չեն գտնվել`,
     tryAnotherCategory: 'Փորձեք այլ կատեգորիա',
-    tryOtherTab: 'Փորձեք մյուս ներդիրը',
-    segmentEmptyPromo:
-      'Այս բաժնում դեռ հատուկ առաջարկներ չկան։ Կառավարման վահանակում նշեք ապրանքները «Վաճառքի հիթ» կամ «Նորինք» կարգավիճակով։',
-    segmentEmptyBest:
-      'Այս բաժնում դեռ ընտրված լավագույն ապրանքներ չկան։ Կառավարման վահանակում նշեք ապրանքները «Հիթ», «Նորինք» կամ «Դասական» կարգավիճակով։',
+    catalogEmpty:
+      'Այս պահին մենյուում հասանելի ապրանքներ չկան։ Ստուգեք ֆիլտրերը կամ փորձեք ավելի ուշ։',
   },
   productCard: {
     uncategorized: 'Առանց կատեգորիայի',
