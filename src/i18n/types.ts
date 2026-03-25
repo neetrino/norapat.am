@@ -39,6 +39,10 @@ export interface AppMessages {
     about: string
     contact: string
     navigation: string
+    /** Կարճ բրենդային անուն (aria-label, fallback) */
+    siteBrand: string
+    /** Լոգոտիպի պատկերի alt */
+    logoAlt: string
   }
   auth: {
     login: string

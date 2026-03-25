@@ -152,33 +152,18 @@ export default function AdminSettings() {
                 Логотип сайта
               </h2>
               <p className="text-gray-600 mb-4">
-                Загрузите новый логотип для сайта. Рекомендуемый размер: 180x60px
+                В шапке и подвале отображается текстовое название бренда (NORAPAT). Загрузка ниже сохраняет файл в хранилище (R2) для возможного использования позже; рекомендуемый размер: до 180×120px.
               </p>
-              
-              {/* Текущий логотип */}
-              <div className="mb-4">
-                <p className="text-sm font-medium text-gray-700 mb-2">Текущий логотип:</p>
-                <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
-                  <img 
-                    src="/logo.png" 
-                    alt="Current Logo" 
-                    className="h-16 w-auto"
-                    onError={(e) => {
-                      e.currentTarget.style.display = 'none'
-                    }}
-                  />
-                </div>
-              </div>
 
               <ImageUpload
-                currentImage="/logo.png"
-                onImageChange={(url) => {
-                  // Обновляем логотип через специальный API
+                onImageChange={() => {
                   updateLogo()
                 }}
                 onImageRemove={() => {
-                  // Можно добавить функцию сброса к дефолтному логотипу
-                  console.log('Reset to default logo')
+                  setMessage({
+                    type: 'success',
+                    text: 'Превью в форме сброшено.',
+                  })
                 }}
                 maxSize={2}
                 className="max-w-md"

@@ -1,7 +1,6 @@
 'use client'
 
 import Link from 'next/link'
-import Image from 'next/image'
 import { Phone, Mail, MapPin, Clock, Facebook, Instagram } from 'lucide-react'
 import { useI18n } from '@/i18n/I18nContext'
 
@@ -14,15 +13,10 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Company Info */}
           <div className="md:col-span-2">
-            <div className="flex items-center mb-4">
-              <Image 
-                src="/logo.png" 
-                alt="Pideh Armenia Logo" 
-                width={120} 
-                height={40}
-                className="h-10 w-auto"
-                style={{ width: "auto", height: "auto" }}
-              />
+            <div className="mb-4">
+              <p className="text-2xl font-bold text-orange-500 tracking-tight">
+                {nav.siteBrand}
+              </p>
             </div>
             <p className="text-gray-600 mb-4">
               {f.tagline}

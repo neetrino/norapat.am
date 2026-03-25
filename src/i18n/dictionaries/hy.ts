@@ -35,6 +35,8 @@ export const hy: AppMessages = {
     about: 'Մեր մասին',
     contact: 'Կապ',
     navigation: 'Նավիգացիա',
+    siteBrand: 'NORAPAT',
+    logoAlt: 'NORAPAT food court',
   },
   auth: {
     login: 'Մուտք',

@@ -1,7 +1,6 @@
 'use client'
 
 import Link from 'next/link'
-import Image from 'next/image'
 import { ShoppingCart, User, LogOut, Search, Heart } from 'lucide-react'
 import { usePathname } from 'next/navigation'
 import { useState } from 'react'
@@ -41,16 +40,14 @@ export default function DesktopHeader() {
     <header className="bg-white shadow-sm fixed top-0 left-0 right-0 z-[60]" style={{ position: 'fixed' }}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center py-4">
-          {/* Logo */}
-          <Link href="/" className="hover:opacity-80 transition-opacity">
-            <Image 
-              src="/logo.png" 
-              alt="Pideh Armenia Logo" 
-              width={180} 
-              height={60}
-              className="h-16 w-auto"
-              priority
-            />
+          <Link
+            href="/"
+            className="flex items-center min-h-[3rem] rounded-lg hover:opacity-90 transition-opacity focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-500"
+            aria-label={nav.siteBrand}
+          >
+            <span className="text-2xl sm:text-3xl font-bold text-orange-500 tracking-tight">
+              {nav.siteBrand}
+            </span>
           </Link>
 
           {/* Desktop Navigation */}

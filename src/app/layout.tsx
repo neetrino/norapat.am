@@ -24,15 +24,10 @@ const promoMarker = Permanent_Marker({
 });
 
 export const metadata: Metadata = {
-  title: "Pideh Armenia — հայկական պիդե, նոր համ",
+  title: "NORAPAT — հայկական պիդե, նոր համ",
   description:
     "Ավանդական ձև՝ ժամանակակից լցոնումներով։ 15 եզակի համ իրական գուրմանների համար։ Առաքում Երևանում։",
-  keywords: "պիդե, հայկական պիդե, մինի պիցցա, ուտելիքի առաքում, Երևան, Հայաստան",
-  icons: {
-    icon: '/logo.png',
-    shortcut: '/logo.png',
-    apple: '/logo.png',
-  },
+  keywords: "NORAPAT, պիդե, հայկական պիդե, մինի պիցցա, ուտելիքի առաքում, Երևան, Հայաստան",
 };
 
 export default function RootLayout({

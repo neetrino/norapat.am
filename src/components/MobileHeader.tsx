@@ -1,14 +1,13 @@
 'use client'
 
 import Link from 'next/link'
-import Image from 'next/image'
 import { Search } from 'lucide-react'
 import { useState } from 'react'
 import { useI18n } from '@/i18n/I18nContext'
 
 export default function MobileHeader() {
   const { t } = useI18n()
-  const { search } = t
+  const { search, nav } = t
   const [searchQuery, setSearchQuery] = useState('')
   const [isSearchOpen, setIsSearchOpen] = useState(false)
 
@@ -18,16 +17,14 @@ export default function MobileHeader() {
         <div className="flex items-center gap-2">
           <div className="flex-1 flex justify-start min-w-0 z-[101]" />
           <div className="flex-shrink-0">
-            <Link href="/" className="hover:opacity-80 transition-all duration-300 hover:scale-105 block">
-              <Image 
-                src="/logo.png" 
-                alt="Pideh Armenia Logo" 
-                width={60} 
-                height={18}
-                className="h-4 w-auto"
-                style={{ width: "auto", height: "auto" }}
-                priority
-              />
+            <Link
+              href="/"
+              className="block hover:opacity-90 transition-opacity"
+              aria-label={nav.siteBrand}
+            >
+              <span className="text-lg font-bold text-orange-500 tracking-tight mx-auto block text-center">
+                {nav.siteBrand}
+              </span>
             </Link>
           </div>
 
