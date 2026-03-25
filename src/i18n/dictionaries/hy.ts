@@ -258,10 +258,6 @@ export const hy: AppMessages = {
     processStep3Desc: 'Ձեռքով ձևավորում ենք նավակներ և ավելացնում լցոնում',
     processStep4Title: 'Թխում',
     processStep4Desc: 'Թխում ենք մինչև ոսկեգույն կեղև',
-    ctaTitle: 'Պատրա՞ստ եք համտեսել',
-    ctaSubtitle: 'Պատվիրեք հիմա կամ կապվեք մեզ հետ՝ հատուկ պատվերի համար',
-    ctaMenu: 'Դիտել մենյու',
-    ctaContact: 'Կապ',
   },
   products: {
     allCategories: 'Բոլորը',

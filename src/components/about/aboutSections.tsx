@@ -1,4 +1,3 @@
-import Link from 'next/link'
 import {
   Award,
   ChefHat,
@@ -150,28 +149,5 @@ export function AboutProcess({ a }: { a: AboutCopy }) {
         ))}
       </div>
     </div>
-  )
-}
-
-export function AboutCta({ a }: { a: AboutCopy }) {
-  return (
-    <section className="rounded-3xl bg-gradient-to-r from-orange-500 to-red-500 p-12 md:p-16 text-white text-center shadow-xl mb-4">
-      <h2 className="text-3xl md:text-4xl font-bold mb-4">{a.ctaTitle}</h2>
-      <p className="text-lg text-orange-100 max-w-2xl mx-auto mb-8">{a.ctaSubtitle}</p>
-      <div className="flex flex-col sm:flex-row gap-4 justify-center">
-        <Link
-          href="/products"
-          className="inline-flex justify-center bg-white text-orange-600 px-8 py-4 rounded-xl font-bold hover:bg-orange-50 transition-colors"
-        >
-          {a.ctaMenu}
-        </Link>
-        <Link
-          href="/contact"
-          className="inline-flex justify-center border-2 border-white text-white px-8 py-4 rounded-xl font-bold hover:bg-white/10 transition-colors"
-        >
-          {a.ctaContact}
-        </Link>
-      </div>
-    </section>
   )
 }

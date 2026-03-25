@@ -3,7 +3,6 @@
 import Footer from '@/components/Footer'
 import { useI18n } from '@/i18n/I18nContext'
 import {
-  AboutCta,
   AboutHero,
   AboutProcess,
   AboutStats,
@@ -29,7 +28,6 @@ export function AboutPageView() {
         <AboutTeam a={a} />
         <AboutStats a={a} />
         <AboutProcess a={a} />
-        <AboutCta a={a} />
       </div>
 
       <div className="hidden lg:block">

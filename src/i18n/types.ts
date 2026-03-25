@@ -243,10 +243,6 @@ export interface AppMessages {
     processStep3Desc: string
     processStep4Title: string
     processStep4Desc: string
-    ctaTitle: string
-    ctaSubtitle: string
-    ctaMenu: string
-    ctaContact: string
   }
   products: {
     allCategories: string
