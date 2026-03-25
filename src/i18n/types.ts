@@ -179,6 +179,8 @@ export interface AppMessages {
       empty: string
       goToMenu: string
       viewAllMenu: string
+      scrollPrev: string
+      scrollNext: string
       itemsCount: (n: number) => string
     }
     bestSellers: {

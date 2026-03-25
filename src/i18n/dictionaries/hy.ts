@@ -182,6 +182,8 @@ export const hy: AppMessages = {
       empty: 'Կատեգորիաներ դեռ չեն ավելացվել։',
       goToMenu: 'Գնալ մենյու',
       viewAllMenu: 'Դիտել ամբողջ մենյուն',
+      scrollPrev: 'Նախորդ կատեգորիաները',
+      scrollNext: 'Հաջորդ կատեգորիաները',
       itemsCount: (n: number) =>
         n === 1 ? `${n} ապրանք` : `${n} ապրանքներ`,
     },

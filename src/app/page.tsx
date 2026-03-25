@@ -135,7 +135,11 @@ export default function Home() {
       <BrandBannerSection />
 
       {/* 2. Կատեգորիաների ցուցադրման հատված (02-FUNCTIONAL 1.2) */}
-      <CategoriesSection onSelectCategory={setActiveCategory} productsSectionId="products-section" />
+      <CategoriesSection
+        activeCategory={activeCategory}
+        onSelectCategory={setActiveCategory}
+        productsSectionId="products-section"
+      />
 
       {/* 3. Լավագույն ուտեսներ (02-FUNCTIONAL 1.3) */}
       <BestSellersSection
