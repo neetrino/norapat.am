@@ -288,10 +288,9 @@ export const hy: AppMessages = {
       'Այս պահին մենյուում հասանելի ապրանքներ չկան։ Ստուգեք ֆիլտրերը կամ փորձեք ավելի ուշ։',
     paginationPrev: 'Նախորդ',
     paginationNext: 'Հաջորդ',
-    paginationPage: (current: number, totalPages: number) =>
-      `Էջ ${current} / ${totalPages}`,
     paginationAria: (current: number, totalPages: number) =>
       `Էջավորում, էջ ${current}՝ ${totalPages}-ից`,
+    paginationGoToPage: (page: number) => `Էջ ${page}`,
   },
   productCard: {
     uncategorized: 'Առանց կատեգորիայի',

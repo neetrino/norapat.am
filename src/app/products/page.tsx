@@ -2,13 +2,14 @@
 
 import { useState, useEffect, useCallback, useRef, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
-import { Search, ArrowDownUp, SlidersHorizontal, ChevronLeft, ChevronRight } from 'lucide-react'
+import { Search, ArrowDownUp, SlidersHorizontal } from 'lucide-react'
 import { useCart } from '@/hooks/useCart'
 import { useWishlist } from '@/hooks/useWishlist'
 import { Product, type CategoryWithCount } from '@/types'
 import Footer from '@/components/Footer'
 import ProductCard from '@/components/ProductCard'
 import { ProductsPageCategoryChips } from '@/components/ProductsPageCategoryChips'
+import { ProductsPagePagination } from '@/components/ProductsPagePagination'
 import { useI18n } from '@/i18n/I18nContext'
 import { getCategoryDisplayName } from '@/i18n/getCategoryDisplayName'
 import { MENU_PRODUCTS_PAGE_SIZE } from '@/constants/menuPagination.constants'
@@ -309,32 +310,15 @@ function ProductsPageContent() {
         </div>
 
         {showPagination && (
-          <nav
-            className="mt-12 flex flex-col items-center gap-4 sm:flex-row sm:justify-center sm:gap-6"
-            aria-label={productsCopy.paginationAria(menuPage, totalPages)}
-          >
-            <button
-              type="button"
-              disabled={menuPage <= 1}
-              onClick={() => setMenuPage((p) => Math.max(1, p - 1))}
-              className="inline-flex items-center gap-2 rounded-xl border-2 border-gray-200 bg-white px-5 py-3 text-sm font-semibold text-gray-900 transition-colors hover:border-orange-300 hover:bg-orange-50 disabled:pointer-events-none disabled:opacity-40"
-            >
-              <ChevronLeft className="h-5 w-5" aria-hidden />
-              {productsCopy.paginationPrev}
-            </button>
-            <p className="text-center text-sm font-medium text-gray-600 tabular-nums">
-              {productsCopy.paginationPage(menuPage, totalPages)}
-            </p>
-            <button
-              type="button"
-              disabled={menuPage >= totalPages}
-              onClick={() => setMenuPage((p) => Math.min(totalPages, p + 1))}
-              className="inline-flex items-center gap-2 rounded-xl border-2 border-gray-200 bg-white px-5 py-3 text-sm font-semibold text-gray-900 transition-colors hover:border-orange-300 hover:bg-orange-50 disabled:pointer-events-none disabled:opacity-40"
-            >
-              {productsCopy.paginationNext}
-              <ChevronRight className="h-5 w-5" aria-hidden />
-            </button>
-          </nav>
+          <ProductsPagePagination
+            currentPage={menuPage}
+            totalPages={totalPages}
+            onPageChange={setMenuPage}
+            prevLabel={productsCopy.paginationPrev}
+            nextLabel={productsCopy.paginationNext}
+            navAriaLabel={productsCopy.paginationAria(menuPage, totalPages)}
+            pageNumberAriaLabel={productsCopy.paginationGoToPage}
+          />
         )}
 
         {filteredProducts.length === 0 && (

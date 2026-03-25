@@ -270,8 +270,9 @@ export interface AppMessages {
     catalogEmpty: string
     paginationPrev: string
     paginationNext: string
-    paginationPage: (current: number, totalPages: number) => string
     paginationAria: (current: number, totalPages: number) => string
+    /** Էջի համարի կոճակի aria-label */
+    paginationGoToPage: (page: number) => string
   }
   productCard: {
     uncategorized: string
