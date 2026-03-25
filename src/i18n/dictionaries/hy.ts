@@ -127,6 +127,7 @@ export const hy: AppMessages = {
     showFirstCategory: (name: string) => `Ցուցադրել «${name}»`,
     showCategories: 'Ցուցադրել կատեգորիաները',
     viewFullMenu: 'Դիտել ամբողջ մենյուն',
+    viewEntireShort: 'Դիտել ամբողջը',
     whyUsTitle: 'Ինչու՞ ընտրում են մեզ',
     whyUsSubtitle:
       'Ստեղծել ենք ավանդույթների և նորարարության կատարյալ համադրություն ձեր հաճույքի համար',
@@ -194,12 +195,12 @@ export const hy: AppMessages = {
     bestSellers: {
       title: 'Լավագույն ուտեսներ',
       subtitle: 'Ամենավաճառվող և ընտրված ապրանքների կարճ ցուցակ',
-      viewAll: 'Դիտել բոլորը',
+      viewAll: 'Դիտել ավելին',
     },
     promo: {
       title: 'Զեղչեր / Հատուկ առաջարկներ',
       subtitle: 'Ակցիաներ, զեղչեր, հատուկ առաջարկներ',
-      viewAll: 'Դիտել բոլորը',
+      viewAll: 'Դիտել ավելին',
     },
     actions: {
       title: 'Ակցիաներ',

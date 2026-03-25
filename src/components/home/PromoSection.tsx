@@ -6,7 +6,7 @@ import { ProductWithCategory, Product } from '@/types'
 import ProductCard from '@/components/ProductCard'
 import { useI18n } from '@/i18n/I18nContext'
 
-const PROMO_LIMIT = 6
+const PROMO_LIMIT = 4
 
 export interface PromoSectionProps {
   onAddToCart?: (product: Product) => void

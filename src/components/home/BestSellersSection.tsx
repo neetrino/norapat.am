@@ -7,7 +7,7 @@ import { Product } from '@/types'
 import ProductCard from '@/components/ProductCard'
 import { useI18n } from '@/i18n/I18nContext'
 
-const BEST_SELLERS_LIMIT = 6
+const BEST_SELLERS_LIMIT = 4
 
 export interface BestSellersSectionProps {
   onAddToCart?: (product: Product) => void

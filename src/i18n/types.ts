@@ -132,6 +132,8 @@ export interface AppMessages {
     showFirstCategory: (name: string) => string
     showCategories: string
     viewFullMenu: string
+    /** Հորիզոնական շարքի վերջի նեղ CTA («Դիտել ամբողջը») */
+    viewEntireShort: string
     whyUsTitle: string
     whyUsSubtitle: string
     featureFastTitle: string

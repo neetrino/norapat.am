@@ -8,13 +8,12 @@ import { useCart } from "@/hooks/useCart";
 import { useWishlist } from "@/hooks/useWishlist";
 import { Product, ProductWithCategory } from "@/types";
 import Footer from "@/components/Footer";
-import ProductCard from "@/components/ProductCard";
 import { BrandBannerSection } from "@/components/home/BrandBannerSection";
 import { CategoriesSection } from "@/components/home/CategoriesSection";
 import { ActionsSection } from "@/components/home/ActionsSection";
+import { HomeShowcaseCarousel } from "@/components/home/HomeShowcaseCarousel";
 import { BRAND_RED_CTA_IDLE_HOVER_CLASS } from "@/components/home/promo-food-banner/promoFoodBanner.constants";
 const ADDED_TO_CART_FEEDBACK_MS = 2000
-const HOME_PRODUCTS_LIMIT = 8
 
 /** Հատուկ առաջարկներ — ինչպես /api/products/promo (HIT, NEW) */
 const PROMO_STATUS_IN = 'HIT,NEW'
@@ -137,20 +136,15 @@ export default function Home() {
                 </Link>
               </div>
             ) : (
-              <div className="grid grid-cols-2 gap-6 gap-y-12 overflow-visible md:grid-cols-3 md:gap-8 md:gap-y-16 lg:grid-cols-4">
-                {bestProducts.slice(0, HOME_PRODUCTS_LIMIT).map((product) => (
-                  <div key={product.id} className="overflow-visible">
-                    <ProductCard
-                      product={product}
-                      onAddToCart={handleAddToCart}
-                      variant="compact"
-                      addedToCart={addedToCart}
-                      isInWishlist={isInWishlist(product.id)}
-                      onToggleWishlist={toggleWishlist}
-                    />
-                  </div>
-                ))}
-              </div>
+              <HomeShowcaseCarousel
+                products={bestProducts}
+                tone="orange"
+                viewEntireLabel={h.viewEntireShort}
+                onAddToCart={handleAddToCart}
+                addedToCart={addedToCart}
+                isInWishlist={isInWishlist}
+                onToggleWishlist={toggleWishlist}
+              />
             )}
           </div>
         </div>
@@ -188,35 +182,16 @@ export default function Home() {
                 </Link>
               </div>
             ) : (
-              <div className="grid grid-cols-2 gap-6 gap-y-12 overflow-visible md:grid-cols-3 md:gap-8 md:gap-y-16 lg:grid-cols-4">
-                {promoProducts.slice(0, HOME_PRODUCTS_LIMIT).map((product) => (
-                  <div key={product.id} className="overflow-visible">
-                    <ProductCard
-                      product={product}
-                      onAddToCart={handleAddToCart}
-                      variant="compact"
-                      addedToCart={addedToCart}
-                      isInWishlist={isInWishlist(product.id)}
-                      onToggleWishlist={toggleWishlist}
-                    />
-                  </div>
-                ))}
-              </div>
+              <HomeShowcaseCarousel
+                products={promoProducts}
+                tone="amber"
+                viewEntireLabel={h.viewEntireShort}
+                onAddToCart={handleAddToCart}
+                addedToCart={addedToCart}
+                isInWishlist={isInWishlist}
+                onToggleWishlist={toggleWishlist}
+              />
             )}
-
-            {!loadingPromo && promoProducts.length > 0 ? (
-              <div className="mt-10 text-center lg:mt-12">
-                <Link
-                  href="/products"
-                  className={`inline-flex items-center gap-2 rounded-full px-6 py-3 font-semibold ${BRAND_RED_CTA_IDLE_HOVER_CLASS}`}
-                >
-                  <span>{h.viewFullMenu}</span>
-                  <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                </Link>
-              </div>
-            ) : null}
           </div>
         </div>
       </section>
