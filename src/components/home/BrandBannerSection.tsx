@@ -16,11 +16,10 @@ export function BrandBannerSection() {
   const homeAria = t.home.ariaBrandBanner
 
   return (
-    <section className="relative overflow-hidden bg-gradient-to-b from-orange-50 via-white to-orange-100/50 text-gray-900" aria-label={homeAria}>
+    <section className="relative overflow-hidden bg-white text-gray-900" aria-label={homeAria}>
       <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>
-        <div className="absolute -right-20 -top-24 h-72 w-72 rounded-full bg-orange-200/35 blur-3xl" />
-        <div className="absolute -left-16 top-1/3 h-56 w-56 rounded-full bg-yellow-200/25 blur-3xl" />
-        <div className="absolute bottom-20 right-1/4 h-40 w-40 rounded-full bg-orange-300/20 blur-2xl" />
+        <div className="brand-banner-corner-tl absolute -left-24 -top-28 h-[min(55vw,28rem)] w-[min(55vw,28rem)] rounded-full blur-3xl" />
+        <div className="brand-banner-corner-br absolute -bottom-32 -right-20 h-[min(60vw,32rem)] w-[min(60vw,32rem)] rounded-full blur-3xl" />
       </div>
 
       <div className="relative z-10 mx-auto max-w-7xl px-4 pb-2 pt-8 sm:px-6 sm:pb-4 sm:pt-10 lg:px-8 lg:pt-14">
