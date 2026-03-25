@@ -162,6 +162,16 @@ export interface AppMessages {
     ctaSubtitle: string
     ctaOrderNow: string
     ctaLearnMore: string
+    brandBannerPromo: {
+      super: string
+      delicious: string
+      menu: string
+      weekendBefore: string
+      weekendWord: string
+      weekendAfter: string
+      body: string
+      cta: string
+    }
     categories: {
       title: string
       subtitle: string

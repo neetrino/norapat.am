@@ -93,27 +93,6 @@ body {
   );
 }
 
-@keyframes promo-sparkle {
-  0%,
-  100% {
-    opacity: 0.5;
-    transform: scale(0.92);
-  }
-  50% {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-.animate-promo-sparkle {
-  animation: promo-sparkle 2.8s ease-in-out infinite;
-}
-
-.animate-promo-sparkle-delay {
-  animation: promo-sparkle 2.8s ease-in-out infinite;
-  animation-delay: 0.6s;
-}
-
 @keyframes promo-plate-float {
   0%,
   100% {
@@ -128,27 +107,8 @@ body {
   animation: promo-plate-float 5s ease-in-out infinite;
 }
 
-.promo-arrow-draw path {
-  stroke-dasharray: 72;
-  stroke-dashoffset: 72;
-  animation: promo-arrow-draw 1.15s ease-out forwards;
-}
-
-.promo-arrow-draw path:nth-child(2) {
-  animation-delay: 0.14s;
-}
-
-@keyframes promo-arrow-draw {
-  to {
-    stroke-dashoffset: 0;
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
-  .animate-promo-sparkle,
-  .animate-promo-sparkle-delay,
-  .animate-promo-plate-float,
-  .promo-arrow-draw path {
+  .animate-promo-plate-float {
     animation: none !important;
   }
 }

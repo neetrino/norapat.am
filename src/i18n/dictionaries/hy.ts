@@ -164,6 +164,17 @@ export const hy: AppMessages = {
     ctaSubtitle: 'Պատվիրեք հիմա և ստացեք 10% զեղչ առաջին պատվերի համար',
     ctaOrderNow: 'Պատվիրել հիմա',
     ctaLearnMore: 'Իմանալ ավելին',
+    brandBannerPromo: {
+      super: 'Գերազանց',
+      delicious: 'Համեղ',
+      menu: 'Մենյու',
+      weekendBefore: 'Այս ',
+      weekendWord: 'շաբաթավերջին',
+      weekendAfter: ' միայն',
+      body:
+        'Թարմ բաղադրիչներ, արագ պատրաստում և առաքում Երևանի ողջ տարածքով։ Յուրաքանչյուր կտորը՝ համի երաշխիք։',
+      cta: 'ՊԱՏՎԻՐԵԼ ՀԻՄԱ',
+    },
     categories: {
       title: 'Կատեգորիաներ',
       subtitle: 'Ընտրեք կատեգորիա և անցեք ապրանքներին',

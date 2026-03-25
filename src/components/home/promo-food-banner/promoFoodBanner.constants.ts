@@ -1,5 +1,5 @@
 /**
- * Promo food banner — design tokens and copy (reference layout, English strings).
+ * Promo food banner — design tokens (տեքստը՝ `i18n` → `home.brandBannerPromo`)։
  */
 
 export const PROMO_COLORS = {
@@ -12,17 +12,4 @@ export const HERO_BANNER_PIZZA_IMAGE = {
   src: '/hero-pepperoni-pizza.png',
   width: 520,
   height: 520,
-} as const
-
-export const PROMO_COPY = {
-  super: 'Super',
-  delicious: 'Delicious',
-  menu: 'Menu',
-  weekendBefore: 'This ',
-  weekendWord: 'Weekend',
-  weekendAfter: ' Only',
-  body:
-    'Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
-  cta: 'ORDER NOW',
-  freeDelivery: 'Free Home Delivery',
 } as const

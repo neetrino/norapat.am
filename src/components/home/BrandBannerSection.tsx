@@ -3,11 +3,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { useI18n } from '@/i18n/I18nContext'
-import {
-  HERO_BANNER_PIZZA_IMAGE,
-  PROMO_COPY,
-} from '@/components/home/promo-food-banner/promoFoodBanner.constants'
-import { PromoBannerDeliveryArrow, PromoBannerSparkles } from '@/components/home/promo-food-banner/PromoBannerGraphics'
+import { HERO_BANNER_PIZZA_IMAGE } from '@/components/home/promo-food-banner/promoFoodBanner.constants'
 
 /**
  * Բրենդային բաններ՝ երկու սյուն, խորը կարմիր տեքստուրա, հերո պատկեր (պիցա)։
@@ -15,6 +11,7 @@ import { PromoBannerDeliveryArrow, PromoBannerSparkles } from '@/components/home
 export function BrandBannerSection() {
   const { t } = useI18n()
   const homeAria = t.home.ariaBrandBanner
+  const p = t.home.brandBannerPromo
 
   return (
     <section
@@ -26,21 +23,21 @@ export function BrandBannerSection() {
           <div className="relative z-10 max-w-xl space-y-4 sm:space-y-5">
             <div className="relative pl-1">
               <span className="font-promo-caveat absolute -left-0.5 -top-7 text-base text-white sm:-top-8 sm:text-lg">
-                {PROMO_COPY.super}
+                {p.super}
               </span>
               <span className="font-promo-marker block text-[clamp(2.5rem,8vw,3.75rem)] leading-[0.95] text-[#FACC15]">
-                {PROMO_COPY.delicious}
+                {p.delicious}
               </span>
             </div>
 
             <h1 className="font-promo-marker text-[clamp(3.25rem,11vw,4.5rem)] font-normal leading-[0.95] tracking-tight text-white">
-              {PROMO_COPY.menu}
+              {p.menu}
             </h1>
 
             <div className="font-promo-caveat text-[clamp(1.35rem,4.2vw,1.85rem)] font-semibold text-[#FACC15]">
-              {PROMO_COPY.weekendBefore}
+              {p.weekendBefore}
               <span className="relative inline-block">
-                {PROMO_COPY.weekendWord}
+                {p.weekendWord}
                 <svg
                   className="absolute -bottom-1 left-0 h-3 w-[calc(100%+0.25rem)] text-white sm:h-3.5"
                   viewBox="0 0 200 12"
@@ -55,11 +52,11 @@ export function BrandBannerSection() {
                   />
                 </svg>
               </span>
-              {PROMO_COPY.weekendAfter}
+              {p.weekendAfter}
             </div>
 
             <p className="max-w-md font-sans text-sm leading-relaxed text-white/95 sm:text-base">
-              {PROMO_COPY.body}
+              {p.body}
             </p>
 
             <div>
@@ -67,21 +64,13 @@ export function BrandBannerSection() {
                 href="/products"
                 className="font-promo-marker inline-flex min-h-[44px] items-center justify-center rounded-full bg-[#FACC15] px-10 py-3 text-sm font-bold uppercase tracking-wide text-[#A51D1D] transition hover:scale-[1.03] motion-reduce:hover:scale-100 sm:px-12 sm:text-base"
               >
-                {PROMO_COPY.cta}
+                {p.cta}
               </Link>
             </div>
           </div>
 
           <div className="relative z-10 flex min-h-[280px] w-full flex-col items-center justify-center sm:min-h-[320px] lg:min-h-[360px]">
-            <div className="absolute right-2 top-0 z-10 flex flex-col items-end sm:right-4 lg:right-6">
-              <span className="font-promo-caveat text-right text-lg font-semibold text-white sm:text-xl">
-                {PROMO_COPY.freeDelivery}
-              </span>
-              <PromoBannerDeliveryArrow />
-            </div>
-
             <div className="relative mt-10 flex w-full items-center justify-center sm:mt-12 lg:mt-14">
-              <PromoBannerSparkles />
               <div className="animate-promo-plate-float relative z-[5] flex w-full max-w-[min(100%,420px)] items-center justify-center sm:max-w-[480px]">
                 <Image
                   src={HERO_BANNER_PIZZA_IMAGE.src}
