@@ -18,6 +18,10 @@ interface ProductCardProps {
   onToggleWishlist?: (productId: string) => void
 }
 
+/** Զամբյուղի կոճակ՝ default վառ կարմիր, hover — `globals.css` բանների base (#a51d1d)։ */
+const PRODUCT_CARD_ADD_IDLE_BUTTON_CLASS =
+  'bg-[#E53225] text-white shadow-md transition-colors duration-300 hover:bg-[#a51d1d]'
+
 const ProductCard = memo(({ product, onAddToCart, variant = 'default', addedToCart, isInWishlist, onToggleWishlist }: ProductCardProps) => {
   const { t, locale } = useI18n()
   const pc = t.productCard
@@ -234,10 +238,10 @@ const ProductCard = memo(({ product, onAddToCart, variant = 'default', addedToCa
                     e.stopPropagation()
                     onAddToCart(product)
                   }}
-                  className={`w-full h-11 rounded-full font-semibold text-sm flex items-center justify-center gap-2 ${
+                  className={`flex h-11 w-full items-center justify-center gap-2 rounded-full text-sm font-semibold ${
                     isAdded
                       ? 'bg-gradient-to-r from-emerald-500 to-green-600 text-white shadow-md'
-                      : 'bg-gradient-to-r from-red-500 to-red-600 text-white shadow-md'
+                      : PRODUCT_CARD_ADD_IDLE_BUTTON_CLASS
                   }`}
                   title={pc.addToCartTitle}
                 >
@@ -266,10 +270,10 @@ const ProductCard = memo(({ product, onAddToCart, variant = 'default', addedToCa
                   e.stopPropagation()
                   onAddToCart(product)
                 }}
-                className={`w-full h-14 rounded-full font-semibold text-lg flex items-center justify-center gap-2.5 ${
+                className={`flex h-14 w-full items-center justify-center gap-2.5 rounded-full text-lg font-semibold ${
                     isAdded
                       ? 'bg-gradient-to-r from-emerald-500 to-green-600 text-white shadow-md'
-                      : 'bg-gradient-to-r from-red-500 to-red-600 text-white shadow-md'
+                      : PRODUCT_CARD_ADD_IDLE_BUTTON_CLASS
                   }`}
                 title={pc.addToCartTitle}
               >
