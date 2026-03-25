@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
-import { Search, ArrowDownUp, SlidersHorizontal } from 'lucide-react'
+import { Search, ArrowDownUp, SlidersHorizontal, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useCart } from '@/hooks/useCart'
 import { useWishlist } from '@/hooks/useWishlist'
 import { Product, type CategoryWithCount } from '@/types'
@@ -11,6 +11,8 @@ import ProductCard from '@/components/ProductCard'
 import { ProductsPageCategoryChips } from '@/components/ProductsPageCategoryChips'
 import { useI18n } from '@/i18n/I18nContext'
 import { getCategoryDisplayName } from '@/i18n/getCategoryDisplayName'
+import { MENU_PRODUCTS_PAGE_SIZE } from '@/constants/menuPagination.constants'
+import { parseProductsListResponse } from '@/lib/parseProductsListResponse'
 
 function ProductsPageContent() {
   const { t, locale } = useI18n()
@@ -28,10 +30,13 @@ function ProductsPageContent() {
   const [maxPrice, setMaxPrice] = useState<string>('')
   const [loading, setLoading] = useState(true)
   const [searching, setSearching] = useState(false)
+  const [menuPage, setMenuPage] = useState(1)
+  const [totalProductCount, setTotalProductCount] = useState(0)
   const [addedToCart, setAddedToCart] = useState<Set<string>>(new Set())
   const { addItem } = useCart()
   const { isInWishlist, toggle: toggleWishlist } = useWishlist()
   const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const productGridTopRef = useRef<HTMLDivElement>(null)
 
   const fetchProducts = useCallback(async () => {
     try {
@@ -44,16 +49,27 @@ function ProductsPageContent() {
       params.set('sort', sortOrder)
       if (minPrice) params.set('minPrice', minPrice)
       if (maxPrice) params.set('maxPrice', maxPrice)
+      params.set('page', String(menuPage))
+      params.set('limit', String(MENU_PRODUCTS_PAGE_SIZE))
       const url = `/api/products?${params.toString()}`
       const response = await fetch(url)
-      const data = await response.json()
-      setFilteredProducts(data)
+      const data: unknown = await response.json()
+      const { items, total } = parseProductsListResponse(data)
+      setFilteredProducts(items)
+      setTotalProductCount(total)
     } catch (error) {
       console.error('Error fetching products:', error)
     } finally {
       setLoading(false)
     }
-  }, [selectedCategoryName, debouncedSearchQuery, sortOrder, minPrice, maxPrice])
+  }, [
+    selectedCategoryName,
+    debouncedSearchQuery,
+    sortOrder,
+    minPrice,
+    maxPrice,
+    menuPage,
+  ])
 
   useEffect(() => {
     const controller = new AbortController()
@@ -92,6 +108,7 @@ function ProductsPageContent() {
     }
 
     searchTimeoutRef.current = setTimeout(() => {
+      setMenuPage(1)
       setDebouncedSearchQuery(searchQuery)
       setSearching(false)
     }, 300)
@@ -106,6 +123,26 @@ function ProductsPageContent() {
   useEffect(() => {
     fetchProducts()
   }, [fetchProducts])
+
+  useEffect(() => {
+    if (menuPage <= 1) return
+    productGridTopRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }, [menuPage])
+
+  const totalPages =
+    totalProductCount > 0 ? Math.ceil(totalProductCount / MENU_PRODUCTS_PAGE_SIZE) : 0
+
+  useEffect(() => {
+    if (totalPages === 0) {
+      if (menuPage !== 1) setMenuPage(1)
+      return
+    }
+    if (menuPage > totalPages) {
+      setMenuPage(totalPages)
+    }
+  }, [totalPages, menuPage])
+
+  const showPagination = totalPages > 1
 
   const handleAddToCart = useCallback((product: Product) => {
     addItem(product, 1)
@@ -198,7 +235,10 @@ function ProductsPageContent() {
                 <ArrowDownUp className="h-5 w-5 text-gray-500" />
                 <select
                   value={sortOrder}
-                  onChange={(e) => setSortOrder(e.target.value)}
+                  onChange={(e) => {
+                    setMenuPage(1)
+                    setSortOrder(e.target.value)
+                  }}
                   className="px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-gray-50 text-gray-900 font-medium"
                 >
                   <option value="newest">{productsCopy.sortNewest}</option>
@@ -213,7 +253,10 @@ function ProductsPageContent() {
                   type="number"
                   placeholder={productsCopy.priceFrom}
                   value={minPrice}
-                  onChange={(e) => setMinPrice(e.target.value)}
+                  onChange={(e) => {
+                    setMenuPage(1)
+                    setMinPrice(e.target.value)
+                  }}
                   min={0}
                   step={100}
                   className="w-24 px-3 py-2 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-gray-50 text-gray-900"
@@ -223,7 +266,10 @@ function ProductsPageContent() {
                   type="number"
                   placeholder={productsCopy.priceTo}
                   value={maxPrice}
-                  onChange={(e) => setMaxPrice(e.target.value)}
+                  onChange={(e) => {
+                    setMenuPage(1)
+                    setMaxPrice(e.target.value)
+                  }}
                   min={0}
                   step={100}
                   className="w-24 px-3 py-2 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-gray-50 text-gray-900"
@@ -237,11 +283,16 @@ function ProductsPageContent() {
             categories={categories}
             loading={categoriesLoading}
             selectedCategoryName={selectedCategoryName}
-            onSelectCategory={setSelectedCategoryName}
+            onSelectCategory={(name) => {
+              setMenuPage(1)
+              setSelectedCategoryName(name)
+            }}
             allLabel={productsCopy.allCategories}
             locale={locale}
           />
         </div>
+
+        <div ref={productGridTopRef} className="scroll-mt-28 md:scroll-mt-32" aria-hidden />
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 gap-y-16 md:gap-12 overflow-visible mt-24">
           {filteredProducts.map((product) => (
@@ -257,6 +308,35 @@ function ProductsPageContent() {
           ))}
         </div>
 
+        {showPagination && (
+          <nav
+            className="mt-12 flex flex-col items-center gap-4 sm:flex-row sm:justify-center sm:gap-6"
+            aria-label={productsCopy.paginationAria(menuPage, totalPages)}
+          >
+            <button
+              type="button"
+              disabled={menuPage <= 1}
+              onClick={() => setMenuPage((p) => Math.max(1, p - 1))}
+              className="inline-flex items-center gap-2 rounded-xl border-2 border-gray-200 bg-white px-5 py-3 text-sm font-semibold text-gray-900 transition-colors hover:border-orange-300 hover:bg-orange-50 disabled:pointer-events-none disabled:opacity-40"
+            >
+              <ChevronLeft className="h-5 w-5" aria-hidden />
+              {productsCopy.paginationPrev}
+            </button>
+            <p className="text-center text-sm font-medium text-gray-600 tabular-nums">
+              {productsCopy.paginationPage(menuPage, totalPages)}
+            </p>
+            <button
+              type="button"
+              disabled={menuPage >= totalPages}
+              onClick={() => setMenuPage((p) => Math.min(totalPages, p + 1))}
+              className="inline-flex items-center gap-2 rounded-xl border-2 border-gray-200 bg-white px-5 py-3 text-sm font-semibold text-gray-900 transition-colors hover:border-orange-300 hover:bg-orange-50 disabled:pointer-events-none disabled:opacity-40"
+            >
+              {productsCopy.paginationNext}
+              <ChevronRight className="h-5 w-5" aria-hidden />
+            </button>
+          </nav>
+        )}
+
         {filteredProducts.length === 0 && (
           <div className="text-center py-12">
             <div className="text-6xl mb-4">🍽️</div>
@@ -271,7 +351,11 @@ function ProductsPageContent() {
                 <div className="flex flex-col sm:flex-row gap-3 justify-center">
                   <button
                     type="button"
-                    onClick={() => setSearchQuery('')}
+                    onClick={() => {
+                      setMenuPage(1)
+                      setSearchQuery('')
+                      setDebouncedSearchQuery('')
+                    }}
                     className="bg-gray-500 text-white px-6 py-3 rounded-xl font-semibold hover:bg-gray-600 transition-colors"
                   >
                     {productsCopy.clearSearch}
@@ -279,6 +363,7 @@ function ProductsPageContent() {
                   <button
                     type="button"
                     onClick={() => {
+                      setMenuPage(1)
                       setSelectedCategoryName(null)
                       setSearchQuery('')
                       setDebouncedSearchQuery('')

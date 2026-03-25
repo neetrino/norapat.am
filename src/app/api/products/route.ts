@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import type { Prisma } from '@prisma/client'
 import { ProductStatus } from '@prisma/client'
 import { prisma } from '@/lib/prisma'
+import { MENU_PRODUCTS_API_MAX_LIMIT } from '@/constants/menuPagination.constants'
 
 const PRODUCT_STATUS_VALUES = new Set<string>(Object.values(ProductStatus))
 
@@ -17,6 +18,20 @@ export async function GET(request: NextRequest) {
     const sort = searchParams.get('sort') ?? 'newest'
     const minPrice = searchParams.get('minPrice')
     const maxPrice = searchParams.get('maxPrice')
+    const pageRaw = searchParams.get('page')
+    const limitRaw = searchParams.get('limit')
+    const limitParsed =
+      limitRaw != null && limitRaw !== '' ? Number.parseInt(limitRaw, 10) : Number.NaN
+    const pageParsed =
+      pageRaw != null && pageRaw !== '' ? Number.parseInt(pageRaw, 10) : Number.NaN
+    const usePagination =
+      Number.isFinite(limitParsed) &&
+      limitParsed > 0 &&
+      limitParsed <= MENU_PRODUCTS_API_MAX_LIMIT
+    const pageOneBased =
+      Number.isFinite(pageParsed) && pageParsed >= 1 ? pageParsed : 1
+    const skip = usePagination ? (pageOneBased - 1) * limitParsed : 0
+    const take = usePagination ? limitParsed : undefined
 
     const whereClause: Prisma.ProductWhereInput = {}
 
@@ -78,29 +93,54 @@ export async function GET(request: NextRequest) {
       orderBy = { createdAt: 'desc' }
     }
 
+    const selectClause = {
+      id: true,
+      name: true,
+      shortDescription: true,
+      description: true,
+      price: true,
+      categoryId: true,
+      category: {
+        select: {
+          id: true,
+          name: true,
+          isActive: true
+        }
+      },
+      image: true,
+      ingredients: true,
+      isAvailable: true,
+      status: true,
+      createdAt: true
+    } as const
+
+    if (usePagination) {
+      const [total, items] = await Promise.all([
+        prisma.product.count({ where: whereClause }),
+        prisma.product.findMany({
+          where: whereClause,
+          orderBy,
+          skip,
+          take,
+          select: selectClause
+        })
+      ])
+
+      const response = NextResponse.json({
+        items,
+        total,
+        page: pageOneBased,
+        pageSize: limitParsed
+      })
+      response.headers.set('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=120')
+      response.headers.set('CDN-Cache-Control', 'public, s-maxage=60')
+      return response
+    }
+
     const products = await prisma.product.findMany({
       where: whereClause,
       orderBy,
-      select: {
-        id: true,
-        name: true,
-        shortDescription: true,
-        description: true,
-        price: true,
-        categoryId: true,
-        category: {
-          select: {
-            id: true,
-            name: true,
-            isActive: true
-          }
-        },
-        image: true,
-        ingredients: true,
-        isAvailable: true,
-        status: true,
-        createdAt: true
-      }
+      select: selectClause
     })
 
     // Улучшенное кэширование на 1 час

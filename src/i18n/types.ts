@@ -268,6 +268,10 @@ export interface AppMessages {
     tryAnotherCategory: string
     /** Մենյու՝ «Բոլորը», առանց կատեգորիայի ֆիլտրի, դատարկ ցուցակ */
     catalogEmpty: string
+    paginationPrev: string
+    paginationNext: string
+    paginationPage: (current: number, totalPages: number) => string
+    paginationAria: (current: number, totalPages: number) => string
   }
   productCard: {
     uncategorized: string

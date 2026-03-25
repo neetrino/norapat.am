@@ -286,6 +286,12 @@ export const hy: AppMessages = {
     tryAnotherCategory: 'Փորձեք այլ կատեգորիա',
     catalogEmpty:
       'Այս պահին մենյուում հասանելի ապրանքներ չկան։ Ստուգեք ֆիլտրերը կամ փորձեք ավելի ուշ։',
+    paginationPrev: 'Նախորդ',
+    paginationNext: 'Հաջորդ',
+    paginationPage: (current: number, totalPages: number) =>
+      `Էջ ${current} / ${totalPages}`,
+    paginationAria: (current: number, totalPages: number) =>
+      `Էջավորում, էջ ${current}՝ ${totalPages}-ից`,
   },
   productCard: {
     uncategorized: 'Առանց կատեգորիայի',
