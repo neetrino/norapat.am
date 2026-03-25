@@ -297,25 +297,25 @@ export default function Home() {
         </div>
       </section>
 
-      {/* CTA Section - Hidden on mobile and tablet */}
-      <section className="hidden lg:block py-24 bg-orange-500 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-4xl md:text-5xl font-bold mb-6">
+      {/* CTA Section — նույն ֆոնը ինչ հերո բանները (`globals.css` → promo-food-banner-*) */}
+      <section className="promo-food-banner-bg promo-food-banner-vignette relative hidden overflow-hidden py-24 text-white lg:block">
+        <div className="relative z-10 mx-auto max-w-7xl px-4 text-center sm:px-6 lg:px-8">
+          <h2 className="mb-6 text-4xl font-bold md:text-5xl">
             {h.ctaTitle}
           </h2>
-          <p className="text-xl text-orange-100 mb-8 max-w-2xl mx-auto">
+          <p className="mx-auto mb-8 max-w-2xl text-xl text-white/90">
             {h.ctaSubtitle}
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link 
+          <div className="flex flex-col justify-center gap-4 sm:flex-row">
+            <Link
               href="/products"
-              className="bg-white text-orange-500 px-8 py-4 rounded-xl font-bold text-lg hover:bg-gray-100 hover:scale-105 transition-all duration-300 shadow-lg"
+              className="rounded-xl bg-white px-8 py-4 text-lg font-bold text-[#A51D1D] shadow-lg transition-all duration-300 hover:scale-105 hover:bg-gray-100"
             >
               {h.ctaOrderNow}
             </Link>
-            <Link 
+            <Link
               href="/contact"
-              className="border-2 border-white text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-white hover:text-orange-500 hover:scale-105 transition-all duration-300"
+              className="rounded-xl border-2 border-white px-8 py-4 text-lg font-bold text-white transition-all duration-300 hover:scale-105 hover:bg-white hover:text-[#A51D1D]"
             >
               {h.ctaLearnMore}
             </Link>
