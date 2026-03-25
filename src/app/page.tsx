@@ -12,6 +12,7 @@ import ProductCard from "@/components/ProductCard";
 import { BrandBannerSection } from "@/components/home/BrandBannerSection";
 import { CategoriesSection } from "@/components/home/CategoriesSection";
 import { ActionsSection } from "@/components/home/ActionsSection";
+import { BRAND_RED_CTA_IDLE_HOVER_CLASS } from "@/components/home/promo-food-banner/promoFoodBanner.constants";
 const ADDED_TO_CART_FEEDBACK_MS = 2000
 const HOME_PRODUCTS_LIMIT = 8
 
@@ -127,7 +128,7 @@ export default function Home() {
                 <p className="mt-2 text-sm text-gray-600">{h.categoryEmptyHint}</p>
                 <Link
                   href="/products"
-                  className="mt-6 inline-flex items-center gap-2 rounded-xl bg-orange-500 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-orange-600"
+                  className={`mt-6 inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold ${BRAND_RED_CTA_IDLE_HOVER_CLASS}`}
                 >
                   {h.viewFullMenu}
                   <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
@@ -178,7 +179,7 @@ export default function Home() {
                 <p className="mt-2 text-sm text-gray-600">{h.categoryEmptyHint}</p>
                 <Link
                   href="/products"
-                  className="mt-6 inline-flex items-center gap-2 rounded-xl bg-orange-500 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-orange-600"
+                  className={`mt-6 inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold ${BRAND_RED_CTA_IDLE_HOVER_CLASS}`}
                 >
                   {h.viewFullMenu}
                   <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
@@ -207,7 +208,7 @@ export default function Home() {
               <div className="mt-10 text-center lg:mt-12">
                 <Link
                   href="/products"
-                  className="inline-flex items-center gap-2 rounded-xl bg-orange-500 px-6 py-3 font-semibold text-white transition-colors hover:bg-orange-600"
+                  className={`inline-flex items-center gap-2 rounded-full px-6 py-3 font-semibold ${BRAND_RED_CTA_IDLE_HOVER_CLASS}`}
                 >
                   <span>{h.viewFullMenu}</span>
                   <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>

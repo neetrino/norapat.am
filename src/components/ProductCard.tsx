@@ -8,6 +8,7 @@ import { Product } from '@/types'
 import { useI18n } from '@/i18n/I18nContext'
 import { getCategoryDisplayName } from '@/i18n/getCategoryDisplayName'
 import { getProductDisplayName } from '@/i18n/getProductDisplayName'
+import { BRAND_RED_CTA_IDLE_HOVER_CLASS } from '@/components/home/promo-food-banner/promoFoodBanner.constants'
 
 interface ProductCardProps {
   product: Product
@@ -18,9 +19,7 @@ interface ProductCardProps {
   onToggleWishlist?: (productId: string) => void
 }
 
-/** Զամբյուղի կոճակ՝ default վառ կարմիր, hover — `globals.css` բանների base (#a51d1d)։ */
-const PRODUCT_CARD_ADD_IDLE_BUTTON_CLASS =
-  'bg-[#E53225] text-white shadow-md transition-colors duration-300 hover:bg-[#a51d1d]'
+const PRODUCT_CARD_ADD_IDLE_BUTTON_CLASS = `${BRAND_RED_CTA_IDLE_HOVER_CLASS} shadow-md`
 
 const ProductCard = memo(({ product, onAddToCart, variant = 'default', addedToCart, isInWishlist, onToggleWishlist }: ProductCardProps) => {
   const { t, locale } = useI18n()

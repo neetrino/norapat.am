@@ -7,6 +7,13 @@ export const PROMO_COLORS = {
   plateRim: '#2a2a2a',
 } as const
 
+/**
+ * Վառ կարմիր CTA — default #E53225, hover — բանների base (#a51d1d, `globals.css` `.promo-food-banner-bg`)։
+ * ProductCard «Ավելացնել», գլխավոր `viewFullMenu` և նման կոճակներ։
+ */
+export const BRAND_RED_CTA_IDLE_HOVER_CLASS =
+  'bg-[#E53225] text-white transition-colors duration-300 hover:bg-[#a51d1d]'
+
 /** Հերո բանների սլայդերի փոխարինման interval (ms) — `HeroBannerRotatingImage`. */
 export const HERO_BANNER_ROTATION_MS = 6000
 
