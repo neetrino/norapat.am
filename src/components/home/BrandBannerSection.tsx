@@ -5,7 +5,6 @@ import { useI18n } from '@/i18n/I18nContext'
 import { PROMO_COPY } from '@/components/home/promo-food-banner/promoFoodBanner.constants'
 import { HeroFoodPlateSvg } from '@/components/home/promo-food-banner/HeroFoodPlateSvg'
 import { PromoBannerDeliveryArrow, PromoBannerSparkles } from '@/components/home/promo-food-banner/PromoBannerGraphics'
-import { DiscountWaveCorner } from '@/components/home/promo-food-banner/DiscountWaveCorner'
 
 /**
  * Բրենդային բաններ՝ երկու սյուն, խորը կարմիր տեքստուրա, վեկտորային «թարման» (առանց ֆոտոյի)։
@@ -84,8 +83,6 @@ export function BrandBannerSection() {
                 <HeroFoodPlateSvg />
               </div>
             </div>
-
-            <DiscountWaveCorner />
           </div>
         </div>
       </div>
