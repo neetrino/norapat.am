@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Phone, MapPin, Clock } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useI18n } from "@/i18n/I18nContext";
 import { getCategoryDisplayName } from "@/i18n/getCategoryDisplayName";
 import { useCart } from "@/hooks/useCart";
@@ -15,6 +15,11 @@ import { CategoriesSection } from "@/components/home/CategoriesSection";
 import { BestSellersSection } from "@/components/home/BestSellersSection";
 import { PromoSection } from "@/components/home/PromoSection";
 import { ActionsSection } from "@/components/home/ActionsSection";
+import {
+  dedupeCategoriesForNav,
+  isSameCategoryNavSelection,
+  productMatchesCategoryFilter,
+} from "@/lib/categoryNav.utils";
 const ADDED_TO_CART_FEEDBACK_MS = 2000
 const HOME_PRODUCTS_LIMIT = 8
 
@@ -120,10 +125,15 @@ export default function Home() {
   const getFilteredProducts = () => {
     if (!Array.isArray(products)) return []
     if (!activeCategory) return products
-    return products.filter((product) => product.category?.name === activeCategory)
+    return products.filter((product) =>
+      productMatchesCategoryFilter(activeCategory, product.category?.name)
+    )
   }
 
-  const categoryNames = categories.map((c) => c.name)
+  const categoryNames = useMemo(
+    () => dedupeCategoriesForNav(categories).map((c) => c.name),
+    [categories]
+  )
 
   return (
     <div className="min-h-screen bg-white overflow-visible">
@@ -178,7 +188,7 @@ export default function Home() {
                         key={category}
                         onClick={() => setActiveCategory(category)}
                         className={`px-6 py-4 rounded-2xl font-bold transition-all duration-300 text-base ${
-                          activeCategory === category
+                          isSameCategoryNavSelection(activeCategory, category)
                             ? 'bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-lg shadow-orange-500/40 ring-1 ring-white/10'
                             : 'bg-gray-100 text-gray-700 hover:bg-gray-200 active:scale-95'
                         }`}
@@ -193,7 +203,7 @@ export default function Home() {
                         key={category}
                         onClick={() => setActiveCategory(category)}
                         className={`px-5 py-3 rounded-2xl font-semibold transition-all duration-300 text-sm ${
-                          activeCategory === category
+                          isSameCategoryNavSelection(activeCategory, category)
                             ? 'bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-lg shadow-orange-500/40 ring-1 ring-white/10'
                             : 'bg-gray-100 text-gray-700 hover:bg-gray-200 active:scale-95'
                         }`}
@@ -212,7 +222,7 @@ export default function Home() {
                     key={category}
                     onClick={() => setActiveCategory(category)}
                     className={`px-6 py-3 rounded-xl font-semibold transition-all duration-300 hover:scale-105 ${
-                      activeCategory === category
+                      isSameCategoryNavSelection(activeCategory, category)
                         ? 'bg-orange-500 text-white shadow-lg'
                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                     }`}
