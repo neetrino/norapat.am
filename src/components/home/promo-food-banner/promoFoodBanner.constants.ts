@@ -7,9 +7,15 @@ export const PROMO_COLORS = {
   plateRim: '#2a2a2a',
 } as const
 
-/** Hero banner — pepperoni pizza PNG in `public/` (replace file to update artwork). */
-export const HERO_BANNER_PIZZA_IMAGE = {
-  src: '/hero-pepperoni-pizza.png',
-  width: 520,
-  height: 520,
-} as const
+/** Հերո բանների սլայդերի փոխարինման interval (ms) — `HeroBannerRotatingImage`. */
+export const HERO_BANNER_ROTATION_MS = 6000
+
+/**
+ * Հերո բանների պատկերների հերթականություն (`public/`)։
+ * Պիցա / բուրգեր / բիրիանի — նույն aspect, object-contain ստեկում։
+ */
+export const HERO_BANNER_SLIDES = [
+  { src: '/hero-banner-slide-pizza.png' },
+  { src: '/hero-banner-slide-burger.png' },
+  { src: '/hero-banner-slide-biryani.png' },
+] as const

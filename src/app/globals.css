@@ -113,6 +113,41 @@ body {
   }
 }
 
+/* Hero բաններ — սլայդերի crossfade + թեթև «pop» (scale / Y / blur) */
+.hero-banner-slide-img {
+  --hero-slide-dur: 1100ms;
+  --hero-slide-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --hero-slide-scale-idle: 0.88;
+  --hero-slide-y-idle: 0.65rem;
+  --hero-slide-blur-idle: 3px;
+
+  transition-property: transform, opacity, filter;
+  transition-duration: var(--hero-slide-dur);
+  transition-timing-function: var(--hero-slide-ease);
+}
+
+.hero-banner-slide-img--active {
+  transform: translate3d(0, 0, 0) scale(1);
+  filter: blur(0);
+}
+
+.hero-banner-slide-img--idle {
+  transform: translate3d(0, var(--hero-slide-y-idle), 0) scale(var(--hero-slide-scale-idle));
+  filter: blur(var(--hero-slide-blur-idle));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-banner-slide-img {
+    transition-duration: 1ms;
+    transition-timing-function: linear;
+  }
+
+  .hero-banner-slide-img--idle {
+    transform: none;
+    filter: none;
+  }
+}
+
 /* Line clamp utilities */
 .line-clamp-2 {
   display: -webkit-box;
