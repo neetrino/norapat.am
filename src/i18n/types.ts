@@ -30,6 +30,8 @@ export interface AppMessages {
     quickOrder: string
     floatFlavors: string
     fastDelivery: string
+    promoBadge: string
+    heroFeaturedLabel: string
   }
   nav: {
     home: string

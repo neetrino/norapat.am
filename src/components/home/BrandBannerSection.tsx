@@ -1,314 +1,154 @@
 'use client'
 
+import Image from 'next/image'
 import Link from 'next/link'
-import { Phone, ShoppingCart } from 'lucide-react'
-import { Product } from '@/types'
+import { Phone } from 'lucide-react'
 import { useI18n } from '@/i18n/I18nContext'
 
-export interface BrandBannerSectionProps {
-  bannerProduct: Product | null
-  onAddToCart: (product: Product) => void
-}
+const HERO_PIZZA_SRC = '/hero-pepperoni-pizza.png'
 
 /**
- * Բրենդային բաննեռի հատված — հերո + ապրանք-բաններ (BANNER).
- * Տվյալները parent-ից (page) — bannerProduct from /api/products/banner.
+ * Բրենդային բաննեռի հատված — հերո + շարժական պիցայի նկար (BANNER).
  */
-export function BrandBannerSection({ bannerProduct, onAddToCart }: BrandBannerSectionProps) {
+export function BrandBannerSection() {
   const { t } = useI18n()
   const bb = t.brandBanner
   const homeAria = t.home.ariaBrandBanner
-  const handleAdd = (e: React.MouseEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
-    if (bannerProduct) onAddToCart(bannerProduct)
-  }
 
   return (
-    <section className="relative bg-orange-500 text-white overflow-hidden" aria-label={homeAria}>
-      <div className="absolute inset-0">
-        <div className="absolute top-10 left-10 w-20 h-20 bg-white/10 rounded-full animate-pulse" />
-        <div className="absolute top-32 right-20 w-16 h-16 bg-yellow-200/20 rounded-full animate-bounce" />
-        <div className="absolute bottom-20 left-1/4 w-12 h-12 bg-white/15 rounded-full animate-ping" />
-        <div className="absolute bottom-32 right-1/3 w-8 h-8 bg-yellow-300/30 rounded-full animate-pulse" />
+    <section className="relative overflow-hidden bg-gradient-to-b from-orange-50 via-white to-orange-100/50 text-gray-900" aria-label={homeAria}>
+      <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>
+        <div className="absolute -right-20 -top-24 h-72 w-72 rounded-full bg-orange-200/35 blur-3xl" />
+        <div className="absolute -left-16 top-1/3 h-56 w-56 rounded-full bg-yellow-200/25 blur-3xl" />
+        <div className="absolute bottom-20 right-1/4 h-40 w-40 rounded-full bg-orange-300/20 blur-2xl" />
       </div>
 
-      {/* Mobile */}
-      <div className="md:hidden relative max-w-7xl mx-auto px-4 py-6">
-        <div className="flex items-center justify-between">
-          <div className="flex-1 pr-4">
-            <h1 className="text-3xl font-bold leading-tight mb-3">
-              <span className="block text-white">{bb.titleWhite}</span>
-              <span className="block text-yellow-200">{bb.titleAccent}</span>
-            </h1>
-            <p className="text-base text-orange-100 mb-4 font-medium">{bb.mobileTagline}</p>
-            <div className="flex gap-6 text-sm">
-              <div className="text-center">
-                <div className="text-xl font-bold text-yellow-200">15+</div>
-                <div className="text-orange-100 font-medium">{bb.statFlavors}</div>
-              </div>
-              <div className="text-center">
-                <div className="text-xl font-bold text-yellow-200">20</div>
-                <div className="text-orange-100 font-medium">{bb.statMinutes}</div>
-              </div>
+      <div className="relative z-10 mx-auto max-w-7xl px-4 pb-2 pt-8 sm:px-6 sm:pb-4 sm:pt-10 lg:px-8 lg:pt-14">
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-3 lg:mb-8">
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="animate-badge-soft flex h-20 w-20 flex-col items-center justify-center rounded-full border-4 border-yellow-200 bg-white text-center shadow-lg ring-2 ring-orange-200/80">
+              <span className="text-[10px] font-semibold uppercase tracking-wide text-orange-700">{bb.promoBadge}</span>
+            </div>
+            <div className="rounded-full bg-orange-500 px-4 py-2 text-xs font-bold uppercase tracking-wide text-white shadow-md">
+              {bb.fastDelivery}
             </div>
           </div>
-          <div className="relative flex-shrink-0">
-            {bannerProduct ? (
-              <div className="relative bg-white/25 backdrop-blur-xl rounded-2xl p-3 text-center border border-white/30 shadow-2xl hover:shadow-3xl transition-all duration-300 group">
-                <div className="relative w-28 h-28 mx-auto mb-2 rounded-xl flex items-center justify-center overflow-hidden">
-                  <img
-                    src={bannerProduct.image}
-                    alt={bannerProduct.name}
-                    className="relative w-full h-full object-cover rounded-xl group-hover:scale-105 transition-transform duration-300"
-                    onError={(e) => {
-                      const t = e.currentTarget
-                      t.classList.add('hidden')
-                      const next = t.nextElementSibling as HTMLElement
-                      if (next) next.classList.remove('hidden')
-                    }}
-                  />
-                  <div className="w-full h-full flex items-center justify-center text-4xl hidden" aria-hidden>🥟</div>
-                  <div className="absolute bottom-1 right-1 bg-yellow-400 text-orange-800 px-2 py-1 rounded-lg text-xs font-bold shadow-lg">
-                    {bannerProduct.price} ֏
-                  </div>
-                </div>
-                <h3 className="text-sm font-bold mb-1 text-white line-clamp-1">{bannerProduct.name}</h3>
-                <p className="text-xs text-orange-100/90 mb-2 line-clamp-1">{bannerProduct.description}</p>
-                <button
-                  onClick={handleAdd}
-                  className="w-full bg-gradient-to-r from-orange-500 to-red-500 text-white py-1.5 px-2 rounded-lg text-xs font-bold hover:from-orange-600 hover:to-red-600 transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 active:scale-95"
-                >
-                  <span className="flex items-center justify-center gap-1">
-                    <ShoppingCart className="w-3 h-3" />
-                    {bb.add}
-                  </span>
-                </button>
-              </div>
-            ) : (
-              <div className="relative bg-white/15 backdrop-blur-lg rounded-2xl p-3 text-center border border-white/20">
-                <div className="relative w-24 h-24 mx-auto mb-2 bg-white/20 rounded-lg flex items-center justify-center">
-                  <span className="text-2xl">🥟</span>
-                </div>
-                <h3 className="text-sm font-bold mb-1 text-white">{bb.cardTitle}</h3>
-                <p className="text-xs text-orange-100">{bb.cardSubtitle}</p>
-              </div>
-            )}
-          </div>
         </div>
-      </div>
 
-      {/* Tablet */}
-      <div className="hidden md:block lg:hidden relative max-w-7xl mx-auto px-6 py-10">
-        <div className="flex items-center justify-between">
-          <div className="flex-1 pr-8">
-            <h1 className="text-4xl font-bold leading-tight mb-4">
-              <span className="block text-white">{bb.titleWhite}</span>
-              <span className="block text-yellow-200">{bb.titleAccent}</span>
-            </h1>
-            <p className="text-lg text-orange-100 mb-6 font-medium">{bb.mobileTagline}</p>
-            <div className="flex gap-8 text-base">
-              <div className="text-center">
-                <div className="text-2xl font-bold text-yellow-200">15+</div>
-                <div className="text-orange-100 font-medium">{bb.statFlavors}</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-yellow-200">20</div>
-                <div className="text-orange-100 font-medium">{bb.statMinutes}</div>
-              </div>
-            </div>
-          </div>
-          <div className="relative flex-shrink-0">
-            {bannerProduct ? (
-              <div className="relative bg-white/25 backdrop-blur-xl rounded-3xl p-4 text-center border border-white/30 shadow-2xl hover:shadow-3xl transition-all duration-300 group">
-                <div className="relative w-36 h-36 mx-auto mb-3 rounded-2xl flex items-center justify-center overflow-hidden">
-                  <img
-                    src={bannerProduct.image}
-                    alt={bannerProduct.name}
-                    className="relative w-full h-full object-cover rounded-2xl group-hover:scale-105 transition-transform duration-300"
-                    onError={(e) => {
-                      const t = e.currentTarget
-                      t.classList.add('hidden')
-                      const next = t.nextElementSibling as HTMLElement
-                      if (next) next.classList.remove('hidden')
-                    }}
-                  />
-                  <div className="w-full h-full flex items-center justify-center text-5xl hidden" aria-hidden>🥟</div>
-                  <div className="absolute bottom-2 right-2 bg-yellow-400 text-orange-800 px-3 py-1.5 rounded-xl text-sm font-bold shadow-lg">
-                    {bannerProduct.price} ֏
-                  </div>
-                </div>
-                <h3 className="text-base font-bold mb-2 text-white line-clamp-1">{bannerProduct.name}</h3>
-                <p className="text-sm text-orange-100/90 mb-3 line-clamp-1">{bannerProduct.description}</p>
-                <button
-                  onClick={handleAdd}
-                  className="w-full bg-gradient-to-r from-orange-500 to-red-500 text-white py-2 px-3 rounded-xl text-sm font-bold hover:from-orange-600 hover:to-red-600 transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 active:scale-95"
-                >
-                  <span className="flex items-center justify-center gap-2">
-                    <ShoppingCart className="w-4 h-4" />
-                    {bb.add}
-                  </span>
-                </button>
-              </div>
-            ) : (
-              <div className="relative bg-white/15 backdrop-blur-lg rounded-3xl p-4 text-center border border-white/20">
-                <div className="relative w-32 h-32 mx-auto mb-3 bg-white/20 rounded-2xl flex items-center justify-center">
-                  <span className="text-4xl">🥟</span>
-                </div>
-                <h3 className="text-base font-bold mb-2 text-white">{bb.cardTitle}</h3>
-                <p className="text-sm text-orange-100">{bb.cardSubtitle}</p>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* Desktop */}
-      <div className="hidden lg:block relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 lg:py-20">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-          <div className="space-y-6">
-            <div className="inline-flex items-center px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full text-sm font-medium animate-fade-in">
-              <span className="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse" />
+        <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-2 lg:gap-12 xl:gap-16">
+          <div className="hero-col-enter space-y-5 sm:space-y-6">
+            <div className="inline-flex items-center rounded-full bg-white/80 px-4 py-2 text-sm font-medium text-orange-800 shadow-sm ring-1 ring-orange-100">
+              <span className="mr-2 h-2 w-2 animate-pulse rounded-full bg-orange-500" />
               {bb.badge}
             </div>
-            <h1 className="text-4xl md:text-6xl font-bold leading-tight">
-              <span className="block text-white animate-slide-up">{bb.titleWhite}</span>
-              <span className="block text-yellow-200 animate-slide-up-delay">{bb.titleAccent}</span>
-              <span className="block text-2xl md:text-3xl font-normal text-orange-100 mt-3 animate-fade-in-delay">
+
+            <h1 className="leading-[1.1]">
+              <span className="block font-serif text-3xl italic text-orange-600 sm:text-4xl lg:text-5xl">
+                {bb.titleWhite}
+              </span>
+              <span className="mt-1 block text-4xl font-extrabold tracking-tight text-gray-900 sm:text-5xl lg:text-6xl">
+                {bb.titleAccent}
+              </span>
+              <span className="mt-3 block text-lg font-medium text-orange-600 sm:text-xl lg:text-2xl">
                 {bb.tagline}
               </span>
             </h1>
-            <p className="text-lg md:text-xl text-orange-100 leading-relaxed max-w-lg animate-fade-in-delay-2">
+
+            <p className="max-w-xl text-base leading-relaxed text-gray-700 sm:text-lg">
               {bb.descriptionBefore}
-              <span className="font-semibold text-yellow-200">{bb.descriptionHighlight}</span>
+              <span className="font-semibold text-orange-600">{bb.descriptionHighlight}</span>
               {bb.descriptionAfter}
             </p>
-            <div className="flex flex-wrap gap-6 animate-fade-in-delay-3">
-              <div className="text-center">
-                <div className="text-2xl font-bold text-yellow-200">15+</div>
-                <div className="text-sm text-orange-100">{bb.statFlavors}</div>
+
+            <p className="text-sm font-medium text-orange-700 sm:text-base lg:hidden">{bb.mobileTagline}</p>
+
+            <div className="flex flex-wrap gap-6 text-sm">
+              <div>
+                <div className="text-2xl font-bold text-orange-600">15+</div>
+                <div className="text-gray-600">{bb.statFlavors}</div>
               </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-yellow-200">20</div>
-                <div className="text-sm text-orange-100">{bb.statMinutes}</div>
+              <div>
+                <div className="text-2xl font-bold text-orange-600">20</div>
+                <div className="text-gray-600">{bb.statMinutes}</div>
               </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-yellow-200">24/7</div>
-                <div className="text-sm text-orange-100">{bb.statDelivery}</div>
+              <div className="hidden sm:block">
+                <div className="text-2xl font-bold text-orange-600">24/7</div>
+                <div className="text-gray-600">{bb.statDelivery}</div>
               </div>
             </div>
-            <div className="flex flex-col sm:flex-row gap-3 animate-fade-in-delay-4">
+
+            <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
               <Link
                 href="/products"
-                className="group bg-white text-orange-500 px-6 py-3 rounded-xl font-bold text-base hover:bg-yellow-100 hover:scale-105 transition-all duration-300 text-center shadow-lg hover:shadow-xl"
+                className="group inline-flex items-center justify-center rounded-xl bg-orange-500 px-6 py-3 text-center text-base font-bold text-white shadow-lg transition hover:scale-[1.02] hover:bg-orange-600 hover:shadow-xl motion-reduce:hover:scale-100"
               >
-                <span className="flex items-center justify-center">
-                    {bb.viewMenu}
-                  <svg className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                </span>
+                {bb.viewMenu}
+                <svg
+                  className="ml-2 h-4 w-4 transition group-hover:translate-x-0.5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  aria-hidden
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
               </Link>
               <Link
                 href="/contact"
-                className="group border-2 border-white text-white px-6 py-3 rounded-xl font-bold text-base hover:bg-white hover:text-orange-500 hover:scale-105 transition-all duration-300 text-center backdrop-blur-sm"
+                className="inline-flex items-center justify-center rounded-xl border-2 border-orange-500 bg-white px-6 py-3 text-center text-base font-bold text-orange-600 shadow-sm transition hover:bg-orange-50"
               >
-                <span className="flex items-center justify-center">
-                  <Phone className="mr-2 w-4 h-4 group-hover:rotate-12 transition-transform" />
-                  {bb.contactUs}
-                </span>
+                <Phone className="mr-2 h-4 w-4" aria-hidden />
+                {bb.contactUs}
               </Link>
             </div>
           </div>
-          <div className="relative animate-fade-in-delay-5">
-            {bannerProduct && (
-              <div
-                className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-white text-orange-600 px-4 py-2 rounded-2xl text-lg font-bold shadow-2xl z-[100]"
-                style={{ boxShadow: '0 15px 35px rgba(0, 0, 0, 0.3)' }}
-              >
-                {bannerProduct.price} ֏
-              </div>
-            )}
-            {bannerProduct ? (
-              <div className="relative w-80 h-80 mx-auto mb-4">
-                <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 w-[calc(100%+4rem)] h-[calc(100%+4rem)] group z-50">
-                  <div className="absolute inset-0 bg-orange-200/30 rounded-3xl transform translate-y-6 translate-x-3 group-hover:translate-y-8 group-hover:translate-x-4 transition-all duration-700 blur-md" />
-                  <div className="absolute inset-0 bg-orange-300/25 rounded-3xl transform translate-y-4 translate-x-2 group-hover:translate-y-6 group-hover:translate-x-3 transition-all duration-700 blur-sm" />
-                  <div className="absolute inset-0 bg-orange-400/20 rounded-3xl transform translate-y-2 translate-x-1 group-hover:translate-y-4 group-hover:translate-x-2 transition-all duration-700 blur-[1px]" />
-                  <img
-                    src={bannerProduct.image}
-                    alt={bannerProduct.name}
-                    className="relative w-full h-full object-contain group-hover:scale-[1.05] group-hover:translate-y-2 group-hover:rotate-3 transition-all duration-700 ease-out z-50"
-                    style={{
-                      transform: 'perspective(1000px) rotateX(8deg) rotateY(-3deg)',
-                    }}
-                    loading="lazy"
-                    onError={(e) => {
-                      const t = e.currentTarget
-                      t.classList.add('hidden')
-                      const next = t.nextElementSibling as HTMLElement
-                      if (next) next.classList.remove('hidden')
-                    }}
-                  />
-                  <div className="absolute inset-0 flex items-center justify-center text-8xl hidden" aria-hidden>🥟</div>
-                  <div className="absolute -bottom-3 -left-3 w-6 h-6 bg-yellow-400 rounded-full opacity-50 group-hover:opacity-80 group-hover:scale-110 transition-all duration-500 shadow-lg" />
-                  <div className="absolute top-1/2 -left-4 w-4 h-4 bg-red-500 rounded-full opacity-40 group-hover:opacity-70 group-hover:scale-125 transition-all duration-500 shadow-lg" />
-                </div>
-              </div>
-            ) : (
-              <div className="relative w-72 h-72 mx-auto mb-6">
-                <div
-                  className="absolute -top-8 left-1/2 transform -translate-x-1/2 w-[calc(100%+3rem)] h-[calc(100%+3rem)] flex items-center justify-center bg-gradient-to-br from-orange-200 to-red-200 opacity-70 rounded-3xl shadow-2xl text-8xl"
-                  style={{ transform: 'perspective(1000px) rotateX(5deg) rotateY(-2deg)' }}
-                >
-                  🥟
-                </div>
-              </div>
-            )}
-            <div className="relative bg-white/10 backdrop-blur-lg rounded-3xl p-8 text-center border border-white/20 shadow-2xl overflow-visible hover:shadow-3xl hover:scale-[1.02] transition-all duration-700 cursor-pointer group">
-              <div className="absolute -top-4 -right-4 w-8 h-8 bg-yellow-300 rounded-full animate-bounce" />
-              <div className="absolute -bottom-2 -left-2 w-6 h-6 bg-orange-300 rounded-full animate-pulse" />
-              {bannerProduct ? (
-                <>
-                  <h3 className="text-2xl font-bold mb-2">{bannerProduct.name}</h3>
-                  <p className="text-orange-100 mb-4 opacity-80 group-hover:opacity-100 transition-opacity duration-300">
-                    {bannerProduct.description}
-                  </p>
-                  <button
-                    onClick={handleAdd}
-                    className="bg-yellow-400 text-orange-800 px-6 py-3 rounded-xl font-bold hover:scale-105 active:bg-green-500 active:text-white transition-all duration-300 shadow-lg"
-                  >
-                    <ShoppingCart className="inline w-5 h-5 mr-2" />
-                    {bb.quickOrder}
-                  </button>
-                </>
-              ) : (
-                <>
-                  <h3 className="text-2xl font-bold mb-2">{bb.cardTitle}</h3>
-                  <p className="text-orange-100 mb-4 opacity-80">{bb.cardSubtitle}</p>
-                  <Link
-                    href="/products"
-                    className="bg-yellow-400 text-orange-800 px-6 py-3 rounded-xl font-bold hover:scale-105 active:bg-green-500 active:text-white transition-all duration-300 shadow-lg inline-block"
-                  >
-                    <ShoppingCart className="inline w-5 h-5 mr-2" />
-                    {bb.viewMenuBtn}
-                  </Link>
-                </>
-              )}
-            </div>
-            <div className="absolute -top-4 -left-4 bg-white/20 backdrop-blur-sm rounded-xl p-3 text-center border border-white/30 animate-float">
-              <div className="w-12 h-12 bg-white/30 rounded-lg flex items-center justify-center mb-2">
-                <span className="text-2xl">🍕</span>
-              </div>
-              <div className="text-xs font-semibold">{bb.floatFlavors}</div>
-            </div>
-            <div className="absolute -bottom-4 -right-4 bg-white/20 backdrop-blur-sm rounded-xl p-3 text-center border border-white/30 animate-float-delay">
-              <div className="w-12 h-12 bg-white/30 rounded-lg flex items-center justify-center mb-2">
-                <span className="text-2xl">🚚</span>
-              </div>
-              <div className="text-xs font-semibold">{bb.fastDelivery}</div>
+
+          <div className="hero-col-enter-delay relative mx-auto flex w-full max-w-lg items-center justify-center py-4 lg:max-w-none lg:py-0">
+            <div
+              className="hero-pizza-shadow pointer-events-none absolute bottom-[6%] left-1/2 z-0 h-10 w-[min(72%,280px)] -translate-x-1/2 rounded-[100%] bg-orange-900/20 blur-2xl"
+              aria-hidden
+            />
+            <div className="hero-pizza-bob relative z-10 aspect-[4/3] w-full max-w-[420px]">
+              <Image
+                src={HERO_PIZZA_SRC}
+                alt={`${bb.titleAccent} — ${bb.heroFeaturedLabel}`}
+                fill
+                priority
+                sizes="(max-width: 1024px) 90vw, 420px"
+                className="object-contain object-center mix-blend-multiply drop-shadow-[0_20px_40px_rgba(238,49,36,0.25)]"
+              />
             </div>
           </div>
+        </div>
+      </div>
+
+      <div className="pointer-events-none relative -mb-px h-10 w-full overflow-hidden text-orange-600" aria-hidden>
+        <svg className="block h-full w-full" viewBox="0 0 1200 40" preserveAspectRatio="none">
+          <path
+            fill="currentColor"
+            d="M0,18 C200,38 400,2 600,16 C800,30 1000,4 1200,22 L1200,40 L0,40 Z"
+          />
+        </svg>
+      </div>
+
+      <div className="relative z-10 bg-orange-600 px-4 py-5 text-white sm:px-6 lg:px-8">
+        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 text-center sm:flex-row sm:text-left">
+          <a
+            href="mailto:info@pideh.am"
+            className="text-sm font-semibold text-orange-100 underline-offset-4 hover:text-white hover:underline"
+          >
+            info@pideh.am
+          </a>
+          <p className="text-sm font-bold tracking-wide">
+            24/7 · {bb.statDelivery}
+          </p>
+          <a
+            href="tel:+37495044888"
+            className="inline-flex items-center justify-center gap-2 text-sm font-semibold text-orange-100 transition hover:text-white"
+          >
+            <Phone className="h-4 w-4 shrink-0" aria-hidden />
+            +374 95-044-888
+          </a>
         </div>
       </div>
     </section>

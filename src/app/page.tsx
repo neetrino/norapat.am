@@ -22,7 +22,6 @@ export default function Home() {
   const { t, locale } = useI18n()
   const h = t.home
   const [products, setProducts] = useState<ProductWithCategory[]>([])
-  const [bannerProduct, setBannerProduct] = useState<Product | null>(null)
   const [categories, setCategories] = useState<CategoryWithCount[]>([])
   const [loading, setLoading] = useState(true)
   const [activeCategory, setActiveCategory] = useState<string>('')
@@ -53,44 +52,28 @@ export default function Home() {
 
   const fetchProducts = async () => {
     try {
-      const [productsResponse, bannerResponse] = await Promise.all([
-        fetch('/api/products', { 
-          cache: 'no-store',
-          headers: {
-            'Cache-Control': 'no-cache',
-            'Pragma': 'no-cache'
-          }
-        }),
-        fetch('/api/products/banner', { 
-          cache: 'no-store',
-          headers: {
-            'Cache-Control': 'no-cache',
-            'Pragma': 'no-cache'
-          }
-        })
-      ])
-      
+      const productsResponse = await fetch('/api/products', {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache',
+          Pragma: 'no-cache',
+        },
+      })
+
       if (!productsResponse.ok) {
         const errorText = await productsResponse.text()
         throw new Error(`Products API error: ${productsResponse.status} - ${errorText}`)
       }
-      if (!bannerResponse.ok) {
-        const errorText = await bannerResponse.text()
-        throw new Error(`Banner API error: ${bannerResponse.status} - ${errorText}`)
-      }
-      
+
       const productsData = await productsResponse.json()
-      const bannerData = await bannerResponse.json()
-      
+
       if (Array.isArray(productsData)) {
         setProducts(productsData)
       } else {
         setProducts([])
       }
-      
-      setBannerProduct(bannerData)
     } catch {
-      setBannerProduct(null)
+      setProducts([])
     } finally {
       setLoading(false)
     }
@@ -149,7 +132,7 @@ export default function Home() {
       <div className="hidden lg:block h-24"></div>
 
       {/* 1. Բրենդային բաննեռի հատված (02-FUNCTIONAL 1.1) */}
-      <BrandBannerSection bannerProduct={bannerProduct} onAddToCart={handleAddToCart} />
+      <BrandBannerSection />
 
       {/* 2. Կատեգորիաների ցուցադրման հատված (02-FUNCTIONAL 1.2) */}
       <CategoriesSection onSelectCategory={setActiveCategory} productsSectionId="products-section" />

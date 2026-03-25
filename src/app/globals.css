@@ -219,6 +219,122 @@ html {
   animation: slideInUp 0.3s ease-out;
 }
 
+/* Hero banner (BrandBannerSection) */
+@keyframes hero-col-in {
+  from {
+    opacity: 0;
+    transform: translateX(-14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes hero-col-in-right {
+  from {
+    opacity: 0;
+    transform: translateX(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes hero-tile-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes hero-float-soft {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+@keyframes badge-soft {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+@keyframes hero-pizza-bob {
+  0%,
+  100% {
+    transform: translateY(-12px);
+  }
+  50% {
+    transform: translateY(14px);
+  }
+}
+
+@keyframes hero-pizza-shadow-pulse {
+  0%,
+  100% {
+    transform: translateX(-50%) scale(0.9);
+    opacity: 0.38;
+  }
+  50% {
+    transform: translateX(-50%) scale(1.08);
+    opacity: 0.58;
+  }
+}
+
+.hero-col-enter {
+  animation: hero-col-in 0.65s ease-out both;
+}
+
+.hero-col-enter-delay {
+  animation: hero-col-in-right 0.65s ease-out 0.12s both;
+}
+
+.hero-tile-enter {
+  animation: hero-tile-in 0.55s ease-out both;
+}
+
+.hero-float-soft {
+  animation: hero-float-soft 6s ease-in-out infinite;
+}
+
+.animate-badge-soft {
+  animation: badge-soft 2.8s ease-in-out infinite;
+}
+
+.hero-pizza-bob {
+  animation: hero-pizza-bob 3.4s ease-in-out infinite;
+}
+
+.hero-pizza-shadow {
+  animation: hero-pizza-shadow-pulse 3.4s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-col-enter,
+  .hero-col-enter-delay,
+  .hero-tile-enter,
+  .hero-float-soft,
+  .animate-badge-soft,
+  .hero-pizza-bob,
+  .hero-pizza-shadow {
+    animation: none !important;
+  }
+}
+
 /* Zoom modal animations */
 @keyframes zoom-modal-backdrop {
   from {

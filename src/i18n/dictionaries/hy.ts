@@ -26,6 +26,8 @@ export const hy: AppMessages = {
     quickOrder: 'Արագ պատվեր',
     floatFlavors: '15+ համեր',
     fastDelivery: 'Արագ առաքում',
+    promoBadge: '-50%',
+    heroFeaturedLabel: 'Թարմ ընտրանի',
   },
   nav: {
     home: 'Գլխավոր',
