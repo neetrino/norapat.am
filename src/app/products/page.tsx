@@ -10,6 +10,7 @@ import Footer from '@/components/Footer'
 import ProductCard from '@/components/ProductCard'
 import { useI18n } from '@/i18n/I18nContext'
 import { getCategoryDisplayName } from '@/i18n/getCategoryDisplayName'
+import { getMenuCategorySectionId } from '@/lib/categoryNav.utils'
 
 const CATEGORY_ORDER = ['Կոմբո', 'Պիդե', 'Սնաք', 'Սոուսներ', 'Ըմպելիքներ'] as const
 
@@ -34,6 +35,8 @@ function ProductsPageContent() {
   const { addItem } = useCart()
   const { isInWishlist, toggle: toggleWishlist } = useWishlist()
   const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const menuHashScrollDoneRef = useRef(false)
+  const menuHashInitRef = useRef(false)
 
   const fetchProducts = useCallback(async () => {
     try {
@@ -159,6 +162,41 @@ function ProductsPageContent() {
   const groupedProducts = useMemo(() => {
     return groupProductsByCategory(filteredProducts)
   }, [filteredProducts, groupProductsByCategory])
+
+  /** Գլխավոր էջից `#mc-...` — մենյուի «Բոլորը» տեսք + համապատասխան բաժին scroll */
+  useEffect(() => {
+    if (typeof window === 'undefined' || menuHashInitRef.current) return
+    const raw = window.location.hash.replace(/^#/, '')
+    if (!raw.startsWith('mc-')) return
+
+    menuHashInitRef.current = true
+    setSelectedCategory(allCategories)
+    setSearchQuery('')
+    setDebouncedSearchQuery('')
+  }, [allCategories])
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || loading || menuHashScrollDoneRef.current) return
+    const raw = window.location.hash.replace(/^#/, '')
+    if (!raw.startsWith('mc-')) return
+    if (selectedCategory !== allCategories || debouncedSearchQuery) return
+
+    const el = document.getElementById(raw)
+    if (!el) return
+
+    const run = () => {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      menuHashScrollDoneRef.current = true
+    }
+    const t = window.setTimeout(run, 120)
+    return () => window.clearTimeout(t)
+  }, [
+    loading,
+    selectedCategory,
+    debouncedSearchQuery,
+    allCategories,
+    groupedProducts.length,
+  ])
 
   // Սկելետոնի կոմպոնենտ ապրանքի քարտի համար
   const ProductSkeleton = () => (
@@ -370,7 +408,11 @@ function ProductsPageContent() {
           // Ցուցադրել ապրանքները խմբավորված ըստ կատեգորիաների
           <div className="space-y-16 mt-24">
             {groupedProducts.map(({ category, products: categoryProducts }) => (
-              <div key={category}>
+              <div
+                key={category}
+                id={getMenuCategorySectionId(category)}
+                className="scroll-mt-28 lg:scroll-mt-32"
+              >
                 {/* Կատեգորիայի վերնագիր */}
                 <div className="flex items-center mb-6">
                   <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mr-4">

@@ -1,5 +1,22 @@
 import type { CategoryWithCount } from '@/types'
 
+/**
+ * `/products` խմբավորված ցուցակում կատեգորիայի բաժնի HTML id (hash հղումների համար)
+ */
+export function getMenuCategorySectionId(categoryName: string): string {
+  const bytes = new TextEncoder().encode(categoryName)
+  let binary = ''
+  for (let i = 0; i < bytes.length; i++) {
+    binary += String.fromCharCode(bytes[i]!)
+  }
+  const base64 =
+    typeof globalThis.btoa === 'function'
+      ? globalThis.btoa(binary)
+      : Buffer.from(bytes).toString('base64')
+  const urlSafe = base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')
+  return `mc-${urlSafe}`
+}
+
 /** Նույն սեմանտիկ խումբ (ըմպելիքներ) — տարբեր լեզուներով DB անուններ */
 const DRINKS_ALIASES = ['Ըմպելիքներ', 'Напитки', 'Drinks'] as const
 

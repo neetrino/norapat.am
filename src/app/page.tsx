@@ -148,7 +148,6 @@ export default function Home() {
       <CategoriesSection
         activeCategory={activeCategory}
         onSelectCategory={setActiveCategory}
-        productsSectionId="products-section"
       />
 
       {/* 3. Լավագույն ուտեսներ (02-FUNCTIONAL 1.3) */}

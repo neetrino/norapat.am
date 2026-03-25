@@ -8,6 +8,7 @@ import { CategoryWithCount } from '@/types'
 import { getCategoryNavImageSrc } from '@/constants/categoryNavImage.constants'
 import {
   dedupeCategoriesForNav,
+  getMenuCategorySectionId,
   isSameCategoryNavSelection,
 } from '@/lib/categoryNav.utils'
 import { useI18n } from '@/i18n/I18nContext'
@@ -18,8 +19,8 @@ const SCROLL_STEP_PX = 260
 
 export interface CategoriesSectionProps {
   activeCategory?: string
+  /** Գլխավորում — ընտրել կատեգորիան (օր. ֆիլտրի համաձայնեցում) */
   onSelectCategory?: (categoryName: string) => void
-  productsSectionId?: string
 }
 
 /**
@@ -28,7 +29,6 @@ export interface CategoriesSectionProps {
 export function CategoriesSection({
   activeCategory,
   onSelectCategory,
-  productsSectionId = 'products-section',
 }: CategoriesSectionProps) {
   const { t, locale } = useI18n()
   const c = t.home.categories
@@ -86,16 +86,6 @@ export function CategoriesSection({
     const el = scrollRef.current
     if (!el) return
     el.scrollBy({ left: direction * SCROLL_STEP_PX, behavior: 'smooth' })
-  }
-
-  const handleCategoryClick = (name: string) => {
-    onSelectCategory?.(name)
-    if (productsSectionId) {
-      document.getElementById(productsSectionId)?.scrollIntoView({
-        behavior: 'smooth',
-        block: 'start',
-      })
-    }
   }
 
   const navArrowClass =
@@ -163,11 +153,12 @@ export function CategoriesSection({
             const isActive = isSameCategoryNavSelection(activeCategory, cat.name)
             const label = getCategoryDisplayName(cat.name, locale)
             const iconSrc = getCategoryNavImageSrc(cat.name)
+            const menuHref = `/products#${getMenuCategorySectionId(cat.name)}`
             return (
-              <button
+              <Link
                 key={cat.id}
-                type="button"
-                onClick={() => handleCategoryClick(cat.name)}
+                href={menuHref}
+                onClick={() => onSelectCategory?.(cat.name)}
                 className={`snap-start inline-flex shrink-0 items-center gap-2.5 rounded-full py-2 pl-2 pr-4 text-sm font-semibold transition-all duration-300 ease-out focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-500 sm:py-2.5 sm:pl-2 sm:pr-5 sm:text-base ${
                   isActive
                     ? 'bg-gradient-to-r from-orange-500 to-red-600 text-white shadow-lg shadow-orange-500/30 ring-1 ring-white/20'
@@ -190,7 +181,7 @@ export function CategoriesSection({
                   />
                 </span>
                 <span className="whitespace-nowrap tracking-tight">{label}</span>
-              </button>
+              </Link>
             )
           })}
         </div>
