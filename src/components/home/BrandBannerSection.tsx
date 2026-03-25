@@ -4,6 +4,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useI18n } from '@/i18n/I18nContext'
 import { HERO_BANNER_PIZZA_IMAGE } from '@/components/home/promo-food-banner/promoFoodBanner.constants'
+import { HeroPizzaDecorIcons } from '@/components/home/promo-food-banner/HeroPizzaDecorIcons'
 
 /**
  * Բրենդային բաններ՝ երկու սյուն, խորը կարմիր տեքստուրա, հերո պատկեր (պիցա)։
@@ -70,7 +71,8 @@ export function BrandBannerSection() {
           </div>
 
           <div className="relative z-10 flex min-h-[280px] w-full flex-col items-center justify-center sm:min-h-[320px] lg:min-h-[360px]">
-            <div className="relative mt-10 flex w-full items-center justify-center sm:mt-12 lg:mt-14">
+            <HeroPizzaDecorIcons />
+            <div className="relative z-[5] mt-10 flex w-full items-center justify-center sm:mt-12 lg:mt-14">
               <div className="animate-promo-plate-float relative z-[5] flex w-full max-w-[min(100%,420px)] items-center justify-center sm:max-w-[480px]">
                 <Image
                   src={HERO_BANNER_PIZZA_IMAGE.src}
