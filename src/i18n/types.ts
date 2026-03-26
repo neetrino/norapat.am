@@ -118,6 +118,8 @@ export interface AppMessages {
     hoursDelivery: string
     ariaPhone: string
     ariaEmail: string
+    /** Դեկորատիվ պատկեր ֆուտերում (մասկոտ) */
+    mascotAlt: string
   }
   home: {
     ariaBrandBanner: string
