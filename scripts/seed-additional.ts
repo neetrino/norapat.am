@@ -1,10 +1,34 @@
 /**
  * Добавляет в базу ~30 дополнительных товаров без удаления существующих данных.
- * Использует существующие категории (Пиде, Комбо, Снэк, Соусы, Напитки).
+ * Использует существующие категории на армянском языке.
  */
 import { PrismaClient } from '@prisma/client'
 
 const prisma = new PrismaClient()
+
+const CATEGORY_NAME_MAP: Record<string, string> = {
+  'Пиде': 'Պիդե',
+  Pide: 'Պիդե',
+  'Комбо': 'Կոմբո',
+  Combo: 'Կոմբո',
+  'Снэк': 'Սնաք',
+  Snacks: 'Սնաք',
+  'Соусы': 'Սոուսներ',
+  Sauces: 'Սոուսներ',
+  'Напитки': 'Ըմպելիքներ',
+  Drinks: 'Ըմպելիքներ',
+  'Պիդե': 'Պիդե',
+  'Կոմբո': 'Կոմբո',
+  'Սնաք': 'Սնաք',
+  'Սնեք': 'Սնաք',
+  'Սոուսներ': 'Սոուսներ',
+  'Ըմպելիքներ': 'Ըմպելիքներ',
+}
+
+function normalizeCategoryName(categoryName: string): string {
+  const trimmedName = categoryName.trim()
+  return CATEGORY_NAME_MAP[trimmedName] ?? trimmedName
+}
 
 const ADDITIONAL_PRODUCTS = [
   { name: 'Пиде с тунцом', description: 'Пиде с тунцом, каперсами и сыром', price: 900, image: '/images/pide-s-govyadinoj-Photoroom.png', category: 'Пиде', ingredients: ['Тесто', 'Тунец', 'Каперсы', 'Сыр'] },
@@ -39,7 +63,7 @@ const ADDITIONAL_PRODUCTS = [
   { name: 'Пиде с креветками', description: 'Пиде с тигровыми креветками и чесночным соусом', price: 1200, image: '/images/ovoshchnoe-pide-Photoroom.png', category: 'Пиде', ingredients: ['Тесто', 'Креветки', 'Чеснок', 'Сыр'] },
 ]
 
-const SEED_CATEGORIES = ['Пиде', 'Комбо', 'Снэк', 'Соусы', 'Напитки'] as const
+const SEED_CATEGORIES = ['Պիդե', 'Կոմբո', 'Սնաք', 'Սոուսներ', 'Ըմպելիքներ'] as const
 
 async function ensureCategories(): Promise<Map<string, string>> {
   const categoryByName = new Map<string, string>()
@@ -65,9 +89,10 @@ async function main() {
   let skipped = 0
 
   for (const p of ADDITIONAL_PRODUCTS) {
-    const categoryId = categoryByName.get(p.category)
+    const normalizedCategory = normalizeCategoryName(p.category)
+    const categoryId = categoryByName.get(normalizedCategory)
     if (!categoryId) {
-      console.warn(`⚠️ Категория не найдена: ${p.category}, товар пропущен: ${p.name}`)
+      console.warn(`⚠️ Категория не найдена: ${normalizedCategory}, товар пропущен: ${p.name}`)
       skipped++
       continue
     }

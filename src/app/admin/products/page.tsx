@@ -16,6 +16,7 @@ import {
   ChevronDown,
   Star,
   ChevronsUpDown,
+  Copy,
 } from 'lucide-react'
 import { Product, ProductStatus } from '@/types'
 
@@ -139,6 +140,41 @@ export default function AdminProducts() {
 
     toggleDebounceRef.current.set(productId, { timer, serverValue })
   }, [])
+
+  const handleDuplicate = async (productId: string) => {
+    const product = products.find(p => p.id === productId)
+    if (!product) return
+
+    try {
+      const res = await fetch('/api/admin/products', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: `${product.name} (պատճեն)`,
+          shortDescription: product.shortDescription,
+          description: product.description,
+          price: product.price,
+          originalPrice: product.originalPrice,
+          image: product.image,
+          images: product.images,
+          categoryId: product.categoryId,
+          ingredients: product.ingredients,
+          status: product.status,
+          isAvailable: false,
+        }),
+      })
+
+      if (res.ok) {
+        const newProduct = await res.json()
+        setProducts(prev => [newProduct, ...prev])
+      } else {
+        alert('Սխալ ապրանքը պատճենելիս')
+      }
+    } catch (err) {
+      console.error('Error duplicating product:', err)
+      alert('Սխալ ապրանքը պատճենելիս')
+    }
+  }
 
   const handleSort = (field: SortField) => {
     if (sortField === field) {
@@ -502,18 +538,25 @@ export default function AdminProducts() {
 
                     {/* Actions */}
                     <td className="px-4 py-3">
-                      <div className="flex items-center justify-end gap-1">
+                      <div className="flex items-center justify-end gap-1.5">
                         <Link
                           href={`/admin/products/${product.id}/edit`}
                           title="Խմբագրել"
-                          className="p-1.5 rounded-lg text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-colors"
+                          className="p-2 rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 hover:text-gray-800 transition-all"
                         >
                           <Edit2 className="h-4 w-4" />
                         </Link>
                         <button
+                          onClick={() => handleDuplicate(product.id)}
+                          title="Պատճենել"
+                          className="p-2 rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 hover:text-gray-800 transition-all"
+                        >
+                          <Copy className="h-4 w-4" />
+                        </button>
+                        <button
                           onClick={() => handleDelete(product.id)}
                           title="Ջնջել"
-                          className="p-1.5 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors"
+                          className="p-2 rounded-lg bg-red-50 text-red-500 hover:bg-red-100 hover:text-red-600 transition-all"
                         >
                           <Trash2 className="h-4 w-4" />
                         </button>
