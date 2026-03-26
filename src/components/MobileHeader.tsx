@@ -7,6 +7,10 @@ import { useI18n } from '@/i18n/I18nContext'
 import type { PublicSiteSettingsState } from '@/hooks/usePublicSiteSettings'
 import { SiteBrandMark } from '@/components/SiteBrandMark'
 import { useHeaderStack } from '@/contexts/HeaderStackContext'
+import {
+  TOP_CONTACT_BAR_TRANSITION_EASING,
+  TOP_CONTACT_BAR_TRANSITION_MS,
+} from '@/lib/headerTopBar.constants'
 
 interface MobileHeaderProps {
   branding: PublicSiteSettingsState
@@ -21,8 +25,12 @@ export default function MobileHeader({ branding }: MobileHeaderProps) {
 
   return (
     <header
-      className="fixed left-0 right-0 z-[100] border-b border-gray-200 bg-white/95 shadow-lg backdrop-blur-xl transition-[top] duration-300 ease-out"
-      style={{ top: topBarInsetPx }}
+      className="fixed left-0 right-0 z-[100] border-b border-gray-200 bg-white/95 shadow-lg backdrop-blur-xl transition-[top]"
+      style={{
+        top: topBarInsetPx,
+        transitionDuration: `${TOP_CONTACT_BAR_TRANSITION_MS}ms`,
+        transitionTimingFunction: TOP_CONTACT_BAR_TRANSITION_EASING,
+      }}
     >
       <div className="px-4 py-1.5">
         <div className="flex items-center gap-2">

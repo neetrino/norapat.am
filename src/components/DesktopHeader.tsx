@@ -12,6 +12,10 @@ import { useI18n } from '@/i18n/I18nContext'
 import type { PublicSiteSettingsState } from '@/hooks/usePublicSiteSettings'
 import { SiteBrandMark } from '@/components/SiteBrandMark'
 import { useHeaderStack } from '@/contexts/HeaderStackContext'
+import {
+  TOP_CONTACT_BAR_TRANSITION_EASING,
+  TOP_CONTACT_BAR_TRANSITION_MS,
+} from '@/lib/headerTopBar.constants'
 
 interface DesktopHeaderProps {
   branding: PublicSiteSettingsState
@@ -46,8 +50,12 @@ export default function DesktopHeader({ branding }: DesktopHeaderProps) {
 
   return (
     <header
-      className="fixed left-0 right-0 z-[60] bg-white shadow-sm transition-[top] duration-300 ease-out"
-      style={{ top: topBarInsetPx }}
+      className="fixed left-0 right-0 z-[60] bg-white shadow-sm transition-[top]"
+      style={{
+        top: topBarInsetPx,
+        transitionDuration: `${TOP_CONTACT_BAR_TRANSITION_MS}ms`,
+        transitionTimingFunction: TOP_CONTACT_BAR_TRANSITION_EASING,
+      }}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center py-4">

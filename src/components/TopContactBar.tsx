@@ -9,6 +9,8 @@ import {
   DEFAULT_PUBLIC_ADDRESS,
   DEFAULT_PUBLIC_CONTACT_PHONE,
   TOP_CONTACT_BAR_HEIGHT_PX,
+  TOP_CONTACT_BAR_TRANSITION_EASING,
+  TOP_CONTACT_BAR_TRANSITION_MS,
 } from '@/lib/headerTopBar.constants'
 
 function normalizeTelHref(phone: string): string {
@@ -30,14 +32,22 @@ export function TopContactBar() {
   const addressDisplay = address?.trim() || DEFAULT_PUBLIC_ADDRESS
   const telHref = normalizeTelHref(phoneDisplay)
 
+  const barTransitionStyle = {
+    top: 0,
+    height: TOP_CONTACT_BAR_HEIGHT_PX,
+    transitionProperty: 'transform, opacity, box-shadow',
+    transitionDuration: `${TOP_CONTACT_BAR_TRANSITION_MS}ms`,
+    transitionTimingFunction: TOP_CONTACT_BAR_TRANSITION_EASING,
+  } as const
+
   return (
     <div
-      className={`fixed left-0 right-0 z-[115] overflow-hidden border-b border-orange-900/15 bg-gradient-to-r from-orange-950 to-stone-900 text-white transition-[transform,opacity] duration-300 ease-out ${
+      className={`fixed left-0 right-0 z-[115] overflow-hidden border-b border-orange-900/20 bg-gradient-to-r from-orange-950 via-stone-950 to-stone-900 text-white ${
         topBarVisible
-          ? 'translate-y-0 opacity-100'
-          : 'pointer-events-none -translate-y-full opacity-0'
+          ? 'translate-y-0 opacity-100 shadow-[0_8px_32px_rgba(0,0,0,0.2)]'
+          : 'pointer-events-none -translate-y-[calc(100%+2px)] opacity-0 shadow-none'
       }`}
-      style={{ top: 0, height: TOP_CONTACT_BAR_HEIGHT_PX }}
+      style={barTransitionStyle}
       aria-hidden={!topBarVisible}
     >
       <div className="mx-auto flex h-full max-w-7xl items-center justify-between gap-2 px-3 sm:px-6 lg:px-8">
@@ -65,3 +75,4 @@ export function TopContactBar() {
     </div>
   )
 }
+
