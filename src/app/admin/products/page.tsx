@@ -13,7 +13,6 @@ import {
   Search,
   Filter
 } from 'lucide-react'
-import Footer from '@/components/Footer'
 import { Product, ProductStatus } from '@/types'
 
 export default function AdminProducts() {
@@ -334,11 +333,6 @@ export default function AdminProducts() {
             </div>
           )}
         </div>
-      </div>
-      
-      {/* Hide Footer on Mobile and Tablet */}
-      <div className="hidden lg:block">
-        <Footer />
       </div>
     </div>
   )

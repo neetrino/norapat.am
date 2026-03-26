@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { ArrowLeft, Plus, Edit, Trash2, Tag } from 'lucide-react'
-import Footer from '@/components/Footer'
 
 interface PromoCode {
   id: string
@@ -307,9 +306,6 @@ export default function AdminPromoPage() {
             </div>
           )}
         </div>
-      </div>
-      <div className="hidden lg:block">
-        <Footer />
       </div>
     </div>
   )

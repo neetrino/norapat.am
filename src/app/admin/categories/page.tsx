@@ -13,7 +13,6 @@ import {
   Eye,
   EyeOff
 } from 'lucide-react'
-import Footer from '@/components/Footer'
 
 interface Category {
   id: string
@@ -348,11 +347,6 @@ export default function CategoriesPage() {
             </div>
           )}
         </div>
-      </div>
-      
-      {/* Hide Footer on Mobile and Tablet */}
-      <div className="hidden lg:block">
-        <Footer />
       </div>
     </div>
   )

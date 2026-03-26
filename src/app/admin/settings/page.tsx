@@ -6,7 +6,6 @@ import { useEffect, useState } from 'react'
 import { Settings, Save, ArrowLeft, Image as ImageIcon } from 'lucide-react'
 import Link from 'next/link'
 import ImageUpload from '@/components/ImageUpload'
-import Footer from '@/components/Footer'
 import { SITE_SETTING_KEYS, type SiteSettingKey } from '@/lib/siteSettings.constants'
 
 interface SiteSettings {
@@ -284,11 +283,6 @@ export default function AdminSettings() {
             </button>
           </div>
         </div>
-      </div>
-      
-      {/* Hide Footer on Mobile and Tablet */}
-      <div className="hidden lg:block">
-        <Footer />
       </div>
     </div>
   )

@@ -35,7 +35,6 @@ import {
   Printer
 } from 'lucide-react'
 import Link from 'next/link'
-import Footer from '@/components/Footer'
 
 interface OrderWithDetails extends Order {
   user: User
@@ -735,11 +734,6 @@ export default function AdminOrdersPage() {
             </div>
           </div>
         )}
-      </div>
-      
-      {/* Hide Footer on Mobile and Tablet */}
-      <div className="hidden lg:block">
-        <Footer />
       </div>
     </div>
   )

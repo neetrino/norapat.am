@@ -8,7 +8,6 @@ import { ArrowLeft, Plus, Edit, Trash2, Megaphone } from 'lucide-react'
 import type { Campaign } from '@/types'
 import type { CategoryWithCount } from '@/types'
 import type { Product } from '@/types'
-import Footer from '@/components/Footer'
 
 const LINK_TYPES = [
   { value: 'NONE', label: 'Առանց հղումի' },
@@ -537,9 +536,6 @@ export default function AdminCampaignsPage() {
             </div>
           )}
         </div>
-      </div>
-      <div className="hidden lg:block">
-        <Footer />
       </div>
     </div>
   )
