@@ -17,7 +17,7 @@ export default function Footer() {
   const branding = usePublicSiteSettings()
 
   return (
-    <footer className="relative border-t border-red-950/10 bg-gradient-to-b from-stone-50 to-white text-stone-900">
+    <footer className="relative border-t border-stone-300 bg-gradient-to-b from-stone-50 to-white text-stone-900">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col gap-10 pt-10 pb-6 xl:flex-row xl:items-end xl:gap-12 xl:pb-8">
           <div className="min-w-0 flex-1">
