@@ -2,48 +2,77 @@
 
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback, useRef } from 'react'
 import Link from 'next/link'
-import { 
-  Plus, 
-  Edit, 
-  Trash2, 
-  ArrowLeft,
+import {
+  Plus,
+  Edit2,
+  Trash2,
   Package,
   Search,
-  Filter
+  Filter,
+  Download,
+  ChevronUp,
+  ChevronDown,
+  Star,
+  ChevronsUpDown,
 } from 'lucide-react'
+import { useRef } from 'react'
 import { Product, ProductStatus } from '@/types'
+
+type SortField = 'name' | 'price' | 'updatedAt'
+type SortDir = 'asc' | 'desc'
+
+const SPECIAL_STATUSES: ProductStatus[] = ['HIT', 'NEW', 'CLASSIC', 'BANNER']
+
+const STATUS_LABELS: Record<ProductStatus, string> = {
+  REGULAR: 'Սովորական',
+  HIT: 'Հիթ',
+  NEW: 'Նոր',
+  CLASSIC: 'Կլasik',
+  BANNER: 'Բаннер',
+}
+
+const STATUS_COLORS: Record<ProductStatus, string> = {
+  REGULAR: 'bg-gray-100 text-gray-600',
+  HIT:     'bg-orange-100 text-orange-700',
+  NEW:     'bg-emerald-100 text-emerald-700',
+  CLASSIC: 'bg-blue-100 text-blue-700',
+  BANNER:  'bg-purple-100 text-purple-700',
+}
 
 export default function AdminProducts() {
   const { data: session, status } = useSession()
   const router = useRouter()
+
   const [products, setProducts] = useState<Product[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('')
   const [selectedStatus, setSelectedStatus] = useState('')
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
+  const [sortField, setSortField] = useState<SortField>('name')
+  const [sortDir, setSortDir] = useState<SortDir>('asc')
+  const togglingRef = useRef<Set<string>>(new Set())
 
   useEffect(() => {
     if (status === 'loading') return
-
     if (!session || session.user?.role !== 'ADMIN') {
       router.push('/login')
       return
     }
-
     fetchProducts()
   }, [session, status, router])
 
   const fetchProducts = async () => {
     try {
-      const response = await fetch('/api/products')
+      const response = await fetch('/api/admin/products')
       if (response.ok) {
         const data = await response.json()
         setProducts(data)
       }
-    } catch (error) {
-      console.error('Error fetching products:', error)
+    } catch (err) {
+      console.error('Error fetching products:', err)
     } finally {
       setIsLoading(false)
     }
@@ -51,280 +80,447 @@ export default function AdminProducts() {
 
   const handleDelete = async (productId: string) => {
     if (!confirm('Համոզվա՞ծ եք, որ ցանկանում եք ջնջել այս ապրանքը:')) return
-
     try {
-      const response = await fetch(`/api/products/${productId}`, {
-        method: 'DELETE'
-      })
-
-      if (response.ok) {
-        setProducts(products.filter(p => p.id !== productId))
+      const res = await fetch(`/api/products/${productId}`, { method: 'DELETE' })
+      if (res.ok) {
+        setProducts(prev => prev.filter(p => p.id !== productId))
+        setSelectedIds(prev => { const next = new Set(prev); next.delete(productId); return next })
       } else {
-        alert('Սխալ ապրանքը ջնջելիս')
+        alert('Սխալ ապрandanqն ջnjelis')
       }
-    } catch (error) {
-      console.error('Error deleting product:', error)
-      alert('Սխալ ապրանքը ջնջելիս')
+    } catch (err) {
+      console.error('Error deleting product:', err)
+      alert('Սխал ападандquнн ջnjелis')
     }
   }
 
-  const filteredProducts = products.filter(product => {
-    const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         product.description.toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesCategory = !selectedCategory || product.category?.name === selectedCategory
-    
-    // Ֆիլտր ըստ կարգավիճակի: "all" - բոլոր ապրանքներ, "special" - միայն հատուկ (HIT, NEW, CLASSIC, BANNER)
-    const matchesStatus = !selectedStatus || 
-                         (selectedStatus === 'all') || 
-                         (selectedStatus === 'special' && ['HIT', 'NEW', 'CLASSIC', 'BANNER'].includes(product.status))
-    
-    return matchesSearch && matchesCategory && matchesStatus
-  })
+  const handleToggleAvailable = useCallback((product: Product) => {
+    if (togglingRef.current.has(product.id)) return
 
-  const categories = [...new Set(products.map(p => p.category?.name).filter(Boolean))]
-  
-  // Վիճակագրություն ըստ կարգավիճակների
-  const statusStats = {
-    total: products.length,
-    regular: products.filter(p => p.status === 'REGULAR').length,
-    hit: products.filter(p => p.status === 'HIT').length,
-    new: products.filter(p => p.status === 'NEW').length,
-    classic: products.filter(p => p.status === 'CLASSIC').length,
-    banner: products.filter(p => p.status === 'BANNER').length
-  }
+    const nextValue = !product.isAvailable
+    togglingRef.current.add(product.id)
 
-  const getStatusBadge = (productStatus: ProductStatus) => {
-    switch (productStatus) {
-      case 'HIT':
-        return { 
-          text: 'ՀԻԹ', 
-          className: 'bg-red-100 text-red-800 border-red-200' 
+    // Optimistic update — UI instantly reflects the change
+    setProducts(prev =>
+      prev.map(p => p.id === product.id ? { ...p, isAvailable: nextValue } : p)
+    )
+
+    fetch(`/api/admin/products/${product.id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ isAvailable: nextValue }),
+    })
+      .then(res => {
+        if (!res.ok) {
+          // Revert on failure
+          setProducts(prev =>
+            prev.map(p => p.id === product.id ? { ...p, isAvailable: product.isAvailable } : p)
+          )
         }
-      case 'NEW':
-        return { 
-          text: 'ՆՈՐԻՆՔ', 
-          className: 'bg-green-100 text-green-800 border-green-200' 
-        }
-      case 'CLASSIC':
-        return { 
-          text: 'ԿԼԱՍԻԿ', 
-          className: 'bg-blue-100 text-blue-800 border-blue-200' 
-        }
-      case 'BANNER':
-        return { 
-          text: 'ԲԱՆՆԵՐ', 
-          className: 'bg-purple-100 text-purple-800 border-purple-200' 
-        }
-      default:
-        return null // Սովորական ապրանքներ առանց պիտակի
+      })
+      .catch(() => {
+        setProducts(prev =>
+          prev.map(p => p.id === product.id ? { ...p, isAvailable: product.isAvailable } : p)
+        )
+      })
+      .finally(() => {
+        togglingRef.current.delete(product.id)
+      })
+  }, [])
+
+  const handleSort = (field: SortField) => {
+    if (sortField === field) {
+      setSortDir(prev => prev === 'asc' ? 'desc' : 'asc')
+    } else {
+      setSortField(field)
+      setSortDir('asc')
     }
   }
+
+  const toggleSelectAll = () => {
+    if (selectedIds.size === filteredProducts.length) {
+      setSelectedIds(new Set())
+    } else {
+      setSelectedIds(new Set(filteredProducts.map(p => p.id)))
+    }
+  }
+
+  const toggleSelect = (id: string) => {
+    setSelectedIds(prev => {
+      const next = new Set(prev)
+      next.has(id) ? next.delete(id) : next.add(id)
+      return next
+    })
+  }
+
+  const exportCSV = () => {
+    const rows = [
+      ['Apsranq', 'Gin (AMD)', 'Kateqoria', 'Kargavichak', 'Pataskhanakanutyun', 'Steghzvatts'],
+      ...filteredProducts.map(p => [
+        p.name,
+        String(p.price),
+        p.category?.name ?? '',
+        STATUS_LABELS[p.status],
+        p.isAvailable ? 'Arakva' : 'Arakva che',
+        new Date(p.updatedAt).toLocaleDateString('hy-AM'),
+      ])
+    ]
+    const csv = rows.map(r => r.map(c => `"${c}"`).join(',')).join('\n')
+    const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = 'apranqner.csv'
+    a.click()
+    URL.revokeObjectURL(url)
+  }
+
+  const categories = [...new Set(products.map(p => p.category?.name).filter(Boolean))] as string[]
+
+  const filteredProducts = products
+    .filter(p => {
+      const matchSearch =
+        p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (p.description ?? '').toLowerCase().includes(searchTerm.toLowerCase())
+      const matchCat = !selectedCategory || p.category?.name === selectedCategory
+      const matchStatus =
+        !selectedStatus ||
+        selectedStatus === 'all' ||
+        (selectedStatus === 'special' && SPECIAL_STATUSES.includes(p.status))
+      return matchSearch && matchCat && matchStatus
+    })
+    .sort((a, b) => {
+      let cmp = 0
+      if (sortField === 'name')  cmp = a.name.localeCompare(b.name)
+      if (sortField === 'price') cmp = a.price - b.price
+      if (sortField === 'updatedAt') cmp = new Date(a.updatedAt).getTime() - new Date(b.updatedAt).getTime()
+      return sortDir === 'asc' ? cmp : -cmp
+    })
+
+  const SortIcon = ({ field }: { field: SortField }) => {
+    if (sortField !== field) return <ChevronsUpDown className="h-3.5 w-3.5 text-gray-400 shrink-0" />
+    return sortDir === 'asc'
+      ? <ChevronUp className="h-3.5 w-3.5 text-orange-500 shrink-0" />
+      : <ChevronDown className="h-3.5 w-3.5 text-orange-500 shrink-0" />
+  }
+
+  const allSelected = filteredProducts.length > 0 && selectedIds.size === filteredProducts.length
+  const someSelected = selectedIds.size > 0 && !allSelected
 
   if (status === 'loading' || isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="w-16 h-16 border-4 border-orange-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600">Բեռնում...</p>
+          <div className="w-14 h-14 border-4 border-orange-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-gray-500 text-sm">Betrnum...</p>
         </div>
       </div>
     )
   }
 
-  if (!session || session.user?.role !== 'ADMIN') {
-    return null
-  }
+  if (!session || session.user?.role !== 'ADMIN') return null
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center space-x-4">
-            <Link 
-              href="/admin"
-              className="flex items-center text-gray-600 hover:text-orange-500 transition-colors"
-            >
-              <ArrowLeft className="h-5 w-5 mr-2" />
-              Վերադարձ
-            </Link>
-            <div className="h-8 w-px bg-gray-300"></div>
-            <h1 className="text-3xl font-bold text-gray-900">Ապրանքների կառավարում</h1>
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+        {/* ── Page header ── */}
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">Apsranqner</h1>
+            <p className="text-sm text-gray-500 mt-0.5">Apsranqneri karavarum</p>
           </div>
-          
-          <Link 
+          <Link
             href="/admin/products/new"
-            className="flex items-center bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition-colors"
+            className="inline-flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white text-sm font-medium px-4 py-2.5 rounded-xl transition-colors shadow-sm shadow-orange-200"
           >
-            <Plus className="h-5 w-5 mr-2" />
-            Ավելացնել ապրանք
+            <Plus className="h-4 w-4" />
+            Avelacnel apsranq
           </Link>
         </div>
 
-        {/* Filters */}
-        <div className="bg-white rounded-2xl shadow-lg p-6 mb-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                <span className="inline-flex items-center gap-1">
-                  <Search className="inline h-4 w-4 shrink-0" aria-hidden />
-                  <span className="underline underline-offset-2">Որոնում</span>
-                </span>
-              </label>
+        {/* ── Filters ── */}
+        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-4 mb-5">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
               <input
                 type="text"
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors"
-                placeholder="Որոնում՝ անվանում կամ նկարագրություն..."
+                onChange={e => setSearchTerm(e.target.value)}
+                placeholder="Voronum anvanmov..."
+                className="w-full pl-9 pr-3 py-2.5 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent transition"
               />
             </div>
-            
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                <Filter className="inline h-4 w-4 mr-1" />
-                Կատեգորիա
-              </label>
+
+            <div className="relative">
+              <Filter className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
               <select
                 value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
-                className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors text-gray-900 bg-white"
-                style={{ color: '#111827' }}
+                onChange={e => setSelectedCategory(e.target.value)}
+                className="w-full pl-9 pr-3 py-2.5 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent bg-white appearance-none transition"
               >
-                <option value="" style={{ color: '#111827', backgroundColor: 'white' }}>Բոլոր կատեգորիաները</option>
-                {categories.map(category => (
-                  <option key={category} value={category} style={{ color: '#111827', backgroundColor: 'white' }}>{category}</option>
+                <option value="">Bolor kategorianerq</option>
+                {categories.map(cat => (
+                  <option key={cat} value={cat}>{cat}</option>
                 ))}
               </select>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                <Filter className="inline h-4 w-4 mr-1" />
-                Կարգավիճակ
-              </label>
+            <div className="relative">
+              <Filter className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
               <select
                 value={selectedStatus}
-                onChange={(e) => setSelectedStatus(e.target.value)}
-                className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors text-gray-900 bg-white"
-                style={{ color: '#111827' }}
+                onChange={e => setSelectedStatus(e.target.value)}
+                className="w-full pl-9 pr-3 py-2.5 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent bg-white appearance-none transition"
               >
-                <option value="" style={{ color: '#111827', backgroundColor: 'white' }}>Բոլորը</option>
-                <option value="special" style={{ color: '#111827', backgroundColor: 'white' }}>Հատուկ</option>
+                <option value="">Bolor kargavichakner</option>
+                <option value="special">Hatuk (HIT / NEW / CLASSIC / BANNER)</option>
               </select>
             </div>
           </div>
         </div>
 
-        {/* Products List */}
-        <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
-          <div className="p-6 border-b border-gray-300">
-            <div className="flex items-center justify-between">
-              <h2 className="text-xl font-semibold text-gray-900">
-                Ապրանքներ ({filteredProducts.length})
-              </h2>
-              
-              {/* Վիճակագրություն ըստ կարգավիճակների */}
-              <div className="flex items-center space-x-4 text-sm">
-                <span className="text-gray-500">Ընդամենը: {statusStats.total}</span>
-                {statusStats.hit > 0 && (
-                  <span className="px-2 py-1 bg-red-100 text-red-800 rounded-full text-xs font-semibold">
-                    Հիթեր: {statusStats.hit}
-                  </span>
-                )}
-                {statusStats.new > 0 && (
-                  <span className="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs font-semibold">
-                    Նորինք: {statusStats.new}
-                  </span>
-                )}
-                {statusStats.classic > 0 && (
-                  <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-semibold">
-                    Կլասիկ: {statusStats.classic}
-                  </span>
-                )}
-                {statusStats.banner > 0 && (
-                  <span className="px-2 py-1 bg-purple-100 text-purple-800 rounded-full text-xs font-semibold">
-                    Բաններ: {statusStats.banner}
-                  </span>
-                )}
-              </div>
+        {/* ── Table card ── */}
+        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+
+          {/* Table toolbar */}
+          <div className="flex items-center justify-between px-5 py-3.5 border-b border-gray-100">
+            <span className="text-sm text-gray-600">
+              Yndameny apsranqner:{' '}
+              <span className="font-semibold text-gray-900">{filteredProducts.length}</span>
+              {selectedIds.size > 0 && (
+                <span className="ml-2 text-orange-600 font-medium">
+                  ({selectedIds.size} yntrvatс)
+                </span>
+              )}
+            </span>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={exportCSV}
+                className="inline-flex items-center gap-1.5 text-xs font-medium text-orange-600 border border-orange-300 hover:bg-orange-50 px-3 py-1.5 rounded-lg transition-colors"
+              >
+                <Download className="h-3.5 w-3.5" />
+                Export CSV
+              </button>
             </div>
           </div>
-          
-          <div className="divide-y divide-gray-200">
-            {filteredProducts.map((product) => (
-              <div key={product.id} className="p-6">
-                <div className="flex items-center space-x-4">
-                  {/* Product Image */}
-                  <div className="w-20 h-20 bg-orange-50 rounded-xl flex items-center justify-center overflow-hidden flex-shrink-0">
-                    {product.image && product.image !== 'no-image' ? (
-                      <img 
-                        src={product.image} 
-                        alt={product.name}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <Package className="h-8 w-8 text-orange-500" />
-                    )}
-                  </div>
-                  
-                  {/* Product Info */}
-                  <div className="flex-1 min-w-0">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-1">
-                      {product.name}
-                    </h3>
-                    <p className="text-sm text-gray-600 mb-2 line-clamp-2">
-                      {product.description}
-                    </p>
-                    <div className="flex items-center space-x-4 text-sm text-gray-500">
-                      <span>Կատեգորիա: {product.category?.name || 'Առանց կատեգորիայի'}</span>
-                      <span>Գին: {product.price} ֏</span>
-                      <span className={`px-2 py-1 rounded-full text-xs ${
-                        product.isAvailable 
-                          ? 'bg-green-100 text-green-800' 
-                          : 'bg-red-100 text-red-800'
-                      }`}>
-                        {product.isAvailable ? 'Առկա' : 'Առկա չէ'}
-                      </span>
-                      {/* Ապրանքի կարգավիճակ */}
-                      {(() => {
-                        const statusBadge = getStatusBadge(product.status)
-                        return statusBadge ? (
-                          <span className={`px-3 py-1 rounded-full text-xs font-semibold border ${statusBadge.className}`}>
-                            {statusBadge.text}
-                          </span>
-                        ) : null
-                      })()}
-                    </div>
-                  </div>
-                  
+
+          {/* Table */}
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-100">
+              <thead>
+                <tr className="bg-gray-50">
+                  {/* Checkbox */}
+                  <th className="w-10 px-4 py-3">
+                    <input
+                      type="checkbox"
+                      checked={allSelected}
+                      ref={el => { if (el) el.indeterminate = someSelected }}
+                      onChange={toggleSelectAll}
+                      className="h-4 w-4 rounded border-gray-300 text-orange-500 focus:ring-orange-400 cursor-pointer"
+                    />
+                  </th>
+
+                  {/* Product */}
+                  <th
+                    onClick={() => handleSort('name')}
+                    className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide cursor-pointer select-none"
+                  >
+                    <span className="inline-flex items-center gap-1">
+                      Apsranq <SortIcon field="name" />
+                    </span>
+                  </th>
+
+                  {/* Price */}
+                  <th
+                    onClick={() => handleSort('price')}
+                    className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide cursor-pointer select-none"
+                  >
+                    <span className="inline-flex items-center gap-1">
+                      Gin <SortIcon field="price" />
+                    </span>
+                  </th>
+
+                  {/* Category */}
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                    Kategoría
+                  </th>
+
+                  {/* Status */}
+                  <th className="px-4 py-3 text-center text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                    Kargavichak
+                  </th>
+
+                  {/* Updated */}
+                  <th
+                    onClick={() => handleSort('updatedAt')}
+                    className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide cursor-pointer select-none"
+                  >
+                    <span className="inline-flex items-center gap-1">
+                      Tveghkanvats <SortIcon field="updatedAt" />
+                    </span>
+                  </th>
+
+                  {/* Active */}
+                  <th className="px-4 py-3 text-center text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                    Aktiv
+                  </th>
+
                   {/* Actions */}
-                  <div className="flex items-center space-x-2">
-                    <Link
-                      href={`/admin/products/${product.id}/edit`}
-                      className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                      title="Խմբագրել"
-                    >
-                      <Edit className="h-5 w-5" />
-                    </Link>
-                    
-                    <button
-                      onClick={() => handleDelete(product.id)}
-                      className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                      title="Ջնջել"
-                    >
-                      <Trash2 className="h-5 w-5" />
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))}
+                  <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                    Gortsoghrityunner
+                  </th>
+                </tr>
+              </thead>
+
+              <tbody className="divide-y divide-gray-100">
+                {filteredProducts.map(product => (
+                  <tr
+                    key={product.id}
+                    className={`group transition-colors hover:bg-orange-50/40 ${
+                      selectedIds.has(product.id) ? 'bg-orange-50/60' : ''
+                    }`}
+                  >
+                    {/* Checkbox */}
+                    <td className="px-4 py-3">
+                      <input
+                        type="checkbox"
+                        checked={selectedIds.has(product.id)}
+                        onChange={() => toggleSelect(product.id)}
+                        className="h-4 w-4 rounded border-gray-300 text-orange-500 focus:ring-orange-400 cursor-pointer"
+                      />
+                    </td>
+
+                    {/* Product */}
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-lg overflow-hidden bg-orange-50 flex items-center justify-center shrink-0 border border-gray-100">
+                          {product.image && product.image !== 'no-image' ? (
+                            <img
+                              src={product.image}
+                              alt={product.name}
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <Package className="h-5 w-5 text-orange-300" />
+                          )}
+                        </div>
+                        <div className="min-w-0">
+                          <p className="text-sm font-semibold text-gray-900 truncate max-w-[200px]">
+                            {product.name}
+                          </p>
+                          {product.shortDescription && (
+                            <p className="text-xs text-gray-400 truncate max-w-[200px] mt-0.5">
+                              {product.shortDescription}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    </td>
+
+                    {/* Price */}
+                    <td className="px-4 py-3 whitespace-nowrap">
+                      <span className="text-sm font-bold text-gray-900">{product.price.toLocaleString()}</span>
+                      <span className="text-xs text-gray-400 ml-1">֏</span>
+                      {product.originalPrice && product.originalPrice > product.price && (
+                        <p className="text-xs text-gray-400 line-through mt-0.5">
+                          {product.originalPrice.toLocaleString()} ֏
+                        </p>
+                      )}
+                    </td>
+
+                    {/* Category */}
+                    <td className="px-4 py-3 whitespace-nowrap">
+                      <span className="text-sm text-gray-700">
+                        {product.category?.name ?? <span className="text-gray-400 italic">—</span>}
+                      </span>
+                    </td>
+
+                    {/* Status */}
+                    <td className="px-4 py-3 text-center">
+                      <div className="flex items-center justify-center gap-1.5">
+                        <Star
+                          className={`h-4 w-4 shrink-0 ${
+                            SPECIAL_STATUSES.includes(product.status)
+                              ? 'fill-orange-400 text-orange-400'
+                              : 'text-gray-300'
+                          }`}
+                        />
+                        {product.status !== 'REGULAR' && (
+                          <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${STATUS_COLORS[product.status]}`}>
+                            {STATUS_LABELS[product.status]}
+                          </span>
+                        )}
+                      </div>
+                    </td>
+
+                    {/* Updated */}
+                    <td className="px-4 py-3 whitespace-nowrap">
+                      <span className="text-sm text-gray-500">
+                        {new Date(product.updatedAt).toLocaleDateString('hy-AM', {
+                          day: '2-digit',
+                          month: '2-digit',
+                          year: 'numeric',
+                        })}
+                      </span>
+                    </td>
+
+                    {/* Toggle */}
+                    <td className="px-4 py-3 text-center">
+                      <button
+                        onClick={() => handleToggleAvailable(product)}
+                        title={product.isAvailable ? 'Apaaktivacnel' : 'Aktivacnel'}
+                        className={`relative inline-flex h-5 w-9 items-center rounded-full focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-orange-400 cursor-pointer ${
+                          product.isAvailable
+                            ? 'bg-orange-500'
+                            : 'bg-gray-200'
+                        }`}
+                        style={{ transition: 'background-color 120ms ease' }}
+                      >
+                        <span
+                          className="inline-block h-3.5 w-3.5 rounded-full bg-white shadow-sm"
+                          style={{
+                            transform: product.isAvailable ? 'translateX(18px)' : 'translateX(2px)',
+                            transition: 'transform 120ms ease',
+                          }}
+                        />
+                      </button>
+                    </td>
+
+                    {/* Actions */}
+                    <td className="px-4 py-3">
+                      <div className="flex items-center justify-end gap-1">
+                        <Link
+                          href={`/admin/products/${product.id}/edit`}
+                          title="Xmbagrel"
+                          className="p-1.5 rounded-lg text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-colors"
+                        >
+                          <Edit2 className="h-4 w-4" />
+                        </Link>
+                        <button
+                          onClick={() => handleDelete(product.id)}
+                          title="Jnjel"
+                          className="p-1.5 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
-          
+
+          {/* Empty state */}
           {filteredProducts.length === 0 && (
-            <div className="text-center py-12 text-gray-500">
-              <Package className="h-12 w-12 mx-auto mb-4 text-gray-300" />
-              <p>Ապրանքներ չեն գտնվել</p>
+            <div className="flex flex-col items-center justify-center py-16 text-center">
+              <div className="w-14 h-14 bg-orange-50 rounded-2xl flex items-center justify-center mb-4">
+                <Package className="h-7 w-7 text-orange-300" />
+              </div>
+              <p className="text-gray-500 text-sm">Apsranqner չen gtnvel</p>
+              <p className="text-gray-400 text-xs mt-1">Փorex voroshel voronum kriter</p>
             </div>
           )}
         </div>

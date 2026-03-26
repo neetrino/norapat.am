@@ -3,6 +3,23 @@ import { prisma } from '@/lib/prisma'
 import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth'
 
+// GET /api/admin/products — Բոլոր apsranqnerq (admin, without isAvailable filter)
+export async function GET() {
+  const session = await getServerSession(authOptions)
+  if (!session?.user || session.user.role !== 'ADMIN') {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+  }
+
+  const products = await prisma.product.findMany({
+    include: {
+      category: { select: { id: true, name: true, isActive: true } },
+    },
+    orderBy: { updatedAt: 'desc' },
+  })
+
+  return NextResponse.json(products)
+}
+
 // POST /api/admin/products - создать новый товар (только для админов)
 export async function POST(request: NextRequest) {
   try {

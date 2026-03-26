@@ -169,3 +169,35 @@ export async function PUT(
     )
   }
 }
+
+// PATCH /api/admin/products/[id] — araq toggle isAvailable (1 DB query)
+export async function PATCH(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params
+    const session = await getServerSession(authOptions)
+
+    if (!session?.user || session.user.role !== 'ADMIN') {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    }
+
+    const { isAvailable } = await request.json()
+
+    if (typeof isAvailable !== 'boolean') {
+      return NextResponse.json({ error: 'isAvailable must be boolean' }, { status: 400 })
+    }
+
+    const updated = await prisma.product.update({
+      where: { id },
+      data: { isAvailable },
+      select: { id: true, isAvailable: true },
+    })
+
+    return NextResponse.json(updated)
+  } catch (error) {
+    console.error('Error patching product availability:', error)
+    return NextResponse.json({ error: 'Failed to update' }, { status: 500 })
+  }
+}
