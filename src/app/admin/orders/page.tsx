@@ -291,7 +291,7 @@ export default function AdminOrdersPage() {
             </Button>
             <Button className="flex items-center gap-2 bg-orange-500 hover:bg-orange-600">
               <Download className="h-4 w-4" />
-              Export
+              Արտահանել
             </Button>
           </div>
         </div>
@@ -488,7 +488,7 @@ export default function AdminOrdersPage() {
                           <div>
                             <span className="text-gray-500 text-xs">Ապրանքներ:</span>
                             <div className="text-base font-semibold text-gray-900">
-                              {order.items.length} шт.
+                              {order.items.length} հատ
                             </div>
                           </div>
                           
@@ -656,7 +656,7 @@ export default function AdminOrdersPage() {
                       <p className="font-medium text-gray-900">{selectedOrder.user.name}</p>
                     </div>
                     <div>
-                      <p className="text-sm text-gray-600 mb-1">Email</p>
+                      <p className="text-sm text-gray-600 mb-1">Էլ. փոստ</p>
                       <p className="font-medium text-gray-900">{selectedOrder.user.email}</p>
                     </div>
                     {selectedOrder.user.phone && (
@@ -708,7 +708,7 @@ export default function AdminOrdersPage() {
                               </span>
                               <span className="text-gray-400">×</span>
                               <span className="bg-orange-100 text-orange-800 px-2 py-1 rounded-full text-xs font-semibold">
-                                {item.quantity} шт.
+                                {item.quantity} հատ
                               </span>
                             </div>
                           </div>

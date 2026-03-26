@@ -121,7 +121,7 @@ export default function ImageSelectorMultiple({
                 >
                   <Image
                     src={path}
-                    alt={`Image ${index + 1}`}
+                    alt={`Նկար ${index + 1}`}
                     fill
                     sizes="80px"
                     className="object-cover"
@@ -132,7 +132,7 @@ export default function ImageSelectorMultiple({
                       onClick={() => moveImage(index, 'up')}
                       disabled={index === 0}
                       className="p-0.5 text-white hover:bg-white/20 disabled:opacity-30 disabled:cursor-not-allowed"
-                      aria-label="Move up"
+                      aria-label="Տեղափոխել վերև"
                     >
                       <ChevronUp className="h-4 w-4" />
                     </button>
@@ -141,7 +141,7 @@ export default function ImageSelectorMultiple({
                       onClick={() => moveImage(index, 'down')}
                       disabled={index === value.length - 1}
                       className="p-0.5 text-white hover:bg-white/20 disabled:opacity-30 disabled:cursor-not-allowed"
-                      aria-label="Move down"
+                      aria-label="Տեղափոխել ներքև"
                     >
                       <ChevronDown className="h-4 w-4" />
                     </button>

@@ -199,7 +199,7 @@ export default function AdminDashboard() {
                 {stats.top5BestSelling.map((p, i) => (
                   <li key={p.productId} className="flex justify-between text-sm">
                     <span className="text-gray-700">{i + 1}. {p.name}</span>
-                    <span className="font-medium text-gray-900">{p.totalQuantity} шт.</span>
+                    <span className="font-medium text-gray-900">{p.totalQuantity} հատ</span>
                   </li>
                 ))}
               </ul>
@@ -214,7 +214,7 @@ export default function AdminDashboard() {
                 {stats.leastSelling.map((p) => (
                   <li key={p.productId} className="flex justify-between text-sm">
                     <span className="text-gray-700 truncate">{p.name}</span>
-                    <span className="font-medium text-gray-900">{p.totalQuantity} шт.</span>
+                    <span className="font-medium text-gray-900">{p.totalQuantity} հատ</span>
                   </li>
                 ))}
               </ul>

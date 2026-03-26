@@ -153,7 +153,7 @@ export default function AdminPromoPage() {
         <div className="flex items-center gap-4 mb-6">
           <Link href="/admin" className="flex items-center text-gray-600 hover:text-orange-500">
             <ArrowLeft className="h-5 w-5 mr-2" />
-            Ադմին
+            Վահանակ
           </Link>
           <h1 className="text-2xl font-bold text-gray-900">Պրոմո կոդեր</h1>
         </div>

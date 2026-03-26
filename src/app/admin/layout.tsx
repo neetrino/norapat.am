@@ -20,7 +20,7 @@ import { useState, useEffect } from 'react'
 
 const SIDEBAR_NAV_ITEMS = [
   { href: '/', label: 'Գլխավոր էջ', icon: Home, external: false },
-  { href: '/admin', label: 'Դաշտբորդ', icon: LayoutDashboard },
+  { href: '/admin', label: 'Վահանակ', icon: LayoutDashboard },
   { href: '/admin/products', label: 'Ապրանքներ', icon: Package },
   { href: '/admin/orders', label: 'Պատվերներ', icon: ShoppingCart },
   { href: '/admin/categories', label: 'Կատեգորիաներ', icon: Tag },
@@ -72,7 +72,7 @@ export default function AdminLayout({
               {sidebarOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
             </button>
             <Link href="/admin" className="font-bold text-gray-900 text-lg">
-              Admin Panel
+              Ադմին վահանակ
             </Link>
           </div>
           <div className="flex items-center gap-2">

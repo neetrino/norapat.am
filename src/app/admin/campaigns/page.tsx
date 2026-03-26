@@ -13,7 +13,7 @@ const LINK_TYPES = [
   { value: 'NONE', label: 'Առանց հղումի' },
   { value: 'PRODUCT', label: 'Ապրանք' },
   { value: 'CATEGORY', label: 'Կատեգորիա' },
-  { value: 'URL', label: 'Կամայական URL' },
+  { value: 'URL', label: 'Կամայական հղում' },
 ] as const
 
 function formatDate(d: string) {
@@ -212,7 +212,7 @@ export default function AdminCampaignsPage() {
         <div className="flex items-center gap-4 mb-6">
           <Link href="/admin" className="flex items-center text-gray-600 hover:text-orange-500">
             <ArrowLeft className="h-5 w-5 mr-2" />
-            Ադմին
+            Վահանակ
           </Link>
           <h1 className="text-2xl font-bold text-gray-900">Ակցիաներ</h1>
         </div>
@@ -266,7 +266,7 @@ export default function AdminCampaignsPage() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Նկար URL *
+                  Նկարի հղում *
                 </label>
                 <input
                   type="url"
@@ -319,7 +319,7 @@ export default function AdminCampaignsPage() {
                         ? 'Ապրանք'
                         : form.linkType === 'CATEGORY'
                           ? 'Կատեգորիա'
-                          : 'URL'}
+                          : 'Հղում'}
                     </label>
                     {form.linkType === 'PRODUCT' ? (
                       <select
@@ -529,7 +529,7 @@ export default function AdminCampaignsPage() {
               <Megaphone className="h-12 w-12 mx-auto mb-2 text-gray-300" />
               <p>Ակցիաներ դեռ չեն ավելացվել</p>
               <p className="text-sm mt-1">
-                Ավելացրեք ժամանակավոր ակցիաներ, բաննեռներ
+                Ավելացրեք ժամանակավոր ակցիաներ, բաններներ
               </p>
             </div>
           )}

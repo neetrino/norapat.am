@@ -28,8 +28,8 @@ const STATUS_LABELS: Record<ProductStatus, string> = {
   REGULAR: 'Սովորական',
   HIT: 'Հիթ',
   NEW: 'Նոր',
-  CLASSIC: 'Կլasik',
-  BANNER: 'Բаннер',
+  CLASSIC: 'Կլասիկ',
+  BANNER: 'Բաններ',
 }
 
 const STATUS_COLORS: Record<ProductStatus, string> = {
@@ -91,11 +91,11 @@ export default function AdminProducts() {
         setProducts(prev => prev.filter(p => p.id !== productId))
         setSelectedIds(prev => { const next = new Set(prev); next.delete(productId); return next })
       } else {
-        alert('Սխալ ապрandanqն ջnjelis')
+        alert('Սխալ ապրանքը ջնջելիս')
       }
     } catch (err) {
       console.error('Error deleting product:', err)
-      alert('Սխал ападандquнн ջnjелis')
+      alert('Սխալ ապրանքը ջնջելիս')
     }
   }
 
@@ -167,13 +167,13 @@ export default function AdminProducts() {
 
   const exportCSV = () => {
     const rows = [
-      ['Apsranq', 'Gin (AMD)', 'Kateqoria', 'Kargavichak', 'Pataskhanakanutyun', 'Steghzvatts'],
+      ['Ապրանք', 'Գին (AMD)', 'Կատեգորիա', 'Կարգավիճակ', 'Առկայություն', 'Թարմացված'],
       ...filteredProducts.map(p => [
         p.name,
         String(p.price),
         p.category?.name ?? '',
         STATUS_LABELS[p.status],
-        p.isAvailable ? 'Arakva' : 'Arakva che',
+        p.isAvailable ? 'Առկա' : 'Առկա չէ',
         new Date(p.updatedAt).toLocaleDateString('hy-AM'),
       ])
     ]
@@ -182,7 +182,7 @@ export default function AdminProducts() {
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = 'apranqner.csv'
+    a.download = 'ապրանքներ.csv'
     a.click()
     URL.revokeObjectURL(url)
   }
@@ -224,7 +224,7 @@ export default function AdminProducts() {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <div className="w-14 h-14 border-4 border-orange-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-gray-500 text-sm">Betrnum...</p>
+          <p className="text-gray-500 text-sm">Բեռնվում է...</p>
         </div>
       </div>
     )
@@ -239,15 +239,15 @@ export default function AdminProducts() {
         {/* ── Page header ── */}
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Apsranqner</h1>
-            <p className="text-sm text-gray-500 mt-0.5">Apsranqneri karavarum</p>
+            <h1 className="text-2xl font-bold text-gray-900">Ապրանքներ</h1>
+            <p className="text-sm text-gray-500 mt-0.5">Ապրանքների կառավարում</p>
           </div>
           <Link
             href="/admin/products/new"
             className="inline-flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white text-sm font-medium px-4 py-2.5 rounded-xl transition-colors shadow-sm shadow-orange-200"
           >
             <Plus className="h-4 w-4" />
-            Avelacnel apsranq
+            Ավելացնել ապրանք
           </Link>
         </div>
 
@@ -260,7 +260,7 @@ export default function AdminProducts() {
                 type="text"
                 value={searchTerm}
                 onChange={e => setSearchTerm(e.target.value)}
-                placeholder="Voronum anvanmov..."
+                placeholder="Որոնում անվանմամբ..."
                 className="w-full pl-9 pr-3 py-2.5 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent transition"
               />
             </div>
@@ -272,7 +272,7 @@ export default function AdminProducts() {
                 onChange={e => setSelectedCategory(e.target.value)}
                 className="w-full pl-9 pr-3 py-2.5 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent bg-white appearance-none transition"
               >
-                <option value="">Bolor kategorianerq</option>
+                <option value="">Բոլոր կատեգորիաները</option>
                 {categories.map(cat => (
                   <option key={cat} value={cat}>{cat}</option>
                 ))}
@@ -286,8 +286,8 @@ export default function AdminProducts() {
                 onChange={e => setSelectedStatus(e.target.value)}
                 className="w-full pl-9 pr-3 py-2.5 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent bg-white appearance-none transition"
               >
-                <option value="">Bolor kargavichakner</option>
-                <option value="special">Hatuk (HIT / NEW / CLASSIC / BANNER)</option>
+                <option value="">Բոլոր կարգավիճակները</option>
+                <option value="special">Հատուկ (Հիթ / Նոր / Կլասիկ / Բաններ)</option>
               </select>
             </div>
           </div>
@@ -299,11 +299,11 @@ export default function AdminProducts() {
           {/* Table toolbar */}
           <div className="flex items-center justify-between px-5 py-3.5 border-b border-gray-100">
             <span className="text-sm text-gray-600">
-              Yndameny apsranqner:{' '}
+              Ընդամենը ապրանքներ:{' '}
               <span className="font-semibold text-gray-900">{filteredProducts.length}</span>
               {selectedIds.size > 0 && (
                 <span className="ml-2 text-orange-600 font-medium">
-                  ({selectedIds.size} yntrvatс)
+                  ({selectedIds.size} ընտրված)
                 </span>
               )}
             </span>
@@ -313,7 +313,7 @@ export default function AdminProducts() {
                 className="inline-flex items-center gap-1.5 text-xs font-medium text-orange-600 border border-orange-300 hover:bg-orange-50 px-3 py-1.5 rounded-lg transition-colors"
               >
                 <Download className="h-3.5 w-3.5" />
-                Export CSV
+                Արտահանել CSV
               </button>
             </div>
           </div>
@@ -340,7 +340,7 @@ export default function AdminProducts() {
                     className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide cursor-pointer select-none"
                   >
                     <span className="inline-flex items-center gap-1">
-                      Apsranq <SortIcon field="name" />
+                      Ապրանք <SortIcon field="name" />
                     </span>
                   </th>
 
@@ -350,18 +350,18 @@ export default function AdminProducts() {
                     className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide cursor-pointer select-none"
                   >
                     <span className="inline-flex items-center gap-1">
-                      Gin <SortIcon field="price" />
+                      Գին <SortIcon field="price" />
                     </span>
                   </th>
 
                   {/* Category */}
                   <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">
-                    Kategoría
+                    Կատեգորիա
                   </th>
 
                   {/* Status */}
                   <th className="px-4 py-3 text-center text-xs font-semibold text-gray-500 uppercase tracking-wide">
-                    Kargavichak
+                    Կարգավիճակ
                   </th>
 
                   {/* Updated */}
@@ -370,18 +370,18 @@ export default function AdminProducts() {
                     className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide cursor-pointer select-none"
                   >
                     <span className="inline-flex items-center gap-1">
-                      Tveghkanvats <SortIcon field="updatedAt" />
+                      Թարմացված <SortIcon field="updatedAt" />
                     </span>
                   </th>
 
                   {/* Active */}
                   <th className="px-4 py-3 text-center text-xs font-semibold text-gray-500 uppercase tracking-wide">
-                    Aktiv
+                    Ակտիվ
                   </th>
 
                   {/* Actions */}
                   <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wide">
-                    Gortsoghrityunner
+                    Գործողություններ
                   </th>
                 </tr>
               </thead>
@@ -482,7 +482,7 @@ export default function AdminProducts() {
                     <td className="px-4 py-3 text-center">
                       <button
                         onClick={() => handleToggleAvailable(product.id)}
-                        title={product.isAvailable ? 'Apaaktivacnel' : 'Aktivacnel'}
+                        title={product.isAvailable ? 'Ապաակտիվացնել' : 'Ակտիվացնել'}
                         className={`relative inline-flex h-5 w-9 items-center rounded-full focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-orange-400 cursor-pointer ${
                           product.isAvailable
                             ? 'bg-orange-500'
@@ -505,14 +505,14 @@ export default function AdminProducts() {
                       <div className="flex items-center justify-end gap-1">
                         <Link
                           href={`/admin/products/${product.id}/edit`}
-                          title="Xmbagrel"
+                          title="Խմբագրել"
                           className="p-1.5 rounded-lg text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-colors"
                         >
                           <Edit2 className="h-4 w-4" />
                         </Link>
                         <button
                           onClick={() => handleDelete(product.id)}
-                          title="Jnjel"
+                          title="Ջնջել"
                           className="p-1.5 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors"
                         >
                           <Trash2 className="h-4 w-4" />
@@ -531,8 +531,8 @@ export default function AdminProducts() {
               <div className="w-14 h-14 bg-orange-50 rounded-2xl flex items-center justify-center mb-4">
                 <Package className="h-7 w-7 text-orange-300" />
               </div>
-              <p className="text-gray-500 text-sm">Apsranqner չen gtnvel</p>
-              <p className="text-gray-400 text-xs mt-1">Փorex voroshel voronum kriter</p>
+              <p className="text-gray-500 text-sm">Ապրանքներ չեն գտնվել</p>
+              <p className="text-gray-400 text-xs mt-1">Փորձեք փոխել որոնման չափանիշները</p>
             </div>
           )}
         </div>
