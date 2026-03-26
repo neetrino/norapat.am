@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { PUBLIC_SITE_SETTING_KEYS } from '@/lib/siteSettings.constants'
+import {
+  DEFAULT_PUBLIC_LOGO_URL,
+  PUBLIC_SITE_SETTING_KEYS,
+} from '@/lib/siteSettings.constants'
 
 const CACHE_CONTROL = 'public, s-maxage=60, stale-while-revalidate=120'
 
@@ -21,16 +24,21 @@ export async function GET() {
       {} as Record<string, string>
     )
 
+    const hasLogoKey = rows.some((row) => row.key === 'logo')
+    const logoFromDb = map.logo?.trim() ?? ''
+    const logo =
+      logoFromDb || (!hasLogoKey ? DEFAULT_PUBLIC_LOGO_URL : '')
+
     return NextResponse.json(
       {
-        logo: map.logo ?? '',
+        logo,
         siteName: map.siteName ?? '',
       },
       { headers: { 'Cache-Control': CACHE_CONTROL } }
     )
   } catch {
     return NextResponse.json(
-      { logo: '', siteName: '' },
+      { logo: DEFAULT_PUBLIC_LOGO_URL, siteName: '' },
       { headers: { 'Cache-Control': CACHE_CONTROL } }
     )
   }

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { DEFAULT_PUBLIC_LOGO_URL } from '@/lib/siteSettings.constants'
 
 export interface PublicSiteSettingsState {
   logo: string | null
@@ -24,7 +25,9 @@ function fetchBrandingOnce(): Promise<BrandingData> {
     .then((res) => (res.ok ? res.json() : {}))
     .then((data: { logo?: string; siteName?: string }) => {
       const logo =
-        typeof data.logo === 'string' && data.logo.trim() ? data.logo.trim() : null
+        typeof data.logo === 'string'
+          ? data.logo.trim()
+          : DEFAULT_PUBLIC_LOGO_URL
       const siteName =
         typeof data.siteName === 'string' && data.siteName.trim()
           ? data.siteName.trim()
@@ -34,7 +37,10 @@ function fetchBrandingOnce(): Promise<BrandingData> {
       return result
     })
     .catch(() => {
-      const result: BrandingData = { logo: null, siteName: null }
+      const result: BrandingData = {
+        logo: DEFAULT_PUBLIC_LOGO_URL,
+        siteName: null,
+      }
       shared = result
       return result
     })

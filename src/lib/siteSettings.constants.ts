@@ -1,3 +1,6 @@
+/** Default branding asset when `settings.logo` is empty */
+export const DEFAULT_PUBLIC_LOGO_URL = '/logo.png'
+
 /** Keys stored in `settings` table for the public site / admin form */
 export const SITE_SETTING_KEYS = [
   'logo',

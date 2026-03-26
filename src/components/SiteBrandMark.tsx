@@ -6,10 +6,10 @@ import Link from 'next/link'
 import { useI18n } from '@/i18n/I18nContext'
 import type { PublicSiteSettingsState } from '@/hooks/usePublicSiteSettings'
 
-const LOGO_WIDTH_DESKTOP = 180
-const LOGO_HEIGHT_DESKTOP = 48
-const LOGO_WIDTH_MOBILE = 140
-const LOGO_HEIGHT_MOBILE = 40
+const LOGO_WIDTH_DESKTOP = 240
+const LOGO_HEIGHT_DESKTOP = 64
+const LOGO_WIDTH_MOBILE = 176
+const LOGO_HEIGHT_MOBILE = 48
 
 interface SiteBrandMarkProps {
   variant: 'desktop' | 'mobile' | 'footer'
@@ -46,7 +46,7 @@ export function SiteBrandMark({ variant, branding }: SiteBrandMarkProps) {
         className={
           isMobile
             ? 'flex min-h-[2rem] min-w-[6rem] items-center justify-center'
-            : 'flex min-h-[3rem] min-w-[8rem] items-center'
+            : 'flex min-h-[4rem] min-w-[10rem] items-center'
         }
         aria-hidden
       >
@@ -64,7 +64,7 @@ export function SiteBrandMark({ variant, branding }: SiteBrandMarkProps) {
   }
 
   const linkClassName = isDesktop
-    ? 'flex min-h-[3rem] items-center rounded-lg transition-opacity hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-500'
+    ? 'flex min-h-[4rem] items-center rounded-lg transition-opacity hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-500'
     : isFooter
       ? 'inline-flex max-w-full items-center rounded-lg transition-opacity hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-500'
       : 'block transition-opacity hover:opacity-90'
@@ -73,8 +73,8 @@ export function SiteBrandMark({ variant, branding }: SiteBrandMarkProps) {
   const imageHeight = isMobile ? LOGO_HEIGHT_MOBILE : LOGO_HEIGHT_DESKTOP
 
   const imageClassName = isDesktop || isFooter
-    ? 'h-10 w-auto max-w-[180px] object-contain object-left'
-    : 'mx-auto h-8 w-auto max-w-[140px] object-contain'
+    ? 'h-14 w-auto max-w-[240px] object-contain object-left sm:h-16 sm:max-w-[260px]'
+    : 'mx-auto h-11 w-auto max-w-[176px] object-contain sm:h-12 sm:max-w-[192px]'
 
   const textClassName = isDesktop || isFooter
     ? 'text-2xl font-bold tracking-tight text-orange-500 sm:text-3xl'
