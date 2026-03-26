@@ -166,30 +166,44 @@ export default function Footer() {
             />
           </div>
         </div>
+      </div>
 
-        <div className="border-t border-stone-200/90 pt-8 pb-10">
+      <div className="promo-food-banner-bg promo-food-banner-vignette relative border-t border-white/15 text-white">
+        <div className="relative z-10 mx-auto max-w-7xl px-4 pb-10 pt-8 sm:px-6 lg:px-8">
           <div className="flex flex-col items-center justify-between space-y-4 md:flex-row md:space-y-0">
             <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm md:justify-start">
-              <Link href="/privacy" className="text-stone-500 transition-colors hover:text-red-800">
+              <Link
+                href="/privacy"
+                className="text-white/95 transition-colors hover:text-[#FACC15]"
+              >
                 {f.privacy}
               </Link>
-              <Link href="/terms" className="text-stone-500 transition-colors hover:text-red-800">
+              <Link
+                href="/terms"
+                className="text-white/95 transition-colors hover:text-[#FACC15]"
+              >
                 {f.terms}
               </Link>
-              <Link href="/refund" className="text-stone-500 transition-colors hover:text-red-800">
+              <Link
+                href="/refund"
+                className="text-white/95 transition-colors hover:text-[#FACC15]"
+              >
                 {f.refundShort}
               </Link>
-              <Link href="/delivery" className="text-stone-500 transition-colors hover:text-red-800">
+              <Link
+                href="/delivery"
+                className="text-white/95 transition-colors hover:text-[#FACC15]"
+              >
                 {f.deliveryShort}
               </Link>
             </div>
-            <p className="text-center text-sm font-light tracking-wide text-stone-500 md:text-right">
+            <p className="text-center text-sm font-normal tracking-wide text-white/90 md:text-right">
               {f.copyright} {f.createdBy}{' '}
               <a
                 href="https://neetrino.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="font-normal text-red-800 transition-colors hover:text-red-700"
+                className="font-semibold text-[#FACC15] transition-colors hover:text-[#fde047]"
               >
                 Neetrino IT Company
               </a>
