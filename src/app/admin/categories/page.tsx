@@ -165,11 +165,6 @@ export default function CategoriesPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      
-      {/* Բացատ ֆիքսված header-ի համար */}
-      <div className="h-header-spacer-mobile lg:hidden" aria-hidden />
-      <div className="h-header-spacer-desktop hidden lg:block" aria-hidden />
-      
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">

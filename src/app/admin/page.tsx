@@ -12,7 +12,6 @@ import {
   TrendingUp,
   Clock,
   CheckCircle,
-  Settings,
   Tag
 } from 'lucide-react'
 interface ProductStat { productId: string; name: string; totalQuantity: number }
@@ -300,17 +299,6 @@ export default function AdminDashboard() {
                 <div>
                   <h3 className="font-semibold text-gray-900">Պրոմո կոդեր</h3>
                   <p className="text-sm text-gray-600">Զեղչերի կոդերի ստեղծում և կառավարում</p>
-                </div>
-              </Link>
-              
-              <Link 
-                href="/admin/settings" 
-                className="flex items-center p-4 bg-purple-50 rounded-xl hover:bg-purple-100 transition-colors"
-              >
-                <Settings className="h-6 w-6 text-purple-500 mr-4" />
-                <div>
-                  <h3 className="font-semibold text-gray-900">Կայքի կարգավորումներ</h3>
-                  <p className="text-sm text-gray-600">Լոգոյի և կարգավորումների կառավարում</p>
                 </div>
               </Link>
             </div>

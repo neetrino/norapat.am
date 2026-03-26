@@ -11,7 +11,6 @@ import {
   Tag,
   Percent,
   Megaphone,
-  Settings,
   LogOut,
   Menu,
   X,
@@ -27,7 +26,6 @@ const SIDEBAR_NAV_ITEMS = [
   { href: '/admin/categories', label: 'Կատեգորիաներ', icon: Tag },
   { href: '/admin/promo', label: 'Պրոմո կոդեր', icon: Percent },
   { href: '/admin/campaigns', label: 'Ակցիաներ', icon: Megaphone },
-  { href: '/admin/settings', label: 'Կարգավորումներ', icon: Settings },
 ]
 
 export default function AdminLayout({

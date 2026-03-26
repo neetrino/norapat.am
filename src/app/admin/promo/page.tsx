@@ -149,8 +149,6 @@ export default function AdminPromoPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="h-header-spacer-mobile lg:hidden" aria-hidden />
-      <div className="h-header-spacer-desktop hidden lg:block" aria-hidden />
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex items-center gap-4 mb-6">
           <Link href="/admin" className="flex items-center text-gray-600 hover:text-orange-500">

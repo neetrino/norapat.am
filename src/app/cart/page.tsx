@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { ArrowLeft, ShoppingCart, Minus, Trash2, ShoppingBag } from 'lucide-react'
+import { ArrowLeft, Plus, Minus, Trash2, ShoppingBag } from 'lucide-react'
 import { useCart } from '@/hooks/useCart'
 import Footer from '@/components/Footer'
 import { useI18n } from '@/i18n/I18nContext'
@@ -187,7 +187,7 @@ export default function CartPage() {
                             onClick={() => handleQuantityChange(item.product.id, item.quantity + 1)}
                             className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center hover:bg-gray-200 transition-colors"
                           >
-                            <ShoppingCart className="h-4 w-4 text-gray-700" />
+                            <Plus className="h-4 w-4 text-gray-700" />
                           </button>
                         </div>
                         
@@ -283,7 +283,7 @@ export default function CartPage() {
                           onClick={() => handleQuantityChange(item.product.id, item.quantity + 1)}
                           className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center hover:bg-gray-200 transition-colors"
                         >
-                          <ShoppingCart className="h-4 w-4 text-gray-700" />
+                          <Plus className="h-4 w-4 text-gray-700" />
                         </button>
                       </div>
                       
