@@ -3,6 +3,7 @@
 import { usePathname } from 'next/navigation'
 import MobileHeader from './MobileHeader'
 import DesktopHeader from './DesktopHeader'
+import { TopContactBar } from '@/components/TopContactBar'
 import { usePublicSiteSettings } from '@/hooks/usePublicSiteSettings'
 
 export default function Header() {
@@ -15,6 +16,7 @@ export default function Header() {
 
   return (
     <>
+      <TopContactBar />
       <div className="lg:hidden">
         <MobileHeader branding={branding} />
       </div>

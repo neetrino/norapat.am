@@ -87,8 +87,8 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-white overflow-visible">
       {/* Բացատ ֆիքսված header-ի համար */}
-      <div className="lg:hidden h-16"></div>
-      <div className="hidden lg:block h-24"></div>
+      <div className="h-header-spacer-mobile lg:hidden" aria-hidden />
+      <div className="h-header-spacer-desktop hidden lg:block" aria-hidden />
 
       {/* 1. Բրենդային բաննեռի հատված (02-FUNCTIONAL 1.1) */}
       <BrandBannerSection />

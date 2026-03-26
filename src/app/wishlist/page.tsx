@@ -98,7 +98,7 @@ export default function WishlistPage() {
   if (sessionStatus !== 'loading' && !session?.user) {
     return (
       <div className="min-h-screen bg-white">
-        <div className="h-16 lg:h-24" />
+        <div className="h-header-spacer-mobile lg:h-header-spacer-desktop" aria-hidden />
         <div className="max-w-xl mx-auto px-4 py-16 text-center">
           <div className="w-24 h-24 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-6">
             <Heart className="h-12 w-12 text-orange-500" />
@@ -124,7 +124,7 @@ export default function WishlistPage() {
   if (showInitialLoading) {
     return (
       <div className="min-h-screen bg-white">
-        <div className="h-16 lg:h-24" />
+        <div className="h-header-spacer-mobile lg:h-header-spacer-desktop" aria-hidden />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 flex justify-center">
           <div
             className="w-10 h-10 border-2 border-orange-500 border-t-transparent rounded-full animate-spin"
@@ -139,7 +139,7 @@ export default function WishlistPage() {
 
   return (
     <div className="min-h-screen bg-white">
-      <div className="h-16 lg:h-24" />
+      <div className="h-header-spacer-mobile lg:h-header-spacer-desktop" aria-hidden />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-10 pb-24 lg:pb-10">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">

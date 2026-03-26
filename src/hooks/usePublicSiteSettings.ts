@@ -6,10 +6,15 @@ import { DEFAULT_PUBLIC_LOGO_URL } from '@/lib/siteSettings.constants'
 export interface PublicSiteSettingsState {
   logo: string | null
   siteName: string | null
+  contactPhone: string | null
+  address: string | null
   isLoading: boolean
 }
 
-type BrandingData = Pick<PublicSiteSettingsState, 'logo' | 'siteName'>
+type BrandingData = Pick<
+  PublicSiteSettingsState,
+  'logo' | 'siteName' | 'contactPhone' | 'address'
+>
 
 let shared: BrandingData | null = null
 let inflight: Promise<BrandingData> | null = null
@@ -23,7 +28,7 @@ function fetchBrandingOnce(): Promise<BrandingData> {
   }
   inflight = fetch('/api/site-settings')
     .then((res) => (res.ok ? res.json() : {}))
-    .then((data: { logo?: string; siteName?: string }) => {
+    .then((data: { logo?: string; siteName?: string; contactPhone?: string; address?: string }) => {
       const logo =
         typeof data.logo === 'string'
           ? data.logo.trim()
@@ -32,7 +37,20 @@ function fetchBrandingOnce(): Promise<BrandingData> {
         typeof data.siteName === 'string' && data.siteName.trim()
           ? data.siteName.trim()
           : null
-      const result: BrandingData = { logo, siteName }
+      const contactPhone =
+        typeof data.contactPhone === 'string' && data.contactPhone.trim()
+          ? data.contactPhone.trim()
+          : null
+      const address =
+        typeof data.address === 'string' && data.address.trim()
+          ? data.address.trim()
+          : null
+      const result: BrandingData = {
+        logo,
+        siteName,
+        contactPhone,
+        address,
+      }
       shared = result
       return result
     })
@@ -40,6 +58,8 @@ function fetchBrandingOnce(): Promise<BrandingData> {
       const result: BrandingData = {
         logo: DEFAULT_PUBLIC_LOGO_URL,
         siteName: null,
+        contactPhone: null,
+        address: null,
       }
       shared = result
       return result
@@ -54,6 +74,8 @@ export function usePublicSiteSettings(): PublicSiteSettingsState {
   const [state, setState] = useState<PublicSiteSettingsState>(() => ({
     logo: shared?.logo ?? null,
     siteName: shared?.siteName ?? null,
+    contactPhone: shared?.contactPhone ?? null,
+    address: shared?.address ?? null,
     isLoading: shared === null,
   }))
 

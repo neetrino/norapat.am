@@ -21,8 +21,8 @@ export function ContactPageView() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="lg:hidden h-16" />
-      <div className="hidden lg:block h-24" />
+      <div className="h-header-spacer-mobile lg:hidden" aria-hidden />
+      <div className="h-header-spacer-desktop hidden lg:block" aria-hidden />
 
       <section className="promo-food-banner-bg promo-food-banner-vignette relative flex min-h-[min(50vh,26rem)] items-center justify-center overflow-hidden py-14 text-white sm:min-h-[min(52vh,30rem)] sm:py-16 md:py-20">
         <div className="relative z-10 mx-auto w-full max-w-7xl px-4 text-center sm:px-6 lg:px-8">

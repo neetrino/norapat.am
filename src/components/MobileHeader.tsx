@@ -6,19 +6,24 @@ import { useState } from 'react'
 import { useI18n } from '@/i18n/I18nContext'
 import type { PublicSiteSettingsState } from '@/hooks/usePublicSiteSettings'
 import { SiteBrandMark } from '@/components/SiteBrandMark'
+import { useHeaderStack } from '@/contexts/HeaderStackContext'
 
 interface MobileHeaderProps {
   branding: PublicSiteSettingsState
 }
 
 export default function MobileHeader({ branding }: MobileHeaderProps) {
+  const { topBarInsetPx } = useHeaderStack()
   const { t } = useI18n()
   const { search, nav } = t
   const [searchQuery, setSearchQuery] = useState('')
   const [isSearchOpen, setIsSearchOpen] = useState(false)
 
   return (
-    <header className="bg-white/95 backdrop-blur-xl shadow-lg fixed top-0 left-0 right-0 z-[100] border-b border-gray-200" style={{ position: 'fixed' }}>
+    <header
+      className="fixed left-0 right-0 z-[100] border-b border-gray-200 bg-white/95 shadow-lg backdrop-blur-xl transition-[top] duration-300 ease-out"
+      style={{ top: topBarInsetPx }}
+    >
       <div className="px-4 py-1.5">
         <div className="flex items-center gap-2">
           <div className="flex-1 flex justify-start min-w-0 z-[101]" />

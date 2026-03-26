@@ -14,6 +14,11 @@ export const SITE_SETTING_KEYS = [
 export type SiteSettingKey = (typeof SITE_SETTING_KEYS)[number]
 
 /** Public-safe keys exposed via GET /api/site-settings (no auth) */
-export const PUBLIC_SITE_SETTING_KEYS = ['logo', 'siteName'] as const
+export const PUBLIC_SITE_SETTING_KEYS = [
+  'logo',
+  'siteName',
+  'contactPhone',
+  'address',
+] as const
 
 export type PublicSiteSettingKey = (typeof PUBLIC_SITE_SETTING_KEYS)[number]

@@ -5,6 +5,8 @@
 @source "../**/*.{js,ts,jsx,tsx}";
 
 :root {
+  /* Extra inset under fixed header when TopContactBar is visible (synced via HeaderStackProvider) */
+  --top-bar-offset: 36px;
   --background: #ffffff;
   --foreground: #000000;
   --foreground-muted: #333333;
@@ -503,4 +505,22 @@ input[type="tel"]::placeholder,
 input[type="number"]::placeholder,
 textarea::placeholder {
   color: #9ca3af !important; /* text-gray-400 */
+}
+
+/* Fixed header + optional top contact bar — spacer height tracks --top-bar-offset */
+@layer utilities {
+  .h-header-spacer-mobile {
+    height: calc(4rem + var(--top-bar-offset));
+  }
+  .h-header-spacer-desktop {
+    height: calc(6rem + var(--top-bar-offset));
+  }
+  .pt-header-breadcrumb {
+    padding-top: calc(5rem + var(--top-bar-offset));
+  }
+  @media (min-width: 768px) {
+    .pt-header-breadcrumb {
+      padding-top: calc(6rem + var(--top-bar-offset));
+    }
+  }
 }

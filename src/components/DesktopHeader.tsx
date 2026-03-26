@@ -11,12 +11,14 @@ import { useHydration } from '@/hooks/useHydration'
 import { useI18n } from '@/i18n/I18nContext'
 import type { PublicSiteSettingsState } from '@/hooks/usePublicSiteSettings'
 import { SiteBrandMark } from '@/components/SiteBrandMark'
+import { useHeaderStack } from '@/contexts/HeaderStackContext'
 
 interface DesktopHeaderProps {
   branding: PublicSiteSettingsState
 }
 
 export default function DesktopHeader({ branding }: DesktopHeaderProps) {
+  const { topBarInsetPx } = useHeaderStack()
   const { t } = useI18n()
   const { nav, auth, search, wishlist } = t
   const isHydrated = useHydration()
@@ -43,7 +45,10 @@ export default function DesktopHeader({ branding }: DesktopHeaderProps) {
   ]
 
   return (
-    <header className="bg-white shadow-sm fixed top-0 left-0 right-0 z-[60]" style={{ position: 'fixed' }}>
+    <header
+      className="fixed left-0 right-0 z-[60] bg-white shadow-sm transition-[top] duration-300 ease-out"
+      style={{ top: topBarInsetPx }}
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center py-4">
           <SiteBrandMark variant="desktop" branding={branding} />

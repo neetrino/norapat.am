@@ -33,12 +33,19 @@ export async function GET() {
       {
         logo,
         siteName: map.siteName ?? '',
+        contactPhone: map.contactPhone ?? '',
+        address: map.address ?? '',
       },
       { headers: { 'Cache-Control': CACHE_CONTROL } }
     )
   } catch {
     return NextResponse.json(
-      { logo: DEFAULT_PUBLIC_LOGO_URL, siteName: '' },
+      {
+        logo: DEFAULT_PUBLIC_LOGO_URL,
+        siteName: '',
+        contactPhone: '',
+        address: '',
+      },
       { headers: { 'Cache-Control': CACHE_CONTROL } }
     )
   }

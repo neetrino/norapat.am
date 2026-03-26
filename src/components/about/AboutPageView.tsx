@@ -17,8 +17,8 @@ export function AboutPageView() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="lg:hidden h-16" />
-      <div className="hidden lg:block h-24" />
+      <div className="h-header-spacer-mobile lg:hidden" aria-hidden />
+      <div className="h-header-spacer-desktop hidden lg:block" aria-hidden />
 
       <AboutHero a={a} />
 

@@ -6,6 +6,7 @@ import MobileBottomNav from "@/components/MobileBottomNav";
 import ServiceWorkerProvider from "@/components/ServiceWorkerProvider";
 import PullToRefresh from "@/components/PullToRefresh";
 import Header from "@/components/Header";
+import { HeaderStackProvider } from "@/contexts/HeaderStackContext";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -42,11 +43,13 @@ export default function RootLayout({
       >
         <ServiceWorkerProvider />
         <ClientProviders>
-          <Header />
-          <PullToRefresh>
-            {children}
-          </PullToRefresh>
-          <MobileBottomNav />
+          <HeaderStackProvider>
+            <Header />
+            <PullToRefresh>
+              {children}
+            </PullToRefresh>
+            <MobileBottomNav />
+          </HeaderStackProvider>
         </ClientProviders>
       </body>
     </html>

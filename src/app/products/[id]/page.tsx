@@ -93,7 +93,7 @@ export default async function ProductPage({
     <div className="min-h-screen bg-white" style={{ overflow: 'auto' }}>
       
       {/* Breadcrumb */}
-      <div className="bg-white pt-20 md:pt-24">
+      <div className="bg-white pt-header-breadcrumb">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <nav className="flex items-center space-x-2 text-sm">
             <Link href="/" className="text-gray-500 hover:text-orange-500">{t.breadcrumbHome}</Link>
