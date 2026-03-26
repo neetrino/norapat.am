@@ -36,8 +36,8 @@ export function SiteBrandMark({ variant, branding }: SiteBrandMarkProps) {
   if (isLoading) {
     if (isFooter) {
       return (
-        <div className="flex min-h-[2rem] items-center" aria-hidden>
-          <span className="text-2xl font-bold text-orange-500/90">{nav.siteBrand}</span>
+        <div className="flex min-h-[1.75rem] items-center" aria-hidden>
+          <span className="text-xl font-bold text-orange-500/90 sm:text-2xl">{nav.siteBrand}</span>
         </div>
       )
     }
@@ -72,13 +72,17 @@ export function SiteBrandMark({ variant, branding }: SiteBrandMarkProps) {
   const imageWidth = isMobile ? LOGO_WIDTH_MOBILE : LOGO_WIDTH_DESKTOP
   const imageHeight = isMobile ? LOGO_HEIGHT_MOBILE : LOGO_HEIGHT_DESKTOP
 
-  const imageClassName = isDesktop || isFooter
+  const imageClassName = isDesktop
     ? 'h-14 w-auto max-w-[240px] object-contain object-left sm:h-16 sm:max-w-[260px]'
+    : isFooter
+      ? 'h-11 w-auto max-w-[200px] object-contain object-left sm:h-12 sm:max-w-[220px]'
     : 'mx-auto h-11 w-auto max-w-[176px] object-contain sm:h-12 sm:max-w-[192px]'
 
-  const textClassName = isDesktop || isFooter
+  const textClassName = isDesktop
     ? 'text-2xl font-bold tracking-tight text-orange-500 sm:text-3xl'
-    : 'mx-auto block text-center text-lg font-bold tracking-tight text-orange-500'
+    : isFooter
+      ? 'text-xl font-bold tracking-tight text-orange-500 sm:text-2xl'
+      : 'mx-auto block text-center text-lg font-bold tracking-tight text-orange-500'
 
   return (
     <Link href="/" className={linkClassName} aria-label={label}>
