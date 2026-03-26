@@ -172,6 +172,10 @@ export interface AppMessages {
     ctaSubtitle: string
     ctaOrderNow: string
     ctaLearnMore: string
+    /** CTA բաժնի ձախ պատկեր — դեկորատիվ կերպար */
+    ctaGirlIllustrationAlt: string
+    /** CTA բաժնի աջ պատկեր — դեկորատիվ կերպար */
+    ctaBoyIllustrationAlt: string
     brandBannerPromo: {
       super: string
       delicious: string

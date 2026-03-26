@@ -171,6 +171,8 @@ export const hy: AppMessages = {
     ctaSubtitle: 'Պատվիրեք հիմա և ստացեք 10% զեղչ առաջին պատվերի համար',
     ctaOrderNow: 'Պատվիրել հիմա',
     ctaLearnMore: 'Իմանալ ավելին',
+    ctaGirlIllustrationAlt: 'NORAPAT բրենդի ոճավորված աղջկա պատկերազարդում',
+    ctaBoyIllustrationAlt: 'NORAPAT բրենդի ոճավորված տղայի պատկերազարդում',
     brandBannerPromo: {
       super: 'Գերազանց',
       delicious: 'Համեղ',

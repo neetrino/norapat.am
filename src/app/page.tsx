@@ -1,5 +1,6 @@
 'use client'
 
+import Image from "next/image";
 import Link from "next/link";
 import { Phone, MapPin, Clock } from "lucide-react";
 import { useState, useEffect } from "react";
@@ -14,6 +15,9 @@ import { ActionsSection } from "@/components/home/ActionsSection";
 import { HomeShowcaseCarousel } from "@/components/home/HomeShowcaseCarousel";
 import { BRAND_RED_CTA_IDLE_HOVER_CLASS } from "@/components/home/promo-food-banner/promoFoodBanner.constants";
 const ADDED_TO_CART_FEEDBACK_MS = 2000
+/** Next/Image ներքին չափեր — ցուցադրման ժամանակ պահպանվում է հարաբերակցությունը `object-contain`-ով */
+const HOME_CTA_CHARACTER_IMAGE_WIDTH_PX = 480
+const HOME_CTA_CHARACTER_IMAGE_HEIGHT_PX = 640
 
 /** Հատուկ առաջարկներ — ինչպես /api/products/promo (HIT, NEW) */
 const PROMO_STATUS_IN = 'HIT,NEW'
@@ -274,27 +278,54 @@ export default function Home() {
       </section>
 
       {/* CTA Section — նույն ֆոնը ինչ հերո բանները (`globals.css` → promo-food-banner-*) */}
-      <section className="promo-food-banner-bg promo-food-banner-vignette relative hidden overflow-hidden py-24 text-white lg:block">
-        <div className="relative z-10 mx-auto max-w-7xl px-4 text-center sm:px-6 lg:px-8">
-          <h2 className="mb-6 text-4xl font-bold md:text-5xl">
-            {h.ctaTitle}
-          </h2>
-          <p className="mx-auto mb-8 max-w-2xl text-xl text-white/90">
-            {h.ctaSubtitle}
-          </p>
-          <div className="flex flex-col justify-center gap-4 sm:flex-row">
-            <Link
-              href="/products"
-              className="rounded-xl bg-white px-8 py-4 text-lg font-bold text-[#A51D1D] shadow-lg transition-all duration-300 hover:scale-105 hover:bg-gray-100"
-            >
-              {h.ctaOrderNow}
-            </Link>
-            <Link
-              href="/contact"
-              className="rounded-xl border-2 border-white px-8 py-4 text-lg font-bold text-white transition-all duration-300 hover:scale-105 hover:bg-white hover:text-[#A51D1D]"
-            >
-              {h.ctaLearnMore}
-            </Link>
+      <section
+        className="promo-food-banner-bg promo-food-banner-vignette relative hidden overflow-hidden py-16 text-white lg:block lg:py-20"
+        aria-labelledby="home-cta-heading"
+      >
+        <div className="relative z-10 mx-auto flex max-w-7xl flex-col items-center gap-10 px-4 sm:px-6 lg:flex-row lg:items-end lg:justify-between lg:gap-6 lg:px-8">
+          <div className="order-2 flex w-full flex-1 justify-center lg:order-1 lg:justify-end lg:pr-4">
+            <Image
+              src="/home-cta-girl.png"
+              alt={h.ctaGirlIllustrationAlt}
+              width={HOME_CTA_CHARACTER_IMAGE_WIDTH_PX}
+              height={HOME_CTA_CHARACTER_IMAGE_HEIGHT_PX}
+              className="h-auto max-h-[min(42vw,22rem)] w-auto max-w-[min(88vw,17.5rem)] object-contain object-bottom sm:max-h-[24rem] sm:max-w-[18rem] xl:max-h-[26rem] xl:max-w-[20rem]"
+              sizes="(min-width: 1280px) 20rem, (min-width: 1024px) 18rem, 100vw"
+            />
+          </div>
+
+          <div className="order-1 w-full max-w-2xl shrink-0 text-center lg:order-2">
+            <h2 id="home-cta-heading" className="mb-6 text-4xl font-bold md:text-5xl">
+              {h.ctaTitle}
+            </h2>
+            <p className="mx-auto mb-8 max-w-2xl text-xl text-white/90">
+              {h.ctaSubtitle}
+            </p>
+            <div className="flex flex-col justify-center gap-4 sm:flex-row sm:flex-wrap">
+              <Link
+                href="/products"
+                className="rounded-xl bg-white px-8 py-4 text-lg font-bold text-[#A51D1D] shadow-lg transition-all duration-300 hover:scale-105 hover:bg-gray-100"
+              >
+                {h.ctaOrderNow}
+              </Link>
+              <Link
+                href="/contact"
+                className="rounded-xl border-2 border-white px-8 py-4 text-lg font-bold text-white transition-all duration-300 hover:scale-105 hover:bg-white hover:text-[#A51D1D]"
+              >
+                {h.ctaLearnMore}
+              </Link>
+            </div>
+          </div>
+
+          <div className="order-3 flex w-full flex-1 justify-center lg:justify-start lg:pl-4">
+            <Image
+              src="/home-cta-boy.png"
+              alt={h.ctaBoyIllustrationAlt}
+              width={HOME_CTA_CHARACTER_IMAGE_WIDTH_PX}
+              height={HOME_CTA_CHARACTER_IMAGE_HEIGHT_PX}
+              className="h-auto max-h-[min(42vw,22rem)] w-auto max-w-[min(88vw,17.5rem)] object-contain object-bottom sm:max-h-[24rem] sm:max-w-[18rem] xl:max-h-[26rem] xl:max-w-[20rem]"
+              sizes="(min-width: 1280px) 20rem, (min-width: 1024px) 18rem, 100vw"
+            />
           </div>
         </div>
       </section>
