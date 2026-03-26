@@ -17,7 +17,6 @@ import {
   Star,
   ChevronsUpDown,
 } from 'lucide-react'
-import { useRef } from 'react'
 import { Product, ProductStatus } from '@/types'
 
 type SortField = 'name' | 'price' | 'updatedAt'
@@ -53,7 +52,13 @@ export default function AdminProducts() {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
   const [sortField, setSortField] = useState<SortField>('name')
   const [sortDir, setSortDir] = useState<SortDir>('asc')
-  const togglingRef = useRef<Set<string>>(new Set())
+  // productsRef — latest products snapshot for debounce callbacks
+  const productsRef = useRef<Product[]>([])
+  // toggleDebounce — per-product: pending timer + server-side value for rollback
+  const toggleDebounceRef = useRef<Map<string, { timer: ReturnType<typeof setTimeout>; serverValue: boolean }>>(new Map())
+
+  // Keep ref in sync so debounce callbacks always read the latest state
+  useEffect(() => { productsRef.current = products }, [products])
 
   useEffect(() => {
     if (status === 'loading') return
@@ -94,38 +99,45 @@ export default function AdminProducts() {
     }
   }
 
-  const handleToggleAvailable = useCallback((product: Product) => {
-    if (togglingRef.current.has(product.id)) return
-
-    const nextValue = !product.isAvailable
-    togglingRef.current.add(product.id)
-
-    // Optimistic update — UI instantly reflects the change
+  const handleToggleAvailable = useCallback((productId: string) => {
+    // 1. Flip UI immediately — every click responds at once
     setProducts(prev =>
-      prev.map(p => p.id === product.id ? { ...p, isAvailable: nextValue } : p)
+      prev.map(p => p.id === productId ? { ...p, isAvailable: !p.isAvailable } : p)
     )
 
-    fetch(`/api/admin/products/${product.id}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ isAvailable: nextValue }),
-    })
-      .then(res => {
-        if (!res.ok) {
-          // Revert on failure
+    const existing = toggleDebounceRef.current.get(productId)
+
+    // serverValue = the value actually saved on the server (before any pending flips)
+    const serverValue = existing?.serverValue
+      ?? (productsRef.current.find(p => p.id === productId)?.isAvailable ?? true)
+
+    // Cancel the previous scheduled API call (user hasn't stopped clicking yet)
+    if (existing) clearTimeout(existing.timer)
+
+    // Schedule a single API call 250ms after the LAST click
+    const timer = setTimeout(() => {
+      toggleDebounceRef.current.delete(productId)
+
+      const latest = productsRef.current.find(p => p.id === productId)
+      if (!latest) return
+
+      fetch(`/api/admin/products/${productId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ isAvailable: latest.isAvailable }),
+      })
+        .then(res => {
+          if (!res.ok) throw new Error('patch failed')
+        })
+        .catch(() => {
+          // API failed → revert to last known server value
           setProducts(prev =>
-            prev.map(p => p.id === product.id ? { ...p, isAvailable: product.isAvailable } : p)
+            prev.map(p => p.id === productId ? { ...p, isAvailable: serverValue } : p)
           )
-        }
-      })
-      .catch(() => {
-        setProducts(prev =>
-          prev.map(p => p.id === product.id ? { ...p, isAvailable: product.isAvailable } : p)
-        )
-      })
-      .finally(() => {
-        togglingRef.current.delete(product.id)
-      })
+        })
+    }, 250)
+
+    toggleDebounceRef.current.set(productId, { timer, serverValue })
   }, [])
 
   const handleSort = (field: SortField) => {
@@ -469,7 +481,7 @@ export default function AdminProducts() {
                     {/* Toggle */}
                     <td className="px-4 py-3 text-center">
                       <button
-                        onClick={() => handleToggleAvailable(product)}
+                        onClick={() => handleToggleAvailable(product.id)}
                         title={product.isAvailable ? 'Apaaktivacnel' : 'Aktivacnel'}
                         className={`relative inline-flex h-5 w-9 items-center rounded-full focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-orange-400 cursor-pointer ${
                           product.isAvailable
