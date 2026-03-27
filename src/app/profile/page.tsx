@@ -252,9 +252,9 @@ export default function ProfilePage() {
     <div className="flex min-h-screen flex-col bg-slate-50">
       <div className="h-header-spacer-mobile lg:hidden" aria-hidden />
       <div className="hidden h-header-spacer-desktop lg:block" aria-hidden />
-      <div className="mx-auto flex w-full max-w-7xl flex-1 flex-col px-4 pb-20 pt-6 sm:px-6 sm:pt-8 lg:px-8 lg:pb-10 lg:pt-10">
+      <div className="mx-auto flex w-full max-w-7xl flex-1 flex-col px-4 pb-20 pt-12 sm:px-6 sm:pt-14 lg:px-8 lg:pb-10 lg:pt-20">
         <div className="grid grid-cols-1 gap-6 xl:grid-cols-[320px_minmax(0,1fr)]">
-          <aside className="xl:sticky xl:top-28 xl:self-start">
+          <aside className="xl:self-start">
             <section className={cardClass}>
               <div className="flex items-center gap-4">
                 <div className="flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-2xl bg-slate-900 text-lg font-semibold text-white">{initials}</div>
@@ -279,7 +279,7 @@ export default function ProfilePage() {
             </section>
           </aside>
 
-          <main className="space-y-6">
+          <main className="space-y-6 lg:min-h-[980px]">
             {activeSection === 'dashboard' && (
               <>
                 <section className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -385,7 +385,7 @@ export default function ProfilePage() {
           </main>
         </div>
       </div>
-      <div className="hidden lg:block"><Footer /></div>
+      <div className="mt-4 hidden lg:block lg:mt-6"><Footer /></div>
       <DeleteAccountModal isOpen={isDeleteModalOpen} onClose={() => setIsDeleteModalOpen(false)} onConfirm={handleDeleteAccount} isLoading={isDeletingAccount} />
     </div>
   )
