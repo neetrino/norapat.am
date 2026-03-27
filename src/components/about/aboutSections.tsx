@@ -8,7 +8,6 @@ import {
 } from 'lucide-react'
 import type { AppMessages } from '@/i18n/types'
 
-console.log('About sections initialized')
 type AboutCopy = AppMessages['aboutPage']
 
 export function AboutHero({ a }: { a: AboutCopy }) {
