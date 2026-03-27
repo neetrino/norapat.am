@@ -1,11 +1,34 @@
-import { User, Product, Order, OrderItem, OrderStatus, ProductStatus, Category } from '@prisma/client'
+import {
+  User,
+  Product,
+  Order,
+  OrderItem,
+  OrderStatus,
+  ProductStatus,
+  Category,
+  Campaign,
+  CampaignLinkType,
+} from '@prisma/client'
 
 // Экспортируем типы из Prisma
-export { Product, User, Order, OrderItem, OrderStatus, ProductStatus, Category }
+export {
+  Product,
+  User,
+  Order,
+  OrderItem,
+  OrderStatus,
+  ProductStatus,
+  Category,
+  Campaign,
+  CampaignLinkType,
+}
 
 // Расширенные типы для приложения
-export interface ProductWithIngredients extends Product {
-  // PostgreSQL уже возвращает ingredients как массив
+export type ProductWithIngredients = Product
+
+/** Ապրանք category relation-ով (API products, featured, banner) */
+export type ProductWithCategory = Product & {
+  category: { id: string; name: string; isActive: boolean } | null
 }
 
 export interface OrderWithItems extends Order {
@@ -43,7 +66,7 @@ export interface OrderFormData {
   phone: string
   address: string
   notes?: string
-  paymentMethod: 'idram' | 'arca' | 'ameriabank'
+  paymentMethod: 'cash' | 'arca' | 'mastercard' | 'visa' | 'ameriabank'
 }
 
 export interface ContactFormData {
@@ -53,27 +76,29 @@ export interface ContactFormData {
   message: string
 }
 
-// Константы
+// Հաստատուններ
 export const ORDER_STATUS_LABELS: Record<OrderStatus, string> = {
-  PENDING: 'Ожидает подтверждения',
-  CONFIRMED: 'Подтвержден',
-  PREPARING: 'Готовится',
-  READY: 'Готов к выдаче',
-  DELIVERED: 'Доставлен',
-  CANCELLED: 'Отменен'
+  PENDING: 'Սպասում հաստատման',
+  CONFIRMED: 'Հաստատված',
+  PREPARING: 'Պատրաստվում',
+  READY: 'Պատրաստ',
+  DELIVERED: 'Առաքված',
+  CANCELLED: 'Չեղարկված'
 }
 
 export const PRODUCT_STATUS_LABELS: Record<ProductStatus, string> = {
-  REGULAR: 'Обычный',
-  HIT: 'Хит продаж',
-  NEW: 'Новинка',
-  CLASSIC: 'Классика',
-  BANNER: 'Баннер'
+  REGULAR: 'Սովորական',
+  HIT: 'Վաճառքի հիթ',
+  NEW: 'Նորինք',
+  CLASSIC: 'Կլասիկ',
+  BANNER: 'Բաններ'
 }
 
 export const PAYMENT_METHODS = {
-  idram: 'Idram',
+  cash: 'Cash',
   arca: 'ArCa',
+  mastercard: 'Mastercard',
+  visa: 'Visa',
   ameriabank: 'Ameriabank'
 } as const
 
@@ -84,10 +109,16 @@ export interface Category {
   id: string
   name: string
   description: string | null
+  image: string | null
   isActive: boolean
   createdAt: Date
   updatedAt: Date
 }
 
+// Категория с количеством товаров (ответ /api/categories)
+export interface CategoryWithCount extends Category {
+  _count: { products: number }
+}
+
 // Старые типы категорий для обратной совместимости
-export type CategoryName = 'Комбо' | 'Пиде' | 'Снэк' | 'Соусы' | 'Напитки'
+export type CategoryName = 'Կոմբո' | 'Պիդե' | 'Սնաք' | 'Սոուսներ' | 'Ըմպելիքներ'

@@ -1,9 +1,16 @@
-import NextAuth from "next-auth"
+import type { NextAuthOptions } from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
+import type { UserRole } from "@prisma/client"
 import bcrypt from 'bcryptjs'
 import { prisma } from '@/lib/prisma'
 
-export const authOptions = {
+const secret = process.env.NEXTAUTH_SECRET ?? process.env.AUTH_SECRET
+if (!secret && process.env.NODE_ENV === 'production') {
+  throw new Error('NEXTAUTH_SECRET or AUTH_SECRET must be set in production')
+}
+
+export const authOptions: NextAuthOptions = {
+  secret: secret || 'dev-fallback-secret-change-me',
   providers: [
     CredentialsProvider({
       name: "credentials",
@@ -16,9 +23,14 @@ export const authOptions = {
           return null
         }
 
-        const user = await prisma.user.findUnique({
+        const normalizedEmail = credentials.email.trim().toLowerCase()
+
+        const user = await prisma.user.findFirst({
           where: {
-            email: credentials.email as string
+            email: {
+              equals: normalizedEmail,
+              mode: 'insensitive',
+            },
           }
         })
 
@@ -57,9 +69,9 @@ export const authOptions = {
       return token
     },
     async session({ session, token }) {
-      if (token) {
-        session.user.id = token.sub!
-        session.user.role = token.role as string
+      if (session.user && token.sub) {
+        session.user.id = token.sub
+        session.user.role = (token.role ?? 'USER') as UserRole
       }
       return session
     },
@@ -68,5 +80,3 @@ export const authOptions = {
     signIn: '/login',
   },
 }
-
-export default NextAuth(authOptions)

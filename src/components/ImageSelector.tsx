@@ -1,9 +1,8 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Card, CardContent } from '@/components/ui/card'
 import { 
   Upload, 
   Search, 
@@ -36,7 +35,7 @@ export default function ImageSelector({ value, onChange, className = '' }: Image
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   // Загружаем список существующих изображений только при переходе на вкладку "Галерея"
-  const loadImages = async () => {
+  const loadImages = useCallback(async () => {
     if (images.length > 0) return // Уже загружены
     
     setLoadingGallery(true)
@@ -52,14 +51,14 @@ export default function ImageSelector({ value, onChange, className = '' }: Image
     } finally {
       setLoadingGallery(false)
     }
-  }
+  }, [images.length])
 
   // Загружаем изображения при переходе на вкладку "Галерея"
   useEffect(() => {
     if (activeTab === 'gallery') {
       loadImages()
     }
-  }, [activeTab])
+  }, [activeTab, loadImages])
 
   // Фильтруем изображения по поисковому запросу
   const filteredImages = images.filter(img => 
@@ -110,8 +109,8 @@ export default function ImageSelector({ value, onChange, className = '' }: Image
             onChange(result.path)
           }
         } else {
-          const error = await response.json()
-          alert(`Ошибка загрузки ${file.name}: ${error.message}`)
+          const data = await response.json()
+          alert(`Ошибка загрузки ${file.name}: ${data.error ?? 'Unknown error'}`)
         }
       }
     } catch (error) {

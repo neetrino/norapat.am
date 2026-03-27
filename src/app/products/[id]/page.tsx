@@ -1,33 +1,35 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import Image from 'next/image'
-import { ArrowLeft, Star, Clock, MapPin, Phone, Zap } from 'lucide-react'
-import { Product } from '@/types'
+import { ArrowLeft, Star, Clock, MapPin, Phone, Zap, Check, XCircle } from 'lucide-react'
 import Footer from '@/components/Footer'
-import ProductCard from '@/components/ProductCard'
 import ProductQuantityControls from '@/components/ProductQuantityControls'
+import { SimilarProducts } from '@/components/SimilarProducts'
+import { CategoryDisplayName } from '@/components/CategoryDisplayName'
+import { ProductCategoryLine } from '@/components/ProductCategoryLine'
+import { ProductDisplayName } from '@/components/ProductDisplayName'
+import { ProductImageGallery } from '@/components/ProductImageGallery'
 import { prisma } from '@/lib/prisma'
+import { hy } from '@/i18n/dictionaries'
 
-// Server Component - данные загружаются на сервере
+// Server Component - տվյալները բեռնվում են սերվերից
 export default async function ProductPage({
   params
 }: {
   params: Promise<{ id: string }>
 }) {
   const { id } = await params
+  const t = hy.productPage
 
   try {
-    // Загружаем данные на сервере - ОПТИМИЗИРОВАННЫЙ ЗАПРОС
+    // Բեռնել տվյալները սերվերից - օպտիմիզացված հարցում
     const [product, similarProducts] = await Promise.all([
-      // Основной продукт
+      // Հիմնական ապրանք
       prisma.product.findUnique({
-        where: {
-          id,
-          isAvailable: true
-        },
+        where: { id },
         select: {
           id: true,
           name: true,
+          shortDescription: true,
           description: true,
           price: true,
           categoryId: true,
@@ -39,14 +41,17 @@ export default async function ProductPage({
             }
           },
           image: true,
+          images: true,
+          originalPrice: true,
           ingredients: true,
           isAvailable: true,
           status: true,
-          createdAt: true
+          createdAt: true,
+          updatedAt: true
         }
       }),
       
-      // Похожие товары - ТОЛЬКО 4, а не все!
+      // Նմանատիպ ապրանքներ - միայն 4 հատ
       prisma.product.findMany({
         where: {
           isAvailable: true,
@@ -55,8 +60,10 @@ export default async function ProductPage({
         select: {
           id: true,
           name: true,
+          shortDescription: true,
           description: true,
           price: true,
+          originalPrice: true,
           categoryId: true,
           category: {
             select: {
@@ -66,13 +73,15 @@ export default async function ProductPage({
             }
           },
           image: true,
+          images: true,
           ingredients: true,
           isAvailable: true,
           status: true,
-          createdAt: true
+          createdAt: true,
+          updatedAt: true
         },
         orderBy: { createdAt: 'desc' },
-        take: 4 // Берем только 4 похожих товара
+        take: 4
       })
     ])
 
@@ -81,17 +90,19 @@ export default async function ProductPage({
     }
 
   return (
-    <div className="min-h-screen bg-gray-50" style={{ overflow: 'auto' }}>
+    <div className="min-h-screen bg-white" style={{ overflow: 'auto' }}>
       
       {/* Breadcrumb */}
-      <div className="bg-white pt-20 md:pt-24">
+      <div className="bg-white pt-header-breadcrumb">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <nav className="flex items-center space-x-2 text-sm">
-            <Link href="/" className="text-gray-500 hover:text-orange-500">Главная</Link>
+            <Link href="/" className="text-gray-500 hover:text-orange-500">{t.breadcrumbHome}</Link>
             <span className="text-gray-400">/</span>
-            <Link href="/products" className="text-gray-500 hover:text-orange-500">Меню</Link>
+            <Link href="/products" className="text-gray-500 hover:text-orange-500">{t.breadcrumbMenu}</Link>
             <span className="text-gray-400">/</span>
-            <span className="text-gray-900 font-medium">{product.name}</span>
+            <span className="text-gray-900 font-medium">
+              <ProductDisplayName name={product.name} />
+            </span>
           </nav>
         </div>
       </div>
@@ -103,58 +114,26 @@ export default async function ProductPage({
           className="inline-flex items-center text-gray-600 hover:text-orange-500 mb-8 group"
         >
           <ArrowLeft className="h-4 w-4 mr-2 group-hover:-translate-x-1 transition-transform" />
-          Назад к каталогу
+          {t.backToCatalog}
         </Link>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
-          {/* Product Image */}
+          {/* Product Image Gallery (multiple images + zoom) */}
           <div className="space-y-4">
-            <div className="bg-white rounded-2xl shadow-lg overflow-visible group relative">
-              <div className="relative h-96 overflow-visible">
-                {/* 3D Product Container */}
-                {product.image && product.image !== 'no-image' ? (
-                  <div className="relative w-full h-full">
-                    {/* 3D Product Image with floating effect */}
-                    <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 w-[calc(100%+1rem)] h-[calc(100%+1rem)]">
-                      {/* 3D Shadow Layer */}
-                      <div 
-                        className="absolute inset-0 bg-gradient-to-br from-gray-200/20 to-gray-300/15 rounded-3xl transform translate-y-2 translate-x-1 group-hover:translate-y-3 group-hover:translate-x-2 transition-all duration-700"
-                        style={{
-                          filter: 'none',
-                        }}
-                      />
-                      
-                        {/* Main 3D Product Image - Оптимизированное изображение */}
-                        <Image
-                          src={product.image}
-                          alt={product.name}
-                          fill
-                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                          priority
-                          className="relative w-full h-full object-contain group-hover:scale-125 group-hover:-translate-y-3 group-hover:rotate-2 transition-all duration-700 ease-out"
-                          style={{
-                            filter: 'none',
-                            transform: 'perspective(1000px) rotateX(5deg) rotateY(-2deg)',
-                            imageRendering: 'crisp-edges',
-                            imageRendering: '-webkit-optimize-contrast',
-                          }}
-                        />
-                    </div>
-                  </div>
-                ) : (
-                  <div 
-                    className="absolute -top-8 left-1/2 transform -translate-x-1/2 w-[calc(100%+3rem)] h-[calc(100%+3rem)] flex items-center justify-center opacity-70 group-hover:opacity-90 transition-opacity duration-500 text-8xl"
-                    style={{
-                      filter: 'none',
-                      transform: 'perspective(1000px) rotateX(5deg) rotateY(-2deg)',
-                    }}
-                  >
-                    🥟
-                  </div>
-                )}
-                
-                {/* 3D Floating Badges */}
-                <div className="absolute top-12 left-4 flex flex-col gap-2 z-20">
+            <div className="bg-white rounded-2xl shadow-lg overflow-visible group relative p-4">
+              <div className="relative">
+                <ProductImageGallery
+                  images={
+                    (product.images && product.images.length > 0)
+                      ? product.images
+                      : product.image && product.image !== 'no-image'
+                      ? [product.image]
+                      : []
+                  }
+                  productName={product.name}
+                />
+                {/* Badges overlay */}
+                <div className="absolute top-4 left-4 flex flex-col gap-2 z-20 pointer-events-none">
                   {/* 3D Category Badge */}
                   <div 
                     className="bg-gradient-to-r from-orange-500 to-red-500 text-white px-4 py-2 rounded-2xl text-xs font-bold shadow-2xl transform group-hover:scale-110 group-hover:-translate-y-1 transition-all duration-500"
@@ -163,7 +142,7 @@ export default async function ProductPage({
                       backdropFilter: 'blur(10px)',
                     }}
                   >
-                    {product.category?.name || 'Без категории'}
+                    <CategoryDisplayName apiName={product.category?.name} />
                   </div>
                   
                   {/* 3D Special Badge */}
@@ -176,7 +155,7 @@ export default async function ProductPage({
                       }}
                     >
                       <Star className="w-3 h-3" />
-                      ХИТ ПРОДАЖ
+                      {t.badgeHit}
                     </div>
                   )}
                   
@@ -189,7 +168,7 @@ export default async function ProductPage({
                       }}
                     >
                       <Zap className="w-3 h-3" />
-                      НОВИНКА
+                      {t.badgeNew}
                     </div>
                   )}
                   
@@ -202,14 +181,13 @@ export default async function ProductPage({
                       }}
                     >
                       <Star className="w-3 h-3" />
-                      КЛАССИКА
+                      {t.badgeClassic}
                     </div>
                   )}
                 </div>
-
               </div>
               
-              {/* 3D Floating Decorative Elements - positioned inside container */}
+              {/* Decorative Elements */}
               <div 
                 className="absolute top-2 right-2 w-6 h-6 bg-gradient-to-br from-orange-400 to-red-500 rounded-full opacity-30 group-hover:opacity-60 transition-all duration-500 group-hover:scale-110"
                 style={{
@@ -236,27 +214,24 @@ export default async function ProductPage({
             {/* Additional Info */}
             <div style={{ marginTop: '50px' }}>
               <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-                <h4 className="text-lg font-semibold text-gray-900 mb-4">Информация о товаре:</h4>
+                <h4 className="text-lg font-semibold text-gray-900 mb-4">{t.productInfo}</h4>
                 <ul className="space-y-2 text-gray-700">
+                  <ProductCategoryLine apiName={product.category?.name} />
                   <li className="flex items-center">
                     <span className="w-2 h-2 bg-orange-500 rounded-full mr-3"></span>
-                    Категория: {product.category?.name || 'Без категории'}
+                    {t.prepTime}
                   </li>
                   <li className="flex items-center">
                     <span className="w-2 h-2 bg-orange-500 rounded-full mr-3"></span>
-                    Время приготовления: 15-20 минут
+                    {t.weight}
                   </li>
                   <li className="flex items-center">
                     <span className="w-2 h-2 bg-orange-500 rounded-full mr-3"></span>
-                    Вес: ~300г
+                    {t.freshIngredients}
                   </li>
                   <li className="flex items-center">
                     <span className="w-2 h-2 bg-orange-500 rounded-full mr-3"></span>
-                    Только свежие ингредиенты
-                  </li>
-                  <li className="flex items-center">
-                    <span className="w-2 h-2 bg-orange-500 rounded-full mr-3"></span>
-                    Без консервантов
+                    {t.noPreservatives}
                   </li>
                 </ul>
               </div>
@@ -267,8 +242,26 @@ export default async function ProductPage({
           {/* Product Info */}
           <div className="space-y-8">
             <div>
-              <h1 className="text-4xl font-bold text-gray-900 mb-4">{product.name}</h1>
-              <p className="text-xl text-gray-600 mb-6 leading-relaxed">{product.description}</p>
+              <h1 className="text-4xl font-bold text-gray-900 mb-4">
+                <ProductDisplayName name={product.name} />
+              </h1>
+              {product.shortDescription ? (
+                <>
+                  <p className="text-xl text-gray-600 mb-4 leading-relaxed">
+                    {product.shortDescription}
+                  </p>
+                  <div className="mb-6">
+                    <h3 className="text-sm font-semibold text-gray-500 mb-2">
+                      {t.fullDescription}
+                    </h3>
+                    <p className="text-gray-600 leading-relaxed">{product.description}</p>
+                  </div>
+                </>
+              ) : (
+                <p className="text-xl text-gray-600 mb-6 leading-relaxed">
+                  {product.description}
+                </p>
+              )}
               
               {/* Rating */}
               <div className="flex items-center space-x-2 mb-6">
@@ -277,19 +270,39 @@ export default async function ProductPage({
                     <Star key={i} className="h-5 w-5 fill-current" />
                   ))}
                 </div>
-                <span className="text-gray-600">(4.9) • 127 отзывов</span>
+                <span className="text-gray-600">{t.reviews}</span>
               </div>
 
-              {/* Price */}
-              <div className="flex items-center space-x-4 mb-8">
+              {/* Price: Ներկա արժեք / Հին գին / Զեղչված գին */}
+              <div className="flex flex-wrap items-center gap-3 mb-8">
+                {product.originalPrice != null && product.originalPrice > product.price && (
+                  <span className="text-xl text-gray-500 line-through">
+                    {product.originalPrice} ֏
+                  </span>
+                )}
                 <span className="text-4xl font-bold text-orange-500">{product.price} ֏</span>
-                <span className="text-lg text-gray-500">за порцию</span>
+                <span className="text-lg text-gray-500">{t.perServing}</span>
+              </div>
+
+              {/* Stock Status */}
+              <div className="flex items-center gap-2 mb-6">
+                {product.isAvailable ? (
+                  <span className="inline-flex items-center gap-2 px-3 py-1.5 bg-green-100 text-green-800 rounded-lg text-sm font-medium">
+                    <Check className="h-4 w-4" />
+                    {t.stockAvailable}
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center gap-2 px-3 py-1.5 bg-gray-100 text-gray-600 rounded-lg text-sm font-medium">
+                    <XCircle className="h-4 w-4" />
+                    {t.stockUnavailable}
+                  </span>
+                )}
               </div>
             </div>
 
             {/* Ingredients */}
             <div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">Ингредиенты:</h3>
+              <h3 className="text-xl font-semibold text-gray-900 mb-4">{t.ingredients}</h3>
               <div className="flex flex-wrap gap-3">
                 {product.ingredients.map((ingredient, index) => (
                   <span
@@ -313,8 +326,8 @@ export default async function ProductPage({
                 <div className="flex items-center space-x-3">
                   <Clock className="h-6 w-6 text-orange-500" />
                   <div>
-                    <div className="font-semibold text-gray-900">15-20 мин</div>
-                    <div className="text-sm text-gray-600">Время приготовления</div>
+                    <div className="font-semibold text-gray-900">{t.prepTimeValue}</div>
+                    <div className="text-sm text-gray-600">{t.prepTimeShort}</div>
                   </div>
                 </div>
               </div>
@@ -323,8 +336,8 @@ export default async function ProductPage({
                 <div className="flex items-center space-x-3">
                   <MapPin className="h-6 w-6 text-orange-500" />
                   <div>
-                    <div className="font-semibold text-gray-900">30 мин</div>
-                    <div className="text-sm text-gray-600">Доставка</div>
+                    <div className="font-semibold text-gray-900">{t.deliveryTimeValue}</div>
+                    <div className="text-sm text-gray-600">{t.delivery}</div>
                   </div>
                 </div>
               </div>
@@ -334,7 +347,7 @@ export default async function ProductPage({
                   <Phone className="h-6 w-6 text-orange-500" />
                   <div>
                     <div className="font-semibold text-gray-900">24/7</div>
-                    <div className="text-sm text-gray-600">Поддержка</div>
+                    <div className="text-sm text-gray-600">{t.support}</div>
                   </div>
                 </div>
               </div>
@@ -347,27 +360,19 @@ export default async function ProductPage({
           <section className="mb-16">
             <div className="flex items-center space-x-4 mb-8">
               <h2 className="text-3xl font-bold text-gray-900">
-                Похожие товары
+                {t.similarProducts}
               </h2>
               <div className="w-1 h-8 bg-gradient-to-b from-orange-500 to-red-500 rounded-full"></div>
               <Link 
                 href="/products" 
                 className="group text-orange-500 hover:text-orange-600 text-lg font-bold flex items-center space-x-2 transition-colors duration-300 ml-2"
               >
-                <span>Все</span>
+                <span>{t.all}</span>
                 <ArrowLeft className="h-5 w-5 rotate-180 group-hover:translate-x-1 transition-transform duration-300" style={{ strokeWidth: 3 }} />
               </Link>
             </div>
             
-            <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-                {similarProducts.map((similarProduct) => (
-                <ProductCard
-                  key={similarProduct.id}
-                  product={similarProduct}
-                  variant="compact"
-                />
-              ))}
-            </div>
+            <SimilarProducts products={similarProducts} />
           </section>
         )}
       </div>

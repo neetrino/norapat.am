@@ -1,40 +1,52 @@
 'use client'
 
-import Link from 'next/link'
-import Image from 'next/image'
 import { Search } from 'lucide-react'
 import { useState } from 'react'
+import { useI18n } from '@/i18n/I18nContext'
+import type { PublicSiteSettingsState } from '@/hooks/usePublicSiteSettings'
+import { SiteBrandMark } from '@/components/SiteBrandMark'
+import { useHeaderStack } from '@/contexts/HeaderStackContext'
+import {
+  TOP_CONTACT_BAR_TRANSITION_EASING,
+  TOP_CONTACT_BAR_TRANSITION_MS,
+} from '@/lib/headerTopBar.constants'
 
-export default function MobileHeader() {
+interface MobileHeaderProps {
+  branding: PublicSiteSettingsState
+}
+
+export default function MobileHeader({ branding }: MobileHeaderProps) {
+  const { topBarInsetPx } = useHeaderStack()
+  const { t } = useI18n()
+  const { search } = t
   const [searchQuery, setSearchQuery] = useState('')
   const [isSearchOpen, setIsSearchOpen] = useState(false)
 
   return (
-    <header className="bg-white/95 backdrop-blur-xl shadow-lg fixed top-0 left-0 right-0 z-[100] border-b border-gray-200" style={{ position: 'fixed' }}>
+    <header
+      className="fixed left-0 right-0 z-[100] border-b border-gray-200 bg-white/95 shadow-lg backdrop-blur-xl transition-[top]"
+      style={{
+        top: topBarInsetPx,
+        transitionDuration: `${TOP_CONTACT_BAR_TRANSITION_MS}ms`,
+        transitionTimingFunction: TOP_CONTACT_BAR_TRANSITION_EASING,
+      }}
+    >
       <div className="px-4 py-1.5">
-        <div className="relative flex justify-between items-center">
-          {/* Mobile Logo - Absolutely Centered */}
-          <div className="absolute left-1/2 transform -translate-x-1/2">
-            <Link href="/" className="hover:opacity-80 transition-all duration-300 hover:scale-105">
-              <Image 
-                src="/logo.png" 
-                alt="Pideh Armenia Logo" 
-                width={60} 
-                height={18}
-                className="h-4 w-auto"
-                style={{ width: "auto", height: "auto" }}
-                priority
-              />
-            </Link>
+        <div className="flex items-center gap-2">
+          <div className="flex-1 flex justify-start min-w-0 z-[101]" />
+          <div className="flex-shrink-0">
+            <SiteBrandMark variant="mobile" branding={branding} />
           </div>
 
           {/* Mobile Search Button */}
+          <div className="flex-1 flex justify-end min-w-0">
           <button
             onClick={() => setIsSearchOpen(!isSearchOpen)}
-            className="p-3 text-gray-900 hover:text-orange-500 hover:bg-orange-50 rounded-xl transition-all duration-300 active:scale-95 ml-auto"
+            className="p-3 text-gray-900 hover:text-orange-500 hover:bg-orange-50 rounded-xl transition-all duration-300 active:scale-95"
           >
             <Search className="h-5 w-5" />
           </button>
+          </div>
         </div>
 
         {/* Mobile Search Bar */}
@@ -46,7 +58,7 @@ export default function MobileHeader() {
                   <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-500" />
                   <input
                     type="text"
-                    placeholder="Поиск по меню..."
+                    placeholder={search.menu}
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="w-full pl-12 pr-4 py-4 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-base text-gray-900 placeholder-gray-500 bg-gray-50 transition-all duration-300 shadow-sm hover:shadow-md focus:bg-white"

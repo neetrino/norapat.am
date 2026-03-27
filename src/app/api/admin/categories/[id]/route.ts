@@ -57,7 +57,7 @@ export async function PUT(
 
     const { id } = await params
     const body = await request.json()
-    const { name, description, isActive } = body
+    const { name, description, image, isActive } = body
 
     if (!name || name.trim() === '') {
       return NextResponse.json(
@@ -97,6 +97,7 @@ export async function PUT(
       data: {
         name: name.trim(),
         description: description?.trim() || null,
+        image: image || null,
         isActive: Boolean(isActive)
       },
       include: {

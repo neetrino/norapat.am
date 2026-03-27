@@ -8,14 +8,14 @@ import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { ArrowLeft, Save, X } from 'lucide-react'
 import Link from 'next/link'
-import ImageSelector from '@/components/ImageSelector'
+import ImageSelectorMultiple from '@/components/ImageSelectorMultiple'
 import { Category } from '@/types'
 
 const statuses = [
-  { value: 'HIT', label: 'Хит продаж' },
-  { value: 'NEW', label: 'Новинка' },
-  { value: 'CLASSIC', label: 'Классика' },
-  { value: 'BANNER', label: 'Баннер' }
+  { value: 'HIT', label: 'Վաճառքի հիթ' },
+  { value: 'NEW', label: 'Նորույթ' },
+  { value: 'CLASSIC', label: 'Դասական' },
+  { value: 'BANNER', label: 'Բաններ' }
 ]
 
 export default function NewProductPage() {
@@ -25,10 +25,12 @@ export default function NewProductPage() {
   const [categories, setCategories] = useState<Category[]>([])
   const [formData, setFormData] = useState({
     name: '',
+    shortDescription: '',
     description: '',
     price: '',
+    originalPrice: '',
     categoryId: '',
-    image: '',
+    images: [] as string[],
     ingredients: '',
     isAvailable: true,
     status: ''
@@ -37,7 +39,7 @@ export default function NewProductPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
-  // Загружаем категории
+  // Բեռնում ենք կատեգորիաները
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -56,13 +58,13 @@ export default function NewProductPage() {
     }
   }, [session])
 
-  // Проверяем права доступа
+  // Ստուգում ենք մուտքի իրավունքները
   if (status === 'loading') {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <div className="w-8 h-8 border-4 border-orange-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600">Загрузка...</p>
+          <p className="text-gray-600">Բեռնում...</p>
         </div>
       </div>
     )
@@ -73,7 +75,7 @@ export default function NewProductPage() {
     return null
   }
 
-  const handleInputChange = (field: string, value: string | boolean) => {
+  const handleInputChange = (field: string, value: string | boolean | string[]) => {
     setFormData(prev => ({
       ...prev,
       [field]: value
@@ -86,11 +88,14 @@ export default function NewProductPage() {
     setError('')
 
     try {
-      // Подготавливаем данные
+      // Պատրաստում ենք տվյալները
       const productData = {
         ...formData,
         price: parseFloat(formData.price),
-        ingredients: formData.ingredients ? formData.ingredients.split(',').map(i => i.trim()) : []
+        originalPrice: formData.originalPrice ? parseFloat(formData.originalPrice) : null,
+        ingredients: formData.ingredients ? formData.ingredients.split(',').map(i => i.trim()) : [],
+        image: formData.images?.length ? formData.images[0] : 'no-image',
+        images: formData.images || []
       }
 
       const response = await fetch('/api/admin/products', {
@@ -103,14 +108,14 @@ export default function NewProductPage() {
 
       if (!response.ok) {
         const errorData = await response.json()
-        throw new Error(errorData.error || 'Failed to create product')
+        throw new Error(errorData.error || 'Սխալ ապրանք ստեղծելիս')
       }
 
-      // Перенаправляем на страницу товаров
+      // Վերաուղղում ենք ապրանքների էջ
       router.push('/admin/products')
     } catch (error) {
       console.error('Error creating product:', error)
-      setError(error instanceof Error ? error.message : 'Failed to create product')
+      setError(error instanceof Error ? error.message : 'Սխալ ապրանք ստեղծելիս')
     } finally {
       setLoading(false)
     }
@@ -119,9 +124,9 @@ export default function NewProductPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       
-      {/* Отступ для fixed хедера */}
-      <div className="lg:hidden h-16"></div>
-      <div className="hidden lg:block h-24"></div>
+      {/* Ֆիքսված վերնագրի բացատ */}
+      <div className="h-header-spacer-mobile lg:hidden" aria-hidden />
+      <div className="h-header-spacer-desktop hidden lg:block" aria-hidden />
       
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
@@ -130,12 +135,12 @@ export default function NewProductPage() {
             <Link href="/admin/products">
               <Button variant="outline" size="sm" className="flex items-center gap-2">
                 <ArrowLeft className="h-4 w-4" />
-                Назад
+                Վերադարձ
               </Button>
             </Link>
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Добавить товар</h1>
-              <p className="text-gray-600 mt-2">Создание нового товара в каталоге</p>
+              <h1 className="text-3xl font-bold text-gray-900">Ավելացնել ապրանք</h1>
+              <p className="text-gray-600 mt-2">Կատալոգում նոր ապրանքի ստեղծում</p>
             </div>
           </div>
         </div>
@@ -143,7 +148,7 @@ export default function NewProductPage() {
         {/* Form */}
         <Card>
           <CardHeader>
-            <CardTitle>Информация о товаре</CardTitle>
+            <CardTitle>Ապրանքի տվյալներ</CardTitle>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
@@ -157,38 +162,53 @@ export default function NewProductPage() {
               )}
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Название */}
+                {/* Անվանում */}
                 <div className="md:col-span-2">
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Название товара *
+                    Ապրանքի անվանում *
                   </label>
                   <Input
                     value={formData.name}
                     onChange={(e) => handleInputChange('name', e.target.value)}
-                    placeholder="Введите название товара"
+                    placeholder="Մուտքագրեք ապրանքի անվանումը"
                     required
                   />
                 </div>
 
-                {/* Описание */}
+                {/* Կարճ նկարագրություն */}
                 <div className="md:col-span-2">
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Описание *
+                    Կարճ նկարագրություն
+                  </label>
+                  <Input
+                    value={formData.shortDescription}
+                    onChange={(e) => handleInputChange('shortDescription', e.target.value)}
+                    placeholder="Կարճ ամփոփ նկարագրություն (նախաբան, քարտերում)"
+                  />
+                  <p className="text-sm text-gray-500 mt-1">
+                    Կարճ ամփոփ, 1–2 նախադասություն
+                  </p>
+                </div>
+
+                {/* Լիարժեք նկարագրություն */}
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Լիարժեք նկարագրություն *
                   </label>
                   <textarea
                     value={formData.description}
                     onChange={(e) => handleInputChange('description', e.target.value)}
-                    placeholder="Введите описание товара"
+                    placeholder="Մանրամասն նկարագրություն ապրանքի մասին"
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent text-gray-900 bg-white"
                     rows={3}
                     required
                   />
                 </div>
 
-                {/* Цена */}
+                {/* Գին */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Цена (֏) *
+                    Գին (֏) *
                   </label>
                   <Input
                     type="number"
@@ -201,10 +221,25 @@ export default function NewProductPage() {
                   />
                 </div>
 
-                {/* Категория */}
+                {/* Հին գին */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Категория *
+                    Հին գին (֏) — զեղչի համար
+                  </label>
+                  <Input
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value={formData.originalPrice}
+                    onChange={(e) => handleInputChange('originalPrice', e.target.value)}
+                    placeholder="Դատարկ = զեղչ չկա"
+                  />
+                </div>
+
+                {/* Կատեգորիա */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Կատեգորիա *
                   </label>
                   <select
                     value={formData.categoryId}
@@ -212,7 +247,7 @@ export default function NewProductPage() {
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent text-gray-900 bg-white"
                     required
                   >
-                    <option value="">Выберите категорию</option>
+                    <option value="">Ընտրեք կատեգորիան</option>
                     {categories.filter(cat => cat.isActive).map((category) => (
                       <option key={category.id} value={category.id}>
                         {category.name}
@@ -221,17 +256,17 @@ export default function NewProductPage() {
                   </select>
                 </div>
 
-                {/* Статус */}
+                {/* Կարգավիճակ */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Статус товара
+                    Ապրանքի կարգավիճակ
                   </label>
                   <select
                     value={formData.status}
                     onChange={(e) => handleInputChange('status', e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent text-gray-900 bg-white"
                   >
-                    <option value="">Не выбрано (обычный товар)</option>
+                    <option value="">Ընտրված չէ (սովորական ապրանք)</option>
                     {statuses.map((status) => (
                       <option key={status.value} value={status.value}>
                         {status.label}
@@ -240,33 +275,33 @@ export default function NewProductPage() {
                   </select>
                 </div>
 
-                {/* Изображение */}
+                {/* Նկարներ */}
                 <div className="md:col-span-2">
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Изображение товара
+                    Նկարներ (մի քանի)
                   </label>
-                  <ImageSelector
-                    value={formData.image}
-                    onChange={(imagePath) => handleInputChange('image', imagePath)}
+                  <ImageSelectorMultiple
+                    value={formData.images}
+                    onChange={(imagePaths) => handleInputChange('images', imagePaths)}
                   />
                 </div>
 
-                {/* Ингредиенты */}
+                {/* Բաղադրիչներ */}
                 <div className="md:col-span-2">
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Ингредиенты
+                    Բաղադրիչներ
                   </label>
                   <Input
                     value={formData.ingredients}
                     onChange={(e) => handleInputChange('ingredients', e.target.value)}
-                    placeholder="Ингредиент 1, Ингредиент 2, Ингредиент 3"
+                    placeholder="Բաղադրիչ 1, Բաղադրիչ 2, Բաղադրիչ 3"
                   />
                   <p className="text-sm text-gray-500 mt-1">
-                    Разделите ингредиенты запятыми
+                    Բաղադրիչները բաժանեք ստորակետերով
                   </p>
                 </div>
 
-                {/* Доступность */}
+                {/* Հասանելիություն */}
                 <div className="md:col-span-2">
                   <label className="flex items-center gap-3">
                     <input
@@ -276,17 +311,17 @@ export default function NewProductPage() {
                       className="w-4 h-4 text-orange-600 border-gray-300 rounded focus:ring-orange-500"
                     />
                     <span className="text-sm font-medium text-gray-700">
-                      Товар доступен для заказа
+                      Ապրանքը հասանելի է պատվերի համար
                     </span>
                   </label>
                 </div>
               </div>
 
-              {/* Кнопки */}
+              {/* Կոճակներ */}
               <div className="flex items-center justify-end gap-4 pt-6 border-t border-gray-300">
                 <Link href="/admin/products">
                   <Button type="button" variant="outline">
-                    Отмена
+                    Չեղարկել
                   </Button>
                 </Link>
                 <Button type="submit" disabled={loading} className="flex items-center gap-2">
@@ -295,7 +330,7 @@ export default function NewProductPage() {
                   ) : (
                     <Save className="h-4 w-4" />
                   )}
-                  {loading ? 'Создание...' : 'Создать товар'}
+                  {loading ? 'Ստեղծվում է...' : 'Ստեղծել ապրանք'}
                 </Button>
               </div>
             </form>

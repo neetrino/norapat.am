@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef } from 'react'
-import { Upload, X, Image as ImageIcon } from 'lucide-react'
+import { Upload, X } from 'lucide-react'
 import Image from 'next/image'
 
 interface ImageUploadProps {
@@ -35,9 +35,9 @@ export default function ImageUpload({
       return
     }
 
-    // Проверка типа файла
-    if (!file.type.startsWith('image/')) {
-      setError('Пожалуйста, выберите изображение')
+    const allowedMime = ['image/png', 'image/jpeg', 'image/gif']
+    if (!allowedMime.includes(file.type)) {
+      setError('Допустимы только PNG, JPG или GIF')
       return
     }
 
@@ -54,11 +54,18 @@ export default function ImageUpload({
         body: formData
       })
 
+      const data = (await response.json()) as { url?: string; error?: string }
+
       if (!response.ok) {
-        throw new Error('Ошибка загрузки файла')
+        setError(data.error ?? 'Ошибка загрузки файла')
+        return
       }
 
-      const data = await response.json()
+      if (!data.url) {
+        setError('Сервер не вернул адрес изображения')
+        return
+      }
+
       onImageChange(data.url)
     } catch (error) {
       console.error('Upload error:', error)

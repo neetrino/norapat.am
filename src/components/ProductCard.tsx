@@ -3,319 +3,364 @@
 import { memo } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { ShoppingCart, Star, Zap } from 'lucide-react'
+import { ShoppingCart, Star, Zap, Heart } from 'lucide-react'
 import { Product } from '@/types'
+import { useI18n } from '@/i18n/I18nContext'
+import { getCategoryDisplayName } from '@/i18n/getCategoryDisplayName'
+import { getProductDisplayName } from '@/i18n/getProductDisplayName'
+import { BRAND_RED_CTA_IDLE_HOVER_CLASS } from '@/components/home/promo-food-banner/promoFoodBanner.constants'
 
 interface ProductCardProps {
   product: Product
-  onAddToCart: (product: Product) => void
-  variant?: 'default' | 'compact'
+  onAddToCart?: (product: Product) => void
+  variant?: 'default' | 'compact' | 'horizontal'
   addedToCart?: Set<string>
+  isInWishlist?: boolean
+  onToggleWishlist?: (productId: string) => void
 }
 
-const ProductCard = memo(({ product, onAddToCart, variant = 'default', addedToCart }: ProductCardProps) => {
-  const isCompact = variant === 'compact'
-  const isAdded = addedToCart?.has(product.id) || false
+const PRODUCT_CARD_ADD_IDLE_BUTTON_CLASS = `${BRAND_RED_CTA_IDLE_HOVER_CLASS} shadow-[0_14px_26px_rgba(229,50,37,0.18)]`
+
+function ProductBadge({
+  tone,
+  icon,
+  label,
+}: {
+  tone: 'amber' | 'green' | 'blue'
+  icon: 'star' | 'zap'
+  label: string
+}) {
+  const toneClass =
+    tone === 'amber'
+      ? 'from-amber-400 to-orange-500'
+      : tone === 'green'
+        ? 'from-green-400 to-emerald-500'
+        : 'from-blue-400 to-indigo-500'
+  const Icon = icon === 'zap' ? Zap : Star
 
   return (
-    <Link 
-      href={`/products/${product.id}`}
-      className={`relative block bg-white rounded-3xl shadow-2xl overflow-visible hover:shadow-3xl hover:scale-110 transition-all duration-700 cursor-pointer group border-0 transform hover:-translate-y-3 ${
-        isCompact ? 'rounded-2xl shadow-xl hover:shadow-2xl' : ''
-      }`}
-      style={{
-        background: 'linear-gradient(145deg, #ffffff 0%, #f8fafc 50%, #f1f5f9 100%)',
-        backdropFilter: 'blur(20px)',
-        boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.1)',
-      }}
-    >
-      {/* 3D Product Container - No top border */}
-      <div className={`relative overflow-visible ${
-        isCompact ? 'h-48' : 'h-80'
-      }`}>
-        {/* Background Gradient - Removed */}
-        {/* <div className="absolute inset-0 bg-gradient-to-br from-orange-50 via-orange-100 to-red-50 opacity-40 group-hover:opacity-60 transition-opacity duration-500" /> */}
-        
-        {/* 3D Floating Product - No top border */}
-        {product.image && product.image !== 'no-image' ? (
-          <div className="relative w-full h-full">
-            {/* 3D Product Image with floating effect - Mobile App Style */}
-            <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 w-full max-w-[200px] h-[calc(100%+4rem)]">
-              {/* Enhanced 3D Shadow Layer - Removed for cleaner look */}
-              {/* <div 
-                className="absolute inset-0 bg-gradient-to-br from-gray-300/30 to-gray-400/20 rounded-3xl transform translate-y-6 translate-x-4 group-hover:translate-y-8 group-hover:translate-x-5 transition-all duration-700"
-                style={{
-                  filter: 'blur(8px)',
-                }}
-              />
-              <div 
-                className="absolute inset-0 bg-gradient-to-br from-gray-200/25 to-gray-300/15 rounded-3xl transform translate-y-4 translate-x-2 group-hover:translate-y-6 group-hover:translate-x-3 transition-all duration-700"
-                style={{
-                  filter: 'blur(4px)',
-                }}
-              />
-              <div 
-                className="absolute inset-0 bg-gradient-to-br from-gray-100/20 to-gray-200/10 rounded-3xl transform translate-y-2 translate-x-1 group-hover:translate-y-4 group-hover:translate-x-2 transition-all duration-700"
-                style={{
-                  filter: 'blur(2px)',
-                }}
-              /> */}
-              
-              {/* Main 3D Product Image - Enhanced mobile app style with Next.js Image */}
-              <Image 
-                src={product.image} 
-                alt={product.name}
+    <div className={`inline-flex items-center gap-1 rounded-full bg-gradient-to-r ${toneClass} px-3 py-1 text-xs font-semibold text-white shadow-md`}>
+      <Icon className="h-3 w-3" />
+      {label}
+    </div>
+  )
+}
+
+const ProductCard = memo(
+  ({
+    product,
+    onAddToCart,
+    variant = 'default',
+    addedToCart,
+    isInWishlist,
+    onToggleWishlist,
+  }: ProductCardProps) => {
+    const { t, locale } = useI18n()
+    const pc = t.productCard
+    const isAdded = addedToCart?.has(product.id) || false
+    const productWithCategory = product as Product & {
+      category?: { name: string } | null
+      ingredients?: string[] | null
+    }
+    const displayName = getProductDisplayName(product.name, locale)
+    const description = product.shortDescription ?? product.description
+    const categoryLabel = productWithCategory.category?.name
+      ? getCategoryDisplayName(productWithCategory.category.name, locale)
+      : pc.uncategorized
+
+    const renderStatusBadge = () => {
+      if (product.status === 'HIT') return <ProductBadge tone="amber" icon="star" label={pc.badgeHit} />
+      if (product.status === 'NEW') return <ProductBadge tone="green" icon="zap" label={pc.badgeNew} />
+      if (product.status === 'CLASSIC') return <ProductBadge tone="blue" icon="star" label={pc.badgeClassic} />
+      return null
+    }
+
+    if (variant === 'horizontal') {
+      return (
+        <Link
+          href={`/products/${product.id}`}
+          className="group relative flex overflow-hidden rounded-[2rem] border border-[#eadfd9] bg-[linear-gradient(140deg,#ffffff_0%,#fffaf6_55%,#fff3ec_100%)] shadow-[0_16px_38px_rgba(15,23,42,0.06)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_22px_46px_rgba(15,23,42,0.1)]"
+        >
+          <div className="relative w-36 shrink-0 self-stretch overflow-hidden border-r border-[#f1e5de] bg-[radial-gradient(circle_at_50%_45%,rgba(255,230,219,0.95)_0%,rgba(255,245,240,0.9)_52%,rgba(255,255,255,0.75)_100%)] sm:w-40">
+            <div aria-hidden className="absolute -bottom-6 -left-6 h-24 w-24 rounded-full bg-[#ffd8c8]/50 blur-2xl" />
+            <div aria-hidden className="absolute -right-5 top-4 h-16 w-16 rounded-full bg-white/70 blur-xl" />
+
+            {product.image && product.image !== 'no-image' ? (
+              <Image
+                src={product.image}
+                alt={displayName}
                 fill
-                sizes="(max-width: 768px) 50vw, (max-width: 1200px) 25vw, 20vw"
-                className="relative w-full h-full object-contain group-hover:scale-110 group-hover:-translate-y-2 group-hover:rotate-1 transition-all duration-500 ease-out"
-                style={{
-                  filter: 'none',
-                  transform: 'perspective(1000px) rotateX(8deg) rotateY(-3deg)',
-                  imageRendering: 'crisp-edges',
-                  imageRendering: '-webkit-optimize-contrast',
-                }}
+                sizes="160px"
+                className="object-contain p-3 transition-transform duration-300 ease-out group-hover:scale-[1.07]"
+                style={{ filter: 'drop-shadow(0 10px 18px rgba(15,23,42,0.18))' }}
                 loading="lazy"
                 quality={85}
-                onError={(e) => {
-                  e.currentTarget.style.display = 'none';
-                  const nextElement = e.currentTarget.nextElementSibling as HTMLElement;
-                  if (nextElement) {
-                    nextElement.style.display = 'flex';
-                  }
-                }}
               />
-              <div 
-                className="absolute inset-0 items-center justify-center bg-slate-100 text-6xl text-slate-400"
-                style={{ display: 'none' }}
-                aria-hidden
-              >
-                🍽️
+            ) : (
+              <div className="absolute inset-0 flex items-center justify-center text-4xl">🍽️</div>
+            )}
+
+            <div className="absolute left-3 top-3 flex flex-col gap-2">
+              <div className="rounded-full border border-white/70 bg-white/85 px-3 py-1 text-[11px] font-semibold text-slate-600 shadow-sm backdrop-blur">
+                {categoryLabel}
               </div>
-              
-              {/* 3D Highlight Effect - Removed white overlay */}
-              {/* <div 
-                className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-3xl"
-                style={{
-                  background: 'linear-gradient(135deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.1) 30%, transparent 70%)',
-                }}
-              /> */}
+              {renderStatusBadge()}
             </div>
           </div>
-        ) : (
-            <div 
-              className={`absolute -top-12 left-1/2 transform -translate-x-1/2 w-full max-w-[200px] h-[calc(100%+4rem)] flex items-center justify-center ${
-                isCompact ? 'text-6xl' : 'text-8xl'
-              }`}
-            style={{
-              filter: 'none',
-              transform: 'perspective(1000px) rotateX(8deg) rotateY(-3deg)',
-            }}
-          >
-            🥟
-          </div>
-        )}
-        
-        {/* 3D Floating Elements - Adjusted for 3D product */}
-        <div className="absolute top-2 left-2 flex flex-col gap-2 z-20">
-          {/* 3D Category Badge */}
-          {!isCompact && (
-            <div 
-              className="bg-gradient-to-r from-orange-500 to-red-500 text-white px-4 py-2 rounded-2xl text-xs font-bold shadow-2xl transform group-hover:scale-110 group-hover:-translate-y-1 transition-all duration-500"
-              style={{
-                boxShadow: '0 10px 25px rgba(255, 107, 53, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1)',
-                backdropFilter: 'blur(10px)',
-              }}
-            >
-              {product.category?.name || 'Без категории'}
-            </div>
-          )}
-          
-          {/* 3D Special Badge */}
-          {product.status === 'HIT' && (
-            <div 
-              className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-3 py-1 rounded-2xl text-xs font-bold shadow-2xl flex items-center gap-1 transform group-hover:scale-110 group-hover:-translate-y-1 transition-all duration-500"
-              style={{
-                boxShadow: '0 10px 25px rgba(255, 193, 7, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1)',
-                backdropFilter: 'blur(10px)',
-              }}
-            >
-              <Star className="w-3 h-3" />
-              ХИТ ПРОДАЖ
-            </div>
-          )}
-          
-          {product.status === 'NEW' && (
-            <div 
-              className="bg-gradient-to-r from-green-400 to-emerald-500 text-white px-3 py-1 rounded-2xl text-xs font-bold shadow-2xl flex items-center gap-1 transform group-hover:scale-110 group-hover:-translate-y-1 transition-all duration-500"
-              style={{
-                boxShadow: '0 10px 25px rgba(34, 197, 94, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1)',
-                backdropFilter: 'blur(10px)',
-              }}
-            >
-              <Zap className="w-3 h-3" />
-              НОВИНКА
-            </div>
-          )}
-          
-          {product.status === 'CLASSIC' && (
-            <div 
-              className="bg-gradient-to-r from-blue-400 to-indigo-500 text-white px-3 py-1 rounded-2xl text-xs font-bold shadow-2xl flex items-center gap-1 transform group-hover:scale-110 group-hover:-translate-y-1 transition-all duration-500"
-              style={{
-                boxShadow: '0 10px 25px rgba(59, 130, 246, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1)',
-                backdropFilter: 'blur(10px)',
-              }}
-            >
-              <Star className="w-3 h-3" />
-              КЛАССИКА
-            </div>
-          )}
-        </div>
 
-        {/* 3D Floating Price Badge - Moved to bottom right */}
-        <div 
-          className="absolute bottom-2 right-2 bg-white/95 backdrop-blur-md text-orange-600 px-3 py-1 rounded-2xl text-sm font-bold shadow-2xl transform group-hover:scale-110 group-hover:-translate-y-1 transition-all duration-500 z-20"
-          style={{
-            boxShadow: '0 15px 35px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(255, 255, 255, 0.1)',
-            backdropFilter: 'blur(15px)',
-          }}
-        >
-          {product.price} ֏
-        </div>
-
-        {/* Bottom Gradient Overlay - Removed black overlay */}
-        {/* <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" /> */}
-      </div>
-      
-      {/* 3D Content Section - Adjusted for 3D product */}
-      <div className={`relative ${isCompact ? 'p-4 -mt-3' : 'p-6 -mt-5'}`}>
-        {/* Product Name */}
-        <h3 className={`font-bold text-gray-900 line-clamp-2 group-hover:text-orange-600 transition-colors duration-300 ${
-          isCompact ? 'text-sm mb-3' : 'text-xl mb-4'
-        }`}>
-          {product.name}
-        </h3>
-        
-        {/* Description for non-compact */}
-        {!isCompact && (
-          <p className="text-gray-600 text-sm mb-4 line-clamp-2 opacity-80 group-hover:opacity-100 transition-opacity duration-300">
-            {product.description}
-          </p>
-        )}
-        
-        {/* Action Section */}
-        <div className={`relative ${isCompact ? 'space-y-3' : 'space-y-4'}`}>
-          {isCompact ? (
-            // Компактный вариант
-            <div className="flex flex-col space-y-3">
-              <button
-                onClick={(e) => {
-                  e.preventDefault()
-                  e.stopPropagation()
-                  onAddToCart(product)
-                }}
-                className={`w-full h-10 rounded-2xl font-bold text-sm transition-all duration-300 shadow-2xl flex items-center justify-center overflow-hidden hover:scale-105 hover:shadow-3xl relative active:scale-95 ${
-                  isAdded
-                    ? 'bg-gradient-to-r from-green-500 to-emerald-600 text-white'
-                    : 'bg-gradient-to-r from-orange-500 to-red-500 text-white hover:from-orange-600 hover:to-red-600'
-                }`}
-                style={{
-                  boxShadow: isAdded 
-                    ? '0 8px 25px rgba(34, 197, 94, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1)'
-                    : '0 8px 25px rgba(255, 107, 53, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1)',
-                  backdropFilter: 'blur(10px)',
-                }}
-                title="В корзину"
-              >
-                {/* 3D Button Background Animation - Removed white overlay */}
-                {/* <div className="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl" /> */}
-                
-                {isAdded ? (
-                  <span className="flex items-center relative z-10">
-                    <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                    В корзине
-                  </span>
-                ) : (
-                  <span className="flex items-center relative z-10">
-                    <ShoppingCart className="w-4 h-4 mr-2" />
-                    Добавить
-                  </span>
-                )}
-              </button>
+          <div className="flex min-w-0 flex-1 flex-col justify-between p-4 sm:p-5">
+            <div>
+              <h3 className="line-clamp-2 text-base font-black leading-tight tracking-tight text-slate-900 sm:text-lg">
+                {displayName}
+              </h3>
+              {description && (
+                <p className="mt-2 line-clamp-2 text-sm leading-6 text-slate-500">
+                  {description}
+                </p>
+              )}
             </div>
-          ) : (
-            // Обычный вариант
-            <div className="flex justify-between items-center">
-              <div className="flex items-center space-x-3">
-                {/* Rating Stars */}
-                <div className="flex items-center space-x-1">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                  ))}
-                  <span className="text-sm text-gray-500 ml-1">(4.8)</span>
+
+            <div className="mt-5 flex items-end justify-between gap-3">
+              <div>
+                <div className="text-xl font-black tracking-tight text-slate-900">
+                  {product.price} ֏
                 </div>
               </div>
-              
-              <button
-                onClick={(e) => {
-                  e.preventDefault()
-                  e.stopPropagation()
-                  onAddToCart(product)
-                }}
-                className={`px-6 h-10 rounded-2xl font-bold text-sm transition-all duration-500 shadow-2xl flex items-center justify-center overflow-hidden hover:scale-105 hover:shadow-3xl relative min-w-[140px] ${
-                  isAdded
-                    ? 'bg-gradient-to-r from-green-500 to-emerald-600 text-white'
-                    : 'bg-gradient-to-r from-orange-500 to-red-500 text-white hover:from-orange-600 hover:to-red-600'
+
+              {onAddToCart && (
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault()
+                    e.stopPropagation()
+                    onAddToCart(product)
+                  }}
+                  title={pc.addToCartTitle}
+                  className={`inline-flex h-11 items-center justify-center gap-2 rounded-full px-4 text-sm font-semibold transition-all ${
+                    isAdded
+                      ? 'bg-gradient-to-r from-emerald-500 to-green-600 text-white shadow-[0_14px_24px_rgba(34,197,94,0.22)]'
+                      : PRODUCT_CARD_ADD_IDLE_BUTTON_CLASS
+                  }`}
+                >
+                  {isAdded ? (
+                    <>
+                      <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path
+                          fillRule="evenodd"
+                          d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                      {pc.inCart}
+                    </>
+                  ) : (
+                    <>
+                      <ShoppingCart className="h-4 w-4" />
+                      {pc.add}
+                    </>
+                  )}
+                </button>
+              )}
+            </div>
+          </div>
+
+          {onToggleWishlist && (
+            <button
+              type="button"
+              aria-label={isInWishlist ? pc.wishlistRemove : pc.wishlistAdd}
+              onClick={(e) => {
+                e.preventDefault()
+                e.stopPropagation()
+                onToggleWishlist(product.id)
+              }}
+              className={`absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full border shadow-sm backdrop-blur transition-all duration-200 active:scale-90 ${
+                isInWishlist
+                  ? 'border-red-100 bg-red-50'
+                  : 'border-white/70 bg-white/90 hover:bg-white'
+              }`}
+            >
+              <Heart
+                className={`h-4 w-4 transition-all duration-200 ${
+                  isInWishlist ? 'scale-110 fill-red-500 text-red-500' : 'text-slate-400 hover:text-slate-600'
+                }`}
+              />
+            </button>
+          )}
+        </Link>
+      )
+    }
+
+    const isCompact = variant === 'compact'
+
+    return (
+      <Link
+        href={`/products/${product.id}`}
+        className={`group relative block w-full overflow-hidden rounded-[2rem] border border-[#eadfd9] bg-[linear-gradient(160deg,#ffffff_0%,#fffaf6_52%,#fff3ec_100%)] shadow-[0_16px_38px_rgba(15,23,42,0.06)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_24px_48px_rgba(15,23,42,0.1)] ${
+          isCompact ? 'rounded-[1.6rem]' : ''
+        }`}
+      >
+        <div
+          className={`relative overflow-hidden border-b border-[#f1e5de] ${
+            isCompact ? 'rounded-t-[1.6rem]' : 'rounded-t-[2rem]'
+          }`}
+          style={{ aspectRatio: isCompact ? '1 / 1' : '1500 / 1125' }}
+        >
+          <div aria-hidden className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,230,219,0.9)_0%,rgba(255,244,238,0.78)_48%,rgba(255,255,255,0.72)_100%)]" />
+          <div aria-hidden className="absolute -left-8 bottom-0 h-28 w-28 rounded-full bg-[#ffd8c8]/45 blur-3xl" />
+          <div aria-hidden className="absolute -right-8 top-0 h-24 w-24 rounded-full bg-white/80 blur-2xl" />
+
+          {onToggleWishlist && (
+            <button
+              type="button"
+              aria-label={isInWishlist ? pc.wishlistRemove : pc.wishlistAdd}
+              onClick={(e) => {
+                e.preventDefault()
+                e.stopPropagation()
+                onToggleWishlist(product.id)
+              }}
+              className={`absolute right-3 top-3 z-20 flex items-center justify-center rounded-full border bg-white/90 shadow-sm backdrop-blur transition-all active:scale-90 ${
+                isCompact ? 'h-9 w-9' : 'h-10 w-10'
+              } ${isInWishlist ? 'border-red-100 bg-red-50' : 'border-white/70 hover:bg-white'}`}
+            >
+              <Heart
+                className={`${isCompact ? 'h-4 w-4' : 'h-5 w-5'} ${
+                  isInWishlist ? 'fill-red-500 text-red-500' : 'text-slate-400'
+                }`}
+              />
+            </button>
+          )}
+
+          <div className={`absolute left-3 top-3 z-20 flex flex-col gap-2 ${isCompact ? '' : 'sm:left-4 sm:top-4'}`}>
+            {!isCompact && (
+              <div className="rounded-full border border-white/70 bg-white/85 px-3 py-1.5 text-xs font-semibold text-slate-600 shadow-sm backdrop-blur">
+                {categoryLabel}
+              </div>
+            )}
+            {renderStatusBadge()}
+          </div>
+
+          {product.image && product.image !== 'no-image' ? (
+            <div className="relative z-10 h-full w-full overflow-hidden">
+              <div
+                className={`absolute inset-0 ${
+                  isCompact ? 'px-3 pb-3 pt-10 sm:px-4 sm:pb-4' : 'px-4 pb-4 pt-14 sm:px-5 sm:pb-5 sm:pt-16'
                 }`}
                 style={{
-                  boxShadow: isAdded 
-                    ? '0 15px 35px rgba(34, 197, 94, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1)'
-                    : '0 15px 35px rgba(255, 107, 53, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1)',
-                  backdropFilter: 'blur(10px)',
+                  transform: isCompact ? undefined : 'perspective(1000px) rotateX(6deg) rotateY(-2deg)',
+                  transformOrigin: 'center center',
                 }}
-                title="В корзину"
               >
-                {/* 3D Button Background Animation - Removed white overlay */}
-                {/* <div className="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl" /> */}
-                
-                {isAdded ? (
-                  <span className="flex items-center relative z-10">
-                    <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                    В корзине
-                  </span>
-                ) : (
-                  <span className="flex items-center relative z-10">
-                    <ShoppingCart className="w-5 h-5 mr-2" />
-                    Добавить
-                  </span>
-                )}
-              </button>
+                <Image
+                  src={product.image}
+                  alt={displayName}
+                  fill
+                  sizes="(max-width: 768px) 50vw, (max-width: 1200px) 25vw, 20vw"
+                  className="object-contain object-center transition-transform duration-300 group-hover:scale-[1.04]"
+                  style={{ filter: 'drop-shadow(0 14px 24px rgba(15,23,42,0.18))' }}
+                  loading="lazy"
+                  quality={85}
+                />
+              </div>
+            </div>
+          ) : (
+            <div
+              className={`absolute inset-0 z-10 flex items-center justify-center ${
+                isCompact ? 'text-6xl' : 'text-7xl'
+              }`}
+            >
+              🍽️
             </div>
           )}
-        </div>
-      </div>
 
-      {/* 3D Floating Decorative Elements */}
-      <div 
-        className="absolute -bottom-2 -left-2 w-6 h-6 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full opacity-30 group-hover:opacity-60 transition-all duration-500 group-hover:scale-110"
-        style={{
-          boxShadow: '0 10px 25px rgba(255, 193, 7, 0.3)',
-          filter: 'blur(1px)',
-        }}
-      />
-      <div 
-        className="absolute top-1/2 -left-4 w-3 h-3 bg-gradient-to-br from-pink-400 to-purple-500 rounded-full opacity-20 group-hover:opacity-40 transition-all duration-500 group-hover:scale-125"
-        style={{
-          boxShadow: '0 5px 15px rgba(236, 72, 153, 0.2)',
-          filter: 'blur(0.5px)',
-        }}
-      />
-    </Link>
-  )
-})
+          <div
+            className={`absolute bottom-3 right-3 z-20 rounded-full border border-white/70 bg-white/92 font-black text-[#E53225] shadow-[0_12px_24px_rgba(15,23,42,0.08)] backdrop-blur ${
+              isCompact ? 'px-4 py-2 text-sm' : 'px-5 py-2.5 text-base'
+            }`}
+          >
+            {product.price} ֏
+          </div>
+        </div>
+
+        <div className={`${isCompact ? 'p-4' : 'p-5 sm:p-6'}`}>
+          <div className="mb-3 flex items-center gap-2">
+            {isCompact && (
+              <span className="rounded-full bg-[#fff3ec] px-2.5 py-1 text-[11px] font-semibold text-[#E53225]">
+                {categoryLabel}
+              </span>
+            )}
+          </div>
+
+          <h3
+            className={`font-black tracking-tight text-slate-900 ${
+              isCompact ? 'line-clamp-2 text-base leading-snug' : 'line-clamp-2 text-xl leading-tight'
+            }`}
+          >
+            {displayName}
+          </h3>
+
+          {isCompact ? (
+            <p className="mt-2 line-clamp-2 text-sm leading-6 text-slate-500">
+              {description || categoryLabel}
+            </p>
+          ) : (
+            <p className="mt-3 line-clamp-2 text-sm leading-6 text-slate-500 sm:text-[15px]">
+              {description}
+            </p>
+          )}
+
+          {productWithCategory.ingredients?.length ? (
+            <div className="mt-4 flex flex-wrap gap-2">
+              {productWithCategory.ingredients.slice(0, isCompact ? 2 : 3).map((ingredient) => (
+                <span
+                  key={ingredient}
+                  className="rounded-full border border-[#efe3dd] bg-[#fcfaf8] px-2.5 py-1 text-[11px] font-medium text-slate-500"
+                >
+                  {ingredient}
+                </span>
+              ))}
+            </div>
+          ) : null}
+
+          {onAddToCart && (
+            <button
+              onClick={(e) => {
+                e.preventDefault()
+                e.stopPropagation()
+                onAddToCart(product)
+              }}
+              className={`mt-5 flex w-full items-center justify-center gap-2 rounded-full font-semibold transition-all ${
+                isCompact ? 'h-11 text-sm' : 'h-12 text-base'
+              } ${
+                isAdded
+                  ? 'bg-gradient-to-r from-emerald-500 to-green-600 text-white shadow-[0_14px_24px_rgba(34,197,94,0.22)]'
+                  : PRODUCT_CARD_ADD_IDLE_BUTTON_CLASS
+              }`}
+              title={pc.addToCartTitle}
+            >
+              {isAdded ? (
+                <span className="flex items-center gap-2">
+                  <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                    <path
+                      fillRule="evenodd"
+                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                  {pc.inCart}
+                </span>
+              ) : (
+                <span className="flex items-center gap-2">
+                  <ShoppingCart className={`${isCompact ? 'h-4 w-4' : 'h-5 w-5'}`} />
+                  {pc.add}
+                </span>
+              )}
+            </button>
+          )}
+        </div>
+      </Link>
+    )
+  }
+)
 
 ProductCard.displayName = 'ProductCard'
 

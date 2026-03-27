@@ -1,74 +1,83 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { PrismaClient } from '@prisma/client'
 import bcrypt from 'bcryptjs'
-
-const prisma = new PrismaClient()
+import { prisma } from '@/lib/prisma'
 
 export async function POST(request: NextRequest) {
   try {
     const { name, email, phone, password } = await request.json()
+    const normalizedName = typeof name === 'string' ? name.trim() : ''
+    const normalizedEmail = typeof email === 'string' ? email.trim().toLowerCase() : ''
+    const normalizedPhone = typeof phone === 'string' ? phone.trim() : null
 
-    // Валидация обязательных полей
-    if (!name || !email || !password) {
+    if (!normalizedName || !normalizedEmail || !password) {
       return NextResponse.json(
-        { error: 'Имя, email и пароль обязательны для заполнения' },
+        { error: 'Name, email, and password are required' },
         { status: 400 }
       )
     }
 
-    // Валидация пароля
     if (password.length < 6) {
       return NextResponse.json(
-        { error: 'Пароль должен содержать минимум 6 символов' },
+        { error: 'Password must be at least 6 characters long' },
         { status: 400 }
       )
     }
 
-    // Проверяем, что пароль не пустой
     if (password.trim().length === 0) {
       return NextResponse.json(
-        { error: 'Пароль не может быть пустым' },
+        { error: 'Password cannot be empty' },
         { status: 400 }
       )
     }
 
-    // Проверяем, существует ли пользователь
-    const existingUser = await prisma.user.findUnique({
-      where: { email }
+    const existingUser = await prisma.user.findFirst({
+      where: {
+        email: {
+          equals: normalizedEmail,
+          mode: 'insensitive',
+        },
+      },
     })
 
     if (existingUser) {
       return NextResponse.json(
-        { error: 'Пользователь с таким email уже существует' },
+        { error: 'A user with this email already exists' },
         { status: 400 }
       )
     }
 
-    // Хешируем пароль
     const hashedPassword = await bcrypt.hash(password, 12)
 
-    // Создаем пользователя
     const user = await prisma.user.create({
       data: {
-        name,
-        email,
-        phone,
+        name: normalizedName,
+        email: normalizedEmail,
+        phone: normalizedPhone || null,
         password: hashedPassword,
-        role: 'USER'
-      }
+        role: 'USER',
+      },
     })
 
-    // Возвращаем пользователя без пароля
-    const { password: _, ...userWithoutPassword } = user
+    const userWithoutPassword = {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      phone: user.phone,
+      address: user.address,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+      deletedAt: user.deletedAt,
+      role: user.role,
+    }
 
     return NextResponse.json(
-      { message: 'Пользователь успешно создан', user: userWithoutPassword },
+      { message: 'User created successfully', user: userWithoutPassword },
       { status: 201 }
     )
   } catch (error) {
     console.error('Registration error:', error)
     return NextResponse.json(
-      { error: 'Внутренняя ошибка сервера' },
+      { error: 'Internal server error' },
       { status: 500 }
     )
   }

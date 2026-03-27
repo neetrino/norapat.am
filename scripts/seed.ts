@@ -4,14 +4,94 @@ import path from 'path'
 
 const prisma = new PrismaClient()
 
+type SeedProduct = {
+  name: string
+  description: string
+  price: number
+  image: string
+  category: string
+  ingredients: string[]
+  isAvailable: boolean
+}
+
+const CATEGORY_NAME_MAP: Record<string, string> = {
+  'Пиде': 'Պիդե',
+  Pide: 'Պիդե',
+  'Комбо': 'Կոմբո',
+  Combo: 'Կոմբո',
+  'Снэк': 'Սնաք',
+  Snacks: 'Սնաք',
+  'Соусы': 'Սոուսներ',
+  Sauces: 'Սոուսներ',
+  'Напитки': 'Ըմպելիքներ',
+  Drinks: 'Ըմպելիքներ',
+  'Պիդե': 'Պիդե',
+  'Կոմբո': 'Կոմբո',
+  'Սնաք': 'Սնաք',
+  'Սնեք': 'Սնաք',
+  'Սոուսներ': 'Սոուսներ',
+  'Ըմպելիքներ': 'Ըմպելիքներ',
+}
+
+const ARMENIAN_CATEGORIES = ['Պիդե', 'Կոմբո', 'Սնաք', 'Սոուսներ', 'Ըմպելիքներ'] as const
+
+const CATEGORY_IMAGES: Record<string, string> = {
+  'Պիդե': '/categories/pide.svg',
+  'Կոմբո': '/categories/combo.svg',
+  'Սնաք': '/categories/snack.svg',
+  'Սոուսներ': '/categories/sauce.svg',
+  'Ըմպելիքներ': '/categories/drinks.svg',
+}
+
+const EXTRA_PRODUCTS: SeedProduct[] = [
+  {
+    name: 'Լոռու պանիրով պիդե',
+    description: 'Փափուկ պիդե Լոռու պանրով և թարմ կանաչիներով',
+    price: 890,
+    image: '/images/classic-chees-Photoroom.png',
+    category: 'Պիդե',
+    ingredients: ['Խմոր', 'Լոռու պանիր', 'Կանաչի'],
+    isAvailable: true,
+  },
+  {
+    name: 'Մածուն-սխտոր սոուս',
+    description: 'Թեթև մածունով սոուս սխտորի և սամիթի նոտաներով',
+    price: 320,
+    image: '/images/Garlic-sauce-Pideh-Photoroom.png',
+    category: 'Սոուսներ',
+    ingredients: ['Մածուն', 'Սխտոր', 'Սամիթ', 'Աղ'],
+    isAvailable: true,
+  },
+  {
+    name: 'Տնական կոմպոտ',
+    description: 'Սեզոնային մրգերից պատրաստված տնական կոմպոտ',
+    price: 550,
+    image: '/images/juice-Photoroom.png',
+    category: 'Ըմպելիքներ',
+    ingredients: ['Մրգեր', 'Ջուր', 'Շաքար'],
+    isAvailable: true,
+  },
+]
+
+function normalizeCategoryName(categoryName: string): string {
+  const trimmedName = categoryName.trim()
+  return CATEGORY_NAME_MAP[trimmedName] ?? trimmedName
+}
+
 async function main() {
   console.log('🌱 Начинаем заполнение базы данных...')
 
   // Загружаем данные товаров из JSON файла
   const productsPath = path.join(__dirname, '../data/buy-am-products.json')
-  const productsData = JSON.parse(fs.readFileSync(productsPath, 'utf8'))
+  const rawProductsData = JSON.parse(fs.readFileSync(productsPath, 'utf8')) as SeedProduct[]
+  const productsData: SeedProduct[] = rawProductsData.map((product) => ({
+    ...product,
+    category: normalizeCategoryName(product.category),
+  }))
+  const allProducts: SeedProduct[] = [...productsData, ...EXTRA_PRODUCTS]
   
   console.log(`📦 Загружено ${productsData.length} товаров из JSON файла`)
+  console.log(`➕ Добавлено ${EXTRA_PRODUCTS.length} новых товаров для сида`)
 
   // Очищаем существующие данные
   await prisma.orderItem.deleteMany()
@@ -23,7 +103,7 @@ async function main() {
   console.log('🗑️ Очистили существующие данные')
 
   // Создаем категории
-  const categories = ['Пиде', 'Комбо', 'Снэк', 'Соусы', 'Напитки']
+  const categories = [...ARMENIAN_CATEGORIES]
   const categoryMap = new Map()
   
   for (const categoryName of categories) {
@@ -31,6 +111,7 @@ async function main() {
       data: {
         name: categoryName,
         description: `Категория ${categoryName}`,
+        image: CATEGORY_IMAGES[categoryName] || null,
         isActive: true
       }
     })
@@ -39,7 +120,7 @@ async function main() {
   }
 
   // Создаем товары
-  for (const productData of productsData) {
+  for (const productData of allProducts) {
     const categoryId = categoryMap.get(productData.category)
     if (!categoryId) {
       console.log(`⚠️ Категория не найдена для товара: ${productData.name}`)
@@ -61,7 +142,6 @@ async function main() {
   }
 
   // Создаем тестового пользователя
-  const bcrypt = require('bcryptjs')
   const testUser = await prisma.user.create({
     data: {
       email: 'test@pideh-armenia.am',
@@ -98,7 +178,7 @@ async function main() {
       address: 'Ереван, ул. Абовяна, 1',
       phone: '+374 99 123 456',
       notes: 'Тестовый заказ',
-      paymentMethod: 'idram',
+      paymentMethod: 'cash',
       items: {
         create: [
           {
@@ -114,7 +194,7 @@ async function main() {
 
   console.log('🎉 База данных успешно заполнена!')
   console.log(`📊 Статистика:`)
-  console.log(`   - Товаров: ${productsData.length}`)
+  console.log(`   - Товаров: ${allProducts.length}`)
   console.log(`   - Пользователей: 2 (тестовый + админ)`)
   console.log(`   - Заказов: 1 (тестовый)`)
 }
@@ -127,3 +207,4 @@ main()
   .finally(async () => {
     await prisma.$disconnect()
   })
+import bcrypt from 'bcryptjs'

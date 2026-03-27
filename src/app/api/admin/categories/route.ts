@@ -47,7 +47,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { name, description, isActive = true } = body
+    const { name, description, image, isActive = true } = body
 
     if (!name || name.trim() === '') {
       return NextResponse.json(
@@ -72,6 +72,7 @@ export async function POST(request: NextRequest) {
       data: {
         name: name.trim(),
         description: description?.trim() || null,
+        image: image || null,
         isActive: Boolean(isActive)
       },
       include: {

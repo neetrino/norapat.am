@@ -1,26 +1,34 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Caveat, Inter, Permanent_Marker } from "next/font/google";
 import "./globals.css";
 import ClientProviders from "@/components/ClientProviders";
 import MobileBottomNav from "@/components/MobileBottomNav";
 import ServiceWorkerProvider from "@/components/ServiceWorkerProvider";
 import PullToRefresh from "@/components/PullToRefresh";
 import Header from "@/components/Header";
+import { HeaderStackProvider } from "@/contexts/HeaderStackContext";
 
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
 });
 
+const promoCaveat = Caveat({
+  subsets: ["latin"],
+  variable: "--font-promo-caveat",
+});
+
+const promoMarker = Permanent_Marker({
+  weight: "400",
+  subsets: ["latin"],
+  variable: "--font-promo-marker",
+});
+
 export const metadata: Metadata = {
-  title: "Pideh Armenia - Армянские пиде новый вкус",
-  description: "Традиционная форма с современными начинками. 15 уникальных вкуса для настоящих гурманов! Доставка по Еревану.",
-  keywords: "пиде, армянские пиде, мини-пиццы, доставка еды, Ереван, Армения",
-  icons: {
-    icon: '/logo.png',
-    shortcut: '/logo.png',
-    apple: '/logo.png',
-  },
+  title: "NORAPAT — հայկական պիդե, նոր համ",
+  description:
+    "Ավանդական ձև՝ ժամանակակից լցոնումներով։ 15 եզակի համ իրական գուրմանների համար։ Առաքում Երևանում։",
+  keywords: "NORAPAT, պիդե, հայկական պիդե, մինի պիցցա, ուտելիքի առաքում, Երևան, Հայաստան",
 };
 
 export default function RootLayout({
@@ -29,15 +37,19 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ru" data-scroll-behavior="smooth" suppressHydrationWarning>
-      <body className={`${inter.variable} font-sans antialiased overflow-x-hidden`}>
+    <html lang="hy" data-scroll-behavior="smooth" suppressHydrationWarning>
+      <body
+        className={`${inter.variable} ${promoCaveat.variable} ${promoMarker.variable} font-sans antialiased overflow-visible`}
+      >
         <ServiceWorkerProvider />
         <ClientProviders>
-          <Header />
-          <PullToRefresh>
-            {children}
-          </PullToRefresh>
-          <MobileBottomNav />
+          <HeaderStackProvider>
+            <Header />
+            <PullToRefresh>
+              {children}
+            </PullToRefresh>
+            <MobileBottomNav />
+          </HeaderStackProvider>
         </ClientProviders>
       </body>
     </html>

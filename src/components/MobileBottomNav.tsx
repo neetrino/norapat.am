@@ -8,29 +8,32 @@ import { useCart } from '@/hooks/useCart'
 import { useHydration } from '@/hooks/useHydration'
 import { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
+import { useI18n } from '@/i18n/I18nContext'
 
 export default function MobileBottomNav() {
+  const { t } = useI18n()
+  const { nav, cart, profile, auth, legal } = t
   const pathname = usePathname()
   const isHydrated = useHydration()
   const { getTotalItems } = useCart()
   const { data: session, status } = useSession()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
-  
-  // Принудительное обновление при изменении сессии
-  const navKey = session ? `nav-authenticated-${session.user?.id}` : 'nav-unauthenticated'
 
-  // Блокировка скролла когда меню открыто
+  // Բոլոր հուկերը կանչվում են return-ից առաջ (Rules of Hooks)
   useEffect(() => {
     if (isMenuOpen) {
       document.body.style.overflow = 'hidden'
     } else {
       document.body.style.overflow = ''
     }
-    
     return () => {
       document.body.style.overflow = ''
     }
   }, [isMenuOpen])
+
+  if (pathname?.startsWith('/admin')) {
+    return null
+  }
 
   const isActive = (path: string) => {
     if (path === '/') {
@@ -41,23 +44,23 @@ export default function MobileBottomNav() {
 
   // Ссылки для меню
   const menuLinks = [
-    { href: '/', label: 'Главная' },
-    { href: '/products', label: 'Меню' },
-    { href: '/about', label: 'О нас' },
-    { href: '/contact', label: 'Контакты' },
+    { href: '/', label: nav.home },
+    { href: '/products', label: nav.menu },
+    { href: '/about', label: nav.about },
+    { href: '/contact', label: nav.contact },
   ]
 
   // Навигационные элементы в зависимости от состояния авторизации
   const navItems = session ? [
-    { href: '/', label: 'Главная', icon: Home },
-    { href: '/products', label: 'Меню', icon: Menu, isMenu: true },
-    { href: '/cart', label: 'Корзина', icon: ShoppingCart, showBadge: true },
-    { href: '/profile', label: 'Профиль', icon: User },
+    { href: '/', label: nav.home, icon: Home },
+    { href: '/products', label: nav.menu, icon: Menu, isMenu: true },
+    { href: '/cart', label: cart.label, icon: ShoppingCart, showBadge: true },
+    { href: '/profile', label: profile.label, icon: User },
   ] : [
-    { href: '/', label: 'Главная', icon: Home },
-    { href: '/products', label: 'Меню', icon: Menu, isMenu: true },
-    { href: '/cart', label: 'Корзина', icon: ShoppingCart, showBadge: true },
-    { href: '/login', label: 'Войти', icon: LogIn },
+    { href: '/', label: nav.home, icon: Home },
+    { href: '/products', label: nav.menu, icon: Menu, isMenu: true },
+    { href: '/cart', label: cart.label, icon: ShoppingCart, showBadge: true },
+    { href: '/login', label: auth.login, icon: LogIn },
   ]
 
   const menuOverlay = isMenuOpen && isHydrated && createPortal(
@@ -77,7 +80,7 @@ export default function MobileBottomNav() {
             <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
               <Menu className="w-5 h-5" />
             </div>
-            <h2 className="text-2xl font-bold">Навигация</h2>
+            <h2 className="text-2xl font-bold">{nav.navigation}</h2>
           </div>
           <button
             onClick={(e) => {
@@ -119,7 +122,10 @@ export default function MobileBottomNav() {
         </div>
 
         {/* Bottom Info */}
-        <div className="p-6 bg-gray-50 border-t border-gray-200">
+        <div
+          className="p-6 bg-white border-t border-gray-200"
+          onClick={(e) => e.stopPropagation()}
+        >
           {/* Legal Links */}
           <div className="flex justify-center space-x-4 mb-4">
             <Link 
@@ -127,7 +133,7 @@ export default function MobileBottomNav() {
               className="text-xs text-gray-400 hover:text-orange-500 transition-colors duration-200 underline decoration-dotted underline-offset-2"
               onClick={() => setIsMenuOpen(false)}
             >
-              Политика конфиденциальности
+              {legal.privacyShort}
             </Link>
             <span className="text-xs text-gray-300">•</span>
             <Link 
@@ -135,7 +141,7 @@ export default function MobileBottomNav() {
               className="text-xs text-gray-400 hover:text-orange-500 transition-colors duration-200 underline decoration-dotted underline-offset-2"
               onClick={() => setIsMenuOpen(false)}
             >
-              Условия использования
+              {legal.termsShort}
             </Link>
           </div>
           
@@ -163,10 +169,9 @@ export default function MobileBottomNav() {
 
   return (
     <>
-      <nav key={navKey} className="lg:hidden fixed bottom-0 left-0 right-0 w-full bg-white/95 backdrop-blur-xl border-t border-gray-200 z-40 shadow-2xl">
+      <nav className="lg:hidden fixed bottom-0 left-0 right-0 w-full bg-white/95 backdrop-blur-xl border-t border-gray-200 z-40 shadow-2xl">
         <div className="flex justify-around items-center py-3">
-          {status === 'loading' ? (
-            // Показываем загрузку для всех кнопок
+          {!isHydrated || status === 'loading' ? (
             Array.from({ length: 4 }).map((_, index) => (
               <div key={index} className="flex flex-col items-center justify-center py-3 px-4 rounded-2xl">
                 <div className="w-6 h-6 bg-gray-200 rounded-full animate-pulse"></div>

@@ -1,23 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { Prisma } from '@prisma/client'
 import { prisma } from '@/lib/prisma'
 
-// GET /api/products/featured - получить товары-хиты
+// GET /api/products/featured - ամենավաճառվող/ընտրված ապրանքներ (HIT, NEW, CLASSIC)
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
-    const status = searchParams.get('status') // HIT, NEW, CLASSIC
+    const status = searchParams.get('status') as 'HIT' | 'NEW' | 'CLASSIC' | null
 
-    const whereClause: any = {
-      isAvailable: true
-    }
-
-    if (status) {
-      whereClause.status = status
-    } else {
-      // Если статус не указан, возвращаем все товары с особыми статусами (кроме BANNER)
-      whereClause.status = {
-        in: ['HIT', 'NEW', 'CLASSIC']
-      }
+    const whereClause: Prisma.ProductWhereInput = {
+      isAvailable: true,
+      ...(status
+        ? { status }
+        : { status: { in: ['HIT', 'NEW', 'CLASSIC'] } }),
     }
 
     const products = await prisma.product.findMany({
@@ -28,6 +23,7 @@ export async function GET(request: NextRequest) {
       select: {
         id: true,
         name: true,
+        shortDescription: true,
         description: true,
         price: true,
         categoryId: true,

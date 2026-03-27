@@ -1,25 +1,27 @@
 'use client'
 
-import { useSession } from 'next-auth/react'
+import { usePathname } from 'next/navigation'
 import MobileHeader from './MobileHeader'
 import DesktopHeader from './DesktopHeader'
+import { TopContactBar } from '@/components/TopContactBar'
+import { usePublicSiteSettings } from '@/hooks/usePublicSiteSettings'
 
 export default function Header() {
-  const { data: session } = useSession()
-  
-  // Принудительное обновление Header при изменении сессии
-  const headerKey = session ? `authenticated-${session.user?.id}` : 'unauthenticated'
+  const pathname = usePathname()
+  const branding = usePublicSiteSettings()
+
+  if (pathname?.startsWith('/admin')) {
+    return null
+  }
 
   return (
     <>
-      {/* Mobile Header - показывается на мобильных устройствах и планшетах */}
-      <div className="lg:hidden" key={`mobile-${headerKey}`}>
-        <MobileHeader />
+      <TopContactBar />
+      <div className="lg:hidden">
+        <MobileHeader branding={branding} />
       </div>
-      
-      {/* Desktop Header - показывается только на десктопе */}
-      <div className="hidden lg:block" key={`desktop-${headerKey}`}>
-        <DesktopHeader />
+      <div className="hidden lg:block">
+        <DesktopHeader branding={branding} />
       </div>
     </>
   )

@@ -1,155 +1,192 @@
 import Footer from '@/components/Footer'
+import Link from 'next/link'
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Օգտագործման պայմաններ | Pideh Armenia',
+  description:
+    'Pideh Armenia-ի օգտագործման պայմանները — պատվերներ, առաքում, վճարումներ և այլ կարևոր տեղեկություններ։',
+}
 
 export default function TermsPage() {
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Отступ для fixed хедера */}
-      <div className="h-16"></div>
-      
+    <div className="min-h-screen bg-white">
+      <div className="h-16" />
+
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-16">
         <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-8 mb-20 lg:mb-16">
           <div className="text-center mb-8">
-            <h1 className="text-2xl sm:text-4xl font-bold text-gray-900 mb-4">Условия использования</h1>
-            <p className="text-gray-600">Последнее обновление: {new Date().toLocaleDateString('ru-RU')}</p>
+            <h1 className="text-2xl sm:text-4xl font-bold text-gray-900 mb-4">
+              Օգտագործման պայմաններ
+            </h1>
+            <p className="text-gray-600">
+              Վերջին թարմացում. {new Date().toLocaleDateString('hy-AM')}
+            </p>
           </div>
 
           <div className="prose prose-lg max-w-none">
             <section className="mb-8">
-              <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-4">1. Общие положения</h2>
+              <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-4">
+                1. Ընդհանուր դրույթներ
+              </h2>
               <p className="text-gray-700 mb-4">
-                Настоящие Условия использования регулируют отношения между администрацией данного сайта 
-                (далее — «Компания») и пользователями сайта (далее — «Пользователь»).
+                Այս Օգտագործման պայմանները կարգավորում են այս կայքի ադմինիստրացիայի (այսուհետև — «Կազմակերպություն») 
+                և կայքի օգտվողների (այսուհետև — «Օգտվող») միջև հարաբերությունները։
               </p>
               <p className="text-gray-700 mb-4">
-                Используя данный сайт, вы соглашаетесь с данными условиями. Если вы не согласны 
-                с какими-либо условиями, пожалуйста, не используйте данный сайт.
+                Օգտագործելով այս կայքը՝ դուք համաձայնում եք այս պայմաններին։ Եթե դուք 
+                չեք համաձայն որևէ պայմանի հետ, խնդրում ենք չօգտագործել այս կայքը։
               </p>
             </section>
 
             <section className="mb-8">
-              <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-4">2. Описание услуг</h2>
+              <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-4">
+                2. Ծառայությունների նկարագրություն
+              </h2>
               <p className="text-gray-700 mb-4">
-                Данный сайт предоставляет следующие услуги:
+                Այս կայքը տրամադրում է հետևյալ ծառայությունները.
               </p>
               <ul className="list-disc list-inside text-gray-700 mb-4 space-y-2">
-                <li>Интернет-магазин товаров</li>
-                <li>Онлайн заказ и оплата товаров</li>
-                <li>Доставка заказов по указанному адресу</li>
-                <li>Информационные услуги о товарах и акциях</li>
+                <li>Ապրանքների ինտերնետ-խանութ</li>
+                <li>Ապրանքների առցանց պատվերում և վճարում</li>
+                <li>Պատվերների առաքում նշված հասցեով</li>
+                <li>Տեղեկատվական ծառայություններ ապրանքների և ակցիաների մասին</li>
               </ul>
             </section>
 
             <section className="mb-8">
-              <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-4">3. Регистрация и аккаунт</h2>
+              <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-4">
+                3. Գրանցում և հաշիվ
+              </h2>
               <p className="text-gray-700 mb-4">
-                Для оформления заказов необходимо создать аккаунт. При регистрации вы обязуетесь:
+                Պատվերներ ձևակերպելու համար անհրաժեշտ է հաշիվ ստեղծել։ Գրանցվելիս դուք 
+                պարտավորվում եք.
               </p>
               <ul className="list-disc list-inside text-gray-700 mb-4 space-y-2">
-                <li>Предоставлять достоверную информацию</li>
-                <li>Поддерживать актуальность данных</li>
-                <li>Нести ответственность за безопасность аккаунта</li>
-                <li>Немедленно уведомлять о несанкционированном доступе</li>
+                <li>Տրամադրել ճշմարիտ տեղեկություն</li>
+                <li>Պահպանել տվյալների արդիականությունը</li>
+                <li>Հաշվի անվտանգության համար պատասխանատվություն կրել</li>
+                <li>Անմիջապես տեղեկացնել անարդյունավետ մուտքի մասին</li>
               </ul>
             </section>
 
             <section className="mb-8">
-              <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-4">4. Заказы и оплата</h2>
+              <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-4">
+                4. Պատվերներ և վճարում
+              </h2>
               <p className="text-gray-700 mb-4">
-                При оформлении заказа вы соглашаетесь:
+                Պատվեր ձևակերպելիս դուք համաձայնում եք.
               </p>
               <ul className="list-disc list-inside text-gray-700 mb-4 space-y-2">
-                <li>Оплатить заказ в полном объеме</li>
-                <li>Предоставить корректный адрес доставки</li>
-                <li>Быть доступным для связи в указанное время</li>
-                <li>Принять заказ при доставке</li>
+                <li>Վճարել պատվերը ամբողջությամբ</li>
+                <li>Տրամադրել ճիշտ առաքման հասցե</li>
+                <li>Հասանելի լինել կապի համար նշված ժամանակին</li>
+                <li>Ընդունել պատվերը առաքման ժամանակ</li>
               </ul>
               <p className="text-gray-700 mb-4">
-                Оплата производится наличными при получении или банковской картой онлайн.
+                Վճարումն իրականացվում է կանխիկ ստացման ժամանակ կամ բանկային քարտով (ArCa, Visa, Mastercard)։
               </p>
             </section>
 
             <section className="mb-8">
-              <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-4">5. Доставка</h2>
+              <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-4">
+                5. Առաքում
+              </h2>
               <p className="text-gray-700 mb-4">
-                Условия доставки:
+                Առաքման պայմաններ.
               </p>
               <ul className="list-disc list-inside text-gray-700 mb-4 space-y-2">
-                <li>Время доставки: 20-30 минут (при заказе до 21:00)</li>
-                <li>Минимальная сумма заказа: 2000 драмов</li>
-                <li>Стоимость доставки: 500 драмов</li>
-                <li>Бесплатная доставка при заказе от 5000 драмов</li>
-                <li>Зона доставки: Ереван и пригороды</li>
+                <li>Առաքման ժամանակ՝ 20–30 րոպե (պատվեր 21:00-ից առաջ)</li>
+                <li>Պատվերի նվազագույն գումար՝ 2000 դրամ</li>
+                <li>Առաքման արժեք՝ 500 դրամ</li>
+                <li>Անվճար առաքում 5000 դրամից բարձր պատվերների դեպքում</li>
+                <li>Առաքման տարածք՝ Երևան և արվարձաններ</li>
               </ul>
+              <p className="text-gray-700 mb-4">
+                Մանրամասների համար տե՛ս <Link href="/delivery" className="text-orange-500 hover:text-orange-600 font-medium">Առաքման քաղաքականություն</Link>։
+              </p>
             </section>
 
             <section className="mb-8">
-              <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-4">6. Возврат и обмен</h2>
+              <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-4">
+                6. Վերադարձ և փոխարինում
+              </h2>
               <p className="text-gray-700 mb-4">
-                Возврат товара возможен в следующих случаях:
+                Ապրանքի վերադարձ հնարավոր է հետևյալ դեպքերում.
               </p>
               <ul className="list-disc list-inside text-gray-700 mb-4 space-y-2">
-                <li>Товар не соответствует заказу</li>
-                <li>Товар поврежден при транспортировке</li>
-                <li>Качество товара не соответствует заявленному</li>
+                <li>Ապրանքը չի համապատասխանում պատվերին</li>
+                <li>Ապրանքը վնասվել է տեղափոխման ընթացքում</li>
+                <li>Ապրանքի որակը չի համապատասխանում հայտարարվածին</li>
               </ul>
               <p className="text-gray-700 mb-4">
-                Возврат должен быть произведен в течение 1 часа с момента получения заказа.
+                Վերադարձը պետք է իրականացվի պատվերը ստանալուց ոչ ուշ քան 1 ժամ հետո։
+              </p>
+              <p className="text-gray-700 mb-4">
+                Մանրամասների համար տե՛ս <Link href="/refund" className="text-orange-500 hover:text-orange-600 font-medium">Վերադարձի քաղաքականություն</Link>։
               </p>
             </section>
 
             <section className="mb-8">
-              <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-4">7. Ответственность</h2>
+              <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-4">
+                7. Պատասխանատվություն
+              </h2>
               <p className="text-gray-700 mb-4">
-                Компания не несет ответственности за:
+                Կազմակերպությունը պատասխանատվություն չի կրում.
               </p>
               <ul className="list-disc list-inside text-gray-700 mb-4 space-y-2">
-                <li>Задержки доставки по причинам, не зависящим от компании</li>
-                <li>Изменения в меню или временное отсутствие товаров</li>
-                <li>Технические сбои на сайте</li>
-                <li>Действия третьих лиц</li>
+                <li>Առաքման ուշացումների համար՝ Կազմակերպությունից անկախ պատճառներով</li>
+                <li>Մենյուի կամ ապրանքների ժամանակավոր բացակայության փոփոխությունների համար</li>
+                <li>Կայքի տեխնիկական խափանումների համար</li>
+                <li>Երրորդ կողմերի գործողությունների համար</li>
               </ul>
             </section>
 
             <section className="mb-8">
-              <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-4">8. Интеллектуальная собственность</h2>
+              <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-4">
+                8. Մտավոր սեփականություն
+              </h2>
               <p className="text-gray-700 mb-4">
-                Все материалы сайта (тексты, изображения, дизайн) являются интеллектуальной 
-                собственностью компании и защищены авторским правом.
+                Կայքի բոլոր նյութերը (տեքստեր, պատկերներ, դիզայն) կազմակերպության 
+                մտավոր սեփականություն են և պաշտպանված են հեղինակային իրավունքով։
               </p>
               <p className="text-gray-700 mb-4">
-                Запрещается копирование, распространение или использование материалов 
-                без письменного разрешения компании.
-              </p>
-            </section>
-
-            <section className="mb-8">
-              <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-4">9. Изменения условий</h2>
-              <p className="text-gray-700 mb-4">
-                Компания оставляет за собой право изменять данные условия в любое время. 
-                О существенных изменениях пользователи будут уведомлены через сайт или 
-                по электронной почте.
+                Անթույլ է նյութերի պատճենումը, բաշխումը կամ օգտագործումը 
+                Կազմակերպության գրավոր թույլտվությունից առանց։
               </p>
             </section>
 
             <section className="mb-8">
-              <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-4">10. Контактная информация</h2>
+              <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-4">
+                9. Պայմանների փոփոխություններ
+              </h2>
               <p className="text-gray-700 mb-4">
-                По вопросам, связанным с условиями использования, обращайтесь:
+                Կազմակերպությունը իրավունք է պահպանում փոփոխել այս պայմանները ցանկացած ժամանակ։ 
+                Կարևոր փոփոխությունների մասին օգտվողներին կտեղեկացվեն կայքի կամ 
+                էլ․ փոստի միջոցով։
+              </p>
+            </section>
+
+            <section className="mb-8">
+              <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-4">
+                10. Կապի տվյալներ
+              </h2>
+              <p className="text-gray-700 mb-4">
+                Օգտագործման պայմանների հետ կապված հարցերի համար դիմեք.
               </p>
               <div className="bg-gray-50 p-4 rounded-lg">
                 <p className="text-gray-700 mb-2">
-                  <strong>Email:</strong> support@neetrino.com
+                  <strong>Էլ․ փոստ.</strong> info@pideh.am
                 </p>
                 <p className="text-gray-700">
-                  <strong>Телефон:</strong> +374 44 343 000
+                  <strong>Հեռ.</strong> +374 95-044-888
                 </p>
               </div>
             </section>
           </div>
         </div>
       </div>
-      
-      {/* Hide Footer on Mobile and Tablet */}
+
       <div className="hidden lg:block">
         <Footer />
       </div>

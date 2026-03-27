@@ -3,6 +3,7 @@ import { prisma } from '@/lib/prisma'
 
 // GET /api/categories - получить все активные категории с количеством товаров
 export async function GET(request: NextRequest) {
+  void request
   try {
     const categories = await prisma.category.findMany({
       where: {

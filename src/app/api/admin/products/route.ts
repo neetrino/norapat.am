@@ -3,6 +3,23 @@ import { prisma } from '@/lib/prisma'
 import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth'
 
+// GET /api/admin/products — Բոլոր apsranqnerq (admin, without isAvailable filter)
+export async function GET() {
+  const session = await getServerSession(authOptions)
+  if (!session?.user || session.user.role !== 'ADMIN') {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+  }
+
+  const products = await prisma.product.findMany({
+    include: {
+      category: { select: { id: true, name: true, isActive: true } },
+    },
+    orderBy: { updatedAt: 'desc' },
+  })
+
+  return NextResponse.json(products)
+}
+
 // POST /api/admin/products - создать новый товар (только для админов)
 export async function POST(request: NextRequest) {
   try {
@@ -26,7 +43,7 @@ export async function POST(request: NextRequest) {
 
     // Получаем данные из запроса
     const body = await request.json()
-    const { name, description, price, categoryId, image, ingredients, isAvailable = true, status = 'REGULAR' } = body
+    const { name, shortDescription, description, price, originalPrice, categoryId, image, images, ingredients, isAvailable = true, status = 'REGULAR' } = body
 
     // Валидация обязательных полей
     if (!name || !description || !price || !categoryId) {
@@ -69,13 +86,16 @@ export async function POST(request: NextRequest) {
     const product = await prisma.product.create({
       data: {
         name,
+        shortDescription: shortDescription?.trim() || null,
         description,
         price,
+        originalPrice: originalPrice != null ? Number(originalPrice) : null,
         categoryId,
-        image: image || '', // Пустая строка для отсутствия изображения
+        image: image || (Array.isArray(images) && images.length ? images[0] : ''),
+        images: Array.isArray(images) ? images : [],
         ingredients: ingredients || [],
         isAvailable,
-        status: status || 'REGULAR' // Если статус не выбран, то REGULAR
+        status: status || 'REGULAR'
       },
       include: {
         category: {

@@ -1,21 +1,59 @@
 @import "tailwindcss";
 
+/* Источники для сканирования классов (пути относительно этого файла) */
+@source "./**/*.{js,ts,jsx,tsx}";
+@source "../**/*.{js,ts,jsx,tsx}";
+
 :root {
+  /* Extra inset under fixed header when TopContactBar is visible (synced via HeaderStackProvider) */
+  --top-bar-offset: 36px;
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #000000;
+  --foreground-muted: #333333;
+  --brand-primary: #EE3124;
+  --brand-black: #000000;
+  --brand-white: #FFFFFF;
+  /* BrandBannerSection — խորը կարմիր թեմա (կանաչ օրինակի փոխարեն) */
+  --brand-banner-bg: #8b1414;
+  --brand-banner-bg-mid: #a02828;
+  --brand-banner-bg-deep: #4a0a0a;
+  --brand-banner-accent: #ffb703;
+  --brand-banner-glow: #c43c3c;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  /* NORAPAT: orange/red scale from logo #EE3124 */
+  --color-orange-50: #fef2f2;
+  --color-orange-100: #fde8e7;
+  --color-orange-200: #fccfcd;
+  --color-orange-300: #f9a5a1;
+  --color-orange-400: #f56d66;
+  --color-orange-500: #EE3124;
+  --color-orange-600: #d92b1f;
+  --color-orange-700: #b32319;
+  --color-orange-800: #8c1b13;
+  --color-orange-900: #66140e;
+  --color-red-50: #fef2f2;
+  --color-red-100: #fde8e7;
+  --color-red-200: #fccfcd;
+  --color-red-300: #f9a5a1;
+  --color-red-400: #f56d66;
+  --color-red-500: #EE3124;
+  --color-red-600: #d92b1f;
+  --color-red-700: #b32319;
+  --color-red-800: #8c1b13;
+  --color-red-900: #66140e;
+  --font-sans: var(--font-inter, ui-sans-serif, system-ui, sans-serif);
+  --font-mono: ui-monospace, "Cascadia Code", "Source Code Pro", monospace;
 }
 
+/* NORAPAT: always light — white background, red elements */
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #ffffff;
+    --foreground: #000000;
   }
 }
 
@@ -23,8 +61,93 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
-  overflow-x: hidden;
+  overflow-x: visible;
   overflow-y: auto;
+}
+
+/* BrandBannerSection — promo food (vector plate, texture, brush fonts) */
+.font-promo-caveat {
+  font-family: var(--font-promo-caveat), cursive, ui-serif, Georgia, serif;
+}
+
+.font-promo-marker {
+  font-family: var(--font-promo-marker), cursive, ui-sans-serif, system-ui, sans-serif;
+}
+
+.promo-food-banner-bg {
+  position: relative;
+  background-color: #a51d1d;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.12'/%3E%3C/svg%3E");
+  background-size: 280px 280px;
+  background-blend-mode: multiply;
+}
+
+.promo-food-banner-vignette::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse 70% 65% at 50% 45%,
+    transparent 22%,
+    rgba(0, 0, 0, 0.38) 100%
+  );
+}
+
+@keyframes promo-plate-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.animate-promo-plate-float {
+  animation: promo-plate-float 5s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-promo-plate-float {
+    animation: none !important;
+  }
+}
+
+/* Hero բաններ — սլայդերի crossfade + թեթև «pop» (scale / Y / blur) */
+.hero-banner-slide-img {
+  --hero-slide-dur: 1100ms;
+  --hero-slide-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --hero-slide-scale-idle: 0.88;
+  --hero-slide-y-idle: 0.65rem;
+  --hero-slide-blur-idle: 3px;
+
+  transition-property: transform, opacity, filter;
+  transition-duration: var(--hero-slide-dur);
+  transition-timing-function: var(--hero-slide-ease);
+}
+
+.hero-banner-slide-img--active {
+  transform: translate3d(0, 0, 0) scale(1);
+  filter: blur(0);
+}
+
+.hero-banner-slide-img--idle {
+  transform: translate3d(0, var(--hero-slide-y-idle), 0) scale(var(--hero-slide-scale-idle));
+  filter: blur(var(--hero-slide-blur-idle));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-banner-slide-img {
+    transition-duration: 1ms;
+    transition-timing-function: linear;
+  }
+
+  .hero-banner-slide-img--idle {
+    transform: none;
+    filter: none;
+  }
 }
 
 /* Line clamp utilities */
@@ -53,16 +176,16 @@ html {
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: #ffffff;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #ff6b35;
+  background: #EE3124;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #e55a2b;
+  background: #d92b1f;
 }
 
 /* Custom animations */
@@ -189,6 +312,171 @@ html {
   animation: slideInUp 0.3s ease-out;
 }
 
+/* Hero banner (BrandBannerSection) — խորը կարմիր, լուսավոր անկյուններ */
+.brand-banner-section .brand-banner-corner-tl {
+  background: radial-gradient(
+    ellipse 85% 85% at 0% 0%,
+    color-mix(in srgb, var(--brand-banner-glow) 32%, transparent) 0%,
+    color-mix(in srgb, var(--brand-banner-glow) 10%, transparent) 44%,
+    transparent 72%
+  );
+}
+
+.brand-banner-section .brand-banner-corner-br {
+  background: radial-gradient(
+    ellipse 90% 90% at 100% 100%,
+    color-mix(in srgb, var(--brand-banner-bg-mid) 28%, transparent) 0%,
+    color-mix(in srgb, var(--brand-banner-bg-mid) 8%, transparent) 46%,
+    transparent 75%
+  );
+}
+
+@keyframes hero-col-in {
+  from {
+    opacity: 0;
+    transform: translateX(-14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes hero-col-in-right {
+  from {
+    opacity: 0;
+    transform: translateX(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes hero-tile-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes hero-float-soft {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+@keyframes badge-soft {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+@keyframes hero-pizza-bob {
+  0%,
+  100% {
+    transform: translateY(-12px);
+  }
+  50% {
+    transform: translateY(14px);
+  }
+}
+
+@keyframes hero-pizza-shadow-pulse {
+  0%,
+  100% {
+    transform: translateX(-50%) scale(0.9);
+    opacity: 0.38;
+  }
+  50% {
+    transform: translateX(-50%) scale(1.08);
+    opacity: 0.58;
+  }
+}
+
+.hero-col-enter {
+  animation: hero-col-in 0.65s ease-out both;
+}
+
+.hero-col-enter-delay {
+  animation: hero-col-in-right 0.65s ease-out 0.12s both;
+}
+
+.hero-tile-enter {
+  animation: hero-tile-in 0.55s ease-out both;
+}
+
+.hero-float-soft {
+  animation: hero-float-soft 6s ease-in-out infinite;
+}
+
+.animate-badge-soft {
+  animation: badge-soft 2.8s ease-in-out infinite;
+}
+
+.hero-pizza-bob {
+  animation: hero-pizza-bob 3.4s ease-in-out infinite;
+}
+
+.hero-pizza-shadow {
+  animation: hero-pizza-shadow-pulse 3.4s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-col-enter,
+  .hero-col-enter-delay,
+  .hero-tile-enter,
+  .hero-float-soft,
+  .animate-badge-soft,
+  .hero-pizza-bob,
+  .hero-pizza-shadow {
+    animation: none !important;
+  }
+}
+
+/* Zoom modal animations */
+@keyframes zoom-modal-backdrop {
+  from {
+    opacity: 0;
+    backdrop-filter: blur(0);
+  }
+  to {
+    opacity: 1;
+    backdrop-filter: blur(16px);
+  }
+}
+
+@keyframes zoom-modal-content {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-zoom-backdrop {
+  animation: zoom-modal-backdrop 0.25s ease-out;
+}
+
+.animate-zoom-content {
+  animation: zoom-modal-content 0.3s ease-out;
+}
+
 /* Input field styles */
 input[type="text"],
 input[type="email"],
@@ -217,4 +505,22 @@ input[type="tel"]::placeholder,
 input[type="number"]::placeholder,
 textarea::placeholder {
   color: #9ca3af !important; /* text-gray-400 */
+}
+
+/* Fixed header + optional top contact bar — spacer height tracks --top-bar-offset */
+@layer utilities {
+  .h-header-spacer-mobile {
+    height: calc(4rem + var(--top-bar-offset));
+  }
+  .h-header-spacer-desktop {
+    height: calc(6rem + var(--top-bar-offset));
+  }
+  .pt-header-breadcrumb {
+    padding-top: calc(5rem + var(--top-bar-offset));
+  }
+  @media (min-width: 768px) {
+    .pt-header-breadcrumb {
+      padding-top: calc(6rem + var(--top-bar-offset));
+    }
+  }
 }

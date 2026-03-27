@@ -1,17 +1,33 @@
 'use client'
 
 import Link from 'next/link'
-import Image from 'next/image'
-import { ShoppingCart, User, LogOut, Search } from 'lucide-react'
+import { ShoppingCart, User, LogOut, Search, Heart } from 'lucide-react'
 import { usePathname } from 'next/navigation'
 import { useState } from 'react'
 import { useSession, signOut } from 'next-auth/react'
 import { useCart } from '@/hooks/useCart'
+import { useWishlist } from '@/hooks/useWishlist'
 import { useHydration } from '@/hooks/useHydration'
+import { useI18n } from '@/i18n/I18nContext'
+import type { PublicSiteSettingsState } from '@/hooks/usePublicSiteSettings'
+import { SiteBrandMark } from '@/components/SiteBrandMark'
+import { useHeaderStack } from '@/contexts/HeaderStackContext'
+import {
+  TOP_CONTACT_BAR_TRANSITION_EASING,
+  TOP_CONTACT_BAR_TRANSITION_MS,
+} from '@/lib/headerTopBar.constants'
 
-export default function DesktopHeader() {
+interface DesktopHeaderProps {
+  branding: PublicSiteSettingsState
+}
+
+export default function DesktopHeader({ branding }: DesktopHeaderProps) {
+  const { topBarInsetPx } = useHeaderStack()
+  const { t } = useI18n()
+  const { nav, auth, search, wishlist } = t
   const isHydrated = useHydration()
   const { getTotalItems } = useCart()
+  const { products: wishlistProducts } = useWishlist()
   const { data: session, status } = useSession()
   const pathname = usePathname()
   const [searchQuery, setSearchQuery] = useState('')
@@ -26,27 +42,24 @@ export default function DesktopHeader() {
 
   // Навигационные ссылки
   const navLinks = [
-    { href: '/', label: 'Главная' },
-    { href: '/products', label: 'Меню' },
-    { href: '/about', label: 'О нас' },
-    { href: '/contact', label: 'Контакты' },
+    { href: '/', label: nav.home },
+    { href: '/products', label: nav.menu },
+    { href: '/about', label: nav.about },
+    { href: '/contact', label: nav.contact },
   ]
 
   return (
-    <header className="bg-white shadow-sm fixed top-0 left-0 right-0 z-[60]" style={{ position: 'fixed' }}>
+    <header
+      className="fixed left-0 right-0 z-[60] bg-white shadow-sm transition-[top]"
+      style={{
+        top: topBarInsetPx,
+        transitionDuration: `${TOP_CONTACT_BAR_TRANSITION_MS}ms`,
+        transitionTimingFunction: TOP_CONTACT_BAR_TRANSITION_EASING,
+      }}
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center py-4">
-          {/* Logo */}
-          <Link href="/" className="hover:opacity-80 transition-opacity">
-            <Image 
-              src="/logo.png" 
-              alt="Pideh Armenia Logo" 
-              width={180} 
-              height={60}
-              className="h-16 w-auto"
-              priority
-            />
-          </Link>
+          <SiteBrandMark variant="desktop" branding={branding} />
 
           {/* Desktop Navigation */}
           <nav className="flex space-x-2">
@@ -83,7 +96,7 @@ export default function DesktopHeader() {
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" />
               <input
                 type="text"
-                placeholder="Поиск..."
+                placeholder={search.short}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyPress={(e) => {
@@ -122,57 +135,77 @@ export default function DesktopHeader() {
               )}
             </Link>
 
-            {/* Auth Buttons */}
-            {status === 'loading' ? (
-              <div className="w-8 h-8 bg-gray-200 rounded-full animate-pulse"></div>
+            {/* Wishlist — только для авторизованных */}
+            {isHydrated && session?.user && (
+              <Link
+                href="/wishlist"
+                className={`
+                  relative p-3 rounded-xl transition-all duration-300 group
+                  ${isActive('/wishlist')
+                    ? 'text-orange-500 bg-orange-50 shadow-md'
+                    : 'text-gray-900 hover:text-red-500 hover:bg-red-50'
+                  }
+                `}
+                title={wishlist.title}
+              >
+                <Heart className={`h-6 w-6 ${isActive('/wishlist') ? 'fill-red-500 text-red-500' : ''}`} />
+                {wishlistProducts.length > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full min-w-[1.25rem] h-5 px-1.5 flex items-center justify-center">
+                    {wishlistProducts.length}
+                  </span>
+                )}
+                {isActive('/wishlist') && (
+                  <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-6 h-1 bg-orange-500 rounded-full" />
+                )}
+              </Link>
+            )}
+
+            {/* Auth: до гидратации показываем скелетон, чтобы не было mismatch server/client */}
+            {!isHydrated || status === 'loading' ? (
+              <div className="w-8 h-8 bg-gray-200 rounded-full animate-pulse" aria-hidden />
             ) : session ? (
               <div className="flex items-center space-x-2">
-                {/* User Profile */}
-                <Link 
-                  href="/profile" 
-                  className={`
-                    flex items-center space-x-2 px-3 py-2 rounded-xl transition-all duration-300 group
-                    ${isActive('/profile')
-                      ? 'text-orange-500 bg-orange-50 shadow-md'
-                      : 'text-gray-900 hover:text-orange-500 hover:bg-orange-50'
-                    }
-                  `}
-                >
-                  <User className="h-5 w-5" />
-                  <span className="hidden sm:block font-medium">{session.user?.name}</span>
-                  
-                  {/* Активный индикатор для профиля */}
-                  {isActive('/profile') && (
-                    <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-6 h-1 bg-orange-500 rounded-full"></div>
-                  )}
-                </Link>
-                
-                {/* Admin Link */}
-                {session.user?.role === 'ADMIN' && (
-                  <Link 
-                    href="/admin" 
+                {/* Admin: один элемент — кнопка Админ; обычный пользователь — профиль */}
+                {session.user?.role === 'ADMIN' ? (
+                  <Link
+                    href="/admin"
                     className={`
-                      relative px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-300 group
+                      relative px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-300
                       ${isActive('/admin')
-                        ? 'text-orange-500 bg-orange-50 shadow-md'
+                        ? 'text-orange-600 bg-orange-100 shadow-md'
                         : 'bg-orange-100 text-orange-600 hover:bg-orange-200'
                       }
                     `}
                   >
-                    Админ
-                    
-                    {/* Активный индикатор для админки */}
+                    {auth.admin}
                     {isActive('/admin') && (
-                      <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-6 h-1 bg-orange-500 rounded-full"></div>
+                      <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-6 h-1 bg-orange-500 rounded-full" />
+                    )}
+                  </Link>
+                ) : (
+                  <Link
+                    href="/profile"
+                    className={`
+                      flex items-center space-x-2 px-3 py-2 rounded-xl transition-all duration-300 group
+                      ${isActive('/profile')
+                        ? 'text-orange-500 bg-orange-50 shadow-md'
+                        : 'text-gray-900 hover:text-orange-500 hover:bg-orange-50'
+                      }
+                    `}
+                  >
+                    <User className="h-5 w-5" />
+                    <span className="hidden sm:block font-medium">{session.user?.name}</span>
+                    {isActive('/profile') && (
+                      <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-6 h-1 bg-orange-500 rounded-full" />
                     )}
                   </Link>
                 )}
-                
+
                 {/* Logout */}
                 <button
                   onClick={() => signOut({ callbackUrl: '/' })}
                   className="p-2 text-gray-900 hover:text-orange-500 transition-colors"
-                  title="Выйти"
+                  title={auth.logoutTitle}
                 >
                   <LogOut className="h-5 w-5" />
                 </button>
@@ -189,7 +222,7 @@ export default function DesktopHeader() {
                     }
                   `}
                 >
-                  Войти
+                  {auth.login}
                   
                   {/* Активный индикатор для входа */}
                   {isActive('/login') && (
@@ -206,7 +239,7 @@ export default function DesktopHeader() {
                     }
                   `}
                 >
-                  Регистрация
+                  {auth.register}
                   
                   {/* Активный индикатор для регистрации */}
                   {isActive('/register') && (

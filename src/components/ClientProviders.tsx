@@ -3,6 +3,8 @@
 import { ReactNode } from 'react'
 import { SessionProvider } from 'next-auth/react'
 import { CartProvider } from '@/hooks/useCart'
+import { WishlistProvider } from '@/hooks/useWishlist'
+import { I18nProvider } from '@/i18n/I18nContext'
 
 interface ClientProvidersProps {
   children: ReactNode
@@ -10,14 +12,16 @@ interface ClientProvidersProps {
 
 export default function ClientProviders({ children }: ClientProvidersProps) {
   return (
-    <SessionProvider 
-      refetchInterval={5 * 60} // Обновляем каждые 5 минут
-      refetchOnWindowFocus={true} // Обновляем при фокусе на окне
-      refetchWhenOffline={false} // Не обновляем когда офлайн
+    <SessionProvider
+      refetchInterval={10 * 60}
+      refetchOnWindowFocus={false}
+      refetchWhenOffline={false}
     >
-      <CartProvider>
-        {children}
-      </CartProvider>
+      <I18nProvider>
+        <CartProvider>
+          <WishlistProvider>{children}</WishlistProvider>
+        </CartProvider>
+      </I18nProvider>
     </SessionProvider>
   )
 }

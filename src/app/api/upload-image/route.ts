@@ -1,17 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { writeFile, mkdir } from 'fs/promises'
-import { join } from 'path'
 import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth'
+import { isR2Configured, uploadToR2 } from '@/lib/r2'
 
 export async function POST(request: NextRequest) {
   try {
-    // Проверяем авторизацию
     const session = await getServerSession(authOptions)
     if (!session || session.user.role !== 'ADMIN') {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
+      )
+    }
+
+    if (!isR2Configured()) {
+      return NextResponse.json(
+        { error: 'R2 storage is not configured' },
+        { status: 503 }
       )
     }
 
@@ -25,7 +30,6 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Проверяем тип файла
     if (!file.type.startsWith('image/')) {
       return NextResponse.json(
         { error: 'File must be an image' },
@@ -33,7 +37,6 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Проверяем размер файла (максимум 5MB)
     if (file.size > 5 * 1024 * 1024) {
       return NextResponse.json(
         { error: 'File size must be less than 5MB' },
@@ -41,37 +44,21 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Генерируем уникальное имя файла
     const timestamp = Date.now()
     const randomString = Math.random().toString(36).substring(2, 8)
-    const extension = file.name.split('.').pop()
+    const extension = file.name.split('.').pop() ?? 'png'
     const fileName = `${timestamp}-${randomString}.${extension}`
+    const key = `images/${fileName}`
 
-    // Путь для сохранения файла
-    const imagesDir = join(process.cwd(), 'public', 'images')
-    const filePath = join(imagesDir, fileName)
-
-    // Создаем папку images если её нет
-    try {
-      await mkdir(imagesDir, { recursive: true })
-    } catch (error) {
-      // Папка уже существует, это нормально
-    }
-
-    // Конвертируем файл в буфер и сохраняем
     const bytes = await file.arrayBuffer()
     const buffer = Buffer.from(bytes)
-    await writeFile(filePath, buffer)
-
-    // Возвращаем путь к файлу
-    const imagePath = `/images/${fileName}`
+    const fullUrl = await uploadToR2(key, buffer, file.type)
 
     return NextResponse.json({
       success: true,
-      path: imagePath,
-      fileName: fileName
+      path: fullUrl,
+      fileName
     })
-
   } catch (error) {
     console.error('Upload error:', error)
     return NextResponse.json(

@@ -87,7 +87,7 @@ export async function PUT(
 
     // Получаем данные из запроса
     const body = await request.json()
-    const { name, description, price, categoryId, image, ingredients, isAvailable, status } = body
+    const { name, shortDescription, description, price, originalPrice, categoryId, image, images, ingredients, isAvailable, status } = body
 
     // Проверяем существование товара
     const existingProduct = await prisma.product.findUnique({
@@ -134,18 +134,20 @@ export async function PUT(
       }
     }
 
-    // Обновляем товар
     const updatedProduct = await prisma.product.update({
       where: { id },
       data: {
         ...(name && { name }),
+        ...(shortDescription !== undefined && { shortDescription: shortDescription?.trim() || null }),
         ...(description && { description }),
         ...(price !== undefined && { price }),
+        ...(originalPrice !== undefined && { originalPrice: originalPrice === null || originalPrice === '' ? null : Number(originalPrice) }),
         ...(categoryId && { categoryId }),
-        ...(image !== undefined && { image: image || 'no-image' }), // Специальное значение для отсутствия изображения
+        ...(image !== undefined && { image: image || 'no-image' }),
+        ...(images !== undefined && { images: Array.isArray(images) ? images : [] }),
         ...(ingredients && { ingredients }),
         ...(isAvailable !== undefined && { isAvailable }),
-        ...(status !== undefined && { status: status || 'REGULAR' }) // Если статус пустой, то REGULAR
+        ...(status !== undefined && { status: status || 'REGULAR' })
       },
       include: {
         category: {
@@ -165,5 +167,37 @@ export async function PUT(
       { error: 'Failed to update product' },
       { status: 500 }
     )
+  }
+}
+
+// PATCH /api/admin/products/[id] — araq toggle isAvailable (1 DB query)
+export async function PATCH(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params
+    const session = await getServerSession(authOptions)
+
+    if (!session?.user || session.user.role !== 'ADMIN') {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    }
+
+    const { isAvailable } = await request.json()
+
+    if (typeof isAvailable !== 'boolean') {
+      return NextResponse.json({ error: 'isAvailable must be boolean' }, { status: 400 })
+    }
+
+    const updated = await prisma.product.update({
+      where: { id },
+      data: { isAvailable },
+      select: { id: true, isAvailable: true },
+    })
+
+    return NextResponse.json(updated)
+  } catch (error) {
+    console.error('Error patching product availability:', error)
+    return NextResponse.json({ error: 'Failed to update' }, { status: 500 })
   }
 }

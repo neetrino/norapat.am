@@ -1,6 +1,12 @@
 import type { NextConfig } from "next";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const nextConfig: NextConfig = {
+  // Корень проекта для трассировки файлов (избегаем конфликта с lockfile в родительской папке)
+  outputFileTracingRoot: path.join(__dirname),
   eslint: {
     // Отключаем ESLint во время сборки для продакшена
     ignoreDuringBuilds: true,
@@ -17,19 +23,22 @@ const nextConfig: NextConfig = {
     minimumCacheTTL: 31536000, // 1 год
     dangerouslyAllowSVG: true,
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
-    qualities: [75, 85, 100], // Добавляем поддержку quality=85
+    qualities: [75, 85, 100],
+    remotePatterns:
+      process.env.R2_PUBLIC_URL && process.env.R2_PUBLIC_URL.startsWith('https')
+        ? [
+            {
+              protocol: 'https',
+              hostname: new URL(process.env.R2_PUBLIC_URL).hostname,
+              pathname: '/**',
+            },
+          ]
+        : [],
   },
   experimental: {
     optimizePackageImports: ['lucide-react'],
   },
-  turbopack: {
-    rules: {
-      '*.svg': {
-        loaders: ['@svgr/webpack'],
-        as: '*.js',
-      },
-    },
-  },
+  // turbopack SVG rule removed: @svgr/webpack was not installed and caused module resolution errors
   // Компрессия
   compress: true,
   // Кэширование
@@ -46,6 +55,15 @@ const nextConfig: NextConfig = {
       },
       {
         source: '/images/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+      {
+        source: '/categories/:path*',
         headers: [
           {
             key: 'Cache-Control',

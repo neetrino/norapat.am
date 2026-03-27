@@ -1,40 +1,49 @@
 'use client'
 
-import { createContext, useContext, useReducer, ReactNode, useEffect } from 'react'
+import { createContext, useContext, useEffect, useReducer, type ReactNode } from 'react'
+import { useSession } from 'next-auth/react'
 import { Product, CartItem, CartContextType } from '@/types'
 import { useHydration } from './useHydration'
 
-// Ключ для localStorage
-const CART_STORAGE_KEY = 'pideh-cart'
+const CART_STORAGE_KEY_PREFIX = 'pideh-cart'
+const LEGACY_CART_STORAGE_KEY = 'pideh-cart'
+const GUEST_CART_STORAGE_KEY = `${CART_STORAGE_KEY_PREFIX}:guest`
 
-// Функции для работы с localStorage
-const saveCartToStorage = (cart: CartItem[]) => {
+const getCartStorageKey = (userId?: string | null) =>
+  userId ? `${CART_STORAGE_KEY_PREFIX}:${userId}` : GUEST_CART_STORAGE_KEY
+
+const saveCartToStorage = (storageKey: string, cart: CartItem[]) => {
   try {
-    localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart))
+    localStorage.setItem(storageKey, JSON.stringify(cart))
   } catch (error) {
-    console.warn('Не удалось сохранить корзину в localStorage:', error)
+    console.warn('Failed to save cart to localStorage:', error)
   }
 }
 
-const loadCartFromStorage = (): CartItem[] => {
+const loadCartFromStorage = (storageKey: string): CartItem[] => {
   try {
-    const saved = localStorage.getItem(CART_STORAGE_KEY)
+    const saved = localStorage.getItem(storageKey)
+
+    if (!saved && storageKey === GUEST_CART_STORAGE_KEY) {
+      const legacySaved = localStorage.getItem(LEGACY_CART_STORAGE_KEY)
+      return legacySaved ? JSON.parse(legacySaved) : []
+    }
+
     return saved ? JSON.parse(saved) : []
   } catch (error) {
-    console.warn('Не удалось загрузить корзину из localStorage:', error)
+    console.warn('Failed to load cart from localStorage:', error)
     return []
   }
 }
 
-const clearCartFromStorage = () => {
+const clearCartFromStorage = (storageKey: string) => {
   try {
-    localStorage.removeItem(CART_STORAGE_KEY)
+    localStorage.removeItem(storageKey)
   } catch (error) {
-    console.warn('Не удалось очистить корзину из localStorage:', error)
+    console.warn('Failed to clear cart from localStorage:', error)
   }
 }
 
-// Типы для reducer
 type CartAction =
   | { type: 'ADD_ITEM'; payload: { product: Product; quantity?: number } }
   | { type: 'REMOVE_ITEM'; payload: { productId: string } }
@@ -42,85 +51,85 @@ type CartAction =
   | { type: 'CLEAR_CART' }
   | { type: 'LOAD_CART'; payload: CartItem[] }
 
-// Начальное состояние
 const initialState: CartItem[] = []
 
-// Reducer для управления состоянием корзины
 function cartReducer(state: CartItem[], action: CartAction): CartItem[] {
-  let newState: CartItem[]
-  
   switch (action.type) {
     case 'ADD_ITEM': {
       const { product, quantity = 1 } = action.payload
-      const existingItem = state.find(item => item.product.id === product.id)
-      
+      const existingItem = state.find((item) => item.product.id === product.id)
+
       if (existingItem) {
-        newState = state.map(item =>
+        return state.map((item) =>
           item.product.id === product.id
             ? { ...item, quantity: item.quantity + quantity }
             : item
         )
-      } else {
-        newState = [...state, { product, quantity }]
       }
-      break
+
+      return [...state, { product, quantity }]
     }
-    
-    case 'REMOVE_ITEM': {
-      newState = state.filter(item => item.product.id !== action.payload.productId)
-      break
-    }
-    
+
+    case 'REMOVE_ITEM':
+      return state.filter((item) => item.product.id !== action.payload.productId)
+
     case 'UPDATE_QUANTITY': {
       const { productId, quantity } = action.payload
-      
+
       if (quantity <= 0) {
-        newState = state.filter(item => item.product.id !== productId)
-      } else {
-        newState = state.map(item =>
-          item.product.id === productId
-            ? { ...item, quantity }
-            : item
-        )
+        return state.filter((item) => item.product.id !== productId)
       }
-      break
+
+      return state.map((item) =>
+        item.product.id === productId ? { ...item, quantity } : item
+      )
     }
-    
+
     case 'CLEAR_CART':
-      newState = []
-      clearCartFromStorage()
-      break
-    
+      return []
+
     case 'LOAD_CART':
-      newState = action.payload
-      break
-    
+      return action.payload
+
     default:
       return state
   }
-  
-  // Сохраняем в localStorage после каждого изменения
-  saveCartToStorage(newState)
-  return newState
 }
 
-// Создание контекста
 const CartContext = createContext<CartContextType | undefined>(undefined)
 
-// Провайдер контекста
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, dispatch] = useReducer(cartReducer, initialState)
   const isHydrated = useHydration()
+  const { data: session, status } = useSession()
+  const storageKey = getCartStorageKey(session?.user?.id)
 
-  // Загружаем корзину из localStorage при инициализации
   useEffect(() => {
-    if (isHydrated) {
-      const savedCart = loadCartFromStorage()
-      if (savedCart.length > 0) {
-        dispatch({ type: 'LOAD_CART', payload: savedCart })
+    if (!isHydrated || status === 'loading') return
+
+    const savedCart = loadCartFromStorage(storageKey)
+    dispatch({ type: 'LOAD_CART', payload: savedCart })
+  }, [isHydrated, status, storageKey])
+
+  useEffect(() => {
+    if (!isHydrated || status === 'loading') return
+
+    if (items.length === 0) {
+      clearCartFromStorage(storageKey)
+
+      if (storageKey === GUEST_CART_STORAGE_KEY) {
+        clearCartFromStorage(LEGACY_CART_STORAGE_KEY)
       }
+
+      return
     }
-  }, [isHydrated])
+
+    saveCartToStorage(storageKey, items)
+
+    if (storageKey === GUEST_CART_STORAGE_KEY) {
+      saveCartToStorage(LEGACY_CART_STORAGE_KEY, items)
+    }
+  }, [isHydrated, items, status, storageKey])
 
   const addItem = (product: Product, quantity: number = 1) => {
     dispatch({ type: 'ADD_ITEM', payload: { product, quantity } })
@@ -139,19 +148,18 @@ export function CartProvider({ children }: { children: ReactNode }) {
   }
 
   const getTotalPrice = () => {
-    return items.reduce((total, item) => total + (item.product.price * item.quantity), 0)
+    return items.reduce((total, item) => total + item.product.price * item.quantity, 0)
   }
 
   const getTotalItems = () => {
     return items.reduce((total, item) => total + item.quantity, 0)
   }
 
-  // Функция для валидации корзины (удаляет несуществующие продукты)
   const validateCart = async () => {
     if (items.length === 0) return
 
     try {
-      const productIds = items.map(item => item.product.id)
+      const productIds = items.map((item) => item.product.id)
       const response = await fetch('/api/products/validate', {
         method: 'POST',
         headers: {
@@ -162,23 +170,26 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
       if (response.ok) {
         const { validIds } = await response.json()
-        const invalidItems = items.filter(item => !validIds.includes(item.product.id))
-        
+        const invalidItems = items.filter((item) => !validIds.includes(item.product.id))
+
         if (invalidItems.length > 0) {
-          console.warn('Удаляем несуществующие продукты из корзины:', invalidItems.map(item => item.product.name))
-          // Удаляем несуществующие продукты
-          invalidItems.forEach(item => {
+          console.warn(
+            'Removing missing products from cart:',
+            invalidItems.map((item) => item.product.name)
+          )
+
+          invalidItems.forEach((item) => {
             dispatch({ type: 'REMOVE_ITEM', payload: { productId: item.product.id } })
           })
         }
       }
     } catch (error) {
-      console.warn('Не удалось валидировать корзину:', error)
+      console.warn('Failed to validate cart:', error)
     }
   }
 
   const value: CartContextType = {
-    items: isHydrated ? items : [], // На сервере всегда пустая корзина
+    items: isHydrated ? items : [],
     addItem,
     removeItem,
     updateQuantity,
@@ -188,18 +199,15 @@ export function CartProvider({ children }: { children: ReactNode }) {
     validateCart,
   }
 
-  return (
-    <CartContext.Provider value={value}>
-      {children}
-    </CartContext.Provider>
-  )
+  return <CartContext.Provider value={value}>{children}</CartContext.Provider>
 }
 
-// Хук для использования контекста корзины
 export function useCart() {
   const context = useContext(CartContext)
+
   if (context === undefined) {
     throw new Error('useCart must be used within a CartProvider')
   }
+
   return context
 }

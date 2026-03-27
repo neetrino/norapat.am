@@ -7,38 +7,35 @@ import { ArrowLeft, MapPin, Clock, CreditCard, Phone, User } from 'lucide-react'
 import { useCart } from '@/hooks/useCart'
 import { useSession } from 'next-auth/react'
 import Footer from '@/components/Footer'
-
-interface UserProfile {
-  id: string
-  name: string | null
-  email: string
-  phone: string | null
-  address: string | null
-}
+import { useI18n } from '@/i18n/I18nContext'
+import { getProductDisplayName } from '@/i18n/getProductDisplayName'
 
 export default function CheckoutPage() {
+  const { locale, t } = useI18n()
+  const cp = t.checkoutPage
   const router = useRouter()
   const { items, getTotalPrice, clearCart, validateCart } = useCart()
   const { data: session, status } = useSession()
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [userProfile, setUserProfile] = useState<UserProfile | null>(null)
-  
   // Form state
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
     address: '',
-    deliveryTime: 'asap', // Дефолтное значение "Как можно скорее"
+    deliveryTime: 'asap',
     paymentMethod: 'cash',
     notes: ''
   })
 
   const [errors, setErrors] = useState<Record<string, string>>({})
+  const [promoCode, setPromoCode] = useState('')
+  const [promoDiscount, setPromoDiscount] = useState(0)
+  const [promoMessage, setPromoMessage] = useState('')
+  const [promoApplying, setPromoApplying] = useState(false)
 
   // Redirect if cart is empty and validate cart
   useEffect(() => {
     if (items.length === 0) {
-      console.log('Cart is empty, redirecting to cart page')
       router.push('/cart')
     } else {
       // Валидируем корзину при загрузке страницы
@@ -51,34 +48,22 @@ export default function CheckoutPage() {
     const loadUserProfile = async () => {
       if (status === 'loading') return
       
-      if (!session) {
-        console.log('Guest user - no profile to load')
-        return
-      }
+      if (!session) return
 
       try {
-        console.log('Loading user profile for authenticated user')
         const response = await fetch('/api/user/profile')
-        
+
         if (response.ok) {
           const profile = await response.json()
-          setUserProfile(profile)
-          
-          // Автоматически заполняем форму данными пользователя
           setFormData(prev => ({
             ...prev,
             name: profile.name || '',
             phone: profile.phone || '',
             address: profile.address || ''
           }))
-          console.log('User profile loaded and form auto-filled:', profile)
-        } else if (response.status === 401) {
-          console.log('User session expired, continuing as guest')
-        } else {
-          console.log('Profile not found, continuing as guest')
         }
-      } catch (error) {
-        console.log('Error loading profile, continuing as guest:', error)
+      } catch {
+        // Продолжаем как гость при ошибке загрузки профиля
       }
     }
 
@@ -101,21 +86,49 @@ export default function CheckoutPage() {
     }
   }
 
+  const applyPromo = async () => {
+    const code = promoCode.trim().toUpperCase()
+    if (!code) return
+    setPromoApplying(true)
+    setPromoMessage('')
+    setPromoDiscount(0)
+    try {
+      const res = await fetch('/api/promo/validate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code, total: getTotalPrice() })
+      })
+      const data = await res.json()
+      if (data.valid && data.discountAmount != null) {
+        setPromoDiscount(data.discountAmount)
+        setPromoMessage(data.message || 'Զեղչ կիրառված')
+      } else {
+        setPromoMessage(data.message || 'Պրոմո կոդը սխալ է')
+      }
+    } catch {
+      setPromoMessage('Սխալ')
+    } finally {
+      setPromoApplying(false)
+    }
+  }
+
+  const finalTotal = Math.max(0, getTotalPrice() - promoDiscount)
+
   const validateForm = () => {
     const newErrors: Record<string, string> = {}
 
     if (!formData.name.trim()) {
-      newErrors.name = 'Имя обязательно'
+      newErrors.name = cp.errorName
     }
 
     if (!formData.phone.trim()) {
-      newErrors.phone = 'Телефон обязателен'
+      newErrors.phone = cp.errorPhone
     } else if (!/^\+?[0-9\s\-\(\)]{10,}$/.test(formData.phone)) {
-      newErrors.phone = 'Неверный формат телефона'
+      newErrors.phone = cp.errorPhoneFormat
     }
 
     if (!formData.address.trim()) {
-      newErrors.address = 'Адрес обязателен'
+      newErrors.address = cp.errorAddress
     }
 
     // Время доставки уже имеет дефолтное значение, валидация не нужна
@@ -126,62 +139,56 @@ export default function CheckoutPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     if (!validateForm()) {
+      setTimeout(() => {
+        const firstError = document.querySelector('.border-red-500') as HTMLElement | null
+        if (firstError) {
+          firstError.scrollIntoView({ behavior: 'smooth', block: 'center' })
+          firstError.focus()
+        }
+      }, 0)
       return
     }
 
-    // Валидируем корзину перед отправкой
     await validateCart()
-    
-    // Проверяем, что корзина не пуста после валидации
     if (items.length === 0) {
-      alert('В корзине нет доступных товаров. Пожалуйста, добавьте товары в корзину.')
+      alert(cp.alertEmptyCart)
       router.push('/products')
       return
     }
 
     setIsSubmitting(true)
 
-    try {
-      // Send order to API
-      const orderData = {
-        ...formData,
-        items: items.map(item => ({
-          productId: item.product.id,
-          quantity: item.quantity,
-          price: item.product.price
-        })),
-        total: getTotalPrice()
-      }
+    const orderPayload = {
+      ...formData,
+      email: session?.user?.email,
+      items: items.map(item => ({
+        productId: item.product.id,
+        quantity: item.quantity,
+        price: item.product.price
+      })),
+      total: finalTotal,
+      promoCode: promoDiscount > 0 ? promoCode.trim().toUpperCase() : undefined
+    }
 
+    try {
       const response = await fetch('/api/orders', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(orderData),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(orderPayload)
       })
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}))
-        console.error('Order creation failed:', {
-          status: response.status,
-          statusText: response.statusText,
-          error: errorData
-        })
-        throw new Error(`Failed to create order: ${errorData.error || response.statusText}`)
+        throw new Error(errorData.error || response.statusText)
       }
-      
-      console.log('Order created successfully, redirecting to order-success page')
-      
-      // Clear cart first
+
       clearCart()
-      // Force redirect to success page using window.location
       window.location.href = '/order-success'
     } catch (error) {
-      console.error('Error submitting order:', error)
-      alert('Произошла ошибка при оформлении заказа. Попробуйте еще раз.')
+      console.error('Order submit error:', error)
+      alert(cp.alertOrderError)
     } finally {
       setIsSubmitting(false)
     }
@@ -192,10 +199,11 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-white">
       
       {/* Отступ для fixed хедера */}
-      <div className="lg:hidden h-16"></div>
+      <div className="h-header-spacer-mobile lg:hidden" aria-hidden />
+      <div className="h-header-spacer-desktop hidden lg:block" aria-hidden />
       
       {/* Mobile App Style Container */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 lg:py-8 pb-20 lg:pb-8">
@@ -207,9 +215,9 @@ export default function CheckoutPage() {
               className="flex items-center text-gray-600 hover:text-orange-500 transition-colors"
             >
               <ArrowLeft className="h-6 w-6 mr-2" />
-              <span className="text-lg font-medium">к корзине</span>
+              <span className="text-lg font-medium">{cp.backToCartShort}</span>
             </Link>
-            <h1 className="text-2xl font-bold text-gray-900">оформление</h1>
+            <h1 className="text-2xl font-bold text-gray-900">{cp.titleShort}</h1>
           </div>
         </div>
 
@@ -220,10 +228,10 @@ export default function CheckoutPage() {
             className="flex items-center text-gray-600 hover:text-orange-500 transition-colors"
           >
             <ArrowLeft className="h-5 w-5 mr-2" />
-            Назад к корзине
+            {cp.backToCart}
           </Link>
           <div className="h-8 w-px bg-gray-300"></div>
-          <h1 className="text-3xl font-bold text-gray-900">Оформление заказа</h1>
+          <h1 className="text-3xl font-bold text-gray-900">{cp.title}</h1>
         </div>
 
         <form onSubmit={handleSubmit}>
@@ -232,10 +240,10 @@ export default function CheckoutPage() {
             {/* Mobile Order Form */}
             <div className="bg-white rounded-2xl shadow-lg p-6">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-semibold text-gray-900">Данные для доставки</h2>
+                <h2 className="text-lg font-semibold text-gray-900">{cp.deliveryData}</h2>
                 {!session && (
                   <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full">
-                    Гостевой заказ
+                    {cp.guestOrder}
                   </span>
                 )}
               </div>
@@ -245,7 +253,7 @@ export default function CheckoutPage() {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     <User className="inline h-4 w-4 mr-1" />
-                    Имя *
+                    {cp.name}
                   </label>
                   <input
                     type="text"
@@ -255,7 +263,7 @@ export default function CheckoutPage() {
                     className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors text-gray-900 ${
                       errors.name ? 'border-red-500' : 'border-gray-300'
                     }`}
-                    placeholder="Введите ваше имя"
+                    placeholder={cp.namePlaceholder}
                   />
                   {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
                 </div>
@@ -264,7 +272,7 @@ export default function CheckoutPage() {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     <Phone className="inline h-4 w-4 mr-1" />
-                    Телефон *
+                    {cp.phone}
                   </label>
                   <input
                     type="tel"
@@ -283,7 +291,7 @@ export default function CheckoutPage() {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     <MapPin className="inline h-4 w-4 mr-1" />
-                    Адрес доставки *
+                    {cp.address}
                   </label>
                   <textarea
                     name="address"
@@ -293,7 +301,7 @@ export default function CheckoutPage() {
                     className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors resize-none text-gray-900 ${
                       errors.address ? 'border-red-500' : 'border-gray-300'
                     }`}
-                    placeholder="Укажите полный адрес доставки"
+                    placeholder={cp.addressPlaceholder}
                   />
                   {errors.address && <p className="text-red-500 text-sm mt-1">{errors.address}</p>}
                 </div>
@@ -302,7 +310,7 @@ export default function CheckoutPage() {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     <Clock className="inline h-4 w-4 mr-1" />
-                    Время доставки *
+                    {cp.deliveryTime}
                   </label>
                   <select
                     name="deliveryTime"
@@ -310,7 +318,7 @@ export default function CheckoutPage() {
                     onChange={handleInputChange}
                     className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors text-gray-900"
                   >
-                    <option value="asap">Как можно скорее (20-30 мин)</option>
+                    <option value="asap">{cp.asap}</option>
                     <option value="11:00-12:00">11:00 - 12:00</option>
                     <option value="12:00-13:00">12:00 - 13:00</option>
                     <option value="13:00-14:00">13:00 - 14:00</option>
@@ -329,97 +337,106 @@ export default function CheckoutPage() {
 
             {/* Mobile Payment Method */}
             <div className="bg-white rounded-2xl shadow-lg p-6">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">Способ оплаты</h2>
-              <div className="space-y-4">
-                <label className={`relative p-4 border-2 rounded-xl cursor-pointer transition-all duration-300 ${
-                  formData.paymentMethod === 'cash' 
-                    ? 'border-orange-500 bg-orange-50' 
-                    : 'border-gray-300'
+              <h2 className="text-lg font-semibold text-gray-900 mb-4">{cp.paymentMethod}</h2>
+              <div className="space-y-3">
+                {/* Cash */}
+                <label className={`flex items-center p-4 rounded-2xl cursor-pointer transition-all duration-200 border-2 ${
+                  formData.paymentMethod === 'cash'
+                    ? 'border-orange-400 bg-orange-50/40'
+                    : 'border-gray-100 bg-white hover:border-gray-200'
                 }`}>
-                  <input
-                    type="radio"
-                    name="paymentMethod"
-                    value="cash"
-                    checked={formData.paymentMethod === 'cash'}
-                    onChange={handleInputChange}
-                    className="sr-only"
-                  />
-                  <div className="flex items-center space-x-3">
-                    <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-                      <svg className="h-6 w-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
-                      </svg>
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="text-base font-semibold text-gray-900">Наличные</h3>
-                      <p className="text-sm text-gray-600">Оплата курьеру наличными</p>
-                    </div>
-                    {formData.paymentMethod === 'cash' && (
-                      <div className="w-6 h-6 bg-orange-500 rounded-full flex items-center justify-center">
-                        <svg className="h-4 w-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                        </svg>
-                      </div>
-                    )}
+                  <input type="radio" name="paymentMethod" value="cash" checked={formData.paymentMethod === 'cash'} onChange={handleInputChange} className="sr-only" />
+                  <div className="w-12 h-12 bg-white border border-gray-100 rounded-xl flex items-center justify-center mr-4 shrink-0 shadow-sm">
+                    <svg className="h-6 w-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-sm font-semibold text-gray-900">{cp.cash}</h3>
+                    <p className="text-xs text-gray-500 mt-0.5">{cp.cashDescFull}</p>
                   </div>
                 </label>
-                
-                <label className={`relative p-4 border-2 rounded-xl cursor-pointer transition-all duration-300 ${
-                  formData.paymentMethod === 'card' 
-                    ? 'border-orange-500 bg-orange-50' 
-                    : 'border-gray-300'
+
+                {/* ArCa */}
+                <label className={`flex items-center p-4 rounded-2xl cursor-pointer transition-all duration-200 border-2 ${
+                  formData.paymentMethod === 'arca'
+                    ? 'border-orange-400 bg-orange-50/40'
+                    : 'border-gray-100 bg-white hover:border-gray-200'
                 }`}>
-                  <input
-                    type="radio"
-                    name="paymentMethod"
-                    value="card"
-                    checked={formData.paymentMethod === 'card'}
-                    onChange={handleInputChange}
-                    className="sr-only"
-                  />
-                  <div className="flex items-center space-x-3">
-                    <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                      <CreditCard className="h-6 w-6 text-blue-600" />
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="text-base font-semibold text-gray-900">Карта</h3>
-                      <p className="text-sm text-gray-600">Оплата картой через терминал</p>
-                    </div>
-                    {formData.paymentMethod === 'card' && (
-                      <div className="w-6 h-6 bg-orange-500 rounded-full flex items-center justify-center">
-                        <svg className="h-4 w-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                        </svg>
-                      </div>
-                    )}
+                  <input type="radio" name="paymentMethod" value="arca" checked={formData.paymentMethod === 'arca'} onChange={handleInputChange} className="sr-only" />
+                  <div className="w-12 h-12 bg-white border border-gray-100 rounded-xl flex items-center justify-center mr-4 shrink-0 shadow-sm">
+                    <span className="text-sm font-extrabold tracking-tight text-blue-700">arc<span className="text-blue-500">a</span></span>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-sm font-semibold text-gray-900">ArCa</h3>
+                    <p className="text-xs text-gray-500 mt-0.5">Վճարեք ArCa քարտով</p>
                   </div>
                 </label>
+
+                {/* Mastercard */}
+                <label className={`flex items-center p-4 rounded-2xl cursor-pointer transition-all duration-200 border-2 ${
+                  formData.paymentMethod === 'mastercard'
+                    ? 'border-orange-400 bg-orange-50/40'
+                    : 'border-gray-100 bg-white hover:border-gray-200'
+                }`}>
+                  <input type="radio" name="paymentMethod" value="mastercard" checked={formData.paymentMethod === 'mastercard'} onChange={handleInputChange} className="sr-only" />
+                  <div className="w-12 h-12 bg-white border border-gray-100 rounded-xl flex items-center justify-center mr-4 shrink-0 shadow-sm">
+                    <svg viewBox="0 0 38 24" className="w-8 h-5">
+                      <circle cx="15" cy="12" r="7" fill="#EB001B" />
+                      <circle cx="23" cy="12" r="7" fill="#F79E1B" />
+                      <path d="M19 6.8a7 7 0 010 10.4A7 7 0 0119 6.8z" fill="#FF5F00" />
+                    </svg>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-sm font-semibold text-gray-900">Mastercard</h3>
+                    <p className="text-xs text-gray-500 mt-0.5">Վճարեք Mastercard քարտով</p>
+                  </div>
+                </label>
+
+                {/* Visa */}
+                <label className={`flex items-center p-4 rounded-2xl cursor-pointer transition-all duration-200 border-2 ${
+                  formData.paymentMethod === 'visa'
+                    ? 'border-orange-400 bg-orange-50/40'
+                    : 'border-gray-100 bg-white hover:border-gray-200'
+                }`}>
+                  <input type="radio" name="paymentMethod" value="visa" checked={formData.paymentMethod === 'visa'} onChange={handleInputChange} className="sr-only" />
+                  <div className="w-12 h-12 bg-white border border-gray-100 rounded-xl flex items-center justify-center mr-4 shrink-0 shadow-sm">
+                    <span className="text-sm font-extrabold italic text-blue-800 tracking-wider">VISA</span>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-sm font-semibold text-gray-900">Visa</h3>
+                    <p className="text-xs text-gray-500 mt-0.5">Վճարեք Visa քարտով</p>
+                  </div>
+                </label>
+
               </div>
             </div>
 
             {/* Mobile Notes */}
             <div className="bg-white rounded-2xl shadow-lg p-6">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">Комментарий</h2>
+              <h2 className="text-lg font-semibold text-gray-900 mb-4">{cp.comment}</h2>
               <textarea
                 name="notes"
                 value={formData.notes}
                 onChange={handleInputChange}
                 rows={3}
                 className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors resize-none text-gray-900"
-                placeholder="Дополнительные пожелания к заказу..."
+                placeholder={cp.commentPlaceholder}
               />
             </div>
 
             {/* Mobile Order Summary */}
             <div className="bg-white rounded-2xl shadow-lg p-6">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">Ваш заказ</h2>
+              <h2 className="text-lg font-semibold text-gray-900 mb-4">{cp.yourOrder}</h2>
               
               <div className="space-y-3 mb-6">
                 {items.map((item) => (
                   <div key={item.product.id} className="flex justify-between items-center py-2">
                     <div className="flex-1">
-                      <div className="font-medium text-gray-900 text-sm">{item.product.name}</div>
-                      <div className="text-xs text-gray-600">{item.quantity} шт.</div>
+                      <div className="font-medium text-gray-900 text-sm">
+                        {getProductDisplayName(item.product.name, locale)}
+                      </div>
+                        <div className="text-xs text-gray-600">{item.quantity} {cp.qtyUnit}.</div>
                     </div>
                     <div className="font-semibold text-gray-900 text-sm">
                       {item.product.price * item.quantity} ֏
@@ -427,14 +444,41 @@ export default function CheckoutPage() {
                   </div>
                 ))}
                 
-                <div className="border-t border-gray-300 pt-3">
+                <div className="border-t border-gray-300 pt-3 space-y-2">
+                  {promoDiscount > 0 && (
+                    <div className="flex justify-between text-sm text-green-600">
+                      <span>Զեղչ (պրոմո)</span>
+                      <span>-{promoDiscount} ֏</span>
+                    </div>
+                  )}
                   <div className="flex justify-between text-lg font-bold text-gray-900">
-                    <span>Итого</span>
-                    <span>{getTotalPrice()} ֏</span>
+                    <span>{cp.total}</span>
+                    <span>{finalTotal} ֏</span>
                   </div>
                   <div className="text-sm text-green-600 mt-1">
-                    Доставка бесплатно
+                    {cp.freeDelivery}
                   </div>
+                </div>
+                <div className="pt-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Պրոմո կոդ</label>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={promoCode}
+                      onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
+                      placeholder="PROMO"
+                      className="flex-1 px-4 py-2 border border-gray-300 rounded-xl text-gray-900"
+                    />
+                    <button
+                      type="button"
+                      onClick={applyPromo}
+                      disabled={promoApplying}
+                      className="px-4 py-2 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 disabled:opacity-50"
+                    >
+                      {promoApplying ? '...' : 'Կիրառել'}
+                    </button>
+                  </div>
+                  {promoMessage && <p className={`text-sm mt-1 ${promoDiscount > 0 ? 'text-green-600' : 'text-red-600'}`}>{promoMessage}</p>}
                 </div>
               </div>
               
@@ -443,15 +487,15 @@ export default function CheckoutPage() {
                 disabled={isSubmitting}
                 className="w-full bg-orange-500 text-white py-4 rounded-xl font-semibold hover:bg-orange-600 transition-colors text-center text-lg disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {isSubmitting ? 'Оформляем заказ...' : 'Подтвердить заказ'}
+                {isSubmitting ? cp.submitting : cp.submit}
               </button>
               
               <p className="text-xs text-gray-500 mt-4 text-center">
-                Нажимая "Подтвердить заказ", вы соглашаетесь с условиями доставки
+                {cp.agreeTerms}
               </p>
               {!session && (
                 <p className="text-xs text-blue-600 mt-2 text-center">
-                  💡 После заказа вы сможете создать аккаунт для быстрого оформления в будущем
+                  💡 {cp.guestHint}
                 </p>
               )}
             </div>
@@ -463,10 +507,10 @@ export default function CheckoutPage() {
             <div className="lg:col-span-2">
               <div className="bg-white rounded-2xl shadow-lg p-8">
                 <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-2xl font-semibold text-gray-900">Данные для доставки</h2>
+                  <h2 className="text-2xl font-semibold text-gray-900">{cp.deliveryData}</h2>
                   {!session && (
                     <span className="text-sm bg-blue-100 text-blue-700 px-3 py-1 rounded-full">
-                      Гостевой заказ
+                      {cp.guestOrder}
                     </span>
                   )}
                 </div>
@@ -476,7 +520,7 @@ export default function CheckoutPage() {
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       <User className="inline h-4 w-4 mr-1" />
-                      Имя *
+                      {cp.name}
                     </label>
                     <input
                       type="text"
@@ -486,7 +530,7 @@ export default function CheckoutPage() {
                       className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors text-gray-900 ${
                         errors.name ? 'border-red-500' : 'border-gray-300'
                       }`}
-                      placeholder="Введите ваше имя"
+                      placeholder={cp.namePlaceholder}
                     />
                     {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
                   </div>
@@ -495,7 +539,7 @@ export default function CheckoutPage() {
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       <Phone className="inline h-4 w-4 mr-1" />
-                      Телефон *
+                      {cp.phone}
                     </label>
                     <input
                       type="tel"
@@ -514,7 +558,7 @@ export default function CheckoutPage() {
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       <MapPin className="inline h-4 w-4 mr-1" />
-                      Адрес доставки *
+                      {cp.address}
                     </label>
                     <textarea
                       name="address"
@@ -524,7 +568,7 @@ export default function CheckoutPage() {
                       className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors resize-none text-gray-900 ${
                         errors.address ? 'border-red-500' : 'border-gray-300'
                       }`}
-                      placeholder="Укажите полный адрес доставки"
+                      placeholder={cp.addressPlaceholder}
                     />
                     {errors.address && <p className="text-red-500 text-sm mt-1">{errors.address}</p>}
                   </div>
@@ -533,7 +577,7 @@ export default function CheckoutPage() {
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       <Clock className="inline h-4 w-4 mr-1" />
-                      Время доставки *
+                      {cp.deliveryTime}
                     </label>
                     <select
                       name="deliveryTime"
@@ -541,7 +585,7 @@ export default function CheckoutPage() {
                       onChange={handleInputChange}
                       className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors text-gray-900"
                     >
-                      <option value="asap">Как можно скорее (20-30 мин)</option>
+                      <option value="asap">{cp.asap}</option>
                       <option value="11:00-12:00">11:00 - 12:00</option>
                       <option value="12:00-13:00">12:00 - 13:00</option>
                       <option value="13:00-14:00">13:00 - 14:00</option>
@@ -560,79 +604,86 @@ export default function CheckoutPage() {
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-4">
                       <CreditCard className="inline h-4 w-4 mr-1" />
-                      Способ оплаты *
+                      {cp.paymentMethod} *
                     </label>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <label className={`relative p-6 border-2 rounded-xl cursor-pointer transition-all duration-300 hover:shadow-lg ${
-                        formData.paymentMethod === 'cash' 
-                          ? 'border-orange-500 bg-orange-50 shadow-md' 
-                          : 'border-gray-300 hover:border-orange-300'
+                    <div className="space-y-3">
+                      {/* Cash */}
+                      <label className={`flex items-center p-4 rounded-2xl cursor-pointer transition-all duration-200 border-2 ${
+                        formData.paymentMethod === 'cash'
+                          ? 'border-orange-400 bg-orange-50/40'
+                          : 'border-gray-100 bg-white hover:border-gray-200'
                       }`}>
-                        <input
-                          type="radio"
-                          name="paymentMethod"
-                          value="cash"
-                          checked={formData.paymentMethod === 'cash'}
-                          onChange={handleInputChange}
-                          className="sr-only"
-                        />
-                        <div className="text-center">
-                          <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <svg className="h-8 w-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
-                            </svg>
-                          </div>
-                          <h3 className="text-lg font-semibold text-gray-900 mb-2">Наличные</h3>
-                          <p className="text-sm text-gray-600">Оплата курьеру наличными при доставке</p>
-                          {formData.paymentMethod === 'cash' && (
-                            <div className="absolute top-4 right-4">
-                              <div className="w-6 h-6 bg-orange-500 rounded-full flex items-center justify-center">
-                                <svg className="h-4 w-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                                </svg>
-                              </div>
-                            </div>
-                          )}
+                        <input type="radio" name="paymentMethod" value="cash" checked={formData.paymentMethod === 'cash'} onChange={handleInputChange} className="sr-only" />
+                        <div className="w-14 h-14 bg-white border border-gray-100 rounded-xl flex items-center justify-center mr-5 shrink-0 shadow-sm">
+                          <svg className="h-7 w-7 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+                          </svg>
+                        </div>
+                        <div className="flex-1">
+                          <h3 className="text-sm font-semibold text-gray-900">{cp.cash}</h3>
+                          <p className="text-sm text-gray-500 mt-0.5">{cp.cashDescFull}</p>
                         </div>
                       </label>
-                      
-                      <label className={`relative p-6 border-2 rounded-xl cursor-pointer transition-all duration-300 hover:shadow-lg ${
-                        formData.paymentMethod === 'card' 
-                          ? 'border-orange-500 bg-orange-50 shadow-md' 
-                          : 'border-gray-300 hover:border-orange-300'
+
+                      {/* ArCa */}
+                      <label className={`flex items-center p-4 rounded-2xl cursor-pointer transition-all duration-200 border-2 ${
+                        formData.paymentMethod === 'arca'
+                          ? 'border-orange-400 bg-orange-50/40'
+                          : 'border-gray-100 bg-white hover:border-gray-200'
                       }`}>
-                        <input
-                          type="radio"
-                          name="paymentMethod"
-                          value="card"
-                          checked={formData.paymentMethod === 'card'}
-                          onChange={handleInputChange}
-                          className="sr-only"
-                        />
-                        <div className="text-center">
-                          <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <CreditCard className="h-8 w-8 text-blue-600" />
-                          </div>
-                          <h3 className="text-lg font-semibold text-gray-900 mb-2">Карта</h3>
-                          <p className="text-sm text-gray-600">Оплата картой через терминал курьера</p>
-                          {formData.paymentMethod === 'card' && (
-                            <div className="absolute top-4 right-4">
-                              <div className="w-6 h-6 bg-orange-500 rounded-full flex items-center justify-center">
-                                <svg className="h-4 w-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                                </svg>
-                              </div>
-                            </div>
-                          )}
+                        <input type="radio" name="paymentMethod" value="arca" checked={formData.paymentMethod === 'arca'} onChange={handleInputChange} className="sr-only" />
+                        <div className="w-14 h-14 bg-white border border-gray-100 rounded-xl flex items-center justify-center mr-5 shrink-0 shadow-sm">
+                          <span className="text-sm font-extrabold tracking-tight text-blue-700">arc<span className="text-blue-500">a</span></span>
+                        </div>
+                        <div className="flex-1">
+                          <h3 className="text-sm font-semibold text-gray-900">ArCa</h3>
+                          <p className="text-sm text-gray-500 mt-0.5">Վճարեք ArCa քարտով</p>
                         </div>
                       </label>
+
+                      {/* Mastercard */}
+                      <label className={`flex items-center p-4 rounded-2xl cursor-pointer transition-all duration-200 border-2 ${
+                        formData.paymentMethod === 'mastercard'
+                          ? 'border-orange-400 bg-orange-50/40'
+                          : 'border-gray-100 bg-white hover:border-gray-200'
+                      }`}>
+                        <input type="radio" name="paymentMethod" value="mastercard" checked={formData.paymentMethod === 'mastercard'} onChange={handleInputChange} className="sr-only" />
+                        <div className="w-14 h-14 bg-white border border-gray-100 rounded-xl flex items-center justify-center mr-5 shrink-0 shadow-sm">
+                          <svg viewBox="0 0 38 24" className="w-9 h-6">
+                            <circle cx="15" cy="12" r="7" fill="#EB001B" />
+                            <circle cx="23" cy="12" r="7" fill="#F79E1B" />
+                            <path d="M19 6.8a7 7 0 010 10.4A7 7 0 0119 6.8z" fill="#FF5F00" />
+                          </svg>
+                        </div>
+                        <div className="flex-1">
+                          <h3 className="text-sm font-semibold text-gray-900">Mastercard</h3>
+                          <p className="text-sm text-gray-500 mt-0.5">Վճարեք Mastercard քարտով</p>
+                        </div>
+                      </label>
+
+                      {/* Visa */}
+                      <label className={`flex items-center p-4 rounded-2xl cursor-pointer transition-all duration-200 border-2 ${
+                        formData.paymentMethod === 'visa'
+                          ? 'border-orange-400 bg-orange-50/40'
+                          : 'border-gray-100 bg-white hover:border-gray-200'
+                      }`}>
+                        <input type="radio" name="paymentMethod" value="visa" checked={formData.paymentMethod === 'visa'} onChange={handleInputChange} className="sr-only" />
+                        <div className="w-14 h-14 bg-white border border-gray-100 rounded-xl flex items-center justify-center mr-5 shrink-0 shadow-sm">
+                          <span className="text-sm font-extrabold italic text-blue-800 tracking-wider">VISA</span>
+                        </div>
+                        <div className="flex-1">
+                          <h3 className="text-sm font-semibold text-gray-900">Visa</h3>
+                          <p className="text-sm text-gray-500 mt-0.5">Վճարեք Visa քարտով</p>
+                        </div>
+                      </label>
+
                     </div>
                   </div>
 
                   {/* Notes */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Комментарий к заказу
+                      {cp.comment}
                     </label>
                     <textarea
                       name="notes"
@@ -640,7 +691,7 @@ export default function CheckoutPage() {
                       onChange={handleInputChange}
                       rows={3}
                       className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors resize-none text-gray-900"
-                      placeholder="Дополнительные пожелания к заказу..."
+                      placeholder={cp.commentPlaceholder}
                     />
                   </div>
                 </div>
@@ -650,14 +701,16 @@ export default function CheckoutPage() {
             {/* Order Summary */}
             <div className="lg:col-span-1">
               <div className="bg-white rounded-2xl shadow-lg p-6 sticky top-8">
-                <h2 className="text-xl font-semibold text-gray-900 mb-6">Ваш заказ</h2>
+                <h2 className="text-xl font-semibold text-gray-900 mb-6">{cp.yourOrder}</h2>
                 
                 <div className="space-y-4 mb-6">
                   {items.map((item) => (
                     <div key={item.product.id} className="flex justify-between items-center py-2">
                       <div className="flex-1">
-                        <div className="font-medium text-gray-900">{item.product.name}</div>
-                        <div className="text-sm text-gray-600">{item.quantity} шт.</div>
+                        <div className="font-medium text-gray-900">
+                          {getProductDisplayName(item.product.name, locale)}
+                        </div>
+                        <div className="text-sm text-gray-600">{item.quantity} {cp.qtyUnit}.</div>
                       </div>
                       <div className="font-semibold text-gray-900">
                         {item.product.price * item.quantity} ֏
@@ -665,14 +718,41 @@ export default function CheckoutPage() {
                     </div>
                   ))}
                   
-                  <div className="border-t border-gray-300 pt-4">
+                  <div className="border-t border-gray-300 pt-4 space-y-2">
+                    {promoDiscount > 0 && (
+                      <div className="flex justify-between text-sm text-green-600">
+                        <span>Զեղչ (պրոմո)</span>
+                        <span>-{promoDiscount} ֏</span>
+                      </div>
+                    )}
                     <div className="flex justify-between text-lg font-bold text-gray-900">
-                      <span>Итого</span>
-                      <span>{getTotalPrice()} ֏</span>
+                      <span>{cp.total}</span>
+                      <span>{finalTotal} ֏</span>
                     </div>
                     <div className="text-sm text-green-600 mt-1">
-                      Доставка бесплатно
+                      {cp.freeDelivery}
                     </div>
+                  </div>
+                  <div className="pt-4">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Պրոմո կոդ</label>
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        value={promoCode}
+                        onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
+                        placeholder="PROMO"
+                        className="flex-1 px-4 py-2 border border-gray-300 rounded-xl text-gray-900"
+                      />
+                      <button
+                        type="button"
+                        onClick={applyPromo}
+                        disabled={promoApplying}
+                        className="px-4 py-2 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 disabled:opacity-50"
+                      >
+                        {promoApplying ? '...' : 'Կիրառել'}
+                      </button>
+                    </div>
+                    {promoMessage && <p className={`text-sm mt-1 ${promoDiscount > 0 ? 'text-green-600' : 'text-red-600'}`}>{promoMessage}</p>}
                   </div>
                 </div>
                 
@@ -681,15 +761,15 @@ export default function CheckoutPage() {
                   disabled={isSubmitting}
                   className="w-full bg-orange-500 text-white py-4 rounded-xl font-semibold hover:bg-orange-600 transition-colors text-center text-lg disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {isSubmitting ? 'Оформляем заказ...' : 'Подтвердить заказ'}
+                  {isSubmitting ? cp.submitting : cp.submit}
                 </button>
                 
                 <p className="text-xs text-gray-500 mt-4 text-center">
-                  Нажимая "Подтвердить заказ", вы соглашаетесь с условиями доставки
+                  {cp.agreeTerms}
                 </p>
                 {!session && (
                   <p className="text-xs text-blue-600 mt-2 text-center">
-                    💡 После заказа вы сможете создать аккаунт для быстрого оформления в будущем
+                    💡 {cp.guestHint}
                   </p>
                 )}
               </div>
