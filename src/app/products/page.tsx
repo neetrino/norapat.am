@@ -2,7 +2,13 @@
 
 import { useState, useEffect, useCallback, useRef, Suspense, useMemo } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
-import { Search, ArrowDownUp, ChevronDown, LayoutGrid } from 'lucide-react'
+import {
+  Search,
+  ArrowDownUp,
+  ChevronDown,
+  LayoutGrid,
+  SlidersHorizontal,
+} from 'lucide-react'
 import Image from 'next/image'
 import { useCart } from '@/hooks/useCart'
 import { useWishlist } from '@/hooks/useWishlist'
@@ -20,7 +26,10 @@ import { dedupeCategoriesForNav, isSameCategoryNavSelection } from '@/lib/catego
 function GridIcon({ cols }: { cols: 2 | 3 | 4 }) {
   const size = cols === 2 ? [1, 1] : cols === 3 ? [1, 1, 1] : [1, 1, 1, 1]
   return (
-    <span className="grid gap-[2px]" style={{ gridTemplateColumns: `repeat(${cols}, 1fr)`, width: 12, height: 12 }}>
+    <span
+      className="grid gap-[2px]"
+      style={{ gridTemplateColumns: `repeat(${cols}, 1fr)`, width: 12, height: 12 }}
+    >
       {size.map((_, i) => (
         <span key={i} className="rounded-[1px] bg-current" />
       ))}
@@ -28,6 +37,65 @@ function GridIcon({ cols }: { cols: 2 | 3 | 4 }) {
         <span key={`b${i}`} className="rounded-[1px] bg-current" />
       ))}
     </span>
+  )
+}
+
+function ProductsPageLoadingSkeleton() {
+  return (
+    <div className="min-h-screen bg-[#fcfaf7]">
+      <div className="h-header-spacer-mobile lg:hidden" aria-hidden />
+      <div className="h-header-spacer-desktop hidden lg:block" aria-hidden />
+
+      <div className="mx-auto max-w-7xl px-4 pb-10 sm:px-6 lg:px-8">
+        <div className="overflow-hidden rounded-[2rem] border border-[#eadfd9] bg-white/90 p-5 shadow-[0_18px_48px_rgba(15,23,42,0.06)] backdrop-blur sm:p-7">
+          <div className="h-5 w-24 animate-pulse rounded-full bg-gray-100" />
+          <div className="mt-4 h-9 w-56 animate-pulse rounded-full bg-gray-100 sm:w-72" />
+          <div className="mt-3 h-5 w-full max-w-xl animate-pulse rounded-full bg-gray-100" />
+        </div>
+      </div>
+
+      <div className="mx-auto flex max-w-7xl gap-6 px-4 pb-8 sm:px-6 lg:px-8 lg:gap-8">
+        <div className="hidden w-64 shrink-0 lg:block">
+          <div className="rounded-[2rem] border border-[#eadfd9] bg-white/90 p-4 shadow-[0_16px_40px_rgba(15,23,42,0.05)] backdrop-blur">
+            <div className="mb-4 h-5 w-28 animate-pulse rounded-full bg-gray-100" />
+            <div className="space-y-2">
+              {[1, 2, 3, 4, 5, 6, 7].map((i) => (
+                <div key={i} className="h-14 animate-pulse rounded-2xl bg-gray-100" />
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <div className="min-w-0 flex-1 space-y-5">
+          <div className="rounded-[2rem] border border-[#eadfd9] bg-white/90 p-5 shadow-[0_16px_40px_rgba(15,23,42,0.05)] backdrop-blur sm:p-6">
+            <div className="h-6 w-40 animate-pulse rounded-full bg-gray-100" />
+            <div className="mt-4 h-12 w-full animate-pulse rounded-[1.4rem] bg-gray-100" />
+            <div className="mt-4 flex flex-wrap gap-3">
+              <div className="h-11 w-32 animate-pulse rounded-2xl bg-gray-100" />
+              <div className="h-11 w-52 animate-pulse rounded-2xl bg-gray-100" />
+              <div className="h-11 w-36 animate-pulse rounded-2xl bg-gray-100" />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:gap-6">
+            {[1, 2, 3, 4, 5, 6].map((i) => (
+              <div
+                key={i}
+                className="overflow-hidden rounded-[2rem] border border-[#ede5df] bg-white shadow-[0_12px_30px_rgba(15,23,42,0.05)]"
+              >
+                <div className="h-48 animate-pulse bg-gray-100" />
+                <div className="space-y-3 p-5">
+                  <div className="h-4 w-24 animate-pulse rounded-full bg-gray-100" />
+                  <div className="h-5 w-3/4 animate-pulse rounded-full bg-gray-100" />
+                  <div className="h-4 w-full animate-pulse rounded-full bg-gray-100" />
+                  <div className="h-11 w-full animate-pulse rounded-full bg-gray-100" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
   )
 }
 
@@ -64,6 +132,16 @@ function ProductsPageContent() {
     return getCategoryDisplayName(selectedCategoryName, locale)
   }, [selectedCategoryName, locale, productsCopy.allCategories])
 
+  const hasActiveFilters = useMemo(
+    () =>
+      selectedCategoryName !== null ||
+      debouncedSearchQuery.trim().length > 0 ||
+      minPrice.trim().length > 0 ||
+      maxPrice.trim().length > 0 ||
+      sortOrder !== 'newest',
+    [selectedCategoryName, debouncedSearchQuery, minPrice, maxPrice, sortOrder]
+  )
+
   const fetchProducts = useCallback(async () => {
     try {
       setLoading(true)
@@ -90,7 +168,10 @@ function ProductsPageContent() {
   useEffect(() => {
     const controller = new AbortController()
     fetch('/api/categories', { signal: controller.signal, cache: 'no-store' })
-      .then((res) => { if (!res.ok) throw new Error('Failed'); return res.json() })
+      .then((res) => {
+        if (!res.ok) throw new Error('Failed')
+        return res.json()
+      })
       .then((data: CategoryWithCount[]) => setCategories(Array.isArray(data) ? data : []))
       .catch(() => setCategories([]))
       .finally(() => setCategoriesLoading(false))
@@ -113,10 +194,14 @@ function ProductsPageContent() {
       setDebouncedSearchQuery(searchQuery)
       setSearching(false)
     }, 300)
-    return () => { if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current) }
+    return () => {
+      if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current)
+    }
   }, [searchQuery, debouncedSearchQuery])
 
-  useEffect(() => { fetchProducts() }, [fetchProducts])
+  useEffect(() => {
+    fetchProducts()
+  }, [fetchProducts])
 
   useEffect(() => {
     if (menuPage <= 1) return
@@ -126,227 +211,276 @@ function ProductsPageContent() {
   const totalPages = totalProductCount > 0 ? Math.ceil(totalProductCount / MENU_PRODUCTS_PAGE_SIZE) : 0
 
   useEffect(() => {
-    if (totalPages === 0) { if (menuPage !== 1) setMenuPage(1); return }
+    if (totalPages === 0) {
+      if (menuPage !== 1) setMenuPage(1)
+      return
+    }
     if (menuPage > totalPages) setMenuPage(totalPages)
   }, [totalPages, menuPage])
 
-  const handleAddToCart = useCallback((product: Product) => {
-    addItem(product, 1)
-    setAddedToCart((prev) => new Set(prev).add(product.id))
-    setTimeout(() => {
-      setAddedToCart((prev) => { const s = new Set(prev); s.delete(product.id); return s })
-    }, 2000)
-  }, [addItem])
+  const handleAddToCart = useCallback(
+    (product: Product) => {
+      addItem(product, 1)
+      setAddedToCart((prev) => new Set(prev).add(product.id))
+      setTimeout(() => {
+        setAddedToCart((prev) => {
+          const s = new Set(prev)
+          s.delete(product.id)
+          return s
+        })
+      }, 2000)
+    },
+    [addItem]
+  )
 
   const selectCategory = useCallback((name: string | null) => {
     setMenuPage(1)
     setSelectedCategoryName(name)
   }, [])
 
-  const handleToggleWishlist = useCallback((productId: string) => {
-    if (!isAuthenticated) {
-      router.push('/login')
-      return
-    }
-    toggleWishlist(productId)
-  }, [isAuthenticated, toggleWishlist, router])
+  const handleToggleWishlist = useCallback(
+    (productId: string) => {
+      if (!isAuthenticated) {
+        router.push('/login')
+        return
+      }
+      toggleWishlist(productId)
+    },
+    [isAuthenticated, toggleWishlist, router]
+  )
 
-  // ─── Loading skeleton ──────────────────────────────────────────────────────
   if (loading) {
-    return (
-      <div className="min-h-screen bg-white">
-        <div className="h-header-spacer-mobile lg:hidden" aria-hidden />
-        <div className="h-header-spacer-desktop hidden lg:block" aria-hidden />
-        <div className="max-w-7xl mx-auto lg:flex">
-          <div className="hidden lg:block w-56 xl:w-64 shrink-0 border-r border-gray-100 py-6 px-3 space-y-1.5">
-            {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
-              <div key={i} className="h-11 rounded-xl bg-gray-100 animate-pulse" />
-            ))}
-          </div>
-          <div className="flex-1 min-w-0 px-4 sm:px-6 lg:px-8 py-8 space-y-4">
-            <div className="h-11 bg-gray-100 rounded-2xl animate-pulse w-full" />
-            <div className="h-6 bg-gray-100 rounded animate-pulse w-40" />
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {[1, 2, 3, 4, 5, 6].map((i) => (
-                <div key={i} className="flex bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden animate-pulse">
-                  <div className="w-32 h-28 bg-gray-200 shrink-0" />
-                  <div className="flex-1 p-4 space-y-2">
-                    <div className="h-4 bg-gray-200 rounded w-3/4" />
-                    <div className="h-3 bg-gray-200 rounded w-full" />
-                    <div className="h-3 bg-gray-200 rounded w-2/3" />
-                    <div className="h-8 bg-gray-200 rounded-full mt-2 w-full" />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-    )
+    return <ProductsPageLoadingSkeleton />
   }
 
-  // ─── Main render ───────────────────────────────────────────────────────────
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-[#fcfaf7] text-slate-900">
       <div className="h-header-spacer-mobile lg:hidden" aria-hidden />
       <div className="h-header-spacer-desktop hidden lg:block" aria-hidden />
 
-      <div className="max-w-7xl mx-auto lg:flex">
-
-        {/* ── Left Sidebar (desktop only) ── */}
+      <div className="mx-auto flex max-w-7xl gap-6 px-4 pb-6 pt-4 sm:px-6 sm:pt-5 lg:px-8 lg:gap-8 lg:pt-6">
         <aside
-          className="hidden lg:block w-56 xl:w-64 shrink-0 border-r border-gray-100 bg-white"
+          className="hidden w-64 shrink-0 lg:block"
           style={{
             position: 'sticky',
             top: 'calc(7.5rem + var(--top-bar-offset, 0px))',
             alignSelf: 'flex-start',
-            height: 'calc(100vh - 7.5rem - var(--top-bar-offset, 0px))',
-            overflowY: 'auto',
           }}
         >
-          <nav className="px-3 space-y-0.5 flex flex-col justify-center h-full">
-            {/* All */}
-            <button
-              type="button"
-              onClick={() => selectCategory(null)}
-              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors ${
-                selectedCategoryName === null
-                  ? 'bg-[#FFE8E6] text-[#E53225] font-semibold'
-                  : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-              }`}
-            >
-              <span className="w-6 h-6 flex items-center justify-center shrink-0 text-[15px]">🍽️</span>
-              <span className="truncate">{productsCopy.allCategories}</span>
-            </button>
+          <div className="max-h-[calc(100vh-7.5rem-var(--top-bar-offset,0px))] overflow-y-auto rounded-[2rem] border border-[#eadfd9] bg-white/90 p-4 shadow-[0_16px_40px_rgba(15,23,42,0.05)] backdrop-blur">
+            <div className="mb-4 flex items-center justify-between px-1">
+              <div>
+                <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">
+                  {productsCopy.categoryLabel}
+                </p>
+                <h2 className="mt-1 text-lg font-bold text-slate-900">
+                  {productsCopy.allCategories}
+                </h2>
+              </div>
+              <div className="rounded-full bg-[#fff3ec] px-3 py-1 text-xs font-semibold text-[#E53225]">
+                {navCategories.length + 1}
+              </div>
+            </div>
 
-            {categoriesLoading
-              ? [1, 2, 3, 4, 5, 6, 7].map((i) => (
-                  <div key={i} className="h-11 rounded-xl bg-gray-100 animate-pulse mx-1" />
-                ))
-              : navCategories.map((cat) => {
-                  const active =
-                    selectedCategoryName != null &&
-                    isSameCategoryNavSelection(selectedCategoryName, cat.name)
-                  const label = getCategoryDisplayName(cat.name, locale)
-                  return (
-                    <button
-                      key={cat.id}
-                      type="button"
-                      onClick={() => selectCategory(cat.name)}
-                      className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors ${
-                        active
-                          ? 'bg-[#FFE8E6] text-[#E53225] font-semibold'
-                          : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                      }`}
-                    >
-                      {cat.image ? (
-                        <div className="relative w-6 h-6 shrink-0">
-                          <Image src={cat.image} alt="" fill sizes="24px" className="object-cover rounded-md" />
-                        </div>
-                      ) : (
-                        <span className="w-6 h-6 flex items-center justify-center shrink-0 text-[15px] opacity-50">🍽️</span>
-                      )}
-                      <span className="truncate">{label}</span>
-                    </button>
-                  )
-                })}
-          </nav>
+            <nav className="space-y-1.5">
+              <button
+                type="button"
+                onClick={() => selectCategory(null)}
+                className={`group flex w-full items-center gap-3 rounded-2xl border px-3.5 py-3 text-sm font-semibold transition-all ${
+                  selectedCategoryName === null
+                    ? 'border-[#ffd2c8] bg-[linear-gradient(135deg,#fff1ec_0%,#ffe5de_100%)] text-[#E53225] shadow-[0_12px_24px_rgba(229,50,37,0.12)]'
+                    : 'border-transparent text-slate-600 hover:border-[#f0e2da] hover:bg-[#fffaf7] hover:text-slate-900'
+                }`}
+              >
+                <span
+                  className={`flex h-10 w-10 items-center justify-center rounded-2xl text-[15px] transition-colors ${
+                    selectedCategoryName === null
+                      ? 'bg-white text-[#E53225]'
+                      : 'bg-[#f6f2ef] text-slate-500 group-hover:bg-white'
+                  }`}
+                >
+                  🍽️
+                </span>
+                <span className="min-w-0 flex-1 truncate text-left">{productsCopy.allCategories}</span>
+              </button>
+
+              {categoriesLoading
+                ? [1, 2, 3, 4, 5, 6, 7].map((i) => (
+                    <div key={i} className="h-14 animate-pulse rounded-2xl bg-gray-100" />
+                  ))
+                : navCategories.map((cat) => {
+                    const active =
+                      selectedCategoryName != null &&
+                      isSameCategoryNavSelection(selectedCategoryName, cat.name)
+                    const label = getCategoryDisplayName(cat.name, locale)
+
+                    return (
+                      <button
+                        key={cat.id}
+                        type="button"
+                        onClick={() => selectCategory(cat.name)}
+                        className={`group flex w-full items-center gap-3 rounded-2xl border px-3.5 py-3 text-sm font-semibold transition-all ${
+                          active
+                            ? 'border-[#ffd2c8] bg-[linear-gradient(135deg,#fff1ec_0%,#ffe5de_100%)] text-[#E53225] shadow-[0_12px_24px_rgba(229,50,37,0.12)]'
+                            : 'border-transparent text-slate-600 hover:border-[#f0e2da] hover:bg-[#fffaf7] hover:text-slate-900'
+                        }`}
+                      >
+                        {cat.image ? (
+                          <div
+                            className={`relative h-10 w-10 shrink-0 overflow-hidden rounded-2xl ring-1 ring-inset ${
+                              active ? 'bg-white ring-[#ffd9cf]' : 'bg-[#f6f2ef] ring-[#efe4dd]'
+                            }`}
+                          >
+                            <Image src={cat.image} alt="" fill sizes="40px" className="object-cover" />
+                          </div>
+                        ) : (
+                          <span
+                            className={`flex h-10 w-10 items-center justify-center rounded-2xl text-[15px] ${
+                              active ? 'bg-white text-[#E53225]' : 'bg-[#f6f2ef] text-slate-500'
+                            }`}
+                          >
+                            🍽️
+                          </span>
+                        )}
+                        <span className="min-w-0 flex-1 truncate text-left">{label}</span>
+                        <span
+                          className={`rounded-full px-2.5 py-1 text-[11px] font-bold ${
+                            active
+                              ? 'bg-white text-[#E53225]'
+                              : 'bg-[#f6f2ef] text-slate-400 group-hover:bg-white'
+                          }`}
+                        >
+                          {cat._count.products}
+                        </span>
+                      </button>
+                    )
+                  })}
+            </nav>
+          </div>
         </aside>
 
-        {/* ── Main Content ── */}
-        <main className="flex-1 min-w-0 px-4 sm:px-6 lg:px-8 py-6 pb-20 lg:pb-8">
-
-          {/* Search + filters */}
-          <div className="mb-5 space-y-2.5">
-            {/* Row 1 — Search */}
-            <div className="relative">
-              <Search className={`absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 ${searching ? 'text-[#E53225] animate-pulse' : 'text-gray-400'}`} />
-              <input
-                type="text"
-                placeholder={searchCopy.productsPage}
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-10 py-2.5 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#E53225]/25 focus:border-[#E53225] text-sm text-gray-900 placeholder-gray-400 bg-gray-50 transition-all hover:bg-white focus:bg-white"
-              />
-              {searching && (
-                <div className="absolute right-3.5 top-1/2 -translate-y-1/2">
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-[#E53225]" />
+        <main className="min-w-0 flex-1 pb-20 pt-1 lg:pb-8">
+          <section className="mb-5 overflow-hidden rounded-[2rem] border border-[#eadfd9] bg-white/90 shadow-[0_16px_40px_rgba(15,23,42,0.05)] backdrop-blur">
+            <div className="border-b border-[#f2e7e1] px-5 py-4 sm:px-6">
+              <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#fff1ec] text-[#E53225] shadow-sm">
+                    <SlidersHorizontal className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <h2 className="text-lg font-bold tracking-tight text-slate-900">
+                      {productsCopy.sortLabel}
+                    </h2>
+                    <p className="text-sm text-slate-500">
+                      {hasActiveFilters ? totalProductCount : productsCopy.allCategories}
+                    </p>
+                  </div>
                 </div>
-              )}
+                <div className="hidden rounded-full bg-[#fff6f1] px-3 py-1.5 text-xs font-semibold text-[#E53225] sm:inline-flex">
+                  {productsCopy.priceRange}
+                </div>
+              </div>
             </div>
 
-            {/* Row 2 — Sort · Price · Rooms */}
-            <div className="flex flex-wrap items-center gap-2">
-
-              {/* Sort */}
-              <div className="relative flex items-center">
-                <ArrowDownUp className="absolute left-2.5 h-3.5 w-3.5 text-gray-400 pointer-events-none" />
-                <select
-                  value={sortOrder}
-                  onChange={(e) => { setMenuPage(1); setSortOrder(e.target.value) }}
-                  className="pl-8 pr-7 py-2 border border-gray-200 rounded-xl bg-white text-gray-700 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-[#E53225]/25 focus:border-[#E53225] appearance-none cursor-pointer"
-                >
-                  <option value="newest">{productsCopy.sortNewest}</option>
-                  <option value="price_asc">{productsCopy.sortPriceAsc}</option>
-                  <option value="price_desc">{productsCopy.sortPriceDesc}</option>
-                  <option value="popular">{productsCopy.sortPopular}</option>
-                </select>
-                <ChevronDown className="absolute right-2 h-3 w-3 text-gray-400 pointer-events-none" />
-              </div>
-
-              {/* Divider */}
-              <span className="hidden sm:block h-5 w-px bg-gray-200" />
-
-              {/* Price range */}
-              <div className="flex items-center gap-1.5">
-                <input
-                  type="number"
-                  placeholder={productsCopy.priceFrom}
-                  value={minPrice}
-                  onChange={(e) => { setMenuPage(1); setMinPrice(e.target.value) }}
-                  min={0} step={100}
-                  className="w-20 px-2.5 py-2 border border-gray-200 rounded-xl text-xs text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-[#E53225]/25 focus:border-[#E53225]"
+            <div className="space-y-4 px-5 py-5 sm:px-6">
+              <div className="relative">
+                <Search
+                  className={`absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 ${
+                    searching ? 'animate-pulse text-[#E53225]' : 'text-slate-400'
+                  }`}
                 />
-                <span className="text-gray-300 text-sm select-none">—</span>
                 <input
-                  type="number"
-                  placeholder={productsCopy.priceTo}
-                  value={maxPrice}
-                  onChange={(e) => { setMenuPage(1); setMaxPrice(e.target.value) }}
-                  min={0} step={100}
-                  className="w-20 px-2.5 py-2 border border-gray-200 rounded-xl text-xs text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-[#E53225]/25 focus:border-[#E53225]"
+                  type="text"
+                  placeholder={searchCopy.productsPage}
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full rounded-[1.4rem] border border-[#eadfd9] bg-[#fcfaf8] py-3.5 pl-11 pr-11 text-sm text-slate-900 placeholder:text-slate-400 transition-all hover:border-[#e3d2ca] hover:bg-white focus:border-[#E53225] focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#E53225]/10"
                 />
-                <span className="text-gray-400 text-xs font-medium">֏</span>
+                {searching && (
+                  <div className="absolute right-4 top-1/2 -translate-y-1/2">
+                    <div className="h-4 w-4 animate-spin rounded-full border-b-2 border-[#E53225]" />
+                  </div>
+                )}
               </div>
 
-              {/* Divider */}
-              <span className="hidden sm:block h-5 w-px bg-gray-200" />
+              <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
+                <div className="flex flex-wrap items-center gap-2.5">
+                  <div className="relative flex items-center">
+                    <ArrowDownUp className="pointer-events-none absolute left-3 h-3.5 w-3.5 text-slate-400" />
+                    <select
+                      value={sortOrder}
+                      onChange={(e) => {
+                        setMenuPage(1)
+                        setSortOrder(e.target.value)
+                      }}
+                      className="appearance-none rounded-2xl border border-[#eadfd9] bg-white py-3 pl-9 pr-9 text-xs font-semibold text-slate-700 shadow-sm transition-colors focus:border-[#E53225] focus:outline-none focus:ring-4 focus:ring-[#E53225]/10"
+                    >
+                      <option value="newest">{productsCopy.sortNewest}</option>
+                      <option value="price_asc">{productsCopy.sortPriceAsc}</option>
+                      <option value="price_desc">{productsCopy.sortPriceDesc}</option>
+                      <option value="popular">{productsCopy.sortPopular}</option>
+                    </select>
+                    <ChevronDown className="pointer-events-none absolute right-3 h-3 w-3 text-slate-400" />
+                  </div>
 
-              {/* Grid columns toggle */}
-              <div className="flex items-center gap-1">
-                <LayoutGrid className="h-3.5 w-3.5 text-gray-400 shrink-0 mr-0.5" />
-                {([2, 3, 4] as const).map((cols) => (
-                  <button
-                    key={cols}
-                    type="button"
-                    onClick={() => setGridCols(cols)}
-                    className={`w-7 h-7 rounded-lg flex items-center justify-center transition-all ${
-                      gridCols === cols
-                        ? 'bg-[#E53225] text-white shadow-sm shadow-[#E53225]/30'
-                        : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
-                    }`}
-                    aria-label={`${cols} columns`}
-                  >
-                    <GridIcon cols={cols} />
-                  </button>
-                ))}
+                  <span className="hidden h-8 w-px bg-[#efe2db] md:block" />
+
+                  <div className="flex items-center gap-2 rounded-2xl border border-[#eadfd9] bg-[#fcfaf8] p-1.5 shadow-sm">
+                    <input
+                      type="number"
+                      placeholder={productsCopy.priceFrom}
+                      value={minPrice}
+                      onChange={(e) => {
+                        setMenuPage(1)
+                        setMinPrice(e.target.value)
+                      }}
+                      min={0}
+                      step={100}
+                      className="w-24 rounded-xl border border-transparent bg-white px-3 py-2.5 text-xs font-medium text-slate-700 placeholder:text-slate-400 focus:border-[#E53225] focus:outline-none focus:ring-2 focus:ring-[#E53225]/10"
+                    />
+                    <span className="select-none text-sm text-slate-300">—</span>
+                    <input
+                      type="number"
+                      placeholder={productsCopy.priceTo}
+                      value={maxPrice}
+                      onChange={(e) => {
+                        setMenuPage(1)
+                        setMaxPrice(e.target.value)
+                      }}
+                      min={0}
+                      step={100}
+                      className="w-24 rounded-xl border border-transparent bg-white px-3 py-2.5 text-xs font-medium text-slate-700 placeholder:text-slate-400 focus:border-[#E53225] focus:outline-none focus:ring-2 focus:ring-[#E53225]/10"
+                    />
+                    <span className="pr-1 text-xs font-semibold text-slate-400">֏</span>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between gap-3 rounded-2xl border border-[#eadfd9] bg-[#fcfaf8] px-3 py-2 shadow-sm">
+                  <LayoutGrid className="h-4 w-4 shrink-0 text-slate-400" />
+
+                  <div className="flex items-center gap-1 rounded-full bg-white p-1">
+                    {([2, 3, 4] as const).map((cols) => (
+                      <button
+                        key={cols}
+                        type="button"
+                        onClick={() => setGridCols(cols)}
+                        className={`flex h-8 w-8 items-center justify-center rounded-full transition-all ${
+                          gridCols === cols
+                            ? 'bg-[#E53225] text-white shadow-[0_10px_20px_rgba(229,50,37,0.25)]'
+                            : 'text-slate-500 hover:bg-[#fff3ec]'
+                        }`}
+                        aria-label={`${cols} columns`}
+                      >
+                        <GridIcon cols={cols} />
+                      </button>
+                    ))}
+                  </div>
+                </div>
               </div>
-
             </div>
-          </div>
+          </section>
 
-          {/* Mobile category chips */}
-          <div className="lg:hidden mb-5">
+          <div className="mb-5 lg:hidden">
             <ProductsPageCategoryChips
               categories={categories}
               loading={categoriesLoading}
@@ -357,19 +491,31 @@ function ProductsPageContent() {
             />
           </div>
 
-          {/* Active category heading */}
-          <h2 className="text-lg font-bold text-gray-900 mb-4">
-            {activeCategoryLabel}
-          </h2>
+          <div className="mb-5 flex items-center justify-between gap-4">
+            <div>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">
+                {productsCopy.categoryLabel}
+              </p>
+              <h2 className="mt-1 text-xl font-black tracking-tight text-slate-900 sm:text-2xl">
+                {activeCategoryLabel}
+              </h2>
+            </div>
+            <div className="rounded-full border border-[#eadfd9] bg-white/90 px-3.5 py-2 text-sm font-semibold text-slate-600 shadow-sm">
+              {totalProductCount}
+            </div>
+          </div>
 
           <div ref={productGridTopRef} className="scroll-mt-28" aria-hidden />
 
-          {/* Product grid */}
-          <div className={
-            gridCols === 2 ? 'grid grid-cols-1 sm:grid-cols-2 gap-4' :
-            gridCols === 3 ? 'grid grid-cols-2 sm:grid-cols-3 gap-3' :
-                             'grid grid-cols-2 sm:grid-cols-4 gap-2.5'
-          }>
+          <div
+            className={
+              gridCols === 2
+                ? 'grid grid-cols-1 gap-5 sm:grid-cols-2 xl:gap-6'
+                : gridCols === 3
+                  ? 'grid grid-cols-2 gap-3.5 sm:grid-cols-3 lg:gap-4'
+                  : 'grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-4'
+            }
+          >
             {filteredProducts.map((product) => (
               <ProductCard
                 key={product.id}
@@ -383,7 +529,6 @@ function ProductsPageContent() {
             ))}
           </div>
 
-          {/* Pagination */}
           {totalPages > 1 && (
             <ProductsPagePagination
               currentPage={menuPage}
@@ -396,87 +541,73 @@ function ProductsPageContent() {
             />
           )}
 
-          {/* Empty state */}
           {filteredProducts.length === 0 && (
-            <div className="text-center py-16">
-              <div className="text-5xl mb-4">🍽️</div>
+            <div className="rounded-[2rem] border border-dashed border-[#e7d9d1] bg-white/90 px-6 py-14 text-center shadow-[0_16px_40px_rgba(15,23,42,0.04)]">
+              <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-[radial-gradient(circle,#fff3ec_0%,#ffe8de_100%)] text-4xl shadow-inner">
+                🍽️
+              </div>
               {debouncedSearchQuery ? (
                 <>
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">
+                  <h3 className="mb-2 text-xl font-black tracking-tight text-slate-900">
                     {productsCopy.searchNoResultsTitle(debouncedSearchQuery)}
                   </h3>
-                  <p className="text-gray-500 mb-6">{productsCopy.searchNoResultsHint}</p>
-                  <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                  <p className="mx-auto mb-6 max-w-lg text-sm leading-6 text-slate-500 sm:text-base">
+                    {productsCopy.searchNoResultsHint}
+                  </p>
+                  <div className="flex flex-col justify-center gap-3 sm:flex-row">
                     <button
                       type="button"
-                      onClick={() => { setMenuPage(1); setSearchQuery(''); setDebouncedSearchQuery('') }}
-                      className="bg-gray-100 text-gray-700 px-6 py-2.5 rounded-full font-semibold hover:bg-gray-200 transition-colors text-sm"
+                      onClick={() => {
+                        setMenuPage(1)
+                        setSearchQuery('')
+                        setDebouncedSearchQuery('')
+                      }}
+                      className="rounded-full border border-[#e6d9d2] bg-[#fcfaf8] px-6 py-3 text-sm font-semibold text-slate-700 transition-colors hover:bg-white"
                     >
                       {productsCopy.clearSearch}
                     </button>
                     <button
                       type="button"
-                      onClick={() => { setMenuPage(1); setSelectedCategoryName(null); setSearchQuery(''); setDebouncedSearchQuery('') }}
-                      className="bg-[#E53225] text-white px-6 py-2.5 rounded-full font-semibold hover:bg-[#a51d1d] transition-colors text-sm"
+                      onClick={() => {
+                        setMenuPage(1)
+                        setSelectedCategoryName(null)
+                        setSearchQuery('')
+                        setDebouncedSearchQuery('')
+                      }}
+                      className="rounded-full bg-[#E53225] px-6 py-3 text-sm font-semibold text-white shadow-[0_12px_24px_rgba(229,50,37,0.18)] transition-colors hover:bg-[#a51d1d]"
                     >
                       {productsCopy.showAllProducts}
                     </button>
                   </div>
                 </>
-              ) : (
+              ) : selectedCategoryName ? (
                 <>
-                  {selectedCategoryName ? (
-                    <>
-                      <p className="text-gray-500 text-base max-w-md mx-auto">
-                        {productsCopy.categoryEmpty(getCategoryDisplayName(selectedCategoryName, locale))}
-                      </p>
-                      <p className="text-gray-400 mt-2 text-sm">{productsCopy.tryAnotherCategory}</p>
-                    </>
-                  ) : (
-                    <p className="text-gray-500 text-base max-w-md mx-auto">{productsCopy.catalogEmpty}</p>
-                  )}
+                  <p className="mx-auto max-w-md text-base leading-7 text-slate-500">
+                    {productsCopy.categoryEmpty(getCategoryDisplayName(selectedCategoryName, locale))}
+                  </p>
+                  <p className="mt-2 text-sm text-slate-400">{productsCopy.tryAnotherCategory}</p>
                 </>
+              ) : (
+                <p className="mx-auto max-w-md text-base leading-7 text-slate-500">
+                  {productsCopy.catalogEmpty}
+                </p>
               )}
             </div>
           )}
         </main>
       </div>
 
-      <div className="hidden lg:block"><Footer /></div>
-      <div className="lg:hidden h-16" />
+      <div className="hidden lg:block">
+        <Footer />
+      </div>
+      <div className="h-16 lg:hidden" />
     </div>
   )
 }
 
 export default function ProductsPage() {
   return (
-    <Suspense
-      fallback={
-        <div className="min-h-screen bg-white">
-          <div className="max-w-7xl mx-auto lg:flex">
-            <div className="hidden lg:block w-56 xl:w-64 shrink-0 border-r border-gray-100 py-6 px-3 space-y-1.5">
-              {[1, 2, 3, 4, 5, 6, 7].map((i) => (
-                <div key={i} className="h-11 rounded-xl bg-gray-100 animate-pulse" />
-              ))}
-            </div>
-            <div className="flex-1 px-4 sm:px-6 lg:px-8 py-8">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {[1, 2, 3, 4, 5, 6].map((i) => (
-                  <div key={i} className="flex bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden animate-pulse">
-                    <div className="w-32 h-28 bg-gray-200 shrink-0" />
-                    <div className="flex-1 p-4 space-y-2">
-                      <div className="h-4 bg-gray-200 rounded w-3/4" />
-                      <div className="h-3 bg-gray-200 rounded w-full" />
-                      <div className="h-8 bg-gray-200 rounded-full mt-3 w-full" />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      }
-    >
+    <Suspense fallback={<ProductsPageLoadingSkeleton />}>
       <ProductsPageContent />
     </Suspense>
   )

@@ -10,20 +10,16 @@ export interface ProductsPagePaginationProps {
   prevLabel: string
   nextLabel: string
   navAriaLabel: string
-  /** Կոճակի aria-label համարների համար */
   pageNumberAriaLabel: (page: number) => string
 }
 
 const numberButtonClass =
-  'inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl border-2 text-sm font-semibold tabular-nums transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-500'
+  'inline-flex min-h-11 min-w-11 items-center justify-center rounded-2xl border text-sm font-semibold tabular-nums transition-all focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-500'
 const numberInactiveClass =
-  'border-gray-200 bg-white text-gray-800 hover:border-orange-300 hover:bg-orange-50'
+  'border-[#e8ddd7] bg-white/95 text-slate-700 shadow-sm hover:border-[#f2c5b7] hover:bg-[#fff6f1] hover:text-slate-900'
 const numberActiveClass =
-  'border-orange-500 bg-gradient-to-r from-orange-500 to-red-600 text-white shadow-md shadow-orange-500/25 ring-1 ring-white/20'
+  'border-[#E53225] bg-[linear-gradient(135deg,#ff6a45_0%,#E53225_55%,#c9241d_100%)] text-white shadow-[0_16px_28px_rgba(229,50,37,0.22)] ring-1 ring-white/20'
 
-/**
- * Մենյուի էջավորում — նախորդ/հաջորդ + համարակալված էջեր
- */
 export function ProductsPagePagination({
   currentPage,
   totalPages,
@@ -40,16 +36,13 @@ export function ProductsPagePagination({
   const items = getMenuPaginationItems(currentPage, totalPages)
 
   return (
-    <nav
-      className="mt-12 flex flex-col items-stretch gap-4 sm:items-center"
-      aria-label={navAriaLabel}
-    >
-      <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-2.5">
+    <nav className="mt-10 flex flex-col items-stretch gap-4 sm:items-center" aria-label={navAriaLabel}>
+      <div className="flex flex-wrap items-center justify-center gap-2 rounded-[2rem] border border-[#eadfd9] bg-white/90 px-3 py-3 shadow-[0_16px_36px_rgba(15,23,42,0.05)] backdrop-blur sm:gap-2.5 sm:px-4">
         <button
           type="button"
           disabled={currentPage <= 1}
           onClick={() => onPageChange(Math.max(1, currentPage - 1))}
-          className="inline-flex items-center gap-2 rounded-xl border-2 border-gray-200 bg-white px-4 py-3 text-sm font-semibold text-gray-900 transition-colors hover:border-orange-300 hover:bg-orange-50 disabled:pointer-events-none disabled:opacity-40"
+          className="inline-flex items-center gap-2 rounded-2xl border border-[#e8ddd7] bg-white px-4 py-3 text-sm font-semibold text-slate-800 shadow-sm transition-all hover:border-[#f2c5b7] hover:bg-[#fff6f1] disabled:pointer-events-none disabled:opacity-40"
         >
           <ChevronLeft className="h-5 w-5 shrink-0" aria-hidden />
           <span className="hidden sm:inline">{prevLabel}</span>
@@ -58,7 +51,7 @@ export function ProductsPagePagination({
         <ul className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2">
           {items.map((item, idx) =>
             item === 'ellipsis' ? (
-              <li key={`e-${idx}`} className="flex items-center px-1 text-gray-400" aria-hidden>
+              <li key={`e-${idx}`} className="flex items-center px-1 text-slate-300" aria-hidden>
                 <span className="select-none text-lg font-bold leading-none tracking-tight">…</span>
               </li>
             ) : (
@@ -83,7 +76,7 @@ export function ProductsPagePagination({
           type="button"
           disabled={currentPage >= totalPages}
           onClick={() => onPageChange(Math.min(totalPages, currentPage + 1))}
-          className="inline-flex items-center gap-2 rounded-xl border-2 border-gray-200 bg-white px-4 py-3 text-sm font-semibold text-gray-900 transition-colors hover:border-orange-300 hover:bg-orange-50 disabled:pointer-events-none disabled:opacity-40"
+          className="inline-flex items-center gap-2 rounded-2xl border border-[#e8ddd7] bg-white px-4 py-3 text-sm font-semibold text-slate-800 shadow-sm transition-all hover:border-[#f2c5b7] hover:bg-[#fff6f1] disabled:pointer-events-none disabled:opacity-40"
         >
           <span className="hidden sm:inline">{nextLabel}</span>
           <ChevronRight className="h-5 w-5 shrink-0" aria-hidden />
