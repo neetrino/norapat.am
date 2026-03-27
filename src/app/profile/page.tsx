@@ -17,6 +17,7 @@ interface Order {
   id: string
   status: string
   total: number
+  paymentMethod: string
   createdAt: string
   items: Array<{
     productId: string
@@ -32,7 +33,7 @@ const CURRENCY = '֏'
 
 export default function ProfilePage() {
   const { t, locale } = useI18n()
-  const { profilePage, orderStatus } = t
+  const { profilePage, orderStatus, checkoutPage } = t
   const dateLocale = locale === 'hy' ? 'hy-AM' : locale === 'ru' ? 'ru-RU' : 'en-US'
   const { data: session, status } = useSession()
   const router = useRouter()
@@ -220,6 +221,23 @@ export default function ProfilePage() {
     }
   }
 
+  const getPaymentMethodLabel = (paymentMethod: string) => {
+    switch (paymentMethod) {
+      case 'cash':
+        return checkoutPage.cash
+      case 'arca':
+        return 'ArCa'
+      case 'mastercard':
+        return 'Mastercard'
+      case 'visa':
+        return 'Visa'
+      case 'ameriabank':
+        return 'Ameriabank'
+      default:
+        return paymentMethod
+    }
+  }
+
   const handleReorder = async (order: Order) => {
     if (order.items.length === 0) return
     setReorderingId(order.id)
@@ -335,6 +353,7 @@ export default function ProfilePage() {
                               <div>
                                 <h3 className="text-base font-semibold text-slate-950">{profilePage.orderLabel} #{order.id.slice(-8)}</h3>
                                 <p className="mt-1 text-sm text-slate-500">{new Date(order.createdAt).toLocaleDateString(dateLocale, { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</p>
+                                <p className="mt-1 text-xs font-medium text-slate-500">{checkoutPage.paymentMethod}: {getPaymentMethodLabel(order.paymentMethod)}</p>
                               </div>
                               <span className={`inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-xs font-semibold ${statusInfo.bg} ${statusInfo.color}`}>
                                 {getStatusIcon(order.status)}
@@ -379,7 +398,7 @@ export default function ProfilePage() {
                       return (
                         <article key={order.id} className="rounded-[24px] border border-slate-200 bg-slate-50 p-4 sm:p-5">
                           <div className="flex flex-col gap-4 border-b border-slate-200 pb-4 lg:flex-row lg:items-start lg:justify-between">
-                            <div><h3 className="text-base font-semibold text-slate-950">{profilePage.orderLabel} #{order.id.slice(-8)}</h3><p className="mt-1 text-sm text-slate-500">{new Date(order.createdAt).toLocaleDateString(dateLocale, { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</p></div>
+                            <div><h3 className="text-base font-semibold text-slate-950">{profilePage.orderLabel} #{order.id.slice(-8)}</h3><p className="mt-1 text-sm text-slate-500">{new Date(order.createdAt).toLocaleDateString(dateLocale, { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</p><p className="mt-1 text-sm text-slate-500">{checkoutPage.paymentMethod}: <span className="font-medium text-slate-700">{getPaymentMethodLabel(order.paymentMethod)}</span></p></div>
                             <div className="flex flex-wrap items-center gap-3 lg:justify-end"><span className={`inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-xs font-semibold ${statusInfo.bg} ${statusInfo.color}`}>{getStatusIcon(order.status)}<span>{statusInfo.text}</span></span><p className="text-lg font-bold text-red-600">{new Intl.NumberFormat(dateLocale).format(order.total)} {CURRENCY}</p></div>
                           </div>
                           <div className="mt-4 space-y-3">
