@@ -51,7 +51,7 @@
 └─────────────────────────────────────────────────────────────────┘
                                 │
 ┌───────────────────────────────▼─────────────────────────────────┐
-│  Ինտեգրացիաներ: Idram/Բանկ (վճարում), Email (ըստ need)          │
+│  Ինտեգրացիաներ: Բանկ (վճարում), Email (ըստ need)                │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
@@ -126,7 +126,7 @@ docs/                       # Փաստաթղթեր (01–ARCHITECTURE, 02–FUNC
 ```
 1. Cart (client) → POST /api/orders (body: items, contact, address, payment, delivery)
 2. API → Վալիդացիա → Order + OrderItems ստեղծում
-3. Վճարում (Idram/Բանկ redirect կամ Cash նշում)
+3. Վճարում (Բանկ redirect կամ Cash նշում)
 4. Redirect → order-success / payment gateway
 ```
 
@@ -164,7 +164,7 @@ Middleware: /admin, /profile պահանջում են token; admin — role === A
 
 | Սերվիս        | Նշանակություն     | Նշում |
 |----------------|--------------------|--------|
-| Idram + Բանկ   | Քարտային վճարում  | Checkout-ում |
+| Բանկ           | Քարտային վճարում  | Checkout-ում |
 | Cash           | Կանխիկ            | Ընտրովի վճարային տարբերակ |
 | Email (optional) | Ծանուցումներ/վերականգնում | Ըստ need |
 
@@ -181,7 +181,7 @@ Middleware: /admin, /profile պահանջում են token; admin — role === A
 ## 🚀 ԴԵՊԼՈՅ
 
 - **Development.** `pnpm dev` — localhost:3000
-- **Production.** Vercel (Next.js) + Neon/Postgres; env: DATABASE_URL, NEXTAUTH_SECRET, Idram/Բանկ keys
+- **Production.** Vercel (Next.js) + Neon/Postgres; env: DATABASE_URL, NEXTAUTH_SECRET, բանկի keys
 
 ---
 

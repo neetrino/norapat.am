@@ -84,7 +84,7 @@ export default function TermsPage() {
                 <li>Ընդունել պատվերը առաքման ժամանակ</li>
               </ul>
               <p className="text-gray-700 mb-4">
-                Վճարումն իրականացվում է կանխիկ ստացման ժամանակ կամ առցանց բանկային քարտով (Idram, ArCa)։
+                Վճարումն իրականացվում է կանխիկ ստացման ժամանակ կամ բանկային քարտով (ArCa, Visa, Mastercard)։
               </p>
             </section>
 

@@ -184,38 +184,6 @@ export default function CheckoutPage() {
     }
 
     try {
-      if (formData.paymentMethod === 'idram') {
-        const response = await fetch('/api/payment/idram/init', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(orderPayload)
-        })
-        const data = await response.json()
-
-        if (!response.ok) {
-          throw new Error(data.error || 'Idram init failed')
-        }
-
-        clearCart()
-
-        const form = document.createElement('form')
-        form.method = 'POST'
-        form.action = data.paymentUrl
-        form.style.display = 'none'
-        Object.entries(data.paymentParams).forEach(([k, v]) => {
-          if (v) {
-            const input = document.createElement('input')
-            input.type = 'hidden'
-            input.name = k
-            input.value = String(v)
-            form.appendChild(input)
-          }
-        })
-        document.body.appendChild(form)
-        form.submit()
-        return
-      }
-
       const response = await fetch('/api/orders', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -452,24 +420,6 @@ export default function CheckoutPage() {
                   </div>
                 </label>
 
-                {/* Idram */}
-                <label className={`flex items-center p-4 rounded-2xl cursor-pointer transition-all duration-200 border-2 ${
-                  formData.paymentMethod === 'idram'
-                    ? 'border-orange-400 bg-orange-50/40'
-                    : 'border-gray-100 bg-white hover:border-gray-200'
-                }`}>
-                  <input type="radio" name="paymentMethod" value="idram" checked={formData.paymentMethod === 'idram'} onChange={handleInputChange} className="sr-only" />
-                  <div className="w-12 h-12 bg-white border border-gray-100 rounded-xl flex items-center justify-center mr-4 shrink-0 shadow-sm overflow-hidden">
-                    <svg viewBox="0 0 48 48" className="w-10 h-10">
-                      <circle cx="24" cy="24" r="24" fill="#FF6B2B" />
-                      <text x="24" y="28" textAnchor="middle" fill="white" fontSize="11" fontWeight="700" fontFamily="Arial, sans-serif">idram</text>
-                    </svg>
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="text-sm font-semibold text-gray-900">{cp.idram}</h3>
-                    <p className="text-xs text-gray-500 mt-0.5">{cp.idramDescFull}</p>
-                  </div>
-                </label>
               </div>
             </div>
 
@@ -738,24 +688,6 @@ export default function CheckoutPage() {
                         </div>
                       </label>
 
-                      {/* Idram */}
-                      <label className={`flex items-center p-4 rounded-2xl cursor-pointer transition-all duration-200 border-2 ${
-                        formData.paymentMethod === 'idram'
-                          ? 'border-orange-400 bg-orange-50/40'
-                          : 'border-gray-100 bg-white hover:border-gray-200'
-                      }`}>
-                        <input type="radio" name="paymentMethod" value="idram" checked={formData.paymentMethod === 'idram'} onChange={handleInputChange} className="sr-only" />
-                        <div className="w-14 h-14 bg-white border border-gray-100 rounded-xl flex items-center justify-center mr-5 shrink-0 shadow-sm overflow-hidden">
-                          <svg viewBox="0 0 48 48" className="w-11 h-11">
-                            <circle cx="24" cy="24" r="24" fill="#FF6B2B" />
-                            <text x="24" y="28" textAnchor="middle" fill="white" fontSize="11" fontWeight="700" fontFamily="Arial, sans-serif">idram</text>
-                          </svg>
-                        </div>
-                        <div className="flex-1">
-                          <h3 className="text-sm font-semibold text-gray-900">{cp.idram}</h3>
-                          <p className="text-sm text-gray-500 mt-0.5">{cp.idramDescFull}</p>
-                        </div>
-                      </label>
                     </div>
                   </div>
 

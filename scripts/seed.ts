@@ -179,7 +179,7 @@ async function main() {
       address: 'Ереван, ул. Абовяна, 1',
       phone: '+374 99 123 456',
       notes: 'Тестовый заказ',
-      paymentMethod: 'idram',
+      paymentMethod: 'cash',
       items: {
         create: [
           {

@@ -68,7 +68,7 @@ export interface OrderFormData {
   phone: string
   address: string
   notes?: string
-  paymentMethod: 'idram' | 'arca' | 'ameriabank'
+  paymentMethod: 'cash' | 'arca' | 'mastercard' | 'visa' | 'ameriabank'
 }
 
 export interface ContactFormData {
@@ -97,8 +97,10 @@ export const PRODUCT_STATUS_LABELS: Record<ProductStatus, string> = {
 }
 
 export const PAYMENT_METHODS = {
-  idram: 'Idram',
+  cash: 'Cash',
   arca: 'ArCa',
+  mastercard: 'Mastercard',
+  visa: 'Visa',
   ameriabank: 'Ameriabank'
 } as const
 
