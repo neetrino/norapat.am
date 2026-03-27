@@ -188,7 +188,6 @@ export default function ProfilePage() {
     { label: profilePage.phone, value: userProfile.phone || profilePage.notSet, icon: Phone },
     { label: profilePage.address, value: userProfile.address || profilePage.notSet, icon: MapPin },
   ]
-  const profileCompletion = Math.round((profileFields.filter((field) => field.value !== profilePage.notSet).length / profileFields.length) * 100)
   const totalSpent = orders.reduce((sum, order) => sum + order.total, 0)
   const activeOrders = orders.filter((order) => !['DELIVERED', 'CANCELLED'].includes(order.status)).length
   const latestOrder = orders[0]

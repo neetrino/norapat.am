@@ -38,7 +38,7 @@ export default function LoginPage() {
           window.location.href = '/'
         }
       }
-    } catch (error) {
+    } catch {
       setError(a.loginError)
     } finally {
       setIsLoading(false)

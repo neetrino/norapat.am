@@ -22,6 +22,7 @@ export function ProductImageGallery({
   productName,
   mainImageClassName = ''
 }: ProductImageGalleryProps) {
+  void mainImageClassName
   const { locale } = useI18n()
   const [selectedIndex, setSelectedIndex] = useState(0)
   const [isZoomOpen, setIsZoomOpen] = useState(false)

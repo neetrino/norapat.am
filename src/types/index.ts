@@ -24,9 +24,7 @@ export {
 }
 
 // Расширенные типы для приложения
-export interface ProductWithIngredients extends Product {
-  // PostgreSQL уже возвращает ingredients как массив
-}
+export type ProductWithIngredients = Product
 
 /** Ապրանք category relation-ով (API products, featured, banner) */
 export type ProductWithCategory = Product & {

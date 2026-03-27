@@ -1,6 +1,5 @@
 'use client'
 
-import Link from 'next/link'
 import { Search } from 'lucide-react'
 import { useState } from 'react'
 import { useI18n } from '@/i18n/I18nContext'
@@ -19,7 +18,7 @@ interface MobileHeaderProps {
 export default function MobileHeader({ branding }: MobileHeaderProps) {
   const { topBarInsetPx } = useHeaderStack()
   const { t } = useI18n()
-  const { search, nav } = t
+  const { search } = t
   const [searchQuery, setSearchQuery] = useState('')
   const [isSearchOpen, setIsSearchOpen] = useState(false)
 

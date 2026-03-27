@@ -2,7 +2,7 @@
 
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { 
@@ -45,18 +45,7 @@ export default function CategoriesPage() {
     isActive: true
   })
 
-  useEffect(() => {
-    if (status === 'loading') return
-
-    if (!session || session.user?.role !== 'ADMIN') {
-      router.push('/login')
-      return
-    }
-
-    fetchCategories()
-  }, [session, status, router, showInactive])
-
-  const fetchCategories = async () => {
+  const fetchCategories = useCallback(async () => {
     try {
       const response = await fetch(`/api/admin/categories?includeInactive=${showInactive}`)
       if (response.ok) {
@@ -69,7 +58,18 @@ export default function CategoriesPage() {
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [showInactive])
+
+  useEffect(() => {
+    if (status === 'loading') return
+
+    if (!session || session.user?.role !== 'ADMIN') {
+      router.push('/login')
+      return
+    }
+
+    fetchCategories()
+  }, [session, status, router, fetchCategories])
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault()

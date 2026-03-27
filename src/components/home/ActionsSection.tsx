@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
@@ -156,9 +157,11 @@ export function ActionsSection() {
 function CampaignBanner({ campaign }: { campaign: Campaign }) {
   return (
     <>
-      <img
+      <Image
         src={campaign.image}
         alt={campaign.title}
+        fill
+        unoptimized
         className="absolute inset-0 w-full h-full object-cover"
         loading="lazy"
         onError={(e) => {

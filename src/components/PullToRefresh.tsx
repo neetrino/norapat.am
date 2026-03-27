@@ -2,7 +2,6 @@
 
 import { usePullToRefresh } from '@/hooks/usePullToRefresh'
 import { RefreshCw, ArrowDown } from 'lucide-react'
-import { useEffect } from 'react'
 
 interface PullToRefreshProps {
   children: React.ReactNode
@@ -10,7 +9,7 @@ interface PullToRefreshProps {
 }
 
 export default function PullToRefresh({ children, className = '' }: PullToRefreshProps) {
-  const { isPulling, isRefreshing, pullDistance, canRefresh, triggerRefresh } = usePullToRefresh()
+  const { isPulling, isRefreshing, pullDistance, canRefresh } = usePullToRefresh()
 
   // Анимация для индикатора
   const getIndicatorTransform = () => {

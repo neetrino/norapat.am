@@ -13,8 +13,9 @@ const CATEGORY_LABELS: Record<string, string> = {
 
 export function getCategoryDisplayName(
   apiName: string | null | undefined,
-  _locale: AppLocale
+  locale: AppLocale
 ): string {
+  void locale
   if (apiName == null || apiName === '') {
     return ''
   }

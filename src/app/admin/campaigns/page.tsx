@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
@@ -280,9 +281,12 @@ export default function AdminCampaignsPage() {
                 />
                 {form.image && (
                   <div className="mt-2 rounded-lg overflow-hidden max-w-xs">
-                    <img
+                    <Image
                       src={form.image}
                       alt=""
+                      width={320}
+                      height={96}
+                      unoptimized
                       className="w-full h-24 object-cover"
                       onError={() => {}}
                     />
@@ -468,9 +472,12 @@ export default function AdminCampaignsPage() {
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-3">
                       <div className="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0 bg-gray-100">
-                        <img
+                        <Image
                           src={c.image}
                           alt=""
+                          width={48}
+                          height={48}
+                          unoptimized
                           className="w-full h-full object-cover"
                           onError={(e) => {
                             e.currentTarget.style.display = 'none'

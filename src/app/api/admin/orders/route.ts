@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import type { OrderStatus, Prisma } from '@prisma/client'
 import { prisma } from '@/lib/prisma'
 import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth'
@@ -31,28 +32,36 @@ export async function GET(request: NextRequest) {
     const page = parseInt(searchParams.get('page') || '1')
     const limit = parseInt(searchParams.get('limit') || '10')
     const skip = (page - 1) * limit
+    const orderStatuses: OrderStatus[] = [
+      'PENDING',
+      'CONFIRMED',
+      'PREPARING',
+      'READY',
+      'DELIVERED',
+      'CANCELLED',
+    ]
 
     // Строим фильтр по статусу (приоритет: filter > status)
-    let whereClause: { status?: string | { in: string[] } } = {}
+    const whereClause: Prisma.OrderWhereInput = {}
     if (filter) {
       switch (filter) {
         case 'new':
-          whereClause = { status: 'PENDING' }
+          whereClause.status = 'PENDING'
           break
         case 'in_progress':
-          whereClause = { status: { in: ['CONFIRMED', 'PREPARING', 'READY'] } }
+          whereClause.status = { in: ['CONFIRMED', 'PREPARING', 'READY'] }
           break
         case 'delivered':
-          whereClause = { status: 'DELIVERED' }
+          whereClause.status = 'DELIVERED'
           break
         case 'cancelled':
-          whereClause = { status: 'CANCELLED' }
+          whereClause.status = 'CANCELLED'
           break
         default:
           break
       }
-    } else if (status) {
-      whereClause = { status }
+    } else if (status && orderStatuses.includes(status as OrderStatus)) {
+      whereClause.status = status as OrderStatus
     }
 
     // Получаем заказы с пагинацией
@@ -91,9 +100,12 @@ export async function GET(request: NextRequest) {
     ])
 
     // Вычисляем общую сумму для каждого заказа
-    const ordersWithTotal = orders.map(order => ({
+    const ordersWithTotal = orders.map((order) => ({
       ...order,
-      totalAmount: order.items.reduce((sum, item) => sum + (item.product.price * item.quantity), 0)
+      totalAmount: order.items.reduce(
+        (sum: number, item) => sum + item.product.price * item.quantity,
+        0
+      )
     }))
 
     return NextResponse.json({

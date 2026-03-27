@@ -6,8 +6,9 @@ import { PRODUCT_DISPLAY_NAMES } from './productDisplayNames'
  */
 export function getProductDisplayName(
   name: string | null | undefined,
-  _locale: AppLocale
+  locale: AppLocale
 ): string {
+  void locale
   if (name == null || name === '') {
     return ''
   }

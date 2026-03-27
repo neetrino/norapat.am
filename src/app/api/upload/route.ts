@@ -30,7 +30,6 @@ export async function POST(request: NextRequest) {
     const buffer = Buffer.from(bytes)
 
     const timestamp = Date.now()
-    const extension = file.name.split('.').pop()
     const safeName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_')
     const filename = `${timestamp}-${safeName}`
     const key = `${folder}/${filename}`

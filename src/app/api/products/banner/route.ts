@@ -3,6 +3,7 @@ import { prisma } from '@/lib/prisma'
 
 // GET /api/products/banner - получить товар для баннера
 export async function GET(request: NextRequest) {
+  void request
   try {
     const product = await prisma.product.findFirst({
       where: {

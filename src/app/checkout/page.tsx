@@ -10,14 +10,6 @@ import Footer from '@/components/Footer'
 import { useI18n } from '@/i18n/I18nContext'
 import { getProductDisplayName } from '@/i18n/getProductDisplayName'
 
-interface UserProfile {
-  id: string
-  name: string | null
-  email: string
-  phone: string | null
-  address: string | null
-}
-
 export default function CheckoutPage() {
   const { locale, t } = useI18n()
   const cp = t.checkoutPage
@@ -25,8 +17,6 @@ export default function CheckoutPage() {
   const { items, getTotalPrice, clearCart, validateCart } = useCart()
   const { data: session, status } = useSession()
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [userProfile, setUserProfile] = useState<UserProfile | null>(null)
-  
   // Form state
   const [formData, setFormData] = useState({
     name: '',
@@ -65,7 +55,6 @@ export default function CheckoutPage() {
 
         if (response.ok) {
           const profile = await response.json()
-          setUserProfile(profile)
           setFormData(prev => ({
             ...prev,
             name: profile.name || '',

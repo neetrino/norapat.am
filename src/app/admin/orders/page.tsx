@@ -1,13 +1,11 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import Image from 'next/image'
+import { useState, useEffect, useCallback } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
-import { Order, OrderItem, User } from '@/types'
+import { Order, OrderItem, OrderStatus, User } from '@/types'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
 import { 
   Search, 
   Filter, 
@@ -18,7 +16,6 @@ import {
   Calendar,
   User as UserIcon,
   Phone,
-  MapPin,
   CreditCard,
   Package,
   Clock,
@@ -28,11 +25,8 @@ import {
   Truck,
   CheckSquare,
   ShoppingCart,
-  TrendingUp,
   DollarSign,
-  Plus,
   Download,
-  Printer
 } from 'lucide-react'
 import Link from 'next/link'
 
@@ -86,7 +80,7 @@ const statusBorderColors = {
   CANCELLED: 'border-red-300'
 }
 
-const statusLabels = {
+const _statusLabels = {
   PENDING: 'Սպասում',
   CONFIRMED: 'Հաստատված',
   PREPARING: 'Պատրաստվում',
@@ -131,7 +125,7 @@ export default function AdminOrdersPage() {
   }, [session, status, router])
 
   // Բեռնել պատվերները
-  const fetchOrders = async () => {
+  const fetchOrders = useCallback(async () => {
     try {
       setLoading(true)
       const params = new URLSearchParams({
@@ -171,7 +165,7 @@ export default function AdminOrdersPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [currentPage, filterGroup, statusFilter])
 
   // Բացել պատվերի մանրամասնությամբ մոդալ պատուհան
   const openOrderDetails = (order: OrderWithDetails) => {
@@ -187,10 +181,10 @@ export default function AdminOrdersPage() {
 
   useEffect(() => {
     fetchOrders()
-  }, [currentPage, statusFilter, filterGroup])
+  }, [fetchOrders])
 
   // Փոխել պատվերի կարգավիճակը
-  const updateOrderStatus = async (orderId: string, newStatus: string) => {
+  const updateOrderStatus = async (orderId: string, newStatus: OrderStatus) => {
     try {
       const response = await fetch(`/api/admin/orders/${orderId}/status`, {
         method: 'PATCH',
@@ -207,13 +201,13 @@ export default function AdminOrdersPage() {
       // Թարմացնել լոկալ state-ը
       setOrders(prevOrders =>
         prevOrders.map(order =>
-          order.id === orderId ? { ...order, status: newStatus as any } : order
+          order.id === orderId ? { ...order, status: newStatus } : order
         )
       )
 
       // Թարմացնել ընտրված պատվերը մոդալ պատուհանում
       if (selectedOrder && selectedOrder.id === orderId) {
-        setSelectedOrder(prev => prev ? { ...prev, status: newStatus as any } : null)
+        setSelectedOrder(prev => prev ? { ...prev, status: newStatus } : null)
       }
     } catch (error) {
       console.error('Error updating order status:', error)
@@ -527,7 +521,8 @@ export default function AdminOrdersPage() {
                       <div className="relative">
                         <select
                           value={order.status}
-                          onChange={(e) => updateOrderStatus(order.id, e.target.value)}
+                          onChange={(e) => updateOrderStatus(order.id, e.target.value as OrderStatus)}
+                          aria-label={_statusLabels[order.status as OrderStatus]}
                           className={`px-4 py-2 rounded-xl border-0 focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors cursor-pointer appearance-none pr-10 ${statusColors[order.status]} font-medium`}
                         >
                           <option value="PENDING">⏳ Սպասում</option>
@@ -610,7 +605,8 @@ export default function AdminOrdersPage() {
                     </div>
                     <select
                       value={selectedOrder.status}
-                      onChange={(e) => updateOrderStatus(selectedOrder.id, e.target.value)}
+                      onChange={(e) => updateOrderStatus(selectedOrder.id, e.target.value as OrderStatus)}
+                      aria-label={_statusLabels[selectedOrder.status as OrderStatus]}
                       className={`w-full px-3 py-2 bg-white border-2 ${statusBorderColors[selectedOrder.status]} rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors text-gray-900 font-medium`}
                     >
                       <option value="PENDING">⏳ Սպասում</option>
@@ -690,9 +686,12 @@ export default function AdminOrdersPage() {
                       <div key={index} className="flex items-center justify-between p-4 bg-white rounded-xl border border-gray-200">
                         <div className="flex items-center gap-3">
                           {item.product.image && item.product.image !== 'no-image' ? (
-                            <img
+                            <Image
                               src={item.product.image}
                               alt={item.product.name}
+                              width={48}
+                              height={48}
+                              unoptimized
                               className="w-12 h-12 rounded-lg object-cover"
                             />
                           ) : (
@@ -733,4 +732,3 @@ export default function AdminOrdersPage() {
     </div>
   )
 }
-

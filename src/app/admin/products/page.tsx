@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState, useCallback, useRef } from 'react'
@@ -108,7 +109,7 @@ export default function AdminProducts() {
 
     const existing = toggleDebounceRef.current.get(productId)
 
-    // serverValue = the value actually saved on the server (before any pending flips)
+    // serverValue = the value actually saved on the server before pending flips
     const serverValue = existing?.serverValue
       ?? (productsRef.current.find(p => p.id === productId)?.isAvailable ?? true)
 
@@ -196,7 +197,11 @@ export default function AdminProducts() {
   const toggleSelect = (id: string) => {
     setSelectedIds(prev => {
       const next = new Set(prev)
-      next.has(id) ? next.delete(id) : next.add(id)
+      if (next.has(id)) {
+        next.delete(id)
+      } else {
+        next.add(id)
+      }
       return next
     })
   }
@@ -364,7 +369,11 @@ export default function AdminProducts() {
                     <input
                       type="checkbox"
                       checked={allSelected}
-                      ref={el => { if (el) el.indeterminate = someSelected }}
+                      ref={el => {
+                        if (el) {
+                          el.indeterminate = someSelected
+                        }
+                      }}
                       onChange={toggleSelectAll}
                       className="h-4 w-4 rounded border-gray-300 text-orange-500 focus:ring-orange-400 cursor-pointer"
                     />
@@ -445,9 +454,12 @@ export default function AdminProducts() {
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-lg overflow-hidden bg-orange-50 flex items-center justify-center shrink-0 border border-gray-100">
                           {product.image && product.image !== 'no-image' ? (
-                            <img
+                            <Image
                               src={product.image}
                               alt={product.name}
+                              width={40}
+                              height={40}
+                              unoptimized
                               className="w-full h-full object-cover"
                             />
                           ) : (

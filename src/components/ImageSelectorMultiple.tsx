@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Search, X, Image as ImageIcon, Check, Loader2, ChevronUp, ChevronDown } from 'lucide-react'
@@ -31,7 +31,7 @@ export default function ImageSelectorMultiple({
   const [dragOver, setDragOver] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  const loadImages = async () => {
+  const loadImages = useCallback(async () => {
     if (images.length > 0) return
     setLoadingGallery(true)
     try {
@@ -45,11 +45,11 @@ export default function ImageSelectorMultiple({
     } finally {
       setLoadingGallery(false)
     }
-  }
+  }, [images.length])
 
   useEffect(() => {
     if (activeTab === 'gallery') loadImages()
-  }, [activeTab])
+  }, [activeTab, loadImages])
 
   const filteredImages = images.filter((img) =>
     img.name.toLowerCase().includes(searchTerm.toLowerCase())

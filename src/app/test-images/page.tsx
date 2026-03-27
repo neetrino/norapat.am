@@ -41,9 +41,12 @@ export default function TestImagesPage() {
             {categories.map((cat) => (
               <div key={cat.name} className="text-center">
                 <div className="w-24 h-24 bg-white rounded-lg border border-gray-300 mb-2 flex items-center justify-center p-2">
-                  <img
+                  <Image
                     src={cat.image}
                     alt={cat.name}
+                    width={96}
+                    height={96}
+                    unoptimized
                     className="max-w-full max-h-full object-contain"
                   />
                 </div>

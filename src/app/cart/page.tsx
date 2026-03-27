@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import { useState } from 'react'
 import Link from 'next/link'
 import { ArrowLeft, Plus, Minus, Trash2, ShoppingBag } from 'lucide-react'
@@ -134,9 +135,12 @@ export default function CartPage() {
                     {/* Product Image */}
                     <div className="w-16 h-16 bg-orange-50 rounded-xl flex items-center justify-center overflow-hidden flex-shrink-0">
                       {item.product.image && item.product.image !== 'no-image' ? (
-                        <img 
-                          src={item.product.image} 
+                        <Image
+                          src={item.product.image}
                           alt={getProductDisplayName(item.product.name, locale)}
+                          width={64}
+                          height={64}
+                          unoptimized
                           className="w-full h-full object-contain"
                           onError={(e) => {
                             e.currentTarget.style.display = 'none';
@@ -230,9 +234,12 @@ export default function CartPage() {
                       {/* Product Image */}
                       <div className="w-20 h-20 bg-orange-50 rounded-xl flex items-center justify-center overflow-hidden flex-shrink-0">
                         {item.product.image && item.product.image !== 'no-image' ? (
-                          <img 
-                            src={item.product.image} 
+                          <Image
+                            src={item.product.image}
                             alt={getProductDisplayName(item.product.name, locale)}
+                            width={80}
+                            height={80}
+                            unoptimized
                             className="w-full h-full object-contain"
                             onError={(e) => {
                               e.currentTarget.style.display = 'none';

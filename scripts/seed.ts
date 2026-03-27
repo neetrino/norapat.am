@@ -142,7 +142,6 @@ async function main() {
   }
 
   // Создаем тестового пользователя
-  const bcrypt = require('bcryptjs')
   const testUser = await prisma.user.create({
     data: {
       email: 'test@pideh-armenia.am',
@@ -208,3 +207,4 @@ main()
   .finally(async () => {
     await prisma.$disconnect()
   })
+import bcrypt from 'bcryptjs'

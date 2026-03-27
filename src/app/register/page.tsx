@@ -86,7 +86,7 @@ export default function RegisterPage() {
       } else {
         setError(data.error || 'Սխալ տեղի ունեցավ գրանցման ժամանակ')
       }
-    } catch (error) {
+    } catch {
       setError('Սխալ տեղի ունեցավ գրանցման ժամանակ')
     } finally {
       setIsLoading(false)

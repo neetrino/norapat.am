@@ -46,7 +46,7 @@ export async function GET() {
     response.headers.set('CDN-Cache-Control', 'public, s-maxage=3600')
 
     return response
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: 'Failed to fetch promo products' },
       { status: 500 }

@@ -5,6 +5,7 @@ import { prisma } from '@/lib/prisma'
 import type { OrderItemForm } from '@/types'
 
 export async function GET(request: NextRequest) {
+  void request
   try {
     const session = await getServerSession(authOptions)
 

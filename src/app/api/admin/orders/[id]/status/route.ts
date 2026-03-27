@@ -1,17 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server'
+import type { OrderStatus } from '@prisma/client'
 import { prisma } from '@/lib/prisma'
 import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth'
 
-// PATCH /api/admin/orders/[id]/status - изменить статус заказа (только для админов)
+interface UpdateOrderStatusBody {
+  status?: OrderStatus
+}
+
+// PATCH /api/admin/orders/[id]/status - change order status (admin only)
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    // Проверяем аутентификацию
     const session = await getServerSession(authOptions)
-    
+
     if (!session?.user) {
       return NextResponse.json(
         { error: 'Unauthorized' },
@@ -19,7 +23,6 @@ export async function PATCH(
       )
     }
 
-    // Проверяем права администратора
     if (session.user.role !== 'ADMIN') {
       return NextResponse.json(
         { error: 'Forbidden - Admin access required' },
@@ -27,12 +30,19 @@ export async function PATCH(
       )
     }
 
-    // Получаем данные из запроса
-    const body = await request.json()
+    const body = (await request.json()) as UpdateOrderStatusBody
     const { status } = body
+    const { id } = await params
 
-    // Валидируем статус
-    const validStatuses = ['PENDING', 'CONFIRMED', 'PREPARING', 'READY', 'DELIVERED', 'CANCELLED']
+    const validStatuses: OrderStatus[] = [
+      'PENDING',
+      'CONFIRMED',
+      'PREPARING',
+      'READY',
+      'DELIVERED',
+      'CANCELLED',
+    ]
+
     if (!status || !validStatuses.includes(status)) {
       return NextResponse.json(
         { error: 'Invalid status. Must be one of: ' + validStatuses.join(', ') },
@@ -40,9 +50,8 @@ export async function PATCH(
       )
     }
 
-    // Проверяем существование заказа
     const existingOrder = await prisma.order.findUnique({
-      where: { id: params.id }
+      where: { id }
     })
 
     if (!existingOrder) {
@@ -52,9 +61,8 @@ export async function PATCH(
       )
     }
 
-    // Обновляем статус заказа
     const updatedOrder = await prisma.order.update({
-      where: { id: params.id },
+      where: { id },
       data: { status },
       include: {
         user: {
@@ -80,9 +88,8 @@ export async function PATCH(
       }
     })
 
-    // Вычисляем общую сумму заказа
     const totalAmount = updatedOrder.items.reduce(
-      (sum, item) => sum + (item.product.price * item.quantity), 
+      (sum: number, item) => sum + item.product.price * item.quantity,
       0
     )
 
