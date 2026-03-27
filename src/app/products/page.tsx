@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef, Suspense, useMemo } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
-import { Search, ArrowDownUp, SlidersHorizontal } from 'lucide-react'
+import { Search, ArrowDownUp, ChevronDown, LayoutGrid } from 'lucide-react'
 import Image from 'next/image'
 import { useCart } from '@/hooks/useCart'
 import { useWishlist } from '@/hooks/useWishlist'
@@ -16,6 +16,20 @@ import { getCategoryDisplayName } from '@/i18n/getCategoryDisplayName'
 import { MENU_PRODUCTS_PAGE_SIZE } from '@/constants/menuPagination.constants'
 import { parseProductsListResponse } from '@/lib/parseProductsListResponse'
 import { dedupeCategoriesForNav, isSameCategoryNavSelection } from '@/lib/categoryNav.utils'
+
+function GridIcon({ cols }: { cols: 2 | 3 | 4 }) {
+  const size = cols === 2 ? [1, 1] : cols === 3 ? [1, 1, 1] : [1, 1, 1, 1]
+  return (
+    <span className="grid gap-[2px]" style={{ gridTemplateColumns: `repeat(${cols}, 1fr)`, width: 12, height: 12 }}>
+      {size.map((_, i) => (
+        <span key={i} className="rounded-[1px] bg-current" />
+      ))}
+      {size.map((_, i) => (
+        <span key={`b${i}`} className="rounded-[1px] bg-current" />
+      ))}
+    </span>
+  )
+}
 
 function ProductsPageContent() {
   const { t, locale } = useI18n()
@@ -31,6 +45,7 @@ function ProductsPageContent() {
   const [sortOrder, setSortOrder] = useState<string>('newest')
   const [minPrice, setMinPrice] = useState<string>('')
   const [maxPrice, setMaxPrice] = useState<string>('')
+  const [gridCols, setGridCols] = useState<2 | 3 | 4>(2)
   const [loading, setLoading] = useState(true)
   const [searching, setSearching] = useState(false)
   const [menuPage, setMenuPage] = useState(1)
@@ -242,57 +257,91 @@ function ProductsPageContent() {
         <main className="flex-1 min-w-0 px-4 sm:px-6 lg:px-8 py-6 pb-20 lg:pb-8">
 
           {/* Search + filters */}
-          <div className="flex flex-col sm:flex-row gap-3 mb-6">
-            <div className="flex-1 relative">
-              <Search className={`absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 ${searching ? 'text-[#E53225] animate-pulse' : 'text-gray-400'}`} />
+          <div className="mb-5 space-y-2.5">
+            {/* Row 1 — Search */}
+            <div className="relative">
+              <Search className={`absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 ${searching ? 'text-[#E53225] animate-pulse' : 'text-gray-400'}`} />
               <input
                 type="text"
                 placeholder={searchCopy.productsPage}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-11 pr-4 py-2.5 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#E53225]/30 focus:border-[#E53225] text-sm text-gray-900 placeholder-gray-400 bg-gray-50 transition-all hover:bg-white focus:bg-white"
+                className="w-full pl-10 pr-10 py-2.5 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#E53225]/25 focus:border-[#E53225] text-sm text-gray-900 placeholder-gray-400 bg-gray-50 transition-all hover:bg-white focus:bg-white"
               />
               {searching && (
-                <div className="absolute right-4 top-1/2 -translate-y-1/2">
+                <div className="absolute right-3.5 top-1/2 -translate-y-1/2">
                   <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-[#E53225]" />
                 </div>
               )}
             </div>
+
+            {/* Row 2 — Sort · Price · Rooms */}
             <div className="flex flex-wrap items-center gap-2">
-              <div className="flex items-center gap-1.5">
-                <ArrowDownUp className="h-4 w-4 text-gray-400 shrink-0" />
+
+              {/* Sort */}
+              <div className="relative flex items-center">
+                <ArrowDownUp className="absolute left-2.5 h-3.5 w-3.5 text-gray-400 pointer-events-none" />
                 <select
                   value={sortOrder}
                   onChange={(e) => { setMenuPage(1); setSortOrder(e.target.value) }}
-                  className="px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#E53225]/30 bg-white text-gray-800 text-sm"
+                  className="pl-8 pr-7 py-2 border border-gray-200 rounded-xl bg-white text-gray-700 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-[#E53225]/25 focus:border-[#E53225] appearance-none cursor-pointer"
                 >
                   <option value="newest">{productsCopy.sortNewest}</option>
                   <option value="price_asc">{productsCopy.sortPriceAsc}</option>
                   <option value="price_desc">{productsCopy.sortPriceDesc}</option>
                   <option value="popular">{productsCopy.sortPopular}</option>
                 </select>
+                <ChevronDown className="absolute right-2 h-3 w-3 text-gray-400 pointer-events-none" />
               </div>
+
+              {/* Divider */}
+              <span className="hidden sm:block h-5 w-px bg-gray-200" />
+
+              {/* Price range */}
               <div className="flex items-center gap-1.5">
-                <SlidersHorizontal className="h-4 w-4 text-gray-400 shrink-0" />
                 <input
                   type="number"
                   placeholder={productsCopy.priceFrom}
                   value={minPrice}
                   onChange={(e) => { setMenuPage(1); setMinPrice(e.target.value) }}
                   min={0} step={100}
-                  className="w-20 px-2.5 py-2 border border-gray-200 rounded-xl text-sm text-gray-800 bg-white focus:outline-none focus:ring-2 focus:ring-[#E53225]/30"
+                  className="w-20 px-2.5 py-2 border border-gray-200 rounded-xl text-xs text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-[#E53225]/25 focus:border-[#E53225]"
                 />
-                <span className="text-gray-400 text-sm">—</span>
+                <span className="text-gray-300 text-sm select-none">—</span>
                 <input
                   type="number"
                   placeholder={productsCopy.priceTo}
                   value={maxPrice}
                   onChange={(e) => { setMenuPage(1); setMaxPrice(e.target.value) }}
                   min={0} step={100}
-                  className="w-20 px-2.5 py-2 border border-gray-200 rounded-xl text-sm text-gray-800 bg-white focus:outline-none focus:ring-2 focus:ring-[#E53225]/30"
+                  className="w-20 px-2.5 py-2 border border-gray-200 rounded-xl text-xs text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-[#E53225]/25 focus:border-[#E53225]"
                 />
-                <span className="text-gray-500 text-sm">֏</span>
+                <span className="text-gray-400 text-xs font-medium">֏</span>
               </div>
+
+              {/* Divider */}
+              <span className="hidden sm:block h-5 w-px bg-gray-200" />
+
+              {/* Grid columns toggle */}
+              <div className="flex items-center gap-1">
+                <LayoutGrid className="h-3.5 w-3.5 text-gray-400 shrink-0 mr-0.5" />
+                {([2, 3, 4] as const).map((cols) => (
+                  <button
+                    key={cols}
+                    type="button"
+                    onClick={() => setGridCols(cols)}
+                    className={`w-7 h-7 rounded-lg flex items-center justify-center transition-all ${
+                      gridCols === cols
+                        ? 'bg-[#E53225] text-white shadow-sm shadow-[#E53225]/30'
+                        : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
+                    }`}
+                    aria-label={`${cols} columns`}
+                  >
+                    <GridIcon cols={cols} />
+                  </button>
+                ))}
+              </div>
+
             </div>
           </div>
 
@@ -315,14 +364,18 @@ function ProductsPageContent() {
 
           <div ref={productGridTopRef} className="scroll-mt-28" aria-hidden />
 
-          {/* Product grid — 2 columns, horizontal cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {/* Product grid */}
+          <div className={
+            gridCols === 2 ? 'grid grid-cols-1 sm:grid-cols-2 gap-4' :
+            gridCols === 3 ? 'grid grid-cols-2 sm:grid-cols-3 gap-3' :
+                             'grid grid-cols-2 sm:grid-cols-4 gap-2.5'
+          }>
             {filteredProducts.map((product) => (
               <ProductCard
                 key={product.id}
                 product={product}
                 onAddToCart={handleAddToCart}
-                variant="horizontal"
+                variant={gridCols === 2 ? 'horizontal' : gridCols === 3 ? 'default' : 'compact'}
                 addedToCart={addedToCart}
                 isInWishlist={isInWishlist(product.id)}
                 onToggleWishlist={handleToggleWishlist}
