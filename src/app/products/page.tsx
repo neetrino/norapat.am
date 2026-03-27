@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback, useRef, Suspense, useMemo } from 'react'
-import { useSearchParams } from 'next/navigation'
+import { useSearchParams, useRouter } from 'next/navigation'
 import { Search, ArrowDownUp, SlidersHorizontal } from 'lucide-react'
 import Image from 'next/image'
 import { useCart } from '@/hooks/useCart'
@@ -36,8 +36,9 @@ function ProductsPageContent() {
   const [menuPage, setMenuPage] = useState(1)
   const [totalProductCount, setTotalProductCount] = useState(0)
   const [addedToCart, setAddedToCart] = useState<Set<string>>(new Set())
+  const router = useRouter()
   const { addItem } = useCart()
-  const { isInWishlist, toggle: toggleWishlist } = useWishlist()
+  const { isInWishlist, toggle: toggleWishlist, isAuthenticated } = useWishlist()
   const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const productGridTopRef = useRef<HTMLDivElement>(null)
 
@@ -127,6 +128,14 @@ function ProductsPageContent() {
     setSelectedCategoryName(name)
   }, [])
 
+  const handleToggleWishlist = useCallback((productId: string) => {
+    if (!isAuthenticated) {
+      router.push('/login')
+      return
+    }
+    toggleWishlist(productId)
+  }, [isAuthenticated, toggleWishlist, router])
+
   // ─── Loading skeleton ──────────────────────────────────────────────────────
   if (loading) {
     return (
@@ -174,13 +183,13 @@ function ProductsPageContent() {
           className="hidden lg:block w-56 xl:w-64 shrink-0 border-r border-gray-100 bg-white"
           style={{
             position: 'sticky',
-            top: 'calc(6rem + var(--top-bar-offset, 0px))',
+            top: 'calc(7.5rem + var(--top-bar-offset, 0px))',
             alignSelf: 'flex-start',
-            height: 'calc(100vh - 6rem - var(--top-bar-offset, 0px))',
+            height: 'calc(100vh - 7.5rem - var(--top-bar-offset, 0px))',
             overflowY: 'auto',
           }}
         >
-          <nav className="py-5 px-3 space-y-0.5">
+          <nav className="px-3 space-y-0.5 flex flex-col justify-center h-full">
             {/* All */}
             <button
               type="button"
@@ -316,7 +325,7 @@ function ProductsPageContent() {
                 variant="horizontal"
                 addedToCart={addedToCart}
                 isInWishlist={isInWishlist(product.id)}
-                onToggleWishlist={toggleWishlist}
+                onToggleWishlist={handleToggleWishlist}
               />
             ))}
           </div>

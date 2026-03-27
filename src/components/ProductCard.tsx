@@ -148,9 +148,19 @@ const ProductCard = memo(({ product, onAddToCart, variant = 'default', addedToCa
               e.stopPropagation()
               onToggleWishlist(product.id)
             }}
-            className="absolute top-2.5 right-2.5 w-7 h-7 flex items-center justify-center rounded-full bg-white/90 shadow-sm hover:bg-white transition-colors"
+            className={`absolute top-2.5 right-2.5 w-8 h-8 flex items-center justify-center rounded-full shadow-sm transition-all duration-200 active:scale-90 ${
+              isInWishlist
+                ? 'bg-red-50 hover:bg-red-100'
+                : 'bg-white/95 hover:bg-white hover:shadow-md'
+            }`}
           >
-            <Heart className={`h-3.5 w-3.5 ${isInWishlist ? 'fill-red-500 text-red-500' : 'text-gray-400'}`} />
+            <Heart
+              className={`h-4 w-4 transition-all duration-200 ${
+                isInWishlist
+                  ? 'fill-red-500 text-red-500 scale-110'
+                  : 'text-gray-400 hover:text-gray-600'
+              }`}
+            />
           </button>
         )}
       </Link>
