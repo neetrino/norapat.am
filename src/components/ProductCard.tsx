@@ -203,7 +203,7 @@ const ProductCard = memo(
           className={`relative overflow-hidden border-b border-[#f1e5de] ${
             isCompact ? 'rounded-t-[1.6rem]' : 'rounded-t-[2rem]'
           }`}
-          style={{ aspectRatio: '1500/1125' }}
+          style={{ aspectRatio: isCompact ? '1 / 1' : '1500 / 1125' }}
         >
           <div aria-hidden className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,230,219,0.9)_0%,rgba(255,244,238,0.78)_48%,rgba(255,255,255,0.72)_100%)]" />
           <div aria-hidden className="absolute -left-8 bottom-0 h-28 w-28 rounded-full bg-[#ffd8c8]/45 blur-3xl" />
@@ -242,17 +242,20 @@ const ProductCard = memo(
           {product.image && product.image !== 'no-image' ? (
             <div className="relative z-10 h-full w-full overflow-hidden">
               <div
-                className={`absolute left-1/2 top-1/2 h-[calc(100%+3rem)] w-full -translate-x-1/2 -translate-y-[46%] ${
-                  isCompact ? 'max-w-[250px]' : 'max-w-[320px]'
+                className={`absolute inset-0 ${
+                  isCompact ? 'px-3 pb-3 pt-10 sm:px-4 sm:pb-4' : 'px-4 pb-4 pt-14 sm:px-5 sm:pb-5 sm:pt-16'
                 }`}
-                style={{ transform: 'translate(-50%, -46%) perspective(1000px) rotateX(6deg) rotateY(-2deg)' }}
+                style={{
+                  transform: isCompact ? undefined : 'perspective(1000px) rotateX(6deg) rotateY(-2deg)',
+                  transformOrigin: 'center center',
+                }}
               >
                 <Image
                   src={product.image}
                   alt={displayName}
                   fill
                   sizes="(max-width: 768px) 50vw, (max-width: 1200px) 25vw, 20vw"
-                  className="object-contain transition-transform duration-300 group-hover:scale-[1.06]"
+                  className="object-contain object-center transition-transform duration-300 group-hover:scale-[1.04]"
                   style={{ filter: 'drop-shadow(0 14px 24px rgba(15,23,42,0.18))' }}
                   loading="lazy"
                   quality={85}

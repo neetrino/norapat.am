@@ -267,18 +267,15 @@ function ProductsPageContent() {
             alignSelf: 'flex-start',
           }}
         >
-          <div className="max-h-[calc(100vh-7.5rem-var(--top-bar-offset,0px))] overflow-y-auto rounded-[2rem] border border-[#eadfd9] bg-white/90 p-4 shadow-[0_16px_40px_rgba(15,23,42,0.05)] backdrop-blur">
-            <div className="mb-4 flex items-center justify-between px-1">
+          <div className="max-h-[calc(100vh-7.5rem-var(--top-bar-offset,0px))] overflow-y-auto rounded-[1.9rem] border border-[#ebe2dc] bg-white p-4 shadow-[0_14px_34px_rgba(15,23,42,0.05)]">
+            <div className="mb-4 border-b border-[#f3ebe6] px-2 pb-4">
               <div>
                 <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">
                   {productsCopy.categoryLabel}
                 </p>
-                <h2 className="mt-1 text-lg font-bold text-slate-900">
+                <h2 className="mt-2 text-[1.35rem] font-black tracking-tight text-slate-900">
                   {productsCopy.allCategories}
                 </h2>
-              </div>
-              <div className="rounded-full bg-[#fff3ec] px-3 py-1 text-xs font-semibold text-[#E53225]">
-                {navCategories.length + 1}
               </div>
             </div>
 
@@ -286,22 +283,33 @@ function ProductsPageContent() {
               <button
                 type="button"
                 onClick={() => selectCategory(null)}
-                className={`group flex w-full items-center gap-3 rounded-2xl border px-3.5 py-3 text-sm font-semibold transition-all ${
+                className={`group flex w-full items-center gap-3 rounded-full px-4 py-3 text-sm font-semibold transition-all duration-300 ${
                   selectedCategoryName === null
-                    ? 'border-[#ffd2c8] bg-[linear-gradient(135deg,#fff1ec_0%,#ffe5de_100%)] text-[#E53225] shadow-[0_12px_24px_rgba(229,50,37,0.12)]'
-                    : 'border-transparent text-slate-600 hover:border-[#f0e2da] hover:bg-[#fffaf7] hover:text-slate-900'
+                    ? 'bg-[#ffd9df] text-[#E53225] shadow-[0_8px_20px_rgba(229,50,37,0.12)]'
+                    : 'text-slate-600 hover:bg-[#fff5f3] hover:text-slate-900'
                 }`}
               >
                 <span
-                  className={`flex h-10 w-10 items-center justify-center rounded-2xl text-[15px] transition-colors ${
+                  className={`flex h-9 w-9 items-center justify-center rounded-full text-[16px] transition-all ${
                     selectedCategoryName === null
                       ? 'bg-white text-[#E53225]'
-                      : 'bg-[#f6f2ef] text-slate-500 group-hover:bg-white'
+                      : 'bg-[#faf5f2] text-slate-500 group-hover:bg-white'
                   }`}
                 >
                   🍽️
                 </span>
-                <span className="min-w-0 flex-1 truncate text-left">{productsCopy.allCategories}</span>
+                <span className="min-w-0 flex-1 truncate text-left text-[1.02rem] font-bold">
+                  {productsCopy.allCategories}
+                </span>
+                <span
+                  className={`rounded-full px-3 py-1 text-xs font-bold ${
+                    selectedCategoryName === null
+                      ? 'bg-white text-[#E53225]'
+                      : 'bg-[#f7f2ee] text-slate-400'
+                  }`}
+                >
+                  {navCategories.length + 1}
+                </span>
               </button>
 
               {categoriesLoading
@@ -319,35 +327,37 @@ function ProductsPageContent() {
                         key={cat.id}
                         type="button"
                         onClick={() => selectCategory(cat.name)}
-                        className={`group flex w-full items-center gap-3 rounded-2xl border px-3.5 py-3 text-sm font-semibold transition-all ${
+                        className={`group flex w-full items-center gap-3 rounded-full px-4 py-3 text-sm font-semibold transition-all duration-300 ${
                           active
-                            ? 'border-[#ffd2c8] bg-[linear-gradient(135deg,#fff1ec_0%,#ffe5de_100%)] text-[#E53225] shadow-[0_12px_24px_rgba(229,50,37,0.12)]'
-                            : 'border-transparent text-slate-600 hover:border-[#f0e2da] hover:bg-[#fffaf7] hover:text-slate-900'
+                            ? 'bg-[#ffd9df] text-[#E53225] shadow-[0_8px_20px_rgba(229,50,37,0.12)]'
+                            : 'text-slate-600 hover:bg-[#fff5f3] hover:text-slate-900'
                         }`}
                       >
                         {cat.image ? (
                           <div
-                            className={`relative h-10 w-10 shrink-0 overflow-hidden rounded-2xl ring-1 ring-inset ${
-                              active ? 'bg-white ring-[#ffd9cf]' : 'bg-[#f6f2ef] ring-[#efe4dd]'
+                            className={`relative h-9 w-9 shrink-0 overflow-hidden rounded-full ring-1 ring-inset ${
+                              active ? 'bg-white ring-[#ffd5cc]' : 'bg-[#faf5f2] ring-[#efe4dd]'
                             }`}
                           >
-                            <Image src={cat.image} alt="" fill sizes="40px" className="object-cover" />
+                            <Image src={cat.image} alt="" fill sizes="36px" className="object-cover" />
                           </div>
                         ) : (
                           <span
-                            className={`flex h-10 w-10 items-center justify-center rounded-2xl text-[15px] ${
-                              active ? 'bg-white text-[#E53225]' : 'bg-[#f6f2ef] text-slate-500'
+                            className={`flex h-9 w-9 items-center justify-center rounded-full text-[16px] ${
+                              active ? 'bg-white text-[#E53225]' : 'bg-[#faf5f2] text-slate-500'
                             }`}
                           >
                             🍽️
                           </span>
                         )}
-                        <span className="min-w-0 flex-1 truncate text-left">{label}</span>
+                        <span className="min-w-0 flex-1 truncate text-left text-[1.02rem] font-semibold">
+                          {label}
+                        </span>
                         <span
-                          className={`rounded-full px-2.5 py-1 text-[11px] font-bold ${
+                          className={`rounded-full px-3 py-1 text-xs font-bold ${
                             active
                               ? 'bg-white text-[#E53225]'
-                              : 'bg-[#f6f2ef] text-slate-400 group-hover:bg-white'
+                              : 'bg-[#f7f2ee] text-slate-400 group-hover:bg-white'
                           }`}
                         >
                           {cat._count.products}
