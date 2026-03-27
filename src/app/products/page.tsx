@@ -46,12 +46,12 @@ function CategoryPromoImage({ className = '' }: { className?: string }) {
       className={`overflow-hidden rounded-[1.9rem] border border-[#ebe2dc] bg-[linear-gradient(180deg,#fff7f2_0%,#fffdfb_100%)] shadow-[0_14px_34px_rgba(15,23,42,0.05)] ${className}`}
     >
       <div className="flex items-center justify-center px-4 pb-2 pt-4">
-        <div className="relative aspect-square w-full max-w-[220px]">
+        <div className="relative aspect-square w-full max-w-[196px]">
           <Image
             src="/menu-category-girl.webp"
             alt="Norapat menu mascot"
             fill
-            sizes="(max-width: 1024px) 220px, 220px"
+            sizes="(max-width: 1024px) 196px, 196px"
             className="object-contain"
             priority
           />
