@@ -260,10 +260,10 @@ export default function ProfilePage() {
       <div className="h-header-spacer-mobile lg:hidden" aria-hidden />
       <div className="h-header-spacer-desktop hidden lg:block" aria-hidden />
       
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 lg:py-8 pb-20 lg:pb-8">
+      <div className="max-w-6xl mx-auto px-4 pt-6 pb-20 sm:px-6 sm:pt-8 lg:px-8 lg:pt-10 lg:pb-10">
         {/* Mobile Header */}
-        <div className="lg:hidden mb-6">
-          <div className="flex items-center justify-between mb-6">
+        <div className="lg:hidden mb-7">
+          <div className="flex items-center justify-between mb-5">
             <Link 
               href="/"
               className="flex items-center text-gray-600 hover:text-orange-500 transition-colors"
@@ -276,7 +276,7 @@ export default function ProfilePage() {
           </div>
           
           {/* Mobile Profile Card */}
-          <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
+          <div className="bg-white rounded-2xl shadow-lg p-5 sm:p-6 mb-6">
             <div className="flex items-center space-x-4 mb-4">
               <div className="w-16 h-16 bg-orange-500 rounded-full flex items-center justify-center">
                 <User className="h-8 w-8 text-white" />
@@ -293,7 +293,7 @@ export default function ProfilePage() {
               </button>
             </div>
             
-            <div className="grid grid-cols-2 gap-4 text-sm mb-4">
+            <div className="grid grid-cols-1 gap-3 text-sm mb-5 sm:grid-cols-2 sm:gap-4">
               <div className="flex items-center space-x-2">
                 <Phone className="h-4 w-4 text-gray-400" />
                 <span className="text-gray-600">{userProfile.phone || profilePage.notSet}</span>
@@ -325,7 +325,7 @@ export default function ProfilePage() {
         </div>
 
         {/* Desktop Header */}
-        <div className="hidden lg:flex items-center space-x-4 mb-8">
+        <div className="hidden lg:flex items-center space-x-4 mb-10">
           <Link 
             href="/"
             className="flex items-center text-gray-600 hover:text-orange-500 transition-colors"
@@ -337,10 +337,10 @@ export default function ProfilePage() {
           <h1 className="text-3xl font-bold text-gray-900">{profilePage.titleDesktop}</h1>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 md:gap-8 lg:gap-10">
           {/* Profile Info - Desktop Only */}
           <div className="hidden lg:block lg:col-span-1">
-            <div className="bg-white rounded-2xl shadow-lg p-6">
+            <div className="bg-white rounded-2xl shadow-lg p-6 lg:p-7">
               <h2 className="text-xl font-semibold text-gray-900 mb-6">{profilePage.profileInfo}</h2>
               
               <div className="space-y-4">
@@ -406,8 +406,8 @@ export default function ProfilePage() {
           </div>
 
           {/* Wishlist & Orders */}
-          <div className="lg:col-span-2 space-y-6">
-            <div className="bg-white rounded-2xl shadow-lg p-4 md:p-6">
+          <div className="lg:col-span-2 space-y-6 lg:space-y-7">
+            <div className="bg-white rounded-2xl shadow-lg p-4 md:p-6 lg:p-7">
               <h2 className="text-lg md:text-xl font-semibold text-gray-900 mb-4 md:mb-6 flex flex-wrap items-center justify-between gap-2">
                 <span className="flex items-center gap-2">
                   <Heart className="h-5 w-5 text-orange-500" />
@@ -457,7 +457,7 @@ export default function ProfilePage() {
               )}
             </div>
 
-            <div className="bg-white rounded-2xl shadow-lg p-4 md:p-6">
+            <div className="bg-white rounded-2xl shadow-lg p-4 md:p-6 lg:p-7">
               <h2 className="text-lg md:text-xl font-semibold text-gray-900 mb-4 md:mb-6">{profilePage.ordersHistory}</h2>
               
               {orders.length === 0 ? (

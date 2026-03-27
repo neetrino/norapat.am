@@ -22,9 +22,14 @@ export const authOptions = {
           return null
         }
 
-        const user = await prisma.user.findUnique({
+        const normalizedEmail = credentials.email.trim().toLowerCase()
+
+        const user = await prisma.user.findFirst({
           where: {
-            email: credentials.email as string
+            email: {
+              equals: normalizedEmail,
+              mode: 'insensitive',
+            },
           }
         })
 

@@ -52,9 +52,9 @@ export default function LoginPage() {
       <div className="h-header-spacer-mobile lg:hidden" aria-hidden />
       <div className="h-header-spacer-desktop hidden lg:block" aria-hidden />
       
-      <div className="max-w-md mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="bg-white rounded-2xl shadow-lg p-8">
-          <div className="text-center mb-8">
+      <div className="mx-auto w-full max-w-lg px-4 pt-8 pb-14 sm:px-6 sm:pt-10 sm:pb-16 lg:px-8 lg:pt-12 lg:pb-20">
+        <div className="bg-white rounded-2xl shadow-lg p-6 sm:p-8 md:p-10">
+          <div className="text-center mb-7 sm:mb-8">
             <h1 className="text-3xl font-bold text-gray-900 mb-2">{a.loginTitle}</h1>
             <p className="text-gray-600">{a.loginSubtitle}</p>
           </div>
@@ -65,7 +65,7 @@ export default function LoginPage() {
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-5 sm:space-y-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 <Mail className="inline h-4 w-4 mr-1" />
@@ -108,13 +108,13 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-orange-500 text-white py-4 rounded-xl font-semibold hover:bg-orange-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-orange-500 text-white py-4 rounded-xl font-semibold hover:bg-orange-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed mt-1"
             >
               {isLoading ? a.signingIn : a.login}
             </button>
           </form>
 
-          <div className="mt-6 text-center">
+          <div className="mt-7 text-center">
             <p className="text-gray-600">
               {a.noAccount}{' '}
               <Link href="/register" className="text-orange-500 hover:text-orange-600 font-semibold">
