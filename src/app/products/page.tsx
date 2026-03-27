@@ -40,6 +40,27 @@ function GridIcon({ cols }: { cols: 2 | 3 | 4 }) {
   )
 }
 
+function CategoryPromoImage({ className = '' }: { className?: string }) {
+  return (
+    <div
+      className={`overflow-hidden rounded-[1.9rem] border border-[#ebe2dc] bg-[linear-gradient(180deg,#fff7f2_0%,#fffdfb_100%)] shadow-[0_14px_34px_rgba(15,23,42,0.05)] ${className}`}
+    >
+      <div className="flex items-center justify-center px-4 pb-2 pt-4">
+        <div className="relative aspect-square w-full max-w-[220px]">
+          <Image
+            src="/menu-category-girl.webp"
+            alt="Norapat menu mascot"
+            fill
+            sizes="(max-width: 1024px) 220px, 220px"
+            className="object-contain"
+            priority
+          />
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function ProductsPageLoadingSkeleton() {
   return (
     <div className="min-h-screen bg-[#fcfaf7]">
@@ -267,30 +288,33 @@ function ProductsPageContent() {
             alignSelf: 'flex-start',
           }}
         >
-          <div className="max-h-[calc(100vh-7.5rem-var(--top-bar-offset,0px))] overflow-y-auto rounded-[1.9rem] border border-[#ebe2dc] bg-white p-4 shadow-[0_14px_34px_rgba(15,23,42,0.05)]">
-            <div className="mb-4 border-b border-[#f3ebe6] px-2 pb-4">
-              <div>
-                <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">
-                  {productsCopy.categoryLabel}
-                </p>
-                <h2 className="mt-2 text-[1.35rem] font-black tracking-tight text-slate-900">
-                  {productsCopy.allCategories}
-                </h2>
-              </div>
-            </div>
+          <div className="space-y-4">
+            <CategoryPromoImage />
 
-            <nav className="space-y-1.5">
+            <div className="rounded-[1.9rem] border border-[#ebe2dc] bg-white p-4 shadow-[0_14px_34px_rgba(15,23,42,0.05)]">
+              <div className="mb-3 border-b border-[#f3ebe6] px-2 pb-3">
+                <div>
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">
+                    {productsCopy.categoryLabel}
+                  </p>
+                  <h2 className="mt-1.5 text-base font-black tracking-tight text-slate-900">
+                    {productsCopy.allCategories}
+                  </h2>
+                </div>
+              </div>
+
+              <nav className="max-h-[calc(100vh-15rem-var(--top-bar-offset,0px))] space-y-1.5 overflow-y-auto pr-2 overscroll-contain [scrollbar-width:thin]">
               <button
                 type="button"
                 onClick={() => selectCategory(null)}
-                className={`group flex w-full items-center gap-3 rounded-full px-4 py-3 text-sm font-semibold transition-all duration-300 ${
+                className={`group flex w-full items-center gap-2 rounded-full px-3 py-2 text-[11px] font-semibold transition-all duration-300 ${
                   selectedCategoryName === null
                     ? 'bg-[#ffd9df] text-[#E53225] shadow-[0_8px_20px_rgba(229,50,37,0.12)]'
                     : 'text-slate-600 hover:bg-[#fff5f3] hover:text-slate-900'
                 }`}
               >
                 <span
-                  className={`flex h-9 w-9 items-center justify-center rounded-full text-[16px] transition-all ${
+                  className={`flex h-8 w-8 items-center justify-center rounded-full text-[15px] transition-all ${
                     selectedCategoryName === null
                       ? 'bg-white text-[#E53225]'
                       : 'bg-[#faf5f2] text-slate-500 group-hover:bg-white'
@@ -298,11 +322,11 @@ function ProductsPageContent() {
                 >
                   🍽️
                 </span>
-                <span className="min-w-0 flex-1 truncate text-left text-[1.02rem] font-bold">
+                <span className="min-w-0 flex-1 truncate text-left text-sm font-bold">
                   {productsCopy.allCategories}
                 </span>
                 <span
-                  className={`rounded-full px-3 py-1 text-xs font-bold ${
+                  className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${
                     selectedCategoryName === null
                       ? 'bg-white text-[#E53225]'
                       : 'bg-[#f7f2ee] text-slate-400'
@@ -327,7 +351,7 @@ function ProductsPageContent() {
                         key={cat.id}
                         type="button"
                         onClick={() => selectCategory(cat.name)}
-                        className={`group flex w-full items-center gap-3 rounded-full px-4 py-3 text-sm font-semibold transition-all duration-300 ${
+                        className={`group flex w-full items-center gap-2 rounded-full px-3 py-2 text-[11px] font-semibold transition-all duration-300 ${
                           active
                             ? 'bg-[#ffd9df] text-[#E53225] shadow-[0_8px_20px_rgba(229,50,37,0.12)]'
                             : 'text-slate-600 hover:bg-[#fff5f3] hover:text-slate-900'
@@ -335,29 +359,29 @@ function ProductsPageContent() {
                       >
                         {cat.image ? (
                           <div
-                            className={`relative h-9 w-9 shrink-0 overflow-hidden rounded-full ring-1 ring-inset ${
+                            className={`relative h-8 w-8 shrink-0 overflow-hidden rounded-full ring-1 ring-inset ${
                               active ? 'bg-white ring-[#ffd5cc]' : 'bg-[#faf5f2] ring-[#efe4dd]'
                             }`}
                           >
-                            <Image src={cat.image} alt="" fill sizes="36px" className="object-cover" />
+                            <Image src={cat.image} alt="" fill sizes="32px" className="object-cover" />
                           </div>
                         ) : (
                           <span
-                            className={`flex h-9 w-9 items-center justify-center rounded-full text-[16px] ${
+                            className={`flex h-8 w-8 items-center justify-center rounded-full text-[15px] ${
                               active ? 'bg-white text-[#E53225]' : 'bg-[#faf5f2] text-slate-500'
                             }`}
                           >
                             🍽️
                           </span>
                         )}
-                        <span className="min-w-0 flex-1 truncate text-left text-[1.02rem] font-semibold">
-                          {label}
-                        </span>
-                        <span
-                          className={`rounded-full px-3 py-1 text-xs font-bold ${
-                            active
-                              ? 'bg-white text-[#E53225]'
-                              : 'bg-[#f7f2ee] text-slate-400 group-hover:bg-white'
+                          <span className="min-w-0 flex-1 truncate text-left text-[13px] font-semibold">
+                            {label}
+                          </span>
+                          <span
+                            className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${
+                              active
+                                ? 'bg-white text-[#E53225]'
+                                : 'bg-[#f7f2ee] text-slate-400 group-hover:bg-white'
                           }`}
                         >
                           {cat._count.products}
@@ -365,7 +389,8 @@ function ProductsPageContent() {
                       </button>
                     )
                   })}
-            </nav>
+              </nav>
+            </div>
           </div>
         </aside>
 
@@ -489,6 +514,10 @@ function ProductsPageContent() {
               </div>
             </div>
           </section>
+
+          <div className="mb-5 lg:hidden">
+            <CategoryPromoImage className="mx-auto max-w-sm" />
+          </div>
 
           <div className="mb-5 lg:hidden">
             <ProductsPageCategoryChips

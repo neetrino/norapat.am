@@ -17,7 +17,7 @@ export interface ProductsPageCategoryChipsProps {
 }
 
 const pillClass = (active: boolean) =>
-  `group inline-flex shrink-0 items-center gap-2.5 rounded-2xl border px-4 py-3 text-sm font-semibold whitespace-nowrap transition-all duration-300 ${
+  `group inline-flex shrink-0 items-center gap-2 rounded-2xl border px-3.5 py-2.5 text-xs font-semibold whitespace-nowrap transition-all duration-300 ${
     active
       ? 'border-[#ffd3c8] bg-[linear-gradient(135deg,#fff1ec_0%,#ffe6de_100%)] text-[#E53225] shadow-[0_14px_28px_rgba(229,50,37,0.14)]'
       : 'border-[#eadfd9] bg-white/90 text-slate-700 hover:border-[#f1d3c7] hover:bg-[#fff8f4] hover:text-slate-900'
@@ -46,16 +46,16 @@ export function ProductsPageCategoryChips({
 
   if (loading) {
     return (
-      <div className="flex gap-3 overflow-x-auto pb-1" aria-hidden>
+      <div className="flex gap-2.5 overflow-x-auto pb-2 pr-1" aria-hidden>
         {[1, 2, 3, 4, 5, 6].map((i) => (
-          <div key={i} className="h-12 w-28 shrink-0 animate-pulse rounded-2xl bg-gray-200" />
+          <div key={i} className="h-11 w-24 shrink-0 animate-pulse rounded-2xl bg-gray-200" />
         ))}
       </div>
     )
   }
 
   return (
-    <div className="-mx-1 flex gap-3 overflow-x-auto px-1 pb-1 lg:mx-0 lg:flex-wrap lg:overflow-visible">
+    <div className="-mx-1 flex gap-2.5 overflow-x-auto px-1 pb-2 pr-2 lg:mx-0 lg:flex-wrap lg:overflow-visible lg:pr-1">
       <button
         type="button"
         onClick={() => onSelectCategory(null)}
@@ -79,7 +79,7 @@ export function ProductsPageCategoryChips({
         >
           {cat.image && (
               <div
-                className={`relative h-7 w-7 flex-shrink-0 overflow-hidden rounded-full ring-1 ring-inset ${
+                className={`relative h-6 w-6 flex-shrink-0 overflow-hidden rounded-full ring-1 ring-inset ${
                   active ? 'ring-[#ffcaba]' : 'ring-[#efe4dd]'
                 }`}
               >
@@ -87,14 +87,14 @@ export function ProductsPageCategoryChips({
                   src={cat.image}
                   alt=""
                   fill
-                  sizes="28px"
+                  sizes="24px"
                   className="object-cover"
                 />
               </div>
             )}
-            {label}
+            <span className="max-w-[8.5rem] truncate">{label}</span>
             <span
-              className={`rounded-full px-2 py-1 text-[11px] font-bold ${
+              className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${
                 active ? 'bg-white text-[#E53225]' : 'bg-[#f6f2ef] text-slate-400'
               }`}
             >
