@@ -246,6 +246,7 @@ export default function ProfilePage() {
   const fullName = userProfile.name || profilePage.userDefault
   const totalSpent = orders.reduce((sum, order) => sum + order.total, 0)
   const activeOrders = orders.filter((order) => !['DELIVERED', 'CANCELLED'].includes(order.status)).length
+  const recentOrders = orders.slice(0, 4)
 
   return (
     <div className="flex min-h-screen flex-col bg-slate-50">
@@ -290,29 +291,75 @@ export default function ProfilePage() {
           <main className="space-y-6">
             {activeSection === 'dashboard' && (
               <>
-                <section className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <section className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
                   {[
                     { label: 'Ընդհանուր ծախս', value: `${new Intl.NumberFormat(dateLocale).format(totalSpent)} ${CURRENCY}`, hint: orders.length > 0 ? `Պատվերների քանակը ${orders.length}` : 'Դեռ պատվերներ չկան', icon: Wallet, accent: 'from-emerald-100 to-emerald-50 text-emerald-700 ring-emerald-100' },
                     { label: 'Սպասվող պատվերներ', value: `${activeOrders}`, hint: activeOrders > 0 ? 'Ակտիվ պատվերները տեսանելի են պատվերների բաժնում' : 'Բոլոր պատվերները ավարտված են', icon: Package, accent: 'from-amber-100 to-amber-50 text-amber-700 ring-amber-100' },
                   ].map((stat) => {
                     const Icon = stat.icon
-                    return <article key={stat.label} className={cardClass}><div className="flex items-start justify-between gap-4"><div><p className="text-sm font-medium text-slate-500">{stat.label}</p><p className="mt-3 text-3xl font-bold tracking-tight text-red-600">{stat.value}</p></div><div className={`rounded-2xl bg-gradient-to-br p-3 ring-1 ${stat.accent}`}><Icon className="h-5 w-5" /></div></div><p className="mt-4 text-sm leading-6 text-slate-600">{stat.hint}</p></article>
+                    return <article key={stat.label} className="rounded-3xl border border-slate-200 bg-white p-4"><div className="flex items-start justify-between gap-3"><div><p className="text-sm font-medium text-slate-500">{stat.label}</p><p className="mt-1.5 text-3xl font-bold tracking-tight text-red-600">{stat.value}</p></div><div className={`rounded-2xl bg-gradient-to-br p-2 ring-1 ${stat.accent}`}><Icon className="h-5 w-5" /></div></div><p className="mt-2.5 text-sm leading-6 text-slate-600">{stat.hint}</p></article>
                   })}
                 </section>
-                <section className={cardClass}>
-                  <h2 className="text-2xl font-semibold tracking-tight text-slate-950">Պրոֆիլի տվյալներ</h2>
-                  <p className="mt-2 text-sm leading-6 text-slate-600">Քո հիմնական տվյալները այստեղ են, իսկ փոփոխությունները կարող ես անել համապատասխան բաժիններից։</p>
-                  <div className="mt-6 grid grid-cols-1 gap-3 md:grid-cols-2">
-                    {[
-                      { label: profilePage.name, value: userProfile.name || profilePage.notSet, icon: User },
-                      { label: profilePage.email, value: userProfile.email || profilePage.notSet, icon: User },
-                      { label: profilePage.phone, value: userProfile.phone || profilePage.notSet, icon: Phone },
-                      { label: profilePage.address, value: userProfile.address || profilePage.notSet, icon: MapPin },
-                    ].map((field) => {
-                      const Icon = field.icon
-                      return <article key={field.label} className="flex items-start gap-4 rounded-2xl border border-slate-200 bg-slate-50 p-4"><div className="rounded-2xl border border-slate-200 bg-white p-3 text-slate-500"><Icon className="h-5 w-5" /></div><div className="min-w-0"><p className="text-sm font-medium text-slate-500">{field.label}</p><p className="mt-1 break-words text-base font-semibold text-slate-950">{field.value}</p></div></article>
-                    })}
+                <section className="rounded-3xl border border-slate-200 bg-white p-4">
+                  <div className="flex flex-col gap-2.5 sm:flex-row sm:items-start sm:justify-between">
+                    <div>
+                      <h2 className="text-xl font-semibold text-slate-950">{'Վերջին պատվերները'}</h2>
+                      <p className="mt-1.5 text-sm leading-6 text-slate-600">{'Այստեղ ցույց են տրված քո վերջին 4 պատվերները։'}</p>
+                    </div>
+                    {orders.length > 0 && (
+                      <button
+                        type="button"
+                        onClick={() => setActiveSection('orders')}
+                        className="inline-flex items-center justify-center rounded-full border border-red-200 bg-white px-4 py-2.5 text-sm font-semibold text-red-600 transition-colors hover:bg-red-50"
+                      >
+                        ?????? ??????
+                      </button>
+                    )}
                   </div>
+                  {recentOrders.length === 0 ? (
+                    <div className="mt-3.5 rounded-[24px] border border-dashed border-slate-200 bg-slate-50 px-6 pt-7 pb-9 text-center">
+                      <Package className="mx-auto h-12 w-12 text-slate-300" />
+                      <p className="mt-4 text-base font-medium text-slate-700">{profilePage.noOrders}</p>
+                      <Link href="/products" className="mt-6 inline-flex items-center justify-center rounded-full bg-red-500 px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-red-600">{profilePage.placeOrder}</Link>
+                    </div>
+                  ) : (
+                    <div className="mt-3.5 grid grid-cols-1 gap-2.5 xl:grid-cols-2">
+                      {recentOrders.map((order) => {
+                        const statusInfo = getStatusInfo(order.status)
+                        const firstItem = order.items[0]
+                        const extraItemsCount = Math.max(order.items.length - 1, 0)
+
+                        return (
+                          <article key={order.id} className="rounded-[24px] border border-slate-200 bg-slate-50 p-3.5">
+                            <div className="flex items-start justify-between gap-4">
+                              <div>
+                                <h3 className="text-base font-semibold text-slate-950">{profilePage.orderLabel} #{order.id.slice(-8)}</h3>
+                                <p className="mt-1 text-sm text-slate-500">{new Date(order.createdAt).toLocaleDateString(dateLocale, { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</p>
+                              </div>
+                              <span className={`inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-xs font-semibold ${statusInfo.bg} ${statusInfo.color}`}>
+                                {getStatusIcon(order.status)}
+                                <span>{statusInfo.text}</span>
+                              </span>
+                            </div>
+                            <div className="mt-3 flex items-center gap-3 rounded-2xl bg-white p-3 ring-1 ring-slate-100">
+                              <div className="h-14 w-14 flex-shrink-0 overflow-hidden rounded-xl bg-orange-50">
+                                {firstItem?.product?.image ? (
+                                  <Image src={firstItem.product.image} alt={getProductDisplayName(firstItem.product.name, locale)} width={56} height={56} className="h-full w-full object-cover" />
+                                ) : (
+                                  <div className="flex h-full w-full items-center justify-center"><Package className="h-5 w-5 text-orange-500" /></div>
+                                )}
+                              </div>
+                              <div className="min-w-0 flex-1">
+                                <p className="truncate text-sm font-semibold text-slate-900 sm:text-base">{firstItem?.product?.name ?? '—'}</p>
+                                <p className="mt-1 text-xs text-slate-500 sm:text-sm">{extraItemsCount > 0 ? `Եվս ${extraItemsCount} ապրանք` : '1 ապրանք'}</p>
+                              </div>
+                              <p className="text-sm font-bold text-red-600 sm:text-base">{new Intl.NumberFormat(dateLocale).format(order.total)} {CURRENCY}</p>
+                            </div>
+                          </article>
+                        )
+                      })}
+                    </div>
+                  )}
                 </section>
               </>
             )}
@@ -395,13 +442,13 @@ export default function ProfilePage() {
       </div>
       <section className="hidden lg:block">
         <div className="mx-auto flex w-full max-w-7xl justify-center px-8 pb-6">
-          <div className="relative flex w-full max-w-4xl justify-center overflow-hidden rounded-[32px] border border-red-100 bg-gradient-to-b from-red-50 via-white to-white px-8 pt-10">
+          <div className="relative mt-6 flex w-full max-w-4xl justify-center overflow-hidden rounded-[32px] border border-red-100 bg-gradient-to-b from-red-50 via-white to-white px-8 pt-6">
             <Image
               src="/profile-footer-couple.png"
               alt="Traditional Armenian couple"
               width={720}
               height={720}
-              className="h-auto max-h-[360px] w-auto object-contain"
+              className="h-auto max-h-[360px] w-auto translate-y-2 object-contain"
               sizes="(max-width: 1280px) 50vw, 720px"
             />
           </div>
