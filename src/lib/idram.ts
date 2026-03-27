@@ -78,8 +78,15 @@ export function verifyIdramChecksum(params: {
     params.edpTransDate
   ].join(':')
 
+  // Idram's EDP callback protocol requires an MD5 checksum for server-to-server verification.
   const computed = crypto.createHash('md5').update(txtToHash).digest('hex').toUpperCase()
-  return computed === (params.edpChecksum || '').toUpperCase()
+  const received = (params.edpChecksum || '').toUpperCase()
+
+  if (computed.length !== received.length) {
+    return false
+  }
+
+  return crypto.timingSafeEqual(Buffer.from(computed), Buffer.from(received))
 }
 
 export function isIdramConfigured(): boolean {
