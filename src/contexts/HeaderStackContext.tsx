@@ -13,7 +13,6 @@ import { usePathname } from 'next/navigation'
 import { TOP_CONTACT_BAR_HEIGHT_PX } from '@/lib/headerTopBar.constants'
 
 const SCROLL_DOWN_HIDE_DELTA_PX = 4
-const SCROLL_UP_SHOW_DELTA_PX = 4
 const SCROLL_TOP_SHOW_THRESHOLD_PX = 8
 
 export type HeaderStackValue = {
@@ -56,8 +55,6 @@ export function HeaderStackProvider({ children }: { children: ReactNode }) {
       setTopBarVisible(true)
     } else if (delta > SCROLL_DOWN_HIDE_DELTA_PX) {
       setTopBarVisible(false)
-    } else if (delta < -SCROLL_UP_SHOW_DELTA_PX) {
-      setTopBarVisible(true)
     }
 
     lastScrollY.current = y
