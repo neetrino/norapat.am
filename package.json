@@ -12,6 +12,7 @@
     "db:seed-additional": "tsx scripts/seed-additional.ts",
     "db:seed-40": "tsx scripts/seed-40-products.ts",
     "db:set-showcase-demo": "tsx scripts/set-showcase-demo-status.ts",
+    "db:update-category-images": "tsx scripts/update-category-images.ts",
     "migrate:images-to-r2": "tsx scripts/migrate-images-to-r2.ts",
     "create-admin": "tsx scripts/create-admin.ts",
     "db:migrate": "prisma migrate dev",

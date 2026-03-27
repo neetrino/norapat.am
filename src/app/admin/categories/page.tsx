@@ -4,6 +4,7 @@ import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { 
   Plus, 
   Edit, 
@@ -13,11 +14,13 @@ import {
   Eye,
   EyeOff
 } from 'lucide-react'
+import ImageSelector from '@/components/ImageSelector'
 
 interface Category {
   id: string
   name: string
   description: string | null
+  image: string | null
   isActive: boolean
   createdAt: Date
   updatedAt: Date
@@ -34,9 +37,11 @@ export default function CategoriesPage() {
   const [showInactive, setShowInactive] = useState(false)
   const [editingCategory, setEditingCategory] = useState<Category | null>(null)
   const [isCreating, setIsCreating] = useState(false)
+  const [imageErrors, setImageErrors] = useState<Set<string>>(new Set())
   const [formData, setFormData] = useState({
     name: '',
     description: '',
+    image: '',
     isActive: true
   })
 
@@ -56,6 +61,7 @@ export default function CategoriesPage() {
       const response = await fetch(`/api/admin/categories?includeInactive=${showInactive}`)
       if (response.ok) {
         const data = await response.json()
+        console.log('Fetched categories:', data)
         setCategories(data)
       }
     } catch (error) {
@@ -77,7 +83,7 @@ export default function CategoriesPage() {
       if (response.ok) {
         await fetchCategories()
         setIsCreating(false)
-        setFormData({ name: '', description: '', isActive: true })
+        setFormData({ name: '', description: '', image: '', isActive: true })
       } else {
         const error = await response.json()
         alert(error.error || 'Սխալ կատեգորիա ստեղծելիս')
@@ -102,7 +108,7 @@ export default function CategoriesPage() {
       if (response.ok) {
         await fetchCategories()
         setEditingCategory(null)
-        setFormData({ name: '', description: '', isActive: true })
+        setFormData({ name: '', description: '', image: '', isActive: true })
       } else {
         const error = await response.json()
         alert(error.error || 'Սխալ կատեգորիա թարմացնելիս')
@@ -138,6 +144,7 @@ export default function CategoriesPage() {
     setFormData({
       name: category.name,
       description: category.description || '',
+      image: category.image || '',
       isActive: category.isActive
     })
   }
@@ -145,7 +152,7 @@ export default function CategoriesPage() {
   const cancelEdit = () => {
     setEditingCategory(null)
     setIsCreating(false)
-    setFormData({ name: '', description: '', isActive: true })
+    setFormData({ name: '', description: '', image: '', isActive: true })
   }
 
   if (status === 'loading' || isLoading) {
@@ -244,6 +251,16 @@ export default function CategoriesPage() {
                   rows={3}
                 />
               </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Նկար
+                </label>
+                <ImageSelector
+                  value={formData.image}
+                  onChange={(imagePath) => setFormData({ ...formData, image: imagePath })}
+                />
+              </div>
               
               <div className="flex items-center">
                 <input
@@ -294,7 +311,31 @@ export default function CategoriesPage() {
             <div className="divide-y divide-gray-200">
               {categories.map((category) => (
                 <div key={category.id} className="p-6 hover:bg-gray-50 transition-colors">
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between gap-4">
+                    {/* Изображение категории */}
+                    <div className="flex-shrink-0">
+                      <div className="relative w-20 h-20 bg-gray-100 rounded-lg overflow-hidden border border-gray-200">
+                        {category.image && !imageErrors.has(category.id) ? (
+                          <Image
+                            src={category.image}
+                            alt={category.name}
+                            fill
+                            sizes="80px"
+                            className="object-contain p-2"
+                            unoptimized
+                            onError={() => {
+                              console.error('Image load error for category:', category.name, category.image)
+                              setImageErrors(prev => new Set(prev).add(category.id))
+                            }}
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center">
+                            <Package className="h-8 w-8 text-gray-400" />
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-2">
                         <h3 className="text-lg font-semibold text-gray-900">

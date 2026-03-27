@@ -1,6 +1,7 @@
 'use client'
 
 import { useMemo } from 'react'
+import Image from 'next/image'
 import type { CategoryWithCount } from '@/types'
 import { dedupeCategoriesForNav, isSameCategoryNavSelection } from '@/lib/categoryNav.utils'
 import { getCategoryDisplayName } from '@/i18n/getCategoryDisplayName'
@@ -16,7 +17,7 @@ export interface ProductsPageCategoryChipsProps {
 }
 
 const pillClass = (active: boolean) =>
-  `px-5 py-2.5 sm:px-6 sm:py-3 rounded-2xl font-semibold text-sm sm:text-base transition-all duration-300 hover:scale-[1.02] motion-reduce:hover:scale-100 whitespace-nowrap shrink-0 ${
+  `flex items-center gap-2 px-5 py-2.5 sm:px-6 sm:py-3 rounded-2xl font-semibold text-sm sm:text-base transition-all duration-300 hover:scale-[1.02] motion-reduce:hover:scale-100 whitespace-nowrap shrink-0 ${
     active
       ? 'bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-lg'
       : 'bg-gray-100 text-gray-700 hover:bg-orange-100 hover:text-orange-600'
@@ -76,6 +77,17 @@ export function ProductsPageCategoryChips({
             className={pillClass(active)}
             style={pillStyle(active)}
           >
+            {cat.image && (
+              <div className="relative w-5 h-5 flex-shrink-0">
+                <Image
+                  src={cat.image}
+                  alt=""
+                  fill
+                  sizes="20px"
+                  className="object-cover rounded-full"
+                />
+              </div>
+            )}
             {label}
           </button>
         )

@@ -35,6 +35,14 @@ const CATEGORY_NAME_MAP: Record<string, string> = {
 
 const ARMENIAN_CATEGORIES = ['Պիդե', 'Կոմբո', 'Սնաք', 'Սոուսներ', 'Ըմպելիքներ'] as const
 
+const CATEGORY_IMAGES: Record<string, string> = {
+  'Պիդե': '/categories/pide.svg',
+  'Կոմբո': '/categories/combo.svg',
+  'Սնաք': '/categories/snack.svg',
+  'Սոուսներ': '/categories/sauce.svg',
+  'Ըմպելիքներ': '/categories/drinks.svg',
+}
+
 const EXTRA_PRODUCTS: SeedProduct[] = [
   {
     name: 'Լոռու պանիրով պիդե',
@@ -103,6 +111,7 @@ async function main() {
       data: {
         name: categoryName,
         description: `Категория ${categoryName}`,
+        image: CATEGORY_IMAGES[categoryName] || null,
         isActive: true
       }
     })

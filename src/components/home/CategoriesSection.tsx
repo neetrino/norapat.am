@@ -2,6 +2,7 @@
 
 import { useRef, useState, useEffect, useMemo } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { CategoryWithCount } from '@/types'
 import {
@@ -163,12 +164,23 @@ export function CategoriesSection({
                 key={cat.id}
                 href={menuHref}
                 onClick={() => onSelectCategory?.(cat.name)}
-                className={`snap-start inline-flex shrink-0 items-center justify-center rounded-full px-6 py-3 text-base font-semibold tracking-tight transition-all duration-300 ease-out focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-500 sm:px-7 sm:py-3.5 sm:text-lg ${
+                className={`snap-start inline-flex shrink-0 items-center gap-2.5 justify-center rounded-full px-6 py-3 text-base font-semibold tracking-tight transition-all duration-300 ease-out focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-500 sm:px-7 sm:py-3.5 sm:text-lg ${
                   isActive
                     ? 'bg-gradient-to-r from-orange-500 to-red-600 text-white shadow-lg shadow-orange-500/30 ring-1 ring-white/20'
                     : 'bg-white text-gray-900 shadow-sm ring-1 ring-orange-100/90 hover:-translate-y-0.5 hover:shadow-md hover:ring-orange-200/90 active:scale-[0.98] motion-reduce:hover:translate-y-0'
                 }`}
               >
+                {cat.image && (
+                  <div className="relative w-6 h-6 flex-shrink-0">
+                    <Image
+                      src={cat.image}
+                      alt=""
+                      fill
+                      sizes="24px"
+                      className="object-cover rounded-full"
+                    />
+                  </div>
+                )}
                 <span className="whitespace-nowrap">{label}</span>
               </Link>
             )
