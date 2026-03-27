@@ -244,7 +244,6 @@ export default function ProfilePage() {
   if (!session) return null
 
   const fullName = userProfile.name || profilePage.userDefault
-  const initials = fullName.split(' ').filter(Boolean).slice(0, 2).map((part) => part[0]?.toUpperCase()).join('') || 'U'
   const totalSpent = orders.reduce((sum, order) => sum + order.total, 0)
   const activeOrders = orders.filter((order) => !['DELIVERED', 'CANCELLED'].includes(order.status)).length
 
@@ -256,8 +255,17 @@ export default function ProfilePage() {
         <div className="grid grid-cols-1 gap-6 xl:grid-cols-[320px_minmax(0,1fr)]">
           <aside className="xl:self-start">
             <section className={cardClass}>
-              <div className="flex items-center gap-4">
-                <div className="flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-2xl bg-slate-900 text-lg font-semibold text-white">{initials}</div>
+              <div className="flex flex-col items-center gap-4 text-center">
+                <div className="relative h-16 w-16 overflow-hidden rounded-2xl ring-1 ring-slate-200">
+                  <Image
+                    src="/profile-avatar.jpg"
+                    alt="Profile avatar"
+                    fill
+                    sizes="64px"
+                    className="object-cover"
+                    priority
+                  />
+                </div>
                 <div className="min-w-0">
                   <p className="truncate text-xl font-semibold text-slate-950">{fullName}</p>
                   <p className="truncate text-sm text-slate-600">{userProfile.email}</p>
