@@ -151,7 +151,16 @@ export default function CheckoutPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    if (!validateForm()) return
+    if (!validateForm()) {
+      setTimeout(() => {
+        const firstError = document.querySelector('.border-red-500') as HTMLElement | null
+        if (firstError) {
+          firstError.scrollIntoView({ behavior: 'smooth', block: 'center' })
+          firstError.focus()
+        }
+      }, 0)
+      return
+    }
 
     await validateCart()
     if (items.length === 0) {
@@ -372,99 +381,93 @@ export default function CheckoutPage() {
             {/* Mobile Payment Method */}
             <div className="bg-white rounded-2xl shadow-lg p-6">
               <h2 className="text-lg font-semibold text-gray-900 mb-4">{cp.paymentMethod}</h2>
-              <div className="space-y-4">
-                <label className={`relative p-4 border-2 rounded-xl cursor-pointer transition-all duration-300 ${
-                  formData.paymentMethod === 'cash' 
-                    ? 'border-orange-500 bg-orange-50' 
-                    : 'border-gray-300'
+              <div className="space-y-3">
+                {/* Cash */}
+                <label className={`flex items-center p-4 rounded-2xl cursor-pointer transition-all duration-200 border-2 ${
+                  formData.paymentMethod === 'cash'
+                    ? 'border-orange-400 bg-orange-50/40'
+                    : 'border-gray-100 bg-white hover:border-gray-200'
                 }`}>
-                  <input
-                    type="radio"
-                    name="paymentMethod"
-                    value="cash"
-                    checked={formData.paymentMethod === 'cash'}
-                    onChange={handleInputChange}
-                    className="sr-only"
-                  />
-                  <div className="flex items-center space-x-3">
-                    <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-                      <svg className="h-6 w-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
-                      </svg>
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="text-base font-semibold text-gray-900">{cp.cash}</h3>
-                      <p className="text-sm text-gray-600">{cp.cashDesc}</p>
-                    </div>
-                    {formData.paymentMethod === 'cash' && (
-                      <div className="w-6 h-6 bg-orange-500 rounded-full flex items-center justify-center">
-                        <svg className="h-4 w-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                        </svg>
-                      </div>
-                    )}
+                  <input type="radio" name="paymentMethod" value="cash" checked={formData.paymentMethod === 'cash'} onChange={handleInputChange} className="sr-only" />
+                  <div className="w-12 h-12 bg-white border border-gray-100 rounded-xl flex items-center justify-center mr-4 shrink-0 shadow-sm">
+                    <svg className="h-6 w-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
                   </div>
-                </label>
-                
-                <label className={`relative p-4 border-2 rounded-xl cursor-pointer transition-all duration-300 ${
-                  formData.paymentMethod === 'card' 
-                    ? 'border-orange-500 bg-orange-50' 
-                    : 'border-gray-300'
-                }`}>
-                  <input
-                    type="radio"
-                    name="paymentMethod"
-                    value="card"
-                    checked={formData.paymentMethod === 'card'}
-                    onChange={handleInputChange}
-                    className="sr-only"
-                  />
-                  <div className="flex items-center space-x-3">
-                    <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                      <CreditCard className="h-6 w-6 text-blue-600" />
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="text-base font-semibold text-gray-900">{cp.card}</h3>
-                      <p className="text-sm text-gray-600">{cp.cardDesc}</p>
-                    </div>
-                    {formData.paymentMethod === 'card' && (
-                      <div className="w-6 h-6 bg-orange-500 rounded-full flex items-center justify-center">
-                        <svg className="h-4 w-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                        </svg>
-                      </div>
-                    )}
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-sm font-semibold text-gray-900">{cp.cash}</h3>
+                    <p className="text-xs text-gray-500 mt-0.5">{cp.cashDescFull}</p>
                   </div>
                 </label>
 
-                <label className={`relative p-4 border-2 rounded-xl cursor-pointer transition-all duration-300 ${
-                  formData.paymentMethod === 'idram' 
-                    ? 'border-orange-500 bg-orange-50' 
-                    : 'border-gray-300'
+                {/* ArCa */}
+                <label className={`flex items-center p-4 rounded-2xl cursor-pointer transition-all duration-200 border-2 ${
+                  formData.paymentMethod === 'arca'
+                    ? 'border-orange-400 bg-orange-50/40'
+                    : 'border-gray-100 bg-white hover:border-gray-200'
                 }`}>
-                  <input
-                    type="radio"
-                    name="paymentMethod"
-                    value="idram"
-                    checked={formData.paymentMethod === 'idram'}
-                    onChange={handleInputChange}
-                    className="sr-only"
-                  />
-                  <div className="flex items-center space-x-3">
-                    <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
-                      <span className="text-lg font-bold text-orange-600">ID</span>
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="text-base font-semibold text-gray-900">{cp.idram}</h3>
-                      <p className="text-sm text-gray-600">{cp.idramDesc}</p>
-                    </div>
-                    {formData.paymentMethod === 'idram' && (
-                      <div className="w-6 h-6 bg-orange-500 rounded-full flex items-center justify-center">
-                        <svg className="h-4 w-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                        </svg>
-                      </div>
-                    )}
+                  <input type="radio" name="paymentMethod" value="arca" checked={formData.paymentMethod === 'arca'} onChange={handleInputChange} className="sr-only" />
+                  <div className="w-12 h-12 bg-white border border-gray-100 rounded-xl flex items-center justify-center mr-4 shrink-0 shadow-sm">
+                    <span className="text-sm font-extrabold tracking-tight text-blue-700">arc<span className="text-blue-500">a</span></span>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-sm font-semibold text-gray-900">ArCa</h3>
+                    <p className="text-xs text-gray-500 mt-0.5">Վճարեք ArCa քարտով</p>
+                  </div>
+                </label>
+
+                {/* Mastercard */}
+                <label className={`flex items-center p-4 rounded-2xl cursor-pointer transition-all duration-200 border-2 ${
+                  formData.paymentMethod === 'mastercard'
+                    ? 'border-orange-400 bg-orange-50/40'
+                    : 'border-gray-100 bg-white hover:border-gray-200'
+                }`}>
+                  <input type="radio" name="paymentMethod" value="mastercard" checked={formData.paymentMethod === 'mastercard'} onChange={handleInputChange} className="sr-only" />
+                  <div className="w-12 h-12 bg-white border border-gray-100 rounded-xl flex items-center justify-center mr-4 shrink-0 shadow-sm">
+                    <svg viewBox="0 0 38 24" className="w-8 h-5">
+                      <circle cx="15" cy="12" r="7" fill="#EB001B" />
+                      <circle cx="23" cy="12" r="7" fill="#F79E1B" />
+                      <path d="M19 6.8a7 7 0 010 10.4A7 7 0 0119 6.8z" fill="#FF5F00" />
+                    </svg>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-sm font-semibold text-gray-900">Mastercard</h3>
+                    <p className="text-xs text-gray-500 mt-0.5">Վճարեք Mastercard քարտով</p>
+                  </div>
+                </label>
+
+                {/* Visa */}
+                <label className={`flex items-center p-4 rounded-2xl cursor-pointer transition-all duration-200 border-2 ${
+                  formData.paymentMethod === 'visa'
+                    ? 'border-orange-400 bg-orange-50/40'
+                    : 'border-gray-100 bg-white hover:border-gray-200'
+                }`}>
+                  <input type="radio" name="paymentMethod" value="visa" checked={formData.paymentMethod === 'visa'} onChange={handleInputChange} className="sr-only" />
+                  <div className="w-12 h-12 bg-white border border-gray-100 rounded-xl flex items-center justify-center mr-4 shrink-0 shadow-sm">
+                    <span className="text-sm font-extrabold italic text-blue-800 tracking-wider">VISA</span>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-sm font-semibold text-gray-900">Visa</h3>
+                    <p className="text-xs text-gray-500 mt-0.5">Վճարեք Visa քարտով</p>
+                  </div>
+                </label>
+
+                {/* Idram */}
+                <label className={`flex items-center p-4 rounded-2xl cursor-pointer transition-all duration-200 border-2 ${
+                  formData.paymentMethod === 'idram'
+                    ? 'border-orange-400 bg-orange-50/40'
+                    : 'border-gray-100 bg-white hover:border-gray-200'
+                }`}>
+                  <input type="radio" name="paymentMethod" value="idram" checked={formData.paymentMethod === 'idram'} onChange={handleInputChange} className="sr-only" />
+                  <div className="w-12 h-12 bg-white border border-gray-100 rounded-xl flex items-center justify-center mr-4 shrink-0 shadow-sm overflow-hidden">
+                    <svg viewBox="0 0 48 48" className="w-10 h-10">
+                      <circle cx="24" cy="24" r="24" fill="#FF6B2B" />
+                      <text x="24" y="28" textAnchor="middle" fill="white" fontSize="11" fontWeight="700" fontFamily="Arial, sans-serif">idram</text>
+                    </svg>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-sm font-semibold text-gray-900">{cp.idram}</h3>
+                    <p className="text-xs text-gray-500 mt-0.5">{cp.idramDescFull}</p>
                   </div>
                 </label>
               </div>
@@ -664,99 +667,93 @@ export default function CheckoutPage() {
                       <CreditCard className="inline h-4 w-4 mr-1" />
                       {cp.paymentMethod} *
                     </label>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      <label className={`relative p-6 border-2 rounded-xl cursor-pointer transition-all duration-300 hover:shadow-lg ${
-                        formData.paymentMethod === 'cash' 
-                          ? 'border-orange-500 bg-orange-50 shadow-md' 
-                          : 'border-gray-300 hover:border-orange-300'
+                    <div className="space-y-3">
+                      {/* Cash */}
+                      <label className={`flex items-center p-4 rounded-2xl cursor-pointer transition-all duration-200 border-2 ${
+                        formData.paymentMethod === 'cash'
+                          ? 'border-orange-400 bg-orange-50/40'
+                          : 'border-gray-100 bg-white hover:border-gray-200'
                       }`}>
-                        <input
-                          type="radio"
-                          name="paymentMethod"
-                          value="cash"
-                          checked={formData.paymentMethod === 'cash'}
-                          onChange={handleInputChange}
-                          className="sr-only"
-                        />
-                        <div className="text-center">
-                          <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <svg className="h-8 w-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
-                            </svg>
-                          </div>
-                          <h3 className="text-lg font-semibold text-gray-900 mb-2">{cp.cash}</h3>
-                          <p className="text-sm text-gray-600">{cp.cashDescFull}</p>
-                          {formData.paymentMethod === 'cash' && (
-                            <div className="absolute top-4 right-4">
-                              <div className="w-6 h-6 bg-orange-500 rounded-full flex items-center justify-center">
-                                <svg className="h-4 w-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                                </svg>
-                              </div>
-                            </div>
-                          )}
+                        <input type="radio" name="paymentMethod" value="cash" checked={formData.paymentMethod === 'cash'} onChange={handleInputChange} className="sr-only" />
+                        <div className="w-14 h-14 bg-white border border-gray-100 rounded-xl flex items-center justify-center mr-5 shrink-0 shadow-sm">
+                          <svg className="h-7 w-7 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+                          </svg>
                         </div>
-                      </label>
-                      
-                      <label className={`relative p-6 border-2 rounded-xl cursor-pointer transition-all duration-300 hover:shadow-lg ${
-                        formData.paymentMethod === 'card' 
-                          ? 'border-orange-500 bg-orange-50 shadow-md' 
-                          : 'border-gray-300 hover:border-orange-300'
-                      }`}>
-                        <input
-                          type="radio"
-                          name="paymentMethod"
-                          value="card"
-                          checked={formData.paymentMethod === 'card'}
-                          onChange={handleInputChange}
-                          className="sr-only"
-                        />
-                        <div className="text-center">
-                          <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <CreditCard className="h-8 w-8 text-blue-600" />
-                          </div>
-                          <h3 className="text-lg font-semibold text-gray-900 mb-2">{cp.card}</h3>
-                          <p className="text-sm text-gray-600">{cp.cardDescFull}</p>
-                          {formData.paymentMethod === 'card' && (
-                            <div className="absolute top-4 right-4">
-                              <div className="w-6 h-6 bg-orange-500 rounded-full flex items-center justify-center">
-                                <svg className="h-4 w-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                                </svg>
-                              </div>
-                            </div>
-                          )}
+                        <div className="flex-1">
+                          <h3 className="text-sm font-semibold text-gray-900">{cp.cash}</h3>
+                          <p className="text-sm text-gray-500 mt-0.5">{cp.cashDescFull}</p>
                         </div>
                       </label>
 
-                      <label className={`relative p-6 border-2 rounded-xl cursor-pointer transition-all duration-300 hover:shadow-lg ${
-                        formData.paymentMethod === 'idram' 
-                          ? 'border-orange-500 bg-orange-50 shadow-md' 
-                          : 'border-gray-300 hover:border-orange-300'
+                      {/* ArCa */}
+                      <label className={`flex items-center p-4 rounded-2xl cursor-pointer transition-all duration-200 border-2 ${
+                        formData.paymentMethod === 'arca'
+                          ? 'border-orange-400 bg-orange-50/40'
+                          : 'border-gray-100 bg-white hover:border-gray-200'
                       }`}>
-                        <input
-                          type="radio"
-                          name="paymentMethod"
-                          value="idram"
-                          checked={formData.paymentMethod === 'idram'}
-                          onChange={handleInputChange}
-                          className="sr-only"
-                        />
-                        <div className="text-center">
-                          <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <span className="text-2xl font-bold text-orange-600">ID</span>
-                          </div>
-                          <h3 className="text-lg font-semibold text-gray-900 mb-2">{cp.idram}</h3>
-                          <p className="text-sm text-gray-600">{cp.idramDescFull}</p>
-                          {formData.paymentMethod === 'idram' && (
-                            <div className="absolute top-4 right-4">
-                              <div className="w-6 h-6 bg-orange-500 rounded-full flex items-center justify-center">
-                                <svg className="h-4 w-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                                </svg>
-                              </div>
-                            </div>
-                          )}
+                        <input type="radio" name="paymentMethod" value="arca" checked={formData.paymentMethod === 'arca'} onChange={handleInputChange} className="sr-only" />
+                        <div className="w-14 h-14 bg-white border border-gray-100 rounded-xl flex items-center justify-center mr-5 shrink-0 shadow-sm">
+                          <span className="text-sm font-extrabold tracking-tight text-blue-700">arc<span className="text-blue-500">a</span></span>
+                        </div>
+                        <div className="flex-1">
+                          <h3 className="text-sm font-semibold text-gray-900">ArCa</h3>
+                          <p className="text-sm text-gray-500 mt-0.5">Վճարեք ArCa քարտով</p>
+                        </div>
+                      </label>
+
+                      {/* Mastercard */}
+                      <label className={`flex items-center p-4 rounded-2xl cursor-pointer transition-all duration-200 border-2 ${
+                        formData.paymentMethod === 'mastercard'
+                          ? 'border-orange-400 bg-orange-50/40'
+                          : 'border-gray-100 bg-white hover:border-gray-200'
+                      }`}>
+                        <input type="radio" name="paymentMethod" value="mastercard" checked={formData.paymentMethod === 'mastercard'} onChange={handleInputChange} className="sr-only" />
+                        <div className="w-14 h-14 bg-white border border-gray-100 rounded-xl flex items-center justify-center mr-5 shrink-0 shadow-sm">
+                          <svg viewBox="0 0 38 24" className="w-9 h-6">
+                            <circle cx="15" cy="12" r="7" fill="#EB001B" />
+                            <circle cx="23" cy="12" r="7" fill="#F79E1B" />
+                            <path d="M19 6.8a7 7 0 010 10.4A7 7 0 0119 6.8z" fill="#FF5F00" />
+                          </svg>
+                        </div>
+                        <div className="flex-1">
+                          <h3 className="text-sm font-semibold text-gray-900">Mastercard</h3>
+                          <p className="text-sm text-gray-500 mt-0.5">Վճարեք Mastercard քարտով</p>
+                        </div>
+                      </label>
+
+                      {/* Visa */}
+                      <label className={`flex items-center p-4 rounded-2xl cursor-pointer transition-all duration-200 border-2 ${
+                        formData.paymentMethod === 'visa'
+                          ? 'border-orange-400 bg-orange-50/40'
+                          : 'border-gray-100 bg-white hover:border-gray-200'
+                      }`}>
+                        <input type="radio" name="paymentMethod" value="visa" checked={formData.paymentMethod === 'visa'} onChange={handleInputChange} className="sr-only" />
+                        <div className="w-14 h-14 bg-white border border-gray-100 rounded-xl flex items-center justify-center mr-5 shrink-0 shadow-sm">
+                          <span className="text-sm font-extrabold italic text-blue-800 tracking-wider">VISA</span>
+                        </div>
+                        <div className="flex-1">
+                          <h3 className="text-sm font-semibold text-gray-900">Visa</h3>
+                          <p className="text-sm text-gray-500 mt-0.5">Վճարեք Visa քարտով</p>
+                        </div>
+                      </label>
+
+                      {/* Idram */}
+                      <label className={`flex items-center p-4 rounded-2xl cursor-pointer transition-all duration-200 border-2 ${
+                        formData.paymentMethod === 'idram'
+                          ? 'border-orange-400 bg-orange-50/40'
+                          : 'border-gray-100 bg-white hover:border-gray-200'
+                      }`}>
+                        <input type="radio" name="paymentMethod" value="idram" checked={formData.paymentMethod === 'idram'} onChange={handleInputChange} className="sr-only" />
+                        <div className="w-14 h-14 bg-white border border-gray-100 rounded-xl flex items-center justify-center mr-5 shrink-0 shadow-sm overflow-hidden">
+                          <svg viewBox="0 0 48 48" className="w-11 h-11">
+                            <circle cx="24" cy="24" r="24" fill="#FF6B2B" />
+                            <text x="24" y="28" textAnchor="middle" fill="white" fontSize="11" fontWeight="700" fontFamily="Arial, sans-serif">idram</text>
+                          </svg>
+                        </div>
+                        <div className="flex-1">
+                          <h3 className="text-sm font-semibold text-gray-900">{cp.idram}</h3>
+                          <p className="text-sm text-gray-500 mt-0.5">{cp.idramDescFull}</p>
                         </div>
                       </label>
                     </div>
