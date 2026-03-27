@@ -252,7 +252,7 @@ export default function ProfilePage() {
     <div className="flex min-h-screen flex-col bg-slate-50">
       <div className="h-header-spacer-mobile lg:hidden" aria-hidden />
       <div className="hidden h-header-spacer-desktop lg:block" aria-hidden />
-      <div className="mx-auto flex w-full max-w-7xl flex-1 flex-col px-4 pb-20 pt-12 sm:px-6 sm:pt-14 lg:px-8 lg:pb-10 lg:pt-20">
+      <div className="mx-auto flex w-full max-w-7xl flex-col px-4 pb-14 pt-12 sm:px-6 sm:pt-14 lg:px-8 lg:pb-6 lg:pt-20">
         <div className="grid grid-cols-1 gap-6 xl:grid-cols-[320px_minmax(0,1fr)]">
           <aside className="xl:self-start">
             <section className={cardClass}>
