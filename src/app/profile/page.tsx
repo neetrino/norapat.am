@@ -287,7 +287,7 @@ export default function ProfilePage() {
             </section>
           </aside>
 
-          <main className="space-y-6 lg:min-h-[980px]">
+          <main className="space-y-6">
             {activeSection === 'dashboard' && (
               <>
                 <section className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -393,6 +393,20 @@ export default function ProfilePage() {
           </main>
         </div>
       </div>
+      <section className="hidden lg:block">
+        <div className="mx-auto flex w-full max-w-7xl justify-center px-8 pb-6">
+          <div className="relative flex w-full max-w-4xl justify-center overflow-hidden rounded-[32px] border border-red-100 bg-gradient-to-b from-red-50 via-white to-white px-8 pt-10">
+            <Image
+              src="/profile-footer-couple.png"
+              alt="Traditional Armenian couple"
+              width={720}
+              height={720}
+              className="h-auto max-h-[360px] w-auto object-contain"
+              sizes="(max-width: 1280px) 50vw, 720px"
+            />
+          </div>
+        </div>
+      </section>
       <div className="mt-4 hidden lg:block lg:mt-6"><Footer /></div>
       <DeleteAccountModal isOpen={isDeleteModalOpen} onClose={() => setIsDeleteModalOpen(false)} onConfirm={handleDeleteAccount} isLoading={isDeletingAccount} />
     </div>
