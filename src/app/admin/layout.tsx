@@ -9,7 +9,6 @@ import {
   ShoppingCart,
   Tag,
   Percent,
-  Megaphone,
   LogOut,
   Menu,
   X,
@@ -24,7 +23,6 @@ const SIDEBAR_NAV_ITEMS = [
   { href: '/admin/orders', label: 'Պատվերներ', icon: ShoppingCart },
   { href: '/admin/categories', label: 'Կատեգորիաներ', icon: Tag },
   { href: '/admin/promo', label: 'Պրոմո կոդեր', icon: Percent },
-  { href: '/admin/campaigns', label: 'Զեղչեր', icon: Megaphone },
 ]
 
 export default function AdminLayout({
@@ -128,9 +126,7 @@ export default function AdminLayout({
       </aside>
 
       <main className="pt-14 lg:pt-16 lg:pl-56">
-        <div className="p-4 lg:p-8">
-          {children}
-        </div>
+        <div className="p-4 lg:p-8">{children}</div>
       </main>
     </div>
   )
