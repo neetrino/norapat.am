@@ -9,6 +9,7 @@ import {
   ShoppingCart,
   Tag,
   Percent,
+  BadgePercent,
   LogOut,
   Menu,
   X,
@@ -22,6 +23,7 @@ const SIDEBAR_NAV_ITEMS = [
   { href: '/admin/products', label: 'Ապրանքներ', icon: Package },
   { href: '/admin/orders', label: 'Պատվերներ', icon: ShoppingCart },
   { href: '/admin/categories', label: 'Կատեգորիաներ', icon: Tag },
+  { href: '/admin/discounts', label: 'Զեղչեր', icon: BadgePercent },
   { href: '/admin/promo', label: 'Պրոմո կոդեր', icon: Percent },
 ]
 
