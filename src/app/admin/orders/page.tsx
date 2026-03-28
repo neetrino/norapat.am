@@ -6,13 +6,13 @@ import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { Order, OrderItem, OrderStatus, User } from '@/types'
 import { Button } from '@/components/ui/button'
-import { 
-  Search, 
-  Filter, 
-  Eye, 
-  RefreshCw, 
-  ArrowLeft, 
-  ChevronRight, 
+import {
+  Search,
+  Filter,
+  Eye,
+  RefreshCw,
+  ArrowLeft,
+  ChevronRight,
   Calendar,
   User as UserIcon,
   Phone,
@@ -24,6 +24,7 @@ import {
   AlertCircle,
   Truck,
   CheckSquare,
+  Square,
   ShoppingCart,
   DollarSign,
   Download,
@@ -113,6 +114,7 @@ export default function AdminOrdersPage() {
     total: 0,
     pages: 0
   })
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
 
   // Ստուգել մուտքի իրավունքները
   useEffect(() => {
@@ -214,6 +216,30 @@ export default function AdminOrdersPage() {
     }
   }
 
+  const toggleSelect = (id: string) => {
+    setSelectedIds(prev => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
+  }
+
+  const toggleSelectAll = () => {
+    if (selectedIds.size === filteredOrders.length) {
+      setSelectedIds(new Set())
+    } else {
+      setSelectedIds(new Set(filteredOrders.map(o => o.id)))
+    }
+  }
+
+  const bulkUpdateStatus = async (newStatus: OrderStatus) => {
+    await Promise.all(
+      Array.from(selectedIds).map(id => updateOrderStatus(id, newStatus))
+    )
+    setSelectedIds(new Set())
+  }
+
   // Ստանալ կարգավիճակի պատկերը
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -226,6 +252,10 @@ export default function AdminOrdersPage() {
       default: return <AlertCircle className="h-4 w-4" />
     }
   }
+
+  useEffect(() => {
+    setSelectedIds(new Set())
+  }, [currentPage, filterGroup, statusFilter, searchTerm])
 
   // Զտել պատվերները որոնման հարցման համաձայն
   const filteredOrders = orders.filter(order => {
@@ -434,10 +464,58 @@ export default function AdminOrdersPage() {
 
         {/* Orders List */}
         <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
-          <div className="p-6 border-b border-gray-300">
-            <h2 className="text-xl font-semibold text-gray-900">
-              Պատվերներ ({filteredOrders.length})
-            </h2>
+          <div className="px-6 py-4 border-b border-gray-300 flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <button onClick={toggleSelectAll} className="text-gray-400 hover:text-orange-500 transition-colors">
+                {selectedIds.size === filteredOrders.length && filteredOrders.length > 0
+                  ? <CheckSquare className="h-5 w-5 text-orange-500" />
+                  : <Square className="h-5 w-5" />}
+              </button>
+              <h2 className="text-xl font-semibold text-gray-900">
+                Պատվերներ ({filteredOrders.length})
+              </h2>
+            </div>
+
+            {selectedIds.size > 0 && (
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="text-sm text-gray-500">Ընտրված՝ {selectedIds.size}</span>
+                <button
+                  onClick={() => bulkUpdateStatus('CONFIRMED')}
+                  className="flex items-center px-3 py-1.5 bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-lg text-sm transition-colors"
+                >
+                  <CheckCircle className="h-3.5 w-3.5 mr-1" />
+                  Հաստատել
+                </button>
+                <button
+                  onClick={() => bulkUpdateStatus('PREPARING')}
+                  className="flex items-center px-3 py-1.5 bg-orange-100 hover:bg-orange-200 text-orange-700 rounded-lg text-sm transition-colors"
+                >
+                  <Package className="h-3.5 w-3.5 mr-1" />
+                  Պատրաստվում
+                </button>
+                <button
+                  onClick={() => bulkUpdateStatus('READY')}
+                  className="flex items-center px-3 py-1.5 bg-green-100 hover:bg-green-200 text-green-700 rounded-lg text-sm transition-colors"
+                >
+                  <CheckSquare className="h-3.5 w-3.5 mr-1" />
+                  Պատրաստ
+                </button>
+                <button
+                  onClick={() => bulkUpdateStatus('DELIVERED')}
+                  className="flex items-center px-3 py-1.5 bg-emerald-100 hover:bg-emerald-200 text-emerald-700 rounded-lg text-sm transition-colors"
+                >
+                  <Truck className="h-3.5 w-3.5 mr-1" />
+                  Առաքված
+                </button>
+                <button
+                  onClick={() => bulkUpdateStatus('CANCELLED')}
+                  className="flex items-center px-3 py-1.5 bg-red-100 hover:bg-red-200 text-red-700 rounded-lg text-sm transition-colors"
+                >
+                  <X className="h-3.5 w-3.5 mr-1" />
+                  Մերժել
+                </button>
+              </div>
+            )}
           </div>
           
           <div className="divide-y divide-gray-200">
@@ -454,10 +532,18 @@ export default function AdminOrdersPage() {
               </div>
             ) : (
               filteredOrders.map((order) => (
-                <div key={order.id} className="p-6 hover:bg-gray-50 transition-colors">
+                <div key={order.id} className={`p-6 hover:bg-gray-50 transition-colors ${selectedIds.has(order.id) ? 'bg-orange-50' : ''}`}>
                   <div className="flex items-center justify-between">
                     {/* Պատվերի ինֆո - միայն հիմնական */}
                     <div className="flex items-center space-x-4">
+                      <button
+                        onClick={() => toggleSelect(order.id)}
+                        className="flex-shrink-0 text-gray-400 hover:text-orange-500 transition-colors"
+                      >
+                        {selectedIds.has(order.id)
+                          ? <CheckSquare className="h-5 w-5 text-orange-500" />
+                          : <Square className="h-5 w-5" />}
+                      </button>
                       <div className="w-12 h-12 bg-orange-50 rounded-xl flex items-center justify-center">
                         <ShoppingCart className="h-6 w-6 text-orange-500" />
                       </div>
