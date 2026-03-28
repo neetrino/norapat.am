@@ -4,6 +4,7 @@ import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState, useCallback, useMemo } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import {
   ArrowLeft,
   BadgePercent,
@@ -157,7 +158,7 @@ export default function AdminDiscountsPage() {
   function toggleProduct(id: string) {
     setSelectedProductIds((prev) => {
       const next = new Set(prev)
-      next.has(id) ? next.delete(id) : next.add(id)
+      if (next.has(id)) { next.delete(id) } else { next.add(id) }
       return next
     })
   }
@@ -412,7 +413,7 @@ export default function AdminDiscountsPage() {
                       {/* Icon placeholder */}
                       <div className="w-9 h-9 rounded-lg bg-orange-50 flex items-center justify-center flex-shrink-0">
                         {p.image ? (
-                          <img src={p.image} alt="" className="w-9 h-9 rounded-lg object-cover" />
+                          <Image src={p.image} alt="" width={36} height={36} className="w-9 h-9 rounded-lg object-cover" />
                         ) : (
                           <Package className="h-4 w-4 text-orange-300" />
                         )}
