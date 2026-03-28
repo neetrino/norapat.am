@@ -41,6 +41,7 @@ export default function MobileBottomNav() {
     }
     return pathname.startsWith(path)
   }
+  const hideProfileActiveIndicator = pathname?.startsWith('/profile')
 
   // Ссылки для меню
   const menuLinks = [
@@ -229,7 +230,7 @@ export default function MobileBottomNav() {
                 <span className={`text-xs font-semibold mt-1 transition-all duration-300 ${active ? 'text-orange-600' : ''}`}>{item.label}</span>
                 
                 {/* Active indicator */}
-                {active && (
+                {active && !hideProfileActiveIndicator && (
                   <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-10 h-1 bg-gradient-to-r from-orange-500 to-red-500 rounded-b-full shadow-lg"></div>
                 )}
               </Link>

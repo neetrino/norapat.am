@@ -1,20 +1,21 @@
 'use client'
 
-import { useSession } from 'next-auth/react'
+import { useSession, signOut } from 'next-auth/react'
 import { useRouter, usePathname } from 'next/navigation'
 import Link from 'next/link'
-import { signOut } from 'next-auth/react'
 import {
   LayoutDashboard,
   Package,
   ShoppingCart,
   Tag,
   Percent,
-  Megaphone,
+  BadgePercent,
   LogOut,
   Menu,
   X,
   Home,
+  Users,
+  BarChart2,
 } from 'lucide-react'
 import { useState, useEffect } from 'react'
 
@@ -24,8 +25,10 @@ const SIDEBAR_NAV_ITEMS = [
   { href: '/admin/products', label: 'Ապրանքներ', icon: Package },
   { href: '/admin/orders', label: 'Պատվերներ', icon: ShoppingCart },
   { href: '/admin/categories', label: 'Կատեգորիաներ', icon: Tag },
+  { href: '/admin/discounts', label: 'Զեղչեր', icon: BadgePercent },
   { href: '/admin/promo', label: 'Պրոմո կոդեր', icon: Percent },
-  { href: '/admin/campaigns', label: 'Ակցիաներ', icon: Megaphone },
+  { href: '/admin/users', label: 'Օգտատերեր', icon: Users },
+  { href: '/admin/analytics', label: 'Վերլուծություն', icon: BarChart2 },
 ]
 
 export default function AdminLayout({
@@ -59,13 +62,12 @@ export default function AdminLayout({
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Top bar */}
       <header className="fixed top-0 left-0 right-0 z-40 h-14 lg:h-16 bg-white border-b border-gray-200 shadow-sm">
         <div className="flex items-center justify-between h-full px-4 lg:px-6">
           <div className="flex items-center gap-3">
             <button
               type="button"
-              onClick={() => setSidebarOpen((o) => !o)}
+              onClick={() => setSidebarOpen((open) => !open)}
               className="lg:hidden p-2 rounded-lg hover:bg-gray-100 text-gray-600"
               aria-label="Մենյու"
             >
@@ -88,7 +90,6 @@ export default function AdminLayout({
         </div>
       </header>
 
-      {/* Sidebar overlay (mobile) */}
       {sidebarOpen && (
         <div
           className="fixed inset-0 z-30 bg-black/30 lg:hidden"
@@ -97,7 +98,6 @@ export default function AdminLayout({
         />
       )}
 
-      {/* Sidebar */}
       <aside
         className={`
           fixed top-14 lg:top-16 left-0 z-40 w-56 h-[calc(100vh-3.5rem)] lg:h-[calc(100vh-4rem)]
@@ -109,7 +109,9 @@ export default function AdminLayout({
         <nav className="p-3 space-y-0.5">
           {SIDEBAR_NAV_ITEMS.map(({ href, label, icon: Icon, external }) => {
             const isAdminLink = href.startsWith('/admin')
-            const isActive = isAdminLink && (pathname === href || (href !== '/admin' && pathname.startsWith(href)))
+            const isActive =
+              isAdminLink && (pathname === href || (href !== '/admin' && pathname.startsWith(href)))
+
             return (
               <Link
                 key={href}
@@ -129,11 +131,8 @@ export default function AdminLayout({
         </nav>
       </aside>
 
-      {/* Main content */}
       <main className="pt-14 lg:pt-16 lg:pl-56">
-        <div className="p-4 lg:p-8">
-          {children}
-        </div>
+        <div className="p-4 lg:p-8">{children}</div>
       </main>
     </div>
   )

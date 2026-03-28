@@ -5,14 +5,16 @@ import { useRouter } from 'next/navigation'
 import { useCallback, useEffect, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { 
-  Plus, 
-  Edit, 
-  Trash2, 
+import {
+  Plus,
+  Edit,
+  Trash2,
   ArrowLeft,
   Package,
   Eye,
-  EyeOff
+  EyeOff,
+  CheckSquare,
+  Square
 } from 'lucide-react'
 import ImageSelector from '@/components/ImageSelector'
 
@@ -38,6 +40,7 @@ export default function CategoriesPage() {
   const [editingCategory, setEditingCategory] = useState<Category | null>(null)
   const [isCreating, setIsCreating] = useState(false)
   const [imageErrors, setImageErrors] = useState<Set<string>>(new Set())
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -153,6 +156,52 @@ export default function CategoriesPage() {
     setEditingCategory(null)
     setIsCreating(false)
     setFormData({ name: '', description: '', image: '', isActive: true })
+  }
+
+  const toggleSelect = (id: string) => {
+    setSelectedIds(prev => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
+  }
+
+  const toggleSelectAll = () => {
+    if (selectedIds.size === categories.length) {
+      setSelectedIds(new Set())
+    } else {
+      setSelectedIds(new Set(categories.map(c => c.id)))
+    }
+  }
+
+  const handleBulkDelete = async () => {
+    const deletable = categories.filter(c => selectedIds.has(c.id) && c._count.products === 0)
+    const nonDeletable = categories.filter(c => selectedIds.has(c.id) && c._count.products > 0)
+
+    if (deletable.length === 0) {
+      alert('Ընտրված կատեգորիաները ջնջել հնարավոր չէ, քանի որ դրանք ունեն ապրանքներ:')
+      return
+    }
+
+    const msg = nonDeletable.length > 0
+      ? `${deletable.length} կատեգորիա կջնջվի: ${nonDeletable.length} կատեգորիա ունի ապրանքներ և չի ջնջվի: Շարունակե՞լ:`
+      : `Համոզվա՞ծ եք, որ ցանկանում եք ջնջել ${deletable.length} կատեգորիա:`
+
+    if (!confirm(msg)) return
+
+    for (const category of deletable) {
+      await fetch(`/api/admin/categories/${category.id}`, { method: 'DELETE' })
+    }
+
+    setSelectedIds(new Set())
+    await fetchCategories()
+  }
+
+  const handleBulkEdit = () => {
+    if (selectedIds.size !== 1) return
+    const category = categories.find(c => selectedIds.has(c.id))
+    if (category) startEdit(category)
   }
 
   if (status === 'loading' || isLoading) {
@@ -296,10 +345,39 @@ export default function CategoriesPage() {
 
         {/* Categories List */}
         <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h2 className="text-lg font-semibold text-gray-900">
-              Կատեգորիաներ ({categories.length})
-            </h2>
+          <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <button onClick={toggleSelectAll} className="text-gray-400 hover:text-orange-500 transition-colors">
+                {selectedIds.size === categories.length && categories.length > 0
+                  ? <CheckSquare className="h-5 w-5 text-orange-500" />
+                  : <Square className="h-5 w-5" />}
+              </button>
+              <h2 className="text-lg font-semibold text-gray-900">
+                Կատեգորիաներ ({categories.length})
+              </h2>
+            </div>
+
+            {selectedIds.size > 0 && (
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-gray-500">Ընտրված՝ {selectedIds.size}</span>
+                {selectedIds.size === 1 && (
+                  <button
+                    onClick={handleBulkEdit}
+                    className="flex items-center px-3 py-1.5 bg-orange-100 hover:bg-orange-200 text-orange-700 rounded-lg text-sm transition-colors"
+                  >
+                    <Edit className="h-3.5 w-3.5 mr-1" />
+                    Խմբագրել
+                  </button>
+                )}
+                <button
+                  onClick={handleBulkDelete}
+                  className="flex items-center px-3 py-1.5 bg-red-100 hover:bg-red-200 text-red-700 rounded-lg text-sm transition-colors"
+                >
+                  <Trash2 className="h-3.5 w-3.5 mr-1" />
+                  Ջնջել
+                </button>
+              </div>
+            )}
           </div>
           
           {categories.length === 0 ? (
@@ -310,8 +388,18 @@ export default function CategoriesPage() {
           ) : (
             <div className="divide-y divide-gray-200">
               {categories.map((category) => (
-                <div key={category.id} className="p-6 hover:bg-gray-50 transition-colors">
+                <div key={category.id} className={`p-6 hover:bg-gray-50 transition-colors ${selectedIds.has(category.id) ? 'bg-orange-50' : ''}`}>
                   <div className="flex items-center justify-between gap-4">
+                    {/* Checkbox */}
+                    <button
+                      onClick={() => toggleSelect(category.id)}
+                      className="flex-shrink-0 text-gray-400 hover:text-orange-500 transition-colors"
+                    >
+                      {selectedIds.has(category.id)
+                        ? <CheckSquare className="h-5 w-5 text-orange-500" />
+                        : <Square className="h-5 w-5" />}
+                    </button>
+
                     {/* Изображение категории */}
                     <div className="flex-shrink-0">
                       <div className="relative w-20 h-20 bg-gray-100 rounded-lg overflow-hidden border border-gray-200">
