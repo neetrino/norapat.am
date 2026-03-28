@@ -1,545 +1,484 @@
 'use client'
 
-import Image from 'next/image'
+import { useEffect, useState } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { ArrowLeft, Plus, Edit, Trash2, Megaphone } from 'lucide-react'
-import type { Campaign } from '@/types'
-import type { CategoryWithCount } from '@/types'
-import type { Product } from '@/types'
+import { ArrowLeft, Filter, Package, Percent, Search } from 'lucide-react'
+import type { Product, CategoryWithCount } from '@/types'
 
-const LINK_TYPES = [
-  { value: 'NONE', label: 'Առանց հղումի' },
-  { value: 'PRODUCT', label: 'Ապրանք' },
-  { value: 'CATEGORY', label: 'Կատեգորիա' },
-  { value: 'URL', label: 'Կամայական հղում' },
-] as const
+type DiscountMode = 'PERCENT' | 'FIXED' | 'CLEAR'
+type ApplyScope = 'FILTERED' | 'SELECTED'
+type AvailabilityFilter = 'ALL' | 'AVAILABLE' | 'UNAVAILABLE'
+type DiscountFilter = 'ALL' | 'DISCOUNTED' | 'WITHOUT_DISCOUNT'
 
-function formatDate(d: string) {
-  return new Date(d).toLocaleDateString('hy-AM', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-  })
+type AdminProduct = Product & {
+  category?: {
+    id: string
+    name: string
+    isActive: boolean
+  } | null
 }
 
-export default function AdminCampaignsPage() {
+function getBasePrice(product: AdminProduct) {
+  return product.originalPrice ?? product.price
+}
+
+function getDiscountPercent(product: AdminProduct) {
+  const basePrice = getBasePrice(product)
+
+  if (!product.originalPrice || basePrice <= 0 || product.price >= basePrice) {
+    return null
+  }
+
+  return Math.round(((basePrice - product.price) / basePrice) * 100)
+}
+
+export default function AdminDiscountsPage() {
   const { data: session, status } = useSession()
   const router = useRouter()
-  const [list, setList] = useState<Campaign[]>([])
+
+  const [products, setProducts] = useState<AdminProduct[]>([])
   const [categories, setCategories] = useState<CategoryWithCount[]>([])
-  const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
-  const [creating, setCreating] = useState(false)
-  const [editing, setEditing] = useState<Campaign | null>(null)
-  const [form, setForm] = useState({
-    title: '',
-    description: '',
-    image: '',
-    linkType: 'NONE' as 'NONE' | 'PRODUCT' | 'CATEGORY' | 'URL',
-    linkValue: '',
-    startDate: new Date().toISOString().slice(0, 16),
-    endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
-      .toISOString()
-      .slice(0, 16),
-    isActive: true,
-    sortOrder: 0,
-  })
+  const [submitting, setSubmitting] = useState(false)
+
+  const [searchTerm, setSearchTerm] = useState('')
+  const [selectedCategory, setSelectedCategory] = useState('ALL')
+  const [availabilityFilter, setAvailabilityFilter] = useState<AvailabilityFilter>('ALL')
+  const [discountFilter, setDiscountFilter] = useState<DiscountFilter>('ALL')
+  const [selectedIds, setSelectedIds] = useState<string[]>([])
+
+  const [mode, setMode] = useState<DiscountMode>('PERCENT')
+  const [amount, setAmount] = useState('10')
+  const [applyScope, setApplyScope] = useState<ApplyScope>('FILTERED')
+  const [resultMessage, setResultMessage] = useState('')
 
   useEffect(() => {
     if (status === 'loading') return
+
     if (!session || session.user?.role !== 'ADMIN') {
       router.push('/login')
       return
     }
-    fetchList()
-    fetchCategories()
-    fetchProducts()
+
+    void loadData()
   }, [session, status, router])
 
-  const fetchList = async () => {
+  const loadData = async () => {
     try {
-      const res = await fetch('/api/admin/campaigns')
-      if (res.ok) setList(await res.json())
-    } catch (e) {
-      console.error(e)
+      setLoading(true)
+
+      const [productsRes, categoriesRes] = await Promise.all([
+        fetch('/api/admin/products'),
+        fetch('/api/admin/categories?includeInactive=true'),
+      ])
+
+      if (productsRes.ok) {
+        const productsData = await productsRes.json()
+        setProducts(Array.isArray(productsData) ? productsData : [])
+      }
+
+      if (categoriesRes.ok) {
+        const categoriesData = await categoriesRes.json()
+        setCategories(Array.isArray(categoriesData) ? categoriesData : [])
+      }
+    } catch (error) {
+      console.error('Failed to load discounts page data:', error)
     } finally {
       setLoading(false)
     }
   }
 
-  const fetchCategories = async () => {
-    try {
-      const res = await fetch('/api/categories')
-      if (res.ok) {
-        const data = await res.json()
-        setCategories(Array.isArray(data) ? data : [] as CategoryWithCount[])
-      }
-    } catch (e) {
-      console.error(e)
-    }
+  const filteredProducts = products.filter((product) => {
+    const normalizedSearch = searchTerm.trim().toLowerCase()
+    const matchesSearch =
+      normalizedSearch.length === 0 ||
+      product.name.toLowerCase().includes(normalizedSearch) ||
+      product.description.toLowerCase().includes(normalizedSearch) ||
+      (product.shortDescription ?? '').toLowerCase().includes(normalizedSearch)
+
+    const matchesCategory =
+      selectedCategory === 'ALL' || product.category?.id === selectedCategory
+
+    const matchesAvailability =
+      availabilityFilter === 'ALL' ||
+      (availabilityFilter === 'AVAILABLE' && product.isAvailable) ||
+      (availabilityFilter === 'UNAVAILABLE' && !product.isAvailable)
+
+    const hasDiscount = product.originalPrice != null && product.originalPrice > product.price
+    const matchesDiscount =
+      discountFilter === 'ALL' ||
+      (discountFilter === 'DISCOUNTED' && hasDiscount) ||
+      (discountFilter === 'WITHOUT_DISCOUNT' && !hasDiscount)
+
+    return matchesSearch && matchesCategory && matchesAvailability && matchesDiscount
+  })
+
+  const filteredIds = filteredProducts.map((product) => product.id)
+  const selectedSet = new Set(selectedIds)
+  const selectedCountInFilter = filteredIds.filter((id) => selectedSet.has(id)).length
+  const targetIds = applyScope === 'FILTERED' ? filteredIds : selectedIds
+  const discountedCount = filteredProducts.filter(
+    (product) => product.originalPrice != null && product.originalPrice > product.price
+  ).length
+
+  const toggleProduct = (productId: string) => {
+    setSelectedIds((current) =>
+      current.includes(productId)
+        ? current.filter((id) => id !== productId)
+        : [...current, productId]
+    )
   }
 
-  const fetchProducts = async () => {
-    try {
-      const res = await fetch('/api/products')
-      if (res.ok) {
-        const data = await res.json()
-        setProducts(Array.isArray(data) ? data : [])
-      }
-    } catch (e) {
-      console.error(e)
+  const toggleFilteredSelection = () => {
+    const allFilteredSelected =
+      filteredIds.length > 0 && filteredIds.every((id) => selectedSet.has(id))
+
+    if (allFilteredSelected) {
+      setSelectedIds((current) => current.filter((id) => !filteredIds.includes(id)))
+      return
     }
+
+    setSelectedIds((current) => [...new Set([...current, ...filteredIds])])
   }
 
-  const handleCreate = async (e: React.FormEvent) => {
-    e.preventDefault()
+  const clearSelection = () => {
+    setSelectedIds([])
+  }
+
+  const handleApply = async () => {
+    setResultMessage('')
+
+    if (targetIds.length === 0) {
+      setResultMessage('Ընտրեք գոնե մեկ ապրանք կամ օգտագործեք ֆիլտրերը։')
+      return
+    }
+
+    if (mode !== 'CLEAR') {
+      const numericAmount = Number(amount)
+
+      if (!Number.isFinite(numericAmount) || numericAmount <= 0) {
+        setResultMessage('Զեղչի արժեքը պետք է լինի դրական թիվ։')
+        return
+      }
+    }
+
     try {
-      const res = await fetch('/api/admin/campaigns', {
+      setSubmitting(true)
+
+      const response = await fetch('/api/admin/products/bulk-discount', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          ...form,
-          linkValue: form.linkType === 'NONE' ? null : form.linkValue || null,
+          productIds: targetIds,
+          mode,
+          amount: mode === 'CLEAR' ? null : Number(amount),
         }),
       })
-      if (res.ok) {
-        await fetchList()
-        setCreating(false)
-        resetForm()
-      } else {
-        const err = await res.json()
-        alert(err.error || 'Սխալ')
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        setResultMessage(data.error || 'Չհաջողվեց թարմացնել զեղչերը։')
+        return
       }
-    } catch (e) {
-      console.error(e)
-      alert('Սխալ')
+
+      setResultMessage(
+        data.updatedCount > 0
+          ? `Թարմացվեց ${data.updatedCount} ապրանք։`
+          : 'Փոփոխելու բան չկար։'
+      )
+      setSelectedIds([])
+      await loadData()
+    } catch (error) {
+      console.error('Failed to apply bulk discounts:', error)
+      setResultMessage('Սերվերի սխալ առաջացավ bulk update-ի ժամանակ։')
+    } finally {
+      setSubmitting(false)
     }
-  }
-
-  const handleUpdate = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!editing) return
-    try {
-      const res = await fetch(`/api/admin/campaigns/${editing.id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          ...form,
-          linkValue: form.linkType === 'NONE' ? null : form.linkValue || null,
-        }),
-      })
-      if (res.ok) {
-        await fetchList()
-        setEditing(null)
-        resetForm()
-      } else {
-        const err = await res.json()
-        alert(err.error || 'Սխալ')
-      }
-    } catch (e) {
-      console.error(e)
-      alert('Սխալ')
-    }
-  }
-
-  const handleDelete = async (id: string) => {
-    if (!confirm('Ջնջե՞լ ակցիան')) return
-    try {
-      const res = await fetch(`/api/admin/campaigns/${id}`, { method: 'DELETE' })
-      if (res.ok) await fetchList()
-      else alert('Ջնջումը ձախողվեց')
-    } catch (e) {
-      console.error(e)
-    }
-  }
-
-  const resetForm = () => {
-    setForm({
-      title: '',
-      description: '',
-      image: '',
-      linkType: 'NONE',
-      linkValue: '',
-      startDate: new Date().toISOString().slice(0, 16),
-      endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
-        .toISOString()
-        .slice(0, 16),
-      isActive: true,
-      sortOrder: 0,
-    })
-  }
-
-  const openEdit = (c: Campaign) => {
-    setEditing(c)
-    setForm({
-      title: c.title,
-      description: c.description || '',
-      image: c.image,
-      linkType: c.linkType,
-      linkValue: c.linkValue || '',
-      startDate: new Date(c.startDate).toISOString().slice(0, 16),
-      endDate: new Date(c.endDate).toISOString().slice(0, 16),
-      isActive: c.isActive,
-      sortOrder: c.sortOrder,
-    })
-  }
-
-  const getLinkLabel = (c: Campaign) => {
-    if (c.linkType === 'NONE' || !c.linkValue) return '—'
-    if (c.linkType === 'PRODUCT') {
-      const p = products.find((x) => x.id === c.linkValue)
-      return p ? p.name : c.linkValue
-    }
-    if (c.linkType === 'CATEGORY') return c.linkValue
-    if (c.linkType === 'URL') return c.linkValue.slice(0, 30) + '…'
-    return c.linkValue
   }
 
   if (status === 'loading' || loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="w-16 h-16 border-4 border-orange-500 border-t-transparent rounded-full animate-spin" />
+        <div className="w-14 h-14 border-4 border-orange-500 border-t-transparent rounded-full animate-spin" />
       </div>
     )
   }
+
   if (!session || session.user?.role !== 'ADMIN') return null
+
+  const allFilteredSelected =
+    filteredIds.length > 0 && filteredIds.every((id) => selectedSet.has(id))
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex items-center gap-4 mb-6">
           <Link href="/admin" className="flex items-center text-gray-600 hover:text-orange-500">
             <ArrowLeft className="h-5 w-5 mr-2" />
             Վահանակ
           </Link>
-          <h1 className="text-2xl font-bold text-gray-900">Ակցիաներ</h1>
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">Զեղչեր</h1>
+            <p className="text-sm text-gray-500 mt-1">
+              Մասայական զեղչեր ըստ category-ի, availability-ի կամ ընտրված ապրանքների
+            </p>
+          </div>
         </div>
 
-        {!creating && !editing && (
-          <button
-            type="button"
-            onClick={() => setCreating(true)}
-            className="mb-6 flex items-center gap-2 bg-orange-500 text-white px-4 py-2 rounded-xl hover:bg-orange-600"
-          >
-            <Plus className="h-5 w-5" />
-            Ավելացնել ակցիա
-          </button>
-        )}
+        <div className="grid grid-cols-1 xl:grid-cols-[1.1fr_1.9fr] gap-6">
+          <div className="space-y-6">
+            <section className="bg-white rounded-2xl shadow-sm border border-gray-200 p-5">
+              <div className="flex items-center gap-2 mb-4">
+                <Filter className="h-5 w-5 text-orange-500" />
+                <h2 className="text-lg font-semibold text-gray-900">Ֆիլտրեր</h2>
+              </div>
 
-        {(creating || editing) && (
-          <div className="bg-white rounded-2xl shadow-lg p-6 mb-8">
-            <h2 className="text-lg font-semibold mb-4">
-              {editing ? 'Խմբագրել' : 'Նոր ակցիա'}
-            </h2>
-            <form
-              onSubmit={editing ? handleUpdate : handleCreate}
-              className="space-y-4"
-            >
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Անվանում *
-                </label>
-                <input
-                  type="text"
-                  value={form.title}
-                  onChange={(e) =>
-                    setForm((f) => ({ ...f, title: e.target.value }))
-                  }
-                  className="w-full px-4 py-2 border border-gray-300 rounded-xl"
-                  required
-                />
+              <div className="space-y-4">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <input
+                    type="text"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    placeholder="Որոնել ապրանք..."
+                    className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-400"
+                  />
+                </div>
+
+                <select
+                  value={selectedCategory}
+                  onChange={(e) => setSelectedCategory(e.target.value)}
+                  className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white"
+                >
+                  <option value="ALL">Բոլոր կատեգորիաները</option>
+                  {categories.map((category) => (
+                    <option key={category.id} value={category.id}>
+                      {category.name} ({category._count.products})
+                    </option>
+                  ))}
+                </select>
+
+                <select
+                  value={availabilityFilter}
+                  onChange={(e) => setAvailabilityFilter(e.target.value as AvailabilityFilter)}
+                  className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white"
+                >
+                  <option value="ALL">Բոլոր availability-ները</option>
+                  <option value="AVAILABLE">Միայն ակտիվ</option>
+                  <option value="UNAVAILABLE">Միայն անջատված</option>
+                </select>
+
+                <select
+                  value={discountFilter}
+                  onChange={(e) => setDiscountFilter(e.target.value as DiscountFilter)}
+                  className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white"
+                >
+                  <option value="ALL">Բոլոր ապրանքները</option>
+                  <option value="DISCOUNTED">Միայն զեղչված</option>
+                  <option value="WITHOUT_DISCOUNT">Միայն առանց զեղչի</option>
+                </select>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Նկարագրություն
-                </label>
-                <textarea
-                  value={form.description}
-                  onChange={(e) =>
-                    setForm((f) => ({ ...f, description: e.target.value }))
-                  }
-                  className="w-full px-4 py-2 border border-gray-300 rounded-xl"
-                  rows={2}
-                />
+
+              <div className="grid grid-cols-2 gap-3 mt-5">
+                <div className="rounded-2xl bg-orange-50 p-4">
+                  <p className="text-sm text-gray-600">Ֆիլտրով գտնված</p>
+                  <p className="text-2xl font-bold text-gray-900">{filteredProducts.length}</p>
+                </div>
+                <div className="rounded-2xl bg-emerald-50 p-4">
+                  <p className="text-sm text-gray-600">Զեղչված</p>
+                  <p className="text-2xl font-bold text-gray-900">{discountedCount}</p>
+                </div>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Նկարի հղում *
-                </label>
-                <input
-                  type="url"
-                  value={form.image}
-                  onChange={(e) =>
-                    setForm((f) => ({ ...f, image: e.target.value }))
-                  }
-                  className="w-full px-4 py-2 border border-gray-300 rounded-xl"
-                  placeholder="https://..."
-                  required
-                />
-                {form.image && (
-                  <div className="mt-2 rounded-lg overflow-hidden max-w-xs">
-                    <Image
-                      src={form.image}
-                      alt=""
-                      width={320}
-                      height={96}
-                      unoptimized
-                      className="w-full h-24 object-cover"
-                      onError={() => {}}
+            </section>
+
+            <section className="bg-white rounded-2xl shadow-sm border border-gray-200 p-5">
+              <div className="flex items-center gap-2 mb-4">
+                <Percent className="h-5 w-5 text-orange-500" />
+                <h2 className="text-lg font-semibold text-gray-900">Մասայական գործողություն</h2>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Գործողություն
+                  </label>
+                  <select
+                    value={mode}
+                    onChange={(e) => setMode(e.target.value as DiscountMode)}
+                    className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white"
+                  >
+                    <option value="PERCENT">Դնել տոկոսային զեղչ</option>
+                    <option value="FIXED">Դնել ֆիքսված գումարով զեղչ</option>
+                    <option value="CLEAR">Հանել զեղչը</option>
+                  </select>
+                </div>
+
+                {mode !== 'CLEAR' && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      {mode === 'PERCENT' ? 'Տոկոս (%)' : 'Գումար (֏)'}
+                    </label>
+                    <input
+                      type="number"
+                      min="1"
+                      max={mode === 'PERCENT' ? '99' : undefined}
+                      value={amount}
+                      onChange={(e) => setAmount(e.target.value)}
+                      className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-400"
                     />
                   </div>
                 )}
-              </div>
-              <div className="grid grid-cols-2 gap-4">
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Հղման տեսակ
+                    Կիրառել ում վրա
                   </label>
                   <select
-                    value={form.linkType}
-                    onChange={(e) =>
-                      setForm((f) => ({
-                        ...f,
-                        linkType: e.target.value as Campaign['linkType'],
-                        linkValue: '',
-                      }))
-                    }
-                    className="w-full px-4 py-2 border border-gray-300 rounded-xl"
+                    value={applyScope}
+                    onChange={(e) => setApplyScope(e.target.value as ApplyScope)}
+                    className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white"
                   >
-                    {LINK_TYPES.map((t) => (
-                      <option key={t.value} value={t.value}>
-                        {t.label}
-                      </option>
-                    ))}
+                    <option value="FILTERED">Բոլոր ֆիլտրած ապրանքների վրա</option>
+                    <option value="SELECTED">Միայն ընտրված ապրանքների վրա</option>
                   </select>
                 </div>
-                {form.linkType !== 'NONE' && (
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      {form.linkType === 'PRODUCT'
-                        ? 'Ապրանք'
-                        : form.linkType === 'CATEGORY'
-                          ? 'Կատեգորիա'
-                          : 'Հղում'}
-                    </label>
-                    {form.linkType === 'PRODUCT' ? (
-                      <select
-                        value={form.linkValue}
-                        onChange={(e) =>
-                          setForm((f) => ({ ...f, linkValue: e.target.value }))
-                        }
-                        className="w-full px-4 py-2 border border-gray-300 rounded-xl"
-                      >
-                        <option value="">Ընտրել...</option>
-                        {products.map((p) => (
-                          <option key={p.id} value={p.id}>
-                            {p.name}
-                          </option>
-                        ))}
-                      </select>
-                    ) : form.linkType === 'CATEGORY' ? (
-                      <select
-                        value={form.linkValue}
-                        onChange={(e) =>
-                          setForm((f) => ({ ...f, linkValue: e.target.value }))
-                        }
-                        className="w-full px-4 py-2 border border-gray-300 rounded-xl"
-                      >
-                        <option value="">Ընտրել...</option>
-                        {categories.map((c) => (
-                          <option key={c.id} value={c.name}>
-                            {c.name}
-                          </option>
-                        ))}
-                      </select>
-                    ) : (
-                      <input
-                        type="url"
-                        value={form.linkValue}
-                        onChange={(e) =>
-                          setForm((f) => ({ ...f, linkValue: e.target.value }))
-                        }
-                        className="w-full px-4 py-2 border border-gray-300 rounded-xl"
-                        placeholder="https://..."
-                      />
-                    )}
+
+                <div className="rounded-2xl bg-gray-50 p-4 text-sm text-gray-700">
+                  Թիրախավորվելու է <span className="font-semibold text-gray-900">{targetIds.length}</span> ապրանք
+                  {applyScope === 'SELECTED' ? ' (ձեռքով ընտրված)' : ' (ֆիլտրերի հիման վրա)'}։
+                </div>
+
+                {resultMessage && (
+                  <div className="rounded-2xl bg-orange-50 border border-orange-200 px-4 py-3 text-sm text-orange-800">
+                    {resultMessage}
                   </div>
                 )}
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Սկիզբ
-                  </label>
-                  <input
-                    type="datetime-local"
-                    value={form.startDate}
-                    onChange={(e) =>
-                      setForm((f) => ({ ...f, startDate: e.target.value }))
-                    }
-                    className="w-full px-4 py-2 border border-gray-300 rounded-xl"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Ավարտ
-                  </label>
-                  <input
-                    type="datetime-local"
-                    value={form.endDate}
-                    onChange={(e) =>
-                      setForm((f) => ({ ...f, endDate: e.target.value }))
-                    }
-                    className="w-full px-4 py-2 border border-gray-300 rounded-xl"
-                  />
-                </div>
-              </div>
-              <div className="flex items-center gap-4">
-                <label className="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    checked={form.isActive}
-                    onChange={(e) =>
-                      setForm((f) => ({ ...f, isActive: e.target.checked }))
-                    }
-                  />
-                  <span className="text-sm text-gray-700">Ակտիվ</span>
-                </label>
-                <div className="flex items-center gap-2">
-                  <label className="text-sm text-gray-700">Կարգի համար</label>
-                  <input
-                    type="number"
-                    min={0}
-                    value={form.sortOrder}
-                    onChange={(e) =>
-                      setForm((f) => ({
-                        ...f,
-                        sortOrder: parseInt(e.target.value, 10) || 0,
-                      }))
-                    }
-                    className="w-20 px-2 py-1 border border-gray-300 rounded-lg"
-                  />
-                </div>
-              </div>
-              <div className="flex gap-2">
+
                 <button
-                  type="submit"
-                  className="bg-orange-500 text-white px-4 py-2 rounded-xl hover:bg-orange-600"
+                  type="button"
+                  onClick={handleApply}
+                  disabled={submitting}
+                  className="w-full bg-orange-500 hover:bg-orange-600 disabled:bg-orange-300 text-white font-medium px-4 py-3 rounded-xl transition-colors"
                 >
-                  {editing ? 'Պահել' : 'Ավելացնել'}
+                  {submitting ? 'Կիրառվում է...' : mode === 'CLEAR' ? 'Հանել զեղչը' : 'Կիրառել զեղչը'}
+                </button>
+              </div>
+            </section>
+          </div>
+
+          <section className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between px-5 py-4 border-b border-gray-100">
+              <div>
+                <h2 className="text-lg font-semibold text-gray-900">Ապրանքներ</h2>
+                <p className="text-sm text-gray-500 mt-1">
+                  Ընտրված է {selectedCountInFilter} / {filteredProducts.length} ֆիլտրած ապրանք
+                </p>
+              </div>
+
+              <div className="flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  onClick={toggleFilteredSelection}
+                  className="px-3 py-2 text-sm rounded-xl border border-gray-300 hover:bg-gray-50"
+                >
+                  {allFilteredSelected ? 'Հանել ֆիլտրած ընտրությունը' : 'Ընտրել բոլոր ֆիլտրածները'}
                 </button>
                 <button
                   type="button"
-                  onClick={() => {
-                    setCreating(false)
-                    setEditing(null)
-                    resetForm()
-                  }}
-                  className="border border-gray-300 px-4 py-2 rounded-xl hover:bg-gray-50"
+                  onClick={clearSelection}
+                  className="px-3 py-2 text-sm rounded-xl border border-gray-300 hover:bg-gray-50"
                 >
-                  Չեղարկել
+                  Մաքրել ընտրությունը
                 </button>
               </div>
-            </form>
-          </div>
-        )}
-
-        <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                  Ակցիա
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                  Հղում
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                  Ժամկետ
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                  Կարգավիճակ
-                </th>
-                <th className="px-4 py-3" />
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200">
-              {list.map((c) => (
-                <tr key={c.id}>
-                  <td className="px-4 py-3">
-                    <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0 bg-gray-100">
-                        <Image
-                          src={c.image}
-                          alt=""
-                          width={48}
-                          height={48}
-                          unoptimized
-                          className="w-full h-full object-cover"
-                          onError={(e) => {
-                            e.currentTarget.style.display = 'none'
-                          }}
-                        />
-                      </div>
-                      <div>
-                        <div className="font-medium text-gray-900">{c.title}</div>
-                        {c.description && (
-                          <div className="text-sm text-gray-500 line-clamp-1">
-                            {c.description}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-4 py-3 text-sm text-gray-600">
-                    {getLinkLabel(c)}
-                  </td>
-                  <td className="px-4 py-3 text-sm text-gray-600">
-                    {formatDate(c.startDate)} – {formatDate(c.endDate)}
-                  </td>
-                  <td className="px-4 py-3">
-                    <span
-                      className={`px-2 py-1 rounded-full text-xs ${
-                        c.isActive
-                          ? 'bg-green-100 text-green-800'
-                          : 'bg-gray-100 text-gray-600'
-                      }`}
-                    >
-                      {c.isActive ? 'Ակտիվ' : 'Անջատված'}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3 flex gap-2">
-                    <button
-                      type="button"
-                      onClick={() => openEdit(c)}
-                      className="text-orange-600 hover:text-orange-700"
-                    >
-                      <Edit className="h-4 w-4" />
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => handleDelete(c.id)}
-                      className="text-red-600 hover:text-red-700"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          {list.length === 0 && (
-            <div className="text-center py-12 text-gray-500">
-              <Megaphone className="h-12 w-12 mx-auto mb-2 text-gray-300" />
-              <p>Ակցիաներ դեռ չեն ավելացվել</p>
-              <p className="text-sm mt-1">
-                Ավելացրեք ժամանակավոր ակցիաներ, բաններներ
-              </p>
             </div>
-          )}
+
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-100">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Ընտրել</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Ապրանք</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Կատեգորիա</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Գին</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Զեղչ</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Availability</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-100">
+                  {filteredProducts.map((product) => {
+                    const discountPercent = getDiscountPercent(product)
+                    const isSelected = selectedSet.has(product.id)
+
+                    return (
+                      <tr key={product.id} className={isSelected ? 'bg-orange-50/60' : 'bg-white'}>
+                        <td className="px-4 py-3">
+                          <input
+                            type="checkbox"
+                            checked={isSelected}
+                            onChange={() => toggleProduct(product.id)}
+                            className="h-4 w-4 rounded border-gray-300 text-orange-500 focus:ring-orange-400"
+                          />
+                        </td>
+                        <td className="px-4 py-3">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-xl bg-orange-50 border border-orange-100 flex items-center justify-center">
+                              <Package className="h-5 w-5 text-orange-400" />
+                            </div>
+                            <div>
+                              <p className="font-medium text-gray-900">{product.name}</p>
+                              <p className="text-xs text-gray-500">{product.shortDescription || product.description}</p>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-4 py-3 text-sm text-gray-700">
+                          {product.category?.name || '—'}
+                        </td>
+                        <td className="px-4 py-3 text-sm text-gray-900">
+                          <div className="font-semibold">{product.price.toLocaleString()} ֏</div>
+                          {product.originalPrice != null && (
+                            <div className="text-xs text-gray-400 line-through">
+                              {product.originalPrice.toLocaleString()} ֏
+                            </div>
+                          )}
+                        </td>
+                        <td className="px-4 py-3 text-sm">
+                          {discountPercent != null ? (
+                            <span className="inline-flex items-center rounded-full bg-emerald-100 px-2.5 py-1 text-emerald-700 font-medium">
+                              -{discountPercent}%
+                            </span>
+                          ) : (
+                            <span className="text-gray-400">Չկա</span>
+                          )}
+                        </td>
+                        <td className="px-4 py-3 text-sm">
+                          <span
+                            className={`inline-flex items-center rounded-full px-2.5 py-1 font-medium ${
+                              product.isAvailable
+                                ? 'bg-green-100 text-green-700'
+                                : 'bg-gray-100 text-gray-600'
+                            }`}
+                          >
+                            {product.isAvailable ? 'Ակտիվ' : 'Անջատված'}
+                          </span>
+                        </td>
+                      </tr>
+                    )
+                  })}
+                </tbody>
+              </table>
+            </div>
+
+            {filteredProducts.length === 0 && (
+              <div className="py-16 text-center">
+                <Package className="h-10 w-10 text-gray-300 mx-auto mb-3" />
+                <p className="text-gray-500">Այս ֆիլտրերով ապրանք չգտնվեց</p>
+              </div>
+            )}
+          </section>
         </div>
       </div>
     </div>
