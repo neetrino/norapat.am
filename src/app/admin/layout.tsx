@@ -15,6 +15,7 @@ import {
   X,
   Home,
   Users,
+  BarChart2,
 } from 'lucide-react'
 import { useState, useEffect } from 'react'
 
@@ -27,6 +28,7 @@ const SIDEBAR_NAV_ITEMS = [
   { href: '/admin/discounts', label: 'Զեղչեր', icon: BadgePercent },
   { href: '/admin/promo', label: 'Պրոմո կոդեր', icon: Percent },
   { href: '/admin/users', label: 'Օգտատերեր', icon: Users },
+  { href: '/admin/analytics', label: 'Վերլուծություն', icon: BarChart2 },
 ]
 
 export default function AdminLayout({
