@@ -14,6 +14,7 @@ import {
   Menu,
   X,
   Home,
+  Users,
 } from 'lucide-react'
 import { useState, useEffect } from 'react'
 
@@ -25,6 +26,7 @@ const SIDEBAR_NAV_ITEMS = [
   { href: '/admin/categories', label: 'Կատեգորիաներ', icon: Tag },
   { href: '/admin/discounts', label: 'Զեղչեր', icon: BadgePercent },
   { href: '/admin/promo', label: 'Պրոմո կոդեր', icon: Percent },
+  { href: '/admin/users', label: 'Օգտատերեր', icon: Users },
 ]
 
 export default function AdminLayout({
