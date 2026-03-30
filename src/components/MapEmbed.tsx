@@ -2,10 +2,9 @@
 
 /**
  * Embed map showing Pideh Armenia locations in Yerevan.
- * Uses OpenStreetMap iframe — no API key required.
+ * Uses OpenStreetMap iframe with no duplicate address links below the map.
  */
 export function MapEmbed() {
-  // Yerevan center bbox to show both branches: Zoravar Andranik 151/2, Eznik Koghbatsi 83
   const bbox = '44.499,40.170,44.532,40.193'
 
   return (
@@ -18,24 +17,6 @@ export function MapEmbed() {
         loading="lazy"
         referrerPolicy="no-referrer-when-downgrade"
       />
-      <div className="flex flex-col sm:flex-row sm:justify-between gap-2 p-3 bg-white text-sm">
-        <a
-          href="https://maps.google.com/?q=Zoravar+Andranik+151%2F2,+Yerevan,+Armenia"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-orange-500 hover:text-orange-600 transition-colors"
-        >
-          Zoravar Andranik 151/2 ↗
-        </a>
-        <a
-          href="https://maps.google.com/?q=Eznik+Koghbatsi+83,+Yerevan,+Armenia"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-orange-500 hover:text-orange-600 transition-colors"
-        >
-          Eznik Koghbatsi 83 ↗
-        </a>
-      </div>
     </div>
   )
 }

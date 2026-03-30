@@ -5,19 +5,20 @@ import { useState } from 'react'
 import Footer from '@/components/Footer'
 import { MapEmbed } from '@/components/MapEmbed'
 import { BRAND_RED_CTA_IDLE_HOVER_CLASS } from '@/components/home/promo-food-banner/promoFoodBanner.constants'
+import { usePublicSiteSettings } from '@/hooks/usePublicSiteSettings'
 import { useI18n } from '@/i18n/I18nContext'
-import {
-  Phone,
-  Mail,
-  MapPin,
-  Clock,
-  ChevronDown,
-} from 'lucide-react'
+import { ChevronDown, Clock, Mail, MapPin, Phone } from 'lucide-react'
 
 export function ContactPageView() {
   const { t } = useI18n()
   const c = t.contactPage
+  const { contactPhone, contactEmail } = usePublicSiteSettings()
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null)
+
+  const phoneNumber = contactPhone?.trim() || '+374 95-044-888'
+  const emailAddress = contactEmail?.trim() || 'info@pideh.am'
+  const phoneHref = `tel:${phoneNumber.replace(/[^\d+]/g, '')}`
+  const emailHref = `mailto:${emailAddress}`
 
   const faqItems = [
     { question: c.faqPrepQ, answer: c.faqPrepA },
@@ -28,152 +29,159 @@ export function ContactPageView() {
     { question: c.faqContactQ, answer: c.faqContactA },
   ]
 
+  const contactCards = [
+    {
+      icon: Phone,
+      title: c.phoneTitle,
+      value: phoneNumber,
+      caption: null,
+      href: phoneHref,
+      actionLabel: c.callBtn,
+    },
+    {
+      icon: Mail,
+      title: c.emailTitle,
+      value: emailAddress,
+      caption: c.emailResponse,
+      href: emailHref,
+      actionLabel: c.writeBtn,
+    },
+    {
+      icon: Clock,
+      title: c.hoursTitle,
+      value: c.phoneHours,
+      caption: c.deliveryHours,
+      href: null,
+      actionLabel: null,
+    },
+  ]
+
+  const branches = [
+    {
+      title: c.addressZoravar,
+      href: 'https://maps.google.com/?q=Zoravar+Andranik+151%2F2,+Yerevan,+Armenia',
+    },
+    {
+      title: c.addressEznik,
+      href: 'https://maps.google.com/?q=Eznik+Koghbatsi+83,+Yerevan,+Armenia',
+    },
+  ]
+
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[linear-gradient(180deg,#fff8f5_0%,#fffdfb_38%,#ffffff_100%)]">
       <div className="h-header-spacer-mobile lg:hidden" aria-hidden />
       <div className="h-header-spacer-desktop hidden lg:block" aria-hidden />
 
-      <section className="promo-food-banner-bg promo-food-banner-vignette relative flex min-h-[min(50vh,26rem)] items-center justify-center overflow-hidden py-14 text-white sm:min-h-[min(52vh,30rem)] sm:py-16 md:py-20">
+      <section className="promo-food-banner-bg promo-food-banner-vignette relative flex min-h-[min(46vh,24rem)] items-center justify-center overflow-hidden py-14 text-white sm:min-h-[min(50vh,28rem)] sm:py-16 md:py-20">
         <div className="relative z-10 mx-auto w-full max-w-7xl px-4 text-center sm:px-6 lg:px-8">
-          <h1 className="mb-6 text-4xl font-bold md:text-6xl">{c.heroTitle}</h1>
-          <p className="mx-auto max-w-3xl text-xl text-white/90 md:text-2xl">
+          <div className="mb-5 inline-flex items-center rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-sm font-medium text-white/90 backdrop-blur">
+            NORAPAT
+          </div>
+          <h1 className="mb-6 text-4xl font-bold tracking-tight md:text-6xl">
+            {c.heroTitle}
+          </h1>
+          <p className="mx-auto max-w-3xl text-lg leading-8 text-white/90 md:text-2xl">
             {c.heroSubtitle}
           </p>
         </div>
       </section>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
-          <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow text-center">
-            <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-6">
-              <Phone className="h-8 w-8 text-orange-500" />
+      <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+        <div className="mb-16 grid gap-4 lg:grid-cols-[1.15fr_0.85fr]">
+          <div className="overflow-hidden rounded-[1.75rem] border border-stone-200 bg-transparent shadow-none">
+            <div className="border-b border-stone-200 px-5 py-5 sm:px-6 sm:py-6">
+              <p className="mb-2 text-xs font-semibold uppercase tracking-[0.22em] text-red-700/75">
+                {c.quickOrderTitle}
+              </p>
+              <h2 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">
+                {c.heroTitle}
+              </h2>
+              <p className="mt-2 max-w-2xl text-sm leading-6 text-gray-600 sm:text-base">
+                {c.quickOrderSubtitle}
+              </p>
             </div>
-            <h3 className="text-xl font-bold text-gray-900 mb-3">{c.phoneTitle}</h3>
-            <p className="text-gray-600 mb-2">+374 95-044-888</p>
-            <p className="text-sm text-gray-500">{c.phoneHours}</p>
-            <a
-              href="tel:+37495044888"
-              className={`mt-4 inline-block rounded-xl px-6 py-2 font-medium ${BRAND_RED_CTA_IDLE_HOVER_CLASS}`}
-            >
-              {c.callBtn}
-            </a>
-          </div>
 
-          <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow text-center">
-            <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-6">
-              <Mail className="h-8 w-8 text-orange-500" />
-            </div>
-            <h3 className="text-xl font-bold text-gray-900 mb-3">{c.emailTitle}</h3>
-            <p className="text-gray-600 mb-2">info@pideh-armenia.am</p>
-            <p className="text-sm text-gray-500">{c.emailResponse}</p>
-            <a
-              href="mailto:info@pideh-armenia.am"
-              className={`mt-4 inline-block rounded-xl px-6 py-2 font-medium ${BRAND_RED_CTA_IDLE_HOVER_CLASS}`}
-            >
-              {c.writeBtn}
-            </a>
-          </div>
+            <div className="grid gap-3 p-4 sm:p-5 lg:grid-cols-3">
+              {contactCards.map((card) => {
+                const Icon = card.icon
 
-          <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow text-center">
-            <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-6">
-              <Clock className="h-8 w-8 text-orange-500" />
-            </div>
-            <h3 className="text-xl font-bold text-gray-900 mb-3">{c.hoursTitle}</h3>
-            <p className="text-gray-600 mb-2">{c.phoneHours}</p>
-            <p className="text-sm text-gray-500">{c.deliveryHours}</p>
-          </div>
-        </div>
-
-        <div className="promo-food-banner-bg promo-food-banner-vignette relative mb-16 overflow-hidden rounded-2xl text-center text-white">
-          <div className="relative z-10 px-6 py-8 text-center sm:px-8 sm:py-10">
-            <h2 className="mb-4 text-2xl font-bold">{c.quickOrderTitle}</h2>
-            <p className="mb-6 text-lg text-white/90">{c.quickOrderSubtitle}</p>
-            <div className="flex flex-col justify-center gap-4 sm:flex-row">
-              <a
-                href="tel:+37495044888"
-                className="inline-flex items-center justify-center space-x-2 rounded-xl bg-white px-6 py-3 font-semibold text-[#A51D1D] transition-colors hover:bg-gray-100"
-              >
-                <Phone className="h-5 w-5" />
-                <span>{c.callPhoneBtn}</span>
-              </a>
-              <a
-                href="https://www.facebook.com/PIDEH.Armenia/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center justify-center space-x-2 rounded-xl bg-blue-600 px-6 py-3 font-semibold text-white transition-colors hover:bg-blue-700"
-              >
-                <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
-                </svg>
-                <span>Facebook</span>
-              </a>
-              <a
-                href="https://www.instagram.com/pideh.armenia/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center justify-center space-x-2 rounded-xl bg-pink-600 px-6 py-3 font-semibold text-white transition-colors hover:bg-pink-700"
-              >
-                <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 6.62 5.367 11.987 11.988 11.987 6.62 0 11.987-5.367 11.987-11.987C24.014 5.367 18.637.001 12.017.001zM8.449 16.988c-1.297 0-2.448-.49-3.323-1.297C4.198 14.895 3.708 13.744 3.708 12.447s.49-2.448 1.297-3.323c.875-.807 2.026-1.297 3.323-1.297s2.448.49 3.323 1.297c.807.875 1.297 2.026 1.297 3.323s-.49 2.448-1.297 3.323c-.875.807-2.026 1.297-3.323 1.297zm7.718-1.297c-.875.807-2.026 1.297-3.323 1.297s-2.448-.49-3.323-1.297c-.807-.875-1.297-2.026-1.297-3.323s.49-2.448 1.297-3.323c.875-.807 2.026-1.297 3.323-1.297s2.448.49 3.323 1.297c.807.875 1.297 2.026 1.297 3.323s-.49 2.448-1.297 3.323z" />
-                </svg>
-                <span>Instagram</span>
-              </a>
+                return (
+                  <div
+                    key={card.title}
+                    className="flex h-full flex-col rounded-[1.35rem] border border-stone-200 bg-white p-4 shadow-[0_8px_22px_rgba(15,23,42,0.04)]"
+                  >
+                    <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-2xl bg-red-50 text-red-700">
+                      <Icon className="h-5 w-5" />
+                    </div>
+                    <h3 className="text-base font-bold text-gray-900">{card.title}</h3>
+                    <p className="mt-2 text-sm font-semibold text-gray-800 sm:text-base">
+                      {card.value}
+                    </p>
+                    {card.caption ? (
+                      <p className="mt-1.5 text-sm leading-6 text-gray-500">
+                        {card.caption}
+                      </p>
+                    ) : null}
+                    {card.href && card.actionLabel ? (
+                      <a
+                        href={card.href}
+                        className={`mt-4 inline-flex w-fit items-center rounded-xl px-4 py-2 text-sm font-semibold ${BRAND_RED_CTA_IDLE_HOVER_CLASS}`}
+                      >
+                        {card.actionLabel}
+                      </a>
+                    ) : null}
+                  </div>
+                )
+              })}
             </div>
           </div>
-        </div>
 
-        <div className="mb-16 rounded-2xl bg-white p-8 shadow-lg">
-          <h2 className="text-3xl font-bold text-center text-gray-900 mb-8">
-            {c.branchesTitle}
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="text-center">
-              <div className="w-20 h-20 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <MapPin className="h-10 w-10 text-orange-500" />
+          <div className="rounded-[1.75rem] border border-stone-200 bg-transparent p-4 shadow-none sm:p-5">
+            <div className="mb-4 flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-stone-200 bg-white text-red-700">
+                <MapPin className="h-5 w-5" />
               </div>
-              <div className="flex items-center justify-center space-x-2 mb-4">
-                <MapPin className="h-5 w-5 text-orange-500" />
-                <p className="text-gray-600 text-lg font-semibold">{c.addressZoravar}</p>
+              <div>
+                <h2 className="text-xl font-bold text-gray-900">{c.branchesTitle}</h2>
+                <p className="text-sm text-gray-500">{c.onMap}</p>
               </div>
-              <a
-                href="https://maps.google.com/?q=Zoravar+Andranik+151%2F2,+Yerevan,+Armenia"
-                target="_blank"
-                rel="noopener noreferrer"
-                className={`inline-block rounded-xl px-6 py-2 font-medium ${BRAND_RED_CTA_IDLE_HOVER_CLASS}`}
-              >
-                {c.onMap}
-              </a>
             </div>
 
-            <div className="text-center">
-              <div className="w-20 h-20 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <MapPin className="h-10 w-10 text-orange-500" />
-              </div>
-              <div className="flex items-center justify-center space-x-2 mb-4">
-                <MapPin className="h-5 w-5 text-orange-500" />
-                <p className="text-gray-600 text-lg font-semibold">{c.addressEznik}</p>
-              </div>
-              <a
-                href="https://maps.google.com/?q=Eznik+Koghbatsi+83,+Yerevan,+Armenia"
-                target="_blank"
-                rel="noopener noreferrer"
-                className={`inline-block rounded-xl px-6 py-2 font-medium ${BRAND_RED_CTA_IDLE_HOVER_CLASS}`}
-              >
-                {c.onMap}
-              </a>
+            <div className="space-y-3">
+              {branches.map((branch) => (
+                <a
+                  key={branch.title}
+                  href={branch.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-between gap-3 rounded-[1.1rem] border border-stone-200 bg-white px-4 py-3 transition-colors hover:border-red-200"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-red-50 text-red-700">
+                      <MapPin className="h-4 w-4" />
+                    </div>
+                    <span className="text-sm font-semibold text-gray-800 sm:text-[15px]">
+                      {branch.title}
+                    </span>
+                  </div>
+                  <span className="text-xs font-semibold uppercase tracking-[0.12em] text-red-700">
+                    {c.onMap}
+                  </span>
+                </a>
+              ))}
             </div>
           </div>
         </div>
 
         <div className="mb-16">
-          <h2 className="text-3xl font-bold text-center text-gray-900 mb-8">
+          <h2 className="mb-8 text-center text-3xl font-bold text-gray-900">
             {c.mapTitle}
           </h2>
           <MapEmbed />
         </div>
 
         <div className="mb-16">
-          <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">
+          <h2 className="mb-12 text-center text-3xl font-bold text-gray-900">
             {c.faqTitle}
           </h2>
           <div className="promo-food-banner-bg promo-food-banner-vignette relative overflow-hidden rounded-[2rem] border border-white/10 shadow-[0_20px_50px_rgba(165,29,29,0.22)]">

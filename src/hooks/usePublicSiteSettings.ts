@@ -7,13 +7,14 @@ export interface PublicSiteSettingsState {
   logo: string | null
   siteName: string | null
   contactPhone: string | null
+  contactEmail: string | null
   address: string | null
   isLoading: boolean
 }
 
 type BrandingData = Pick<
   PublicSiteSettingsState,
-  'logo' | 'siteName' | 'contactPhone' | 'address'
+  'logo' | 'siteName' | 'contactPhone' | 'contactEmail' | 'address'
 >
 
 let shared: BrandingData | null = null
@@ -28,7 +29,7 @@ function fetchBrandingOnce(): Promise<BrandingData> {
   }
   inflight = fetch('/api/site-settings')
     .then((res) => (res.ok ? res.json() : {}))
-    .then((data: { logo?: string; siteName?: string; contactPhone?: string; address?: string }) => {
+    .then((data: { logo?: string; siteName?: string; contactPhone?: string; contactEmail?: string; address?: string }) => {
       const logo =
         typeof data.logo === 'string'
           ? data.logo.trim()
@@ -41,6 +42,10 @@ function fetchBrandingOnce(): Promise<BrandingData> {
         typeof data.contactPhone === 'string' && data.contactPhone.trim()
           ? data.contactPhone.trim()
           : null
+      const contactEmail =
+        typeof data.contactEmail === 'string' && data.contactEmail.trim()
+          ? data.contactEmail.trim()
+          : null
       const address =
         typeof data.address === 'string' && data.address.trim()
           ? data.address.trim()
@@ -49,6 +54,7 @@ function fetchBrandingOnce(): Promise<BrandingData> {
         logo,
         siteName,
         contactPhone,
+        contactEmail,
         address,
       }
       shared = result
@@ -59,6 +65,7 @@ function fetchBrandingOnce(): Promise<BrandingData> {
         logo: DEFAULT_PUBLIC_LOGO_URL,
         siteName: null,
         contactPhone: null,
+        contactEmail: null,
         address: null,
       }
       shared = result
@@ -75,6 +82,7 @@ export function usePublicSiteSettings(): PublicSiteSettingsState {
     logo: shared?.logo ?? null,
     siteName: shared?.siteName ?? null,
     contactPhone: shared?.contactPhone ?? null,
+    contactEmail: shared?.contactEmail ?? null,
     address: shared?.address ?? null,
     isLoading: shared === null,
   }))
