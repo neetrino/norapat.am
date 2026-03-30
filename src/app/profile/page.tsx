@@ -461,7 +461,7 @@ export default function ProfilePage() {
       </div>
       <section className="hidden lg:block">
         <div className="mx-auto flex w-full max-w-7xl justify-center px-8 pb-6">
-          <div className="relative mt-6 flex w-full max-w-4xl justify-center overflow-hidden rounded-[32px] border border-red-100 bg-gradient-to-b from-red-50 via-white to-white px-8 pt-6">
+          <div className="relative mt-6 flex w-full max-w-4xl justify-center px-8 pt-6">
             <Image
               src="/profile-footer-couple.png"
               alt="Traditional Armenian couple"
