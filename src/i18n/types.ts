@@ -104,6 +104,7 @@ export interface AppMessages {
     tagline: string
     navHeading: string
     contactsHeading: string
+    policiesHeading: string
     privacy: string
     terms: string
     copyright: string

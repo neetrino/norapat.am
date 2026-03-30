@@ -97,6 +97,7 @@ export const hy: AppMessages = {
     tagline: 'Հայկական պիդե` 15 եզակի համ իսկական գուրմանների համար։',
     navHeading: 'Նավիգացիա',
     contactsHeading: 'Կապ',
+    policiesHeading: 'Քաղաքականություն',
     privacy: 'Գաղտնիության քաղաքականություն',
     terms: 'Օգտագործման պայմաններ',
     copyright: 'Copyright © 2026. Բոլոր իրավունքները պաշտպանված են։',

@@ -9,8 +9,7 @@ import { SiteBrandMark } from '@/components/SiteBrandMark'
 
 const LINK_HOVER = 'transition-colors hover:text-red-800'
 const LINK_BASE = `text-sm text-stone-600 ${LINK_HOVER}`
-const LINK_FOOTER_BAR =
-  'text-xs text-white/90 transition-colors hover:text-[#FACC15] sm:text-sm'
+const LINK_POLICY = `text-[13px] leading-5 text-stone-600 ${LINK_HOVER} sm:text-sm`
 const ICON_ACCENT = 'text-red-800'
 const SECTION_LABEL =
   'mb-2.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-stone-500'
@@ -28,7 +27,7 @@ export default function Footer() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col gap-6 py-7 md:gap-7 md:py-8 lg:flex-row lg:items-end lg:gap-8 xl:gap-10">
           <div className="min-w-0 flex-1">
-            <div className="grid grid-cols-1 gap-7 lg:grid-cols-12 lg:gap-6 xl:gap-8">
+            <div className="grid grid-cols-1 gap-7 lg:grid-cols-12 lg:gap-8 xl:gap-10">
               <div className="lg:col-span-5 lg:border-r lg:border-stone-200/70 lg:pr-6 xl:pr-8">
                 <div className="mb-0.5">
                   <SiteBrandMark variant="footer" branding={branding} />
@@ -59,7 +58,7 @@ export default function Footer() {
               </div>
 
               <nav
-                className="lg:col-span-3 lg:border-r lg:border-stone-200/70 lg:pr-6"
+                className="lg:col-span-2 lg:border-r lg:border-stone-200/70 lg:pr-6 xl:pr-8"
                 aria-labelledby="footer-nav-heading"
               >
                 <h2 id="footer-nav-heading" className={SECTION_LABEL}>
@@ -99,7 +98,30 @@ export default function Footer() {
                 </ul>
               </nav>
 
-              <div className="lg:col-span-4" aria-labelledby="footer-contact-heading">
+              <div
+                className="lg:col-span-2 lg:border-r lg:border-stone-200/70 lg:pl-6 lg:pr-14 xl:pl-8 xl:pr-18"
+                aria-labelledby="footer-policies-heading"
+              >
+                <h2 id="footer-policies-heading" className={SECTION_LABEL}>
+                  {f.policiesHeading}
+                </h2>
+                <div className="grid grid-cols-1 gap-x-4 gap-y-2 sm:grid-cols-2 lg:grid-cols-1">
+                  <Link href="/privacy" className={LINK_POLICY}>
+                    {f.privacy}
+                  </Link>
+                  <Link href="/terms" className={LINK_POLICY}>
+                    {f.terms}
+                  </Link>
+                  <Link href="/refund" className={LINK_POLICY}>
+                    {f.refundPolicy}
+                  </Link>
+                  <Link href="/delivery" className={LINK_POLICY}>
+                    {f.deliveryPolicy}
+                  </Link>
+                </div>
+              </div>
+
+              <div className="lg:col-span-3 lg:pl-8 xl:pl-10" aria-labelledby="footer-contact-heading">
                 <h2 id="footer-contact-heading" className={SECTION_LABEL}>
                   {f.contactsHeading}
                 </h2>
@@ -159,22 +181,8 @@ export default function Footer() {
 
       <div className="promo-food-banner-bg promo-food-banner-vignette relative border-t border-white/10 text-white">
         <div className="relative z-10 mx-auto max-w-7xl px-4 py-5 sm:px-6 sm:py-6 lg:px-8">
-          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between md:gap-6">
-            <div className="flex flex-wrap justify-center gap-x-5 gap-y-2 md:justify-start">
-              <Link href="/privacy" className={LINK_FOOTER_BAR}>
-                {f.privacy}
-              </Link>
-              <Link href="/terms" className={LINK_FOOTER_BAR}>
-                {f.terms}
-              </Link>
-              <Link href="/refund" className={LINK_FOOTER_BAR}>
-                {f.refundShort}
-              </Link>
-              <Link href="/delivery" className={LINK_FOOTER_BAR}>
-                {f.deliveryShort}
-              </Link>
-            </div>
-            <p className="text-center text-[11px] font-normal leading-relaxed tracking-wide text-white/85 sm:text-xs md:ml-auto md:text-right lg:whitespace-nowrap">
+          <div className="flex justify-center md:justify-end">
+            <p className="text-center text-[11px] font-normal leading-relaxed tracking-wide text-white/85 sm:text-xs md:text-right lg:whitespace-nowrap">
               {f.copyright} {f.createdBy}{' '}
               <a
                 href="https://neetrino.com"
