@@ -129,7 +129,7 @@ const ProductCard = memo(
                 {displayName}
               </h3>
               {description && (
-                <p className="mt-2 line-clamp-2 text-sm leading-6 text-slate-500">
+                <p className="mt-2 line-clamp-1 text-sm leading-6 text-slate-500">
                   {description}
                 </p>
               )}
@@ -333,7 +333,7 @@ const ProductCard = memo(
               {description}
             </p>
           ) : (
-            <p className="mt-3 line-clamp-2 text-sm leading-6 text-slate-500 sm:text-[15px]">
+            <p className="mt-3 line-clamp-1 text-sm leading-6 text-slate-500 sm:text-[15px]">
               {description}
             </p>
           )}

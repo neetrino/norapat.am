@@ -40,7 +40,7 @@ export function SimilarProducts({ products }: SimilarProductsProps) {
         <ProductCard
           key={p.id}
           product={p}
-          variant="compact"
+          variant="default"
           onAddToCart={handleAddToCart}
           addedToCart={addedToCart}
           isInWishlist={isAuthenticated ? isInWishlist(p.id) : undefined}
