@@ -21,7 +21,6 @@ export function ContactPageView() {
   const locationMapQuery = '5th Street, Village of Norapat, Armavir, Armenia'
   const phoneHref = `tel:${phoneNumber.replace(/[^\d+]/g, '')}`
   const emailHref = `mailto:${emailAddress}`
-  const mapHref = `https://maps.google.com/?q=${encodeURIComponent(locationMapQuery)}`
 
   const faqItems = [
     { question: c.faqPrepQ, answer: c.faqPrepA },
@@ -57,6 +56,14 @@ export function ContactPageView() {
       href: null,
       actionLabel: null,
     },
+    {
+      icon: MapPin,
+      title: c.locationTitle,
+      value: locationAddress,
+      caption: c.onMap,
+      href: null,
+      actionLabel: null,
+    },
   ]
 
   return (
@@ -64,24 +71,24 @@ export function ContactPageView() {
       <div className="h-header-spacer-mobile lg:hidden" aria-hidden />
       <div className="h-header-spacer-desktop hidden lg:block" aria-hidden />
 
-      <section className="promo-food-banner-bg promo-food-banner-vignette relative flex min-h-[min(46vh,24rem)] items-center justify-center overflow-hidden py-14 text-white sm:min-h-[min(50vh,28rem)] sm:py-16 md:py-20">
-        <div className="relative z-10 mx-auto w-full max-w-7xl px-4 text-center sm:px-6 lg:px-8">
-          <div className="mb-5 inline-flex items-center rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-sm font-medium text-white/90 backdrop-blur">
+      <section className="promo-food-banner-bg promo-food-banner-vignette relative flex min-h-[min(46vh,24rem)] items-start justify-center overflow-hidden pt-10 pb-14 text-white sm:min-h-[min(50vh,28rem)] sm:pt-12 sm:pb-16 md:pt-14 md:pb-20">
+        <div className="relative z-10 mx-auto flex w-full max-w-7xl flex-col items-center px-4 text-center sm:px-6 lg:px-8">
+          <div className="mb-5 inline-flex items-center self-center rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-sm font-medium text-white/90 backdrop-blur">
             NORAPAT
           </div>
-          <h1 className="mb-6 text-4xl font-bold tracking-tight md:text-6xl">
+          <h1 className="mx-auto mb-6 text-center text-4xl font-bold tracking-tight md:text-6xl">
             {c.heroTitle}
           </h1>
-          <p className="mx-auto max-w-3xl text-lg leading-8 text-white/90 md:text-2xl">
+          <p className="mx-auto max-w-3xl text-center text-lg leading-8 text-white/90 md:text-2xl">
             {c.heroSubtitle}
           </p>
         </div>
       </section>
 
       <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-        <div className="mb-16 grid gap-4 lg:grid-cols-[1.15fr_0.85fr]">
+        <div className="mb-16">
           <div className="overflow-hidden rounded-[1.75rem] border border-stone-200 bg-transparent shadow-none">
-            <div className="border-b border-stone-200 px-5 py-5 sm:px-6 sm:py-6">
+            <div className="flex flex-col items-center border-b border-stone-200 px-5 py-5 text-center sm:px-6 sm:py-6">
               <p className="mb-2 text-xs font-semibold uppercase tracking-[0.22em] text-red-700/75">
                 {c.quickOrderTitle}
               </p>
@@ -93,7 +100,7 @@ export function ContactPageView() {
               </p>
             </div>
 
-            <div className="grid gap-3 p-4 sm:p-5 lg:grid-cols-3">
+            <div className="grid gap-3 p-4 sm:p-5 md:grid-cols-2 xl:grid-cols-4">
               {contactCards.map((card) => {
                 const Icon = card.icon
 
@@ -125,43 +132,6 @@ export function ContactPageView() {
                   </div>
                 )
               })}
-            </div>
-          </div>
-
-          <div className="rounded-[1.75rem] border border-stone-200 bg-transparent p-4 shadow-none sm:p-5">
-            <div className="mb-4 flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-stone-200 bg-white text-red-700">
-                <MapPin className="h-5 w-5" />
-              </div>
-              <div>
-                <h2 className="text-xl font-bold text-gray-900">{c.locationTitle}</h2>
-                <p className="text-sm text-gray-500">{c.onMap}</p>
-              </div>
-            </div>
-
-            <div className="rounded-[1.4rem] border border-red-100 bg-white p-5 shadow-[0_12px_28px_rgba(15,23,42,0.05)]">
-              <div className="flex items-start gap-3">
-                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-red-50 text-red-700">
-                  <MapPin className="h-5 w-5" />
-                </div>
-                <div className="min-w-0">
-                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-red-700/80">
-                    {c.locationLabel}
-                  </p>
-                  <p className="mt-2 text-base font-semibold leading-7 text-gray-900 sm:text-lg">
-                    {locationAddress}
-                  </p>
-                </div>
-              </div>
-
-              <a
-                href={mapHref}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={`mt-5 inline-flex w-fit rounded-xl px-4 py-2 text-sm font-semibold ${BRAND_RED_CTA_IDLE_HOVER_CLASS}`}
-              >
-                {c.openMapBtn}
-              </a>
             </div>
           </div>
         </div>
