@@ -1,17 +1,21 @@
 'use client'
 
 /**
- * Embed map showing Pideh Armenia locations in Yerevan.
- * Uses OpenStreetMap iframe with no duplicate address links below the map.
+ * Embed map centered on the selected Pideh Armenia branch.
  */
-export function MapEmbed() {
-  const bbox = '44.499,40.170,44.532,40.193'
+type MapEmbedProps = {
+  addressQuery: string
+  title?: string
+}
+
+export function MapEmbed({ addressQuery, title = 'Pideh Armenia - location on map' }: MapEmbedProps) {
+  const src = `https://maps.google.com/maps?q=${encodeURIComponent(addressQuery)}&t=&z=16&ie=UTF8&iwloc=B&output=embed`
 
   return (
     <div className="w-full overflow-hidden rounded-2xl border border-gray-200 bg-gray-100">
       <iframe
-        title="Pideh Armenia - locations on map"
-        src={`https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&marker=40.1814,44.5097`}
+        title={title}
+        src={src}
         className="h-[350px] w-full border-0"
         allowFullScreen
         loading="lazy"
