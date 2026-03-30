@@ -149,8 +149,8 @@ export default function Footer() {
               alt={f.mascotAlt}
               width={280}
               height={560}
-              className="h-[120px] w-auto select-none object-contain object-bottom sm:h-[140px] lg:h-[min(180px,28vh)] xl:h-[min(200px,30vh)]"
-              sizes="(max-width: 640px) 120px, (max-width: 1024px) 140px, 200px"
+              className="h-[180px] w-auto select-none object-contain object-bottom sm:h-[220px] lg:h-[min(280px,36vh)] xl:h-[min(320px,40vh)]"
+              sizes="(max-width: 640px) 180px, (max-width: 1024px) 220px, 320px"
               priority={false}
             />
           </div>
