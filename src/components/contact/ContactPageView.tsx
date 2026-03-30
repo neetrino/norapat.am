@@ -217,37 +217,6 @@ export function ContactPageView() {
             </div>
           </div>
         </div>
-
-        <div className="bg-white rounded-3xl p-12 shadow-lg">
-          <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">
-            {c.testimonialsTitle}
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="text-center">
-              <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-2xl" aria-hidden>😋</span>
-              </div>
-              <p className="text-gray-600 mb-4">{c.testimonial1Quote}</p>
-              <p className="font-semibold text-gray-900">{c.testimonial1Name}</p>
-            </div>
-
-            <div className="text-center">
-              <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-2xl" aria-hidden>🔥</span>
-              </div>
-              <p className="text-gray-600 mb-4">{c.testimonial2Quote}</p>
-              <p className="font-semibold text-gray-900">{c.testimonial2Name}</p>
-            </div>
-
-            <div className="text-center">
-              <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-2xl" aria-hidden>⭐</span>
-              </div>
-              <p className="text-gray-600 mb-4">{c.testimonial3Quote}</p>
-              <p className="font-semibold text-gray-900">{c.testimonial3Name}</p>
-            </div>
-          </div>
-        </div>
       </div>
 
       <div className="hidden lg:block">
