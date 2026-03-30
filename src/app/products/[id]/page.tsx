@@ -186,29 +186,6 @@ export default async function ProductPage({
                   )}
                 </div>
               </div>
-              
-              {/* Decorative Elements */}
-              <div 
-                className="absolute top-2 right-2 w-6 h-6 bg-gradient-to-br from-orange-400 to-red-500 rounded-full opacity-30 group-hover:opacity-60 transition-all duration-500 group-hover:scale-110"
-                style={{
-                  boxShadow: '0 10px 25px rgba(255, 107, 53, 0.3)',
-                  filter: 'blur(1px)',
-                }}
-              />
-              <div 
-                className="absolute bottom-2 left-2 w-4 h-4 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full opacity-30 group-hover:opacity-60 transition-all duration-500 group-hover:scale-110"
-                style={{
-                  boxShadow: '0 10px 25px rgba(255, 193, 7, 0.3)',
-                  filter: 'blur(1px)',
-                }}
-              />
-              <div 
-                className="absolute top-1/2 left-2 w-2 h-2 bg-gradient-to-br from-pink-400 to-purple-500 rounded-full opacity-20 group-hover:opacity-40 transition-all duration-500 group-hover:scale-125"
-                style={{
-                  boxShadow: '0 5px 15px rgba(236, 72, 153, 0.2)',
-                  filter: 'blur(0.5px)',
-                }}
-              />
             </div>
 
             {/* Additional Info */}
