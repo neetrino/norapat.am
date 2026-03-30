@@ -30,10 +30,10 @@ export default function Footer() {
           <div className="min-w-0 flex-1">
             <div className="grid grid-cols-1 gap-7 lg:grid-cols-12 lg:gap-6 xl:gap-8">
               <div className="lg:col-span-5 lg:border-r lg:border-stone-200/70 lg:pr-6 xl:pr-8">
-                <div className="mb-2.5">
+                <div className="mb-0.5">
                   <SiteBrandMark variant="footer" branding={branding} />
                 </div>
-                <p className="mb-3 max-w-md text-sm leading-relaxed text-stone-600">
+                <p className="-mt-2 mb-3 max-w-md text-sm leading-relaxed text-stone-600">
                   {f.tagline}
                 </p>
                 <div className="flex flex-wrap items-center gap-2">
