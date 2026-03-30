@@ -239,7 +239,8 @@ export default function AdminProducts() {
       const matchStatus =
         !selectedStatus ||
         selectedStatus === 'all' ||
-        (selectedStatus === 'special' && SPECIAL_STATUSES.includes(p.status))
+        (selectedStatus === 'special' && SPECIAL_STATUSES.includes(p.status)) ||
+        (selectedStatus === 'discounted' && p.originalPrice != null && p.originalPrice > p.price)
       return matchSearch && matchCat && matchStatus
     })
     .sort((a, b) => {
@@ -320,6 +321,7 @@ export default function AdminProducts() {
               </select>
             </div>
 
+
             <div className="relative">
               <Filter className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
               <select
@@ -327,8 +329,9 @@ export default function AdminProducts() {
                 onChange={e => setSelectedStatus(e.target.value)}
                 className="w-full pl-9 pr-3 py-2.5 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent bg-white appearance-none transition"
               >
-                <option value="">Բոլոր կարգավիճակները</option>
-                <option value="special">Հատուկ (Հիթ / Նոր / Կլասիկ / Բաններ)</option>
+                <option value="">????? ??????????????</option>
+                <option value="special">?????? (??? / ??? / ?????? / ??????)</option>
+                <option value="discounted">???????</option>
               </select>
             </div>
           </div>
@@ -484,9 +487,14 @@ export default function AdminProducts() {
                       <span className="text-sm font-bold text-gray-900">{product.price.toLocaleString()}</span>
                       <span className="text-xs text-gray-400 ml-1">֏</span>
                       {product.originalPrice && product.originalPrice > product.price && (
+                        <>
                         <p className="text-xs text-gray-400 line-through mt-0.5">
                           {product.originalPrice.toLocaleString()} ֏
                         </p>
+                        <span className="mt-1 inline-flex rounded-full bg-orange-100 px-2 py-0.5 text-[10px] font-bold text-orange-700">
+                          -{Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}%
+                        </span>
+                        </>
                       )}
                     </td>
 
@@ -595,3 +603,4 @@ export default function AdminProducts() {
     </div>
   )
 }
+

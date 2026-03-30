@@ -117,6 +117,10 @@ export default async function ProductPage({
 
     const statusStyle = product.status ? statusBadgeStyles[product.status as keyof typeof statusBadgeStyles] : null
     const StatusIcon = statusStyle?.icon
+    const discountPercent =
+      product.originalPrice != null && product.originalPrice > product.price
+        ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
+        : null
 
     return (
       <div className="min-h-screen bg-[#fffaf7]" style={{ overflow: 'auto' }}>
@@ -257,9 +261,16 @@ export default async function ProductPage({
                       </span>
 
                       {product.originalPrice != null && product.originalPrice > product.price && (
-                        <span className="rounded-full bg-slate-100 px-3 py-1.5 text-sm text-slate-500 line-through">
-                          {product.originalPrice} ֏
-                        </span>
+                        <>
+                          <span className="rounded-full bg-slate-100 px-3 py-1.5 text-sm text-slate-500 line-through">
+                            {product.originalPrice} ֏
+                          </span>
+                          {discountPercent != null && (
+                            <span className="rounded-full bg-[#E53225] px-3 py-1.5 text-sm font-semibold text-white shadow-[0_12px_24px_rgba(229,50,37,0.18)]">
+                              -{discountPercent}%
+                            </span>
+                          )}
+                        </>
                       )}
                     </div>
                   </div>

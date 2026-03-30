@@ -20,6 +20,14 @@ interface ProductCardProps {
 
 const PRODUCT_CARD_ADD_IDLE_BUTTON_CLASS = `${BRAND_RED_CTA_IDLE_HOVER_CLASS} shadow-[0_14px_26px_rgba(229,50,37,0.18)]`
 
+function getDiscountPercent(originalPrice: number | null | undefined, currentPrice: number) {
+  if (originalPrice == null || originalPrice <= currentPrice || originalPrice <= 0) {
+    return null
+  }
+
+  return Math.round(((originalPrice - currentPrice) / originalPrice) * 100)
+}
+
 function ProductBadge({
   tone,
   icon,
@@ -62,6 +70,8 @@ const ProductCard = memo(
     }
     const displayName = getProductDisplayName(product.name, locale)
     const description = product.shortDescription ?? product.description
+    const discountPercent = getDiscountPercent(product.originalPrice, product.price)
+    const hasDiscount = discountPercent != null
 
     const statusBadge =
       product.status === 'HIT'
@@ -98,6 +108,11 @@ const ProductCard = memo(
             )}
 
             <div className="absolute left-2.5 top-0.5 flex flex-col gap-1.5 sm:left-3 sm:top-1">
+              {hasDiscount && (
+                <div className="inline-flex w-fit items-center rounded-full bg-[#E53225] px-3 py-1.5 text-[10px] font-black leading-none tracking-[0.12em] text-white shadow-[0_12px_22px_rgba(229,50,37,0.28)]">
+                  -{discountPercent}%
+                </div>
+              )}
               {statusBadge && (
                 <ProductBadge
                   tone={statusBadge.tone}
@@ -122,6 +137,11 @@ const ProductCard = memo(
 
             <div className="mt-5 flex items-end justify-between gap-3">
               <div>
+                {hasDiscount && product.originalPrice != null && (
+                  <div className="mb-1 text-sm font-medium text-slate-400 line-through">
+                    {product.originalPrice} ֏
+                  </div>
+                )}
                 <div className="text-xl font-black tracking-tight text-slate-900">
                   {product.price} ֏
                 </div>
@@ -231,6 +251,11 @@ const ProductCard = memo(
           )}
 
           <div className={`absolute left-2.5 top-0.5 z-20 flex flex-col gap-1.5 ${isCompact ? '' : 'sm:left-3 sm:top-1'}`}>
+            {hasDiscount && (
+              <div className="inline-flex w-fit items-center rounded-full bg-[#E53225] px-3 py-1.5 text-[10px] font-black leading-none tracking-[0.12em] text-white shadow-[0_12px_22px_rgba(229,50,37,0.28)]">
+                -{discountPercent}%
+              </div>
+            )}
             {!isCompact && statusBadge && (
               <ProductBadge
                 tone={statusBadge.tone}
@@ -311,6 +336,17 @@ const ProductCard = memo(
             <p className="mt-3 line-clamp-2 text-sm leading-6 text-slate-500 sm:text-[15px]">
               {description}
             </p>
+          )}
+
+          {hasDiscount && product.originalPrice != null && (
+            <div className="mt-3 flex items-center gap-2">
+              <span className="text-sm font-medium text-slate-400 line-through">
+                {product.originalPrice} ֏
+              </span>
+              <span className="rounded-full bg-[#fff1ec] px-2.5 py-1 text-[11px] font-bold text-[#E53225]">
+                -{discountPercent}%
+              </span>
+            </div>
           )}
 
           {productWithCategory.ingredients?.length ? (
