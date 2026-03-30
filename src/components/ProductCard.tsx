@@ -307,7 +307,7 @@ const ProductCard = memo(
           </div>
         </div>
 
-        <div className={`${isCompact ? 'p-4' : 'p-5 sm:p-6'}`}>
+        <div className={`${isCompact ? 'flex h-full flex-col p-4' : 'p-5 sm:p-6'}`}>
           <div className="mb-3 flex items-center gap-2">
             {isCompact && statusBadge && (
               <span className="inline-flex">
@@ -322,14 +322,14 @@ const ProductCard = memo(
 
           <h3
             className={`font-black tracking-tight text-slate-900 ${
-              isCompact ? 'line-clamp-2 text-base leading-snug' : 'line-clamp-2 text-xl leading-tight'
+              isCompact ? 'min-h-[2.75rem] line-clamp-2 text-base leading-snug' : 'line-clamp-2 text-xl leading-tight'
             }`}
           >
             {displayName}
           </h3>
 
           {isCompact ? (
-            <p className="mt-2 line-clamp-2 text-sm leading-6 text-slate-500">
+            <p className="mt-2 min-h-[1.5rem] truncate text-sm leading-6 text-slate-500">
               {description}
             </p>
           ) : (
@@ -350,7 +350,7 @@ const ProductCard = memo(
           )}
 
           {productWithCategory.ingredients?.length ? (
-            <div className="mt-4 flex flex-wrap gap-2">
+            <div className={`mt-4 flex flex-wrap gap-2 ${isCompact ? 'min-h-[2.5rem]' : ''}`}>
               {productWithCategory.ingredients.slice(0, isCompact ? 2 : 3).map((ingredient) => (
                 <span
                   key={ingredient}
@@ -375,7 +375,7 @@ const ProductCard = memo(
                 isAdded
                   ? 'bg-gradient-to-r from-emerald-500 to-green-600 text-white shadow-[0_14px_24px_rgba(34,197,94,0.22)]'
                   : PRODUCT_CARD_ADD_IDLE_BUTTON_CLASS
-              }`}
+              } ${isCompact ? 'mt-auto' : ''}`}
               title={pc.addToCartTitle}
             >
               {isAdded ? (

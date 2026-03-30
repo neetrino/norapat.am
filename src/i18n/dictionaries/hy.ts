@@ -304,7 +304,7 @@ export const hy: AppMessages = {
     badgeClassic: 'ԴԱՍԱԿԱՆ',
     addToCartTitle: 'Զամբյուղում',
     inCart: 'Զամբյուղում',
-    add: 'Ավելացնել',
+    add: 'Գնել',
     wishlistAdd: 'Ավելացնել նախընտրածում',
     wishlistRemove: 'Հանել նախընտրածից',
   },
