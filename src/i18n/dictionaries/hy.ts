@@ -332,6 +332,7 @@ export const hy: AppMessages = {
     wishlistEmpty: 'Դեռ ապրանքներ ավելացված չեն',
     removeWishlistAria: 'Հանել նախընտրածից',
     ordersHistory: 'Պատվերների պատմություն',
+    viewAllOrders: 'Տեսնել բոլորը',
     noOrders: 'Դեռ պատվերներ չունեք',
     placeOrder: 'Պատվիրել',
     orderLabel: 'Պատվեր',

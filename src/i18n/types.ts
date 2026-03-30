@@ -320,6 +320,7 @@ export interface AppMessages {
     wishlistEmpty: string
     removeWishlistAria: string
     ordersHistory: string
+    viewAllOrders: string
     noOrders: string
     placeOrder: string
     orderLabel: string
