@@ -223,17 +223,9 @@ export default async function ProductPage({
                 <ProductDisplayName name={product.name} />
               </h1>
               {product.shortDescription ? (
-                <>
-                  <p className="text-xl text-gray-600 mb-4 leading-relaxed">
-                    {product.shortDescription}
-                  </p>
-                  <div className="mb-6">
-                    <h3 className="text-sm font-semibold text-gray-500 mb-2">
-                      {t.fullDescription}
-                    </h3>
-                    <p className="text-gray-600 leading-relaxed">{product.description}</p>
-                  </div>
-                </>
+                <p className="text-xl text-gray-600 mb-6 leading-relaxed">
+                  {product.shortDescription}
+                </p>
               ) : (
                 <p className="text-xl text-gray-600 mb-6 leading-relaxed">
                   {product.description}
