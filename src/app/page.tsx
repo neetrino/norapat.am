@@ -33,7 +33,7 @@ export default function Home() {
   const [loadingPromo, setLoadingPromo] = useState(true)
   const [addedToCart, setAddedToCart] = useState<Set<string>>(new Set())
   const { addItem } = useCart()
-  const { isInWishlist, toggle: toggleWishlist } = useWishlist()
+  const { isInWishlist, toggle: toggleWishlist, isAuthenticated } = useWishlist()
 
   useEffect(() => {
     const controller = new AbortController()
@@ -146,8 +146,8 @@ export default function Home() {
                 viewEntireLabel={h.viewEntireShort}
                 onAddToCart={handleAddToCart}
                 addedToCart={addedToCart}
-                isInWishlist={isInWishlist}
-                onToggleWishlist={toggleWishlist}
+                isInWishlist={isAuthenticated ? isInWishlist : undefined}
+                onToggleWishlist={isAuthenticated ? toggleWishlist : undefined}
               />
             )}
           </div>
@@ -192,8 +192,8 @@ export default function Home() {
                 viewEntireLabel={h.viewEntireShort}
                 onAddToCart={handleAddToCart}
                 addedToCart={addedToCart}
-                isInWishlist={isInWishlist}
-                onToggleWishlist={toggleWishlist}
+                isInWishlist={isAuthenticated ? isInWishlist : undefined}
+                onToggleWishlist={isAuthenticated ? toggleWishlist : undefined}
               />
             )}
           </div>

@@ -562,8 +562,8 @@ function ProductsPageContent() {
                 onAddToCart={handleAddToCart}
                 variant={gridCols === 2 ? 'horizontal' : gridCols === 3 ? 'default' : 'compact'}
                 addedToCart={addedToCart}
-                isInWishlist={isInWishlist(product.id)}
-                onToggleWishlist={handleToggleWishlist}
+                isInWishlist={isAuthenticated ? isInWishlist(product.id) : undefined}
+                onToggleWishlist={isAuthenticated ? handleToggleWishlist : undefined}
               />
             ))}
           </div>

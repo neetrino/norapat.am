@@ -9,7 +9,7 @@ interface SimilarProductsProps {
 }
 
 export function SimilarProducts({ products }: SimilarProductsProps) {
-  const { isInWishlist, toggle: toggleWishlist } = useWishlist()
+  const { isInWishlist, toggle: toggleWishlist, isAuthenticated } = useWishlist()
   if (products.length === 0) return null
   return (
     <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 overflow-visible">
@@ -18,8 +18,8 @@ export function SimilarProducts({ products }: SimilarProductsProps) {
           key={p.id}
           product={p}
           variant="compact"
-          isInWishlist={isInWishlist(p.id)}
-          onToggleWishlist={toggleWishlist}
+          isInWishlist={isAuthenticated ? isInWishlist(p.id) : undefined}
+          onToggleWishlist={isAuthenticated ? toggleWishlist : undefined}
         />
       ))}
     </div>
