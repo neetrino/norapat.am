@@ -108,7 +108,7 @@ export function ContactPageView() {
                 return (
                   <div
                     key={card.title}
-                    className="flex h-full flex-col rounded-[1.35rem] border border-stone-200 bg-white p-4 shadow-[0_8px_22px_rgba(15,23,42,0.04)]"
+                    className="flex h-full flex-col items-center rounded-[1.35rem] border border-stone-200 bg-white p-4 text-center shadow-[0_8px_22px_rgba(15,23,42,0.04)]"
                   >
                     <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-2xl bg-red-50 text-red-700">
                       <Icon className="h-5 w-5" />
@@ -125,7 +125,7 @@ export function ContactPageView() {
                     {card.href && card.actionLabel ? (
                       <a
                         href={card.href}
-                        className={`mt-4 inline-flex w-fit items-center rounded-xl px-4 py-2 text-sm font-semibold ${BRAND_RED_CTA_IDLE_HOVER_CLASS}`}
+                        className={`mt-auto inline-flex w-fit self-center rounded-xl px-4 py-2 text-sm font-semibold ${BRAND_RED_CTA_IDLE_HOVER_CLASS}`}
                       >
                         {card.actionLabel}
                       </a>
