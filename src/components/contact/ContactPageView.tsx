@@ -1,28 +1,27 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useState } from 'react'
 
 import Footer from '@/components/Footer'
 import { MapEmbed } from '@/components/MapEmbed'
 import { BRAND_RED_CTA_IDLE_HOVER_CLASS } from '@/components/home/promo-food-banner/promoFoodBanner.constants'
 import { usePublicSiteSettings } from '@/hooks/usePublicSiteSettings'
 import { useI18n } from '@/i18n/I18nContext'
-import { useSearchParams } from 'next/navigation'
 import { ChevronDown, Clock, Mail, MapPin, Phone } from 'lucide-react'
-
-type BranchId = 'zoravar' | 'eznik'
 
 export function ContactPageView() {
   const { t } = useI18n()
   const c = t.contactPage
   const { contactPhone, contactEmail } = usePublicSiteSettings()
-  const searchParams = useSearchParams()
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null)
 
   const phoneNumber = contactPhone?.trim() || '+374 95-044-888'
   const emailAddress = contactEmail?.trim() || 'info@pideh.am'
+  const locationAddress = c.addressLine
+  const locationMapQuery = '5th Street, Village of Norapat, Armavir, Armenia'
   const phoneHref = `tel:${phoneNumber.replace(/[^\d+]/g, '')}`
   const emailHref = `mailto:${emailAddress}`
+  const mapHref = `https://maps.google.com/?q=${encodeURIComponent(locationMapQuery)}`
 
   const faqItems = [
     { question: c.faqPrepQ, answer: c.faqPrepA },
@@ -59,48 +58,6 @@ export function ContactPageView() {
       actionLabel: null,
     },
   ]
-
-  const branches = useMemo(
-    () =>
-      [
-        {
-          id: 'zoravar' as const,
-          title: c.addressZoravar,
-          addressQuery: 'Zoravar Andranik 151/2, Yerevan, Armenia',
-        },
-        {
-          id: 'eznik' as const,
-          title: c.addressEznik,
-          addressQuery: 'Eznik Koghbatsi 83, Yerevan, Armenia',
-        },
-      ] satisfies ReadonlyArray<{
-        id: BranchId
-        title: string
-        addressQuery: string
-      }>,
-    [c.addressEznik, c.addressZoravar]
-  )
-
-  const [selectedBranchId, setSelectedBranchId] = useState<BranchId>(branches[0].id)
-
-  useEffect(() => {
-    const branchFromQuery = searchParams.get('branch')
-
-    if (branchFromQuery && branches.some((branch) => branch.id === branchFromQuery)) {
-      setSelectedBranchId(branchFromQuery as BranchId)
-    }
-  }, [branches, searchParams])
-
-  const selectedBranch =
-    branches.find((branch) => branch.id === selectedBranchId) ?? branches[0]
-
-  function handleBranchClick(branchId: BranchId) {
-    setSelectedBranchId(branchId)
-    document.getElementById('contact-map')?.scrollIntoView({
-      behavior: 'smooth',
-      block: 'start',
-    })
-  }
 
   return (
     <div className="min-h-screen bg-[linear-gradient(180deg,#fff8f5_0%,#fffdfb_38%,#ffffff_100%)]">
@@ -177,37 +134,34 @@ export function ContactPageView() {
                 <MapPin className="h-5 w-5" />
               </div>
               <div>
-                <h2 className="text-xl font-bold text-gray-900">{c.branchesTitle}</h2>
+                <h2 className="text-xl font-bold text-gray-900">{c.locationTitle}</h2>
                 <p className="text-sm text-gray-500">{c.onMap}</p>
               </div>
             </div>
 
-            <div className="space-y-3">
-              {branches.map((branch) => (
-                <button
-                  key={branch.title}
-                  type="button"
-                  onClick={() => handleBranchClick(branch.id)}
-                  className={`flex w-full items-center justify-between gap-3 rounded-[1.1rem] border bg-white px-4 py-3 text-left transition-colors ${
-                    selectedBranch.id === branch.id
-                      ? 'border-red-300 ring-1 ring-red-200'
-                      : 'border-stone-200 hover:border-red-200'
-                  }`}
-                  aria-pressed={selectedBranch.id === branch.id}
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-red-50 text-red-700">
-                      <MapPin className="h-4 w-4" />
-                    </div>
-                    <span className="text-sm font-semibold text-gray-800 sm:text-[15px]">
-                      {branch.title}
-                    </span>
-                  </div>
-                  <span className="text-xs font-semibold uppercase tracking-[0.12em] text-red-700">
-                    {c.onMap}
-                  </span>
-                </button>
-              ))}
+            <div className="rounded-[1.4rem] border border-red-100 bg-white p-5 shadow-[0_12px_28px_rgba(15,23,42,0.05)]">
+              <div className="flex items-start gap-3">
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-red-50 text-red-700">
+                  <MapPin className="h-5 w-5" />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-red-700/80">
+                    {c.locationLabel}
+                  </p>
+                  <p className="mt-2 text-base font-semibold leading-7 text-gray-900 sm:text-lg">
+                    {locationAddress}
+                  </p>
+                </div>
+              </div>
+
+              <a
+                href={mapHref}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`mt-5 inline-flex w-fit rounded-xl px-4 py-2 text-sm font-semibold ${BRAND_RED_CTA_IDLE_HOVER_CLASS}`}
+              >
+                {c.openMapBtn}
+              </a>
             </div>
           </div>
         </div>
@@ -218,12 +172,9 @@ export function ContactPageView() {
           </h2>
           <div className="mb-4 flex items-center justify-center gap-2 rounded-2xl border border-red-100 bg-red-50 px-4 py-3 text-center text-sm font-semibold text-red-800 sm:text-base">
             <MapPin className="h-4 w-4 shrink-0" />
-            <span>{selectedBranch.title}</span>
+            <span>{locationAddress}</span>
           </div>
-          <MapEmbed
-            addressQuery={selectedBranch.addressQuery}
-            title={`${selectedBranch.title} - map`}
-          />
+          <MapEmbed addressQuery={locationMapQuery} title={`${locationAddress} - map`} />
         </div>
 
         <div className="mb-16">

@@ -116,27 +116,16 @@ export default function Footer() {
                       info@pideh.am
                     </a>
                   </div>
-                  <div className="space-y-1.5 border-t border-stone-200/60 pt-2.5">
+                  <div className="border-t border-stone-200/60 pt-2.5">
                     <div className="flex gap-2">
                       <MapPin className={CONTACT_ICON_BOX} aria-hidden />
                       <a
-                        href="https://maps.google.com/?q=Zoravar+Andranik+151%2F2,+Yerevan,+Armenia"
+                        href="https://maps.google.com/?q=5th+Street,+Village+of+Norapat,+Armavir,+Armenia"
                         target="_blank"
                         rel="noopener noreferrer"
                         className={LINK_BASE}
                       >
-                        {f.addressZoravar}
-                      </a>
-                    </div>
-                    <div className="flex gap-2">
-                      <MapPin className={CONTACT_ICON_BOX} aria-hidden />
-                      <a
-                        href="https://maps.google.com/?q=Eznik+Koghbatsi+83,+Yerevan,+Armenia"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className={LINK_BASE}
-                      >
-                        {f.addressEznik}
+                        {f.addressLine}
                       </a>
                     </div>
                   </div>

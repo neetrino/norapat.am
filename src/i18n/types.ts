@@ -112,8 +112,7 @@ export interface AppMessages {
     deliveryPolicy: string
     refundShort: string
     deliveryShort: string
-    addressZoravar: string
-    addressEznik: string
+    addressLine: string
     hoursWeek: string
     hoursDelivery: string
     ariaPhone: string
@@ -418,9 +417,10 @@ export interface AppMessages {
     quickOrderTitle: string
     quickOrderSubtitle: string
     callPhoneBtn: string
-    branchesTitle: string
-    addressZoravar: string
-    addressEznik: string
+    locationTitle: string
+    locationLabel: string
+    addressLine: string
+    openMapBtn: string
     onMap: string
     mapTitle: string
     faqTitle: string

@@ -1,13 +1,10 @@
 /** Height of the fixed top contact strip (phone + address), px */
 export const TOP_CONTACT_BAR_HEIGHT_PX = 36
 
-/** Hide/show animation length — kept in sync with main header `top` transition */
+/** Hide/show animation length, kept in sync with main header `top` transition. */
 export const TOP_CONTACT_BAR_TRANSITION_MS = 520
 
-/**
- * Smooth deceleration (Material-like) — feels softer than linear `ease-out`
- * when the bar slides away.
- */
+/** Smooth deceleration when the bar slides away. */
 export const TOP_CONTACT_BAR_TRANSITION_EASING =
   'cubic-bezier(0.4, 0, 0.2, 1)' as const
 
@@ -15,4 +12,4 @@ export const TOP_CONTACT_BAR_TRANSITION_EASING =
 export const DEFAULT_PUBLIC_CONTACT_PHONE = '+374 95-044-888'
 
 export const DEFAULT_PUBLIC_ADDRESS =
-  'Երևան · Զորավար Անդրանիկ 151/2 · Եզնիկ Կողբացի 83'
+  '5th Street, Village of Norapat, Armavir, Armenia'
