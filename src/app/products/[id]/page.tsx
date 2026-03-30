@@ -240,15 +240,6 @@ export default async function ProductPage({
                 </p>
               )}
               
-              {/* Rating */}
-              <div className="flex items-center space-x-2 mb-6">
-                <div className="flex text-yellow-400">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="h-5 w-5 fill-current" />
-                  ))}
-                </div>
-                <span className="text-gray-600">{t.reviews}</span>
-              </div>
 
               {/* Price: Ներկա արժեք / Հին գին / Զեղչված գին */}
               <div className="flex flex-wrap items-center gap-3 mb-8">
