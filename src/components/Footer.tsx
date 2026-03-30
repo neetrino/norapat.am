@@ -174,7 +174,7 @@ export default function Footer() {
                 {f.deliveryShort}
               </Link>
             </div>
-            <p className="text-center text-[11px] font-normal leading-relaxed tracking-wide text-white/85 sm:text-xs md:max-w-md md:text-right">
+            <p className="text-center text-[11px] font-normal leading-relaxed tracking-wide text-white/85 sm:text-xs md:ml-auto md:text-right lg:whitespace-nowrap">
               {f.copyright} {f.createdBy}{' '}
               <a
                 href="https://neetrino.com"

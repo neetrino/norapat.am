@@ -100,7 +100,7 @@ export const hy: AppMessages = {
     contactsHeading: 'Կապ',
     privacy: 'Գաղտնիության քաղաքականություն',
     terms: 'Օգտագործման պայմաններ',
-    copyright: 'Copyright © 2025. Բոլոր իրավունքները պաշտպանված են։',
+    copyright: 'Copyright © 2026. Բոլոր իրավունքները պաշտպանված են։',
     createdBy: 'Ստեղծել է',
     refundPolicy: 'Վերադարձի քաղաքականություն',
     deliveryPolicy: 'Առաքման քաղաքականություն',
