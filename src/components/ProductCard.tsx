@@ -6,7 +6,6 @@ import Image from 'next/image'
 import { ShoppingCart, Star, Zap, Heart } from 'lucide-react'
 import { Product } from '@/types'
 import { useI18n } from '@/i18n/I18nContext'
-import { getCategoryDisplayName } from '@/i18n/getCategoryDisplayName'
 import { getProductDisplayName } from '@/i18n/getProductDisplayName'
 import { BRAND_RED_CTA_IDLE_HOVER_CLASS } from '@/components/home/promo-food-banner/promoFoodBanner.constants'
 
@@ -32,15 +31,15 @@ function ProductBadge({
 }) {
   const toneClass =
     tone === 'amber'
-      ? 'from-amber-400 to-orange-500'
+      ? 'bg-[linear-gradient(180deg,rgba(255,251,244,0.96)_0%,rgba(255,246,235,0.92)_100%)] text-[#b86114] shadow-[0_10px_22px_rgba(207,145,39,0.12)]'
       : tone === 'green'
-        ? 'from-green-400 to-emerald-500'
-        : 'from-blue-400 to-indigo-500'
+        ? 'bg-[linear-gradient(180deg,rgba(255,251,244,0.96)_0%,rgba(248,244,232,0.92)_100%)] text-[#6c8a2b] shadow-[0_10px_22px_rgba(168,157,92,0.12)]'
+        : 'bg-[linear-gradient(180deg,rgba(255,251,244,0.96)_0%,rgba(246,241,233,0.92)_100%)] text-[#6f633d] shadow-[0_10px_22px_rgba(154,132,95,0.12)]'
   const Icon = icon === 'zap' ? Zap : Star
 
   return (
-    <div className={`inline-flex items-center gap-1 rounded-full bg-gradient-to-r ${toneClass} px-3 py-1 text-xs font-semibold text-white shadow-md`}>
-      <Icon className="h-3 w-3" />
+    <div className={`inline-flex max-w-[9.5rem] items-center gap-1.5 rounded-[999px] ${toneClass} px-3 py-1.5 text-[10px] font-semibold leading-none tracking-[0.12em] backdrop-blur-sm`}>
+      <Icon className="h-3 w-3 shrink-0 stroke-[2.2]" />
       {label}
     </div>
   )
@@ -59,21 +58,19 @@ const ProductCard = memo(
     const pc = t.productCard
     const isAdded = addedToCart?.has(product.id) || false
     const productWithCategory = product as Product & {
-      category?: { name: string } | null
       ingredients?: string[] | null
     }
     const displayName = getProductDisplayName(product.name, locale)
     const description = product.shortDescription ?? product.description
-    const categoryLabel = productWithCategory.category?.name
-      ? getCategoryDisplayName(productWithCategory.category.name, locale)
-      : pc.uncategorized
 
-    const renderStatusBadge = () => {
-      if (product.status === 'HIT') return <ProductBadge tone="amber" icon="star" label={pc.badgeHit} />
-      if (product.status === 'NEW') return <ProductBadge tone="green" icon="zap" label={pc.badgeNew} />
-      if (product.status === 'CLASSIC') return <ProductBadge tone="blue" icon="star" label={pc.badgeClassic} />
-      return null
-    }
+    const statusBadge =
+      product.status === 'HIT'
+        ? { tone: 'amber' as const, icon: 'star' as const, label: pc.badgeHit }
+        : product.status === 'NEW'
+          ? { tone: 'green' as const, icon: 'zap' as const, label: pc.badgeNew }
+          : product.status === 'CLASSIC'
+            ? { tone: 'blue' as const, icon: 'star' as const, label: pc.badgeClassic }
+            : null
 
     if (variant === 'horizontal') {
       return (
@@ -100,11 +97,14 @@ const ProductCard = memo(
               <div className="absolute inset-0 flex items-center justify-center text-4xl">🍽️</div>
             )}
 
-            <div className="absolute left-3 top-3 flex flex-col gap-2">
-              <div className="rounded-full border border-white/70 bg-white/85 px-3 py-1 text-[11px] font-semibold text-slate-600 shadow-sm backdrop-blur">
-                {categoryLabel}
-              </div>
-              {renderStatusBadge()}
+            <div className="absolute left-2.5 top-0.5 flex flex-col gap-1.5 sm:left-3 sm:top-1">
+              {statusBadge && (
+                <ProductBadge
+                  tone={statusBadge.tone}
+                  icon={statusBadge.icon}
+                  label={statusBadge.label}
+                />
+              )}
             </div>
           </div>
 
@@ -230,13 +230,14 @@ const ProductCard = memo(
             </button>
           )}
 
-          <div className={`absolute left-3 top-3 z-20 flex flex-col gap-2 ${isCompact ? '' : 'sm:left-4 sm:top-4'}`}>
-            {!isCompact && (
-              <div className="rounded-full border border-white/70 bg-white/85 px-3 py-1.5 text-xs font-semibold text-slate-600 shadow-sm backdrop-blur">
-                {categoryLabel}
-              </div>
+          <div className={`absolute left-2.5 top-0.5 z-20 flex flex-col gap-1.5 ${isCompact ? '' : 'sm:left-3 sm:top-1'}`}>
+            {!isCompact && statusBadge && (
+              <ProductBadge
+                tone={statusBadge.tone}
+                icon={statusBadge.icon}
+                label={statusBadge.label}
+              />
             )}
-            {renderStatusBadge()}
           </div>
 
           {product.image && product.image !== 'no-image' ? (
@@ -283,9 +284,13 @@ const ProductCard = memo(
 
         <div className={`${isCompact ? 'p-4' : 'p-5 sm:p-6'}`}>
           <div className="mb-3 flex items-center gap-2">
-            {isCompact && (
-              <span className="rounded-full bg-[#fff3ec] px-2.5 py-1 text-[11px] font-semibold text-[#E53225]">
-                {categoryLabel}
+            {isCompact && statusBadge && (
+              <span className="inline-flex">
+                <ProductBadge
+                  tone={statusBadge.tone}
+                  icon={statusBadge.icon}
+                  label={statusBadge.label}
+                />
               </span>
             )}
           </div>
@@ -300,7 +305,7 @@ const ProductCard = memo(
 
           {isCompact ? (
             <p className="mt-2 line-clamp-2 text-sm leading-6 text-slate-500">
-              {description || categoryLabel}
+              {description}
             </p>
           ) : (
             <p className="mt-3 line-clamp-2 text-sm leading-6 text-slate-500 sm:text-[15px]">
