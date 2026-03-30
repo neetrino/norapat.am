@@ -25,50 +25,62 @@ export default function ProductQuantityControls({ product }: ProductQuantityCont
   }, [product, quantity, addItem])
 
   return (
-    <>
-      <div className="flex items-center space-x-6">
-        <label className="text-lg font-medium text-gray-900">{pq.quantity}</label>
-        <div className={`flex items-center border-2 rounded-xl overflow-hidden bg-white shadow-sm ${!product.isAvailable ? 'opacity-60 border-gray-200' : 'border-gray-300'}`}>
+    <div className="space-y-4">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <label className="text-sm font-semibold uppercase tracking-[0.16em] text-slate-500">
+          {pq.quantity}
+        </label>
+
+        <div
+          className={`inline-flex items-center self-start overflow-hidden rounded-2xl border bg-white shadow-sm ${
+            !product.isAvailable ? 'border-slate-200 opacity-60' : 'border-[#ead8cf]'
+          }`}
+        >
           <button
+            type="button"
             onClick={() => setQuantity(Math.max(1, quantity - 1))}
             disabled={!product.isAvailable}
-            className="p-3 hover:bg-orange-100 transition-colors text-gray-700 hover:text-orange-600 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent"
+            className="p-3 text-slate-600 transition-colors hover:bg-orange-50 hover:text-orange-600 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-transparent"
           >
-            <Minus className="h-5 w-5" />
+            <Minus className="h-4 w-4" />
           </button>
-          <span className="px-6 py-3 min-w-[4rem] text-center text-lg font-semibold bg-gray-50 text-gray-900">{quantity}</span>
+
+          <span className="min-w-[3.5rem] bg-[#fff8f4] px-5 py-3 text-center text-base font-bold text-slate-900">
+            {quantity}
+          </span>
+
           <button
+            type="button"
             onClick={() => setQuantity(quantity + 1)}
             disabled={!product.isAvailable}
-            className="p-3 hover:bg-orange-100 transition-colors text-gray-700 hover:text-orange-600 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent"
+            className="p-3 text-slate-600 transition-colors hover:bg-orange-50 hover:text-orange-600 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-transparent"
           >
-            <Plus className="h-5 w-5" />
+            <Plus className="h-4 w-4" />
           </button>
         </div>
       </div>
 
-      <div className="space-y-4">
-        <button
-          onClick={handleAddToCart}
-          disabled={!product.isAvailable}
-          className={`w-full px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 flex items-center justify-center space-x-3 ${
-            !product.isAvailable
-              ? 'bg-gray-400 text-white cursor-not-allowed opacity-70'
-              : addedToCart
-              ? 'bg-green-500 text-white scale-105 shadow-lg'
-              : 'bg-orange-500 text-white hover:bg-orange-600 hover:scale-105 shadow-lg hover:shadow-xl'
-          }`}
-        >
-          <ShoppingCart className="h-6 w-6" />
-          <span>
-            {!product.isAvailable
-              ? 'Առկա չէ'
-              : addedToCart
+      <button
+        type="button"
+        onClick={handleAddToCart}
+        disabled={!product.isAvailable}
+        className={`flex w-full items-center justify-center gap-2 rounded-2xl px-6 py-3.5 text-base font-bold transition-all duration-200 ${
+          !product.isAvailable
+            ? 'cursor-not-allowed bg-slate-300 text-white opacity-75'
+            : addedToCart
+              ? 'bg-emerald-500 text-white shadow-[0_14px_28px_rgba(34,197,94,0.22)]'
+              : 'bg-orange-500 text-white shadow-[0_14px_28px_rgba(238,49,36,0.22)] hover:bg-orange-600'
+        }`}
+      >
+        <ShoppingCart className="h-5 w-5" />
+        <span>
+          {!product.isAvailable
+            ? 'Առկա չէ'
+            : addedToCart
               ? pq.addedToCart
               : pq.addToCart}
-          </span>
-        </button>
-      </div>
-    </>
+        </span>
+      </button>
+    </div>
   )
 }
