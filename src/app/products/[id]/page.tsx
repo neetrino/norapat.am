@@ -121,7 +121,7 @@ export default async function ProductPage({
     return (
       <div className="min-h-screen bg-[#fffaf7]" style={{ overflow: 'auto' }}>
         <div className="border-b border-[#f1e5de] bg-white/90 pt-header-breadcrumb backdrop-blur">
-          <div className="mx-auto max-w-6xl px-4 py-3 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-7xl px-4 py-3 sm:px-6 lg:px-8">
             <nav className="flex flex-wrap items-center gap-2 text-sm text-slate-500">
               <Link href="/" className="transition-colors hover:text-orange-500">
                 {t.breadcrumbHome}
@@ -138,7 +138,7 @@ export default async function ProductPage({
           </div>
         </div>
 
-        <div className="mx-auto max-w-6xl px-4 py-5 sm:px-6 sm:py-6 lg:px-8 lg:py-8">
+        <div className="mx-auto max-w-7xl px-4 py-5 sm:px-6 sm:py-6 lg:px-8 lg:py-8">
           <Link
             href="/products"
             className="mb-5 inline-flex items-center gap-2 rounded-full border border-[#eedfd6] bg-white px-4 py-2 text-sm font-medium text-slate-600 transition-colors hover:border-orange-200 hover:text-orange-600"
