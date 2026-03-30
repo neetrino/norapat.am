@@ -66,11 +66,6 @@ export default function Footer() {
                 </h2>
                 <ul className="space-y-2">
                   <li>
-                    <Link href="/" className={LINK_BASE}>
-                      {nav.home}
-                    </Link>
-                  </li>
-                  <li>
                     <Link href="/products" className={LINK_BASE}>
                       {nav.menu}
                     </Link>
@@ -83,16 +78,6 @@ export default function Footer() {
                   <li>
                     <Link href="/contact" className={LINK_BASE}>
                       {nav.contact}
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="/refund" className={LINK_BASE}>
-                      {f.refundPolicy}
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="/delivery" className={LINK_BASE}>
-                      {f.deliveryPolicy}
                     </Link>
                   </li>
                 </ul>
