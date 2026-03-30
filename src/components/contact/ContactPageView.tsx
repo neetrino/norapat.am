@@ -1,5 +1,7 @@
 'use client'
 
+import { useState } from 'react'
+
 import Footer from '@/components/Footer'
 import { MapEmbed } from '@/components/MapEmbed'
 import { BRAND_RED_CTA_IDLE_HOVER_CLASS } from '@/components/home/promo-food-banner/promoFoodBanner.constants'
@@ -9,15 +11,22 @@ import {
   Mail,
   MapPin,
   Clock,
-  MessageCircle,
-  Star,
-  Calendar,
-  CreditCard,
+  ChevronDown,
 } from 'lucide-react'
 
 export function ContactPageView() {
   const { t } = useI18n()
   const c = t.contactPage
+  const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null)
+
+  const faqItems = [
+    { question: c.faqPrepQ, answer: c.faqPrepA },
+    { question: c.faqDeliveryQ, answer: c.faqDeliveryA },
+    { question: c.faqAdvanceQ, answer: c.faqAdvanceA },
+    { question: c.faqPaymentQ, answer: c.faqPaymentA },
+    { question: c.faqDiscountQ, answer: c.faqDiscountA },
+    { question: c.faqContactQ, answer: c.faqContactA },
+  ]
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -167,54 +176,45 @@ export function ContactPageView() {
           <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">
             {c.faqTitle}
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow">
-              <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mb-4">
-                <Clock className="h-6 w-6 text-orange-500" />
-              </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-3">{c.faqPrepQ}</h3>
-              <p className="text-gray-600">{c.faqPrepA}</p>
-            </div>
+          <div className="promo-food-banner-bg promo-food-banner-vignette relative overflow-hidden rounded-[2rem] border border-white/10 shadow-[0_20px_50px_rgba(165,29,29,0.22)]">
+            {faqItems.map((item, index) => {
+              const isOpen = openFaqIndex === index
 
-            <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow">
-              <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mb-4">
-                <MapPin className="h-6 w-6 text-orange-500" />
-              </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-3">{c.faqDeliveryQ}</h3>
-              <p className="text-gray-600">{c.faqDeliveryA}</p>
-            </div>
+              return (
+                <div
+                  key={item.question}
+                  className={index !== faqItems.length - 1 ? 'border-b border-white/12' : ''}
+                >
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setOpenFaqIndex((currentIndex) =>
+                        currentIndex === index ? null : index
+                      )
+                    }
+                    className="relative z-10 flex w-full items-center justify-between gap-4 px-5 py-4 text-left transition-colors hover:bg-white/5 sm:px-7 sm:py-5"
+                    aria-expanded={isOpen}
+                  >
+                    <span className="text-base font-semibold leading-relaxed text-white sm:text-xl sm:leading-[1.45]">
+                      {item.question}
+                    </span>
+                    <ChevronDown
+                      className={`h-5 w-5 shrink-0 text-white/90 transition-transform duration-300 sm:h-6 sm:w-6 ${
+                        isOpen ? 'rotate-180' : ''
+                      }`}
+                    />
+                  </button>
 
-            <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow">
-              <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mb-4">
-                <Calendar className="h-6 w-6 text-orange-500" />
-              </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-3">{c.faqAdvanceQ}</h3>
-              <p className="text-gray-600">{c.faqAdvanceA}</p>
-            </div>
-
-            <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow">
-              <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mb-4">
-                <CreditCard className="h-6 w-6 text-orange-500" />
-              </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-3">{c.faqPaymentQ}</h3>
-              <p className="text-gray-600">{c.faqPaymentA}</p>
-            </div>
-
-            <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow">
-              <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mb-4">
-                <Star className="h-6 w-6 text-orange-500" />
-              </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-3">{c.faqDiscountQ}</h3>
-              <p className="text-gray-600">{c.faqDiscountA}</p>
-            </div>
-
-            <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow">
-              <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mb-4">
-                <MessageCircle className="h-6 w-6 text-orange-500" />
-              </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-3">{c.faqContactQ}</h3>
-              <p className="text-gray-600">{c.faqContactA}</p>
-            </div>
+                  {isOpen ? (
+                    <div className="relative z-10 px-5 pb-4 sm:px-7 sm:pb-5">
+                      <p className="max-w-5xl text-sm leading-6 text-white/80 sm:text-base sm:leading-7">
+                        {item.answer}
+                      </p>
+                    </div>
+                  ) : null}
+                </div>
+              )
+            })}
           </div>
         </div>
       </div>
