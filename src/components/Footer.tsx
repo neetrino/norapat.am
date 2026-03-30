@@ -28,7 +28,7 @@ export default function Footer() {
         <div className="flex flex-col gap-6 py-7 md:gap-7 md:py-8 lg:flex-row lg:items-end lg:gap-8 xl:gap-10">
           <div className="min-w-0 flex-1">
             <div className="grid grid-cols-1 gap-7 lg:grid-cols-12 lg:gap-8 xl:gap-10">
-              <div className="lg:col-span-5 lg:border-r lg:border-stone-200/70 lg:pr-6 xl:pr-8">
+              <div className="lg:col-span-4 lg:border-r lg:border-stone-200/70 lg:pr-6 xl:pr-8">
                 <div className="mb-0.5">
                   <SiteBrandMark variant="footer" branding={branding} />
                 </div>
@@ -64,7 +64,7 @@ export default function Footer() {
                 <h2 id="footer-nav-heading" className={SECTION_LABEL}>
                   {f.navHeading}
                 </h2>
-                <ul className="space-y-1.5">
+                <ul className="space-y-2">
                   <li>
                     <Link href="/" className={LINK_BASE}>
                       {nav.home}
@@ -99,7 +99,7 @@ export default function Footer() {
               </nav>
 
               <div
-                className="lg:col-span-2 lg:border-r lg:border-stone-200/70 lg:pl-6 lg:pr-14 xl:pl-8 xl:pr-18"
+                className="lg:col-span-3 lg:border-r lg:border-stone-200/70 lg:pl-6 lg:pr-10 xl:pl-8 xl:pr-12"
                 aria-labelledby="footer-policies-heading"
               >
                 <h2 id="footer-policies-heading" className={SECTION_LABEL}>
