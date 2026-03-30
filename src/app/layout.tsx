@@ -6,6 +6,7 @@ import MobileBottomNav from "@/components/MobileBottomNav";
 import ServiceWorkerProvider from "@/components/ServiceWorkerProvider";
 import PullToRefresh from "@/components/PullToRefresh";
 import Header from "@/components/Header";
+import FloatingCallWidget from "@/components/FloatingCallWidget";
 import { HeaderStackProvider } from "@/contexts/HeaderStackContext";
 
 const inter = Inter({
@@ -48,6 +49,7 @@ export default function RootLayout({
             <PullToRefresh>
               {children}
             </PullToRefresh>
+            <FloatingCallWidget />
             <MobileBottomNav />
           </HeaderStackProvider>
         </ClientProviders>

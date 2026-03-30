@@ -4,6 +4,7 @@ export const companyInfo = {
   description: 'Traditional Armenian flavors with fast and reliable service.',
   address: '5th Street, Village of Norapat, Armavir, Armenia',
   phone: '+374 95-044-888',
+  callNowPhones: ['+374 41 440 003', '+374 77 777 174'],
   email: 'info@pideh.am',
   workingHours: 'Mon-Sun: 10:00 - 22:00',
   socialMedia: {
