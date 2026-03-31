@@ -26,6 +26,7 @@ export default function WishlistPage() {
     loading: wishlistLoading,
     toggle: toggleWishlist,
     isInWishlist,
+    isAuthenticated,
     remove: removeFromWishlist
   } = useWishlist()
   const { addItem } = useCart()
@@ -166,8 +167,14 @@ export default function WishlistPage() {
                       variant="compact"
                       onAddToCart={handleAddToCart}
                       addedToCart={addedToCart}
-                      isInWishlist={isInWishlist(item.product.id)}
-                      onToggleWishlist={(id) => { void toggleWishlist(id) }}
+                      isInWishlist={
+                        isAuthenticated ? isInWishlist(item.product.id) : false
+                      }
+                      onToggleWishlist={
+                        isAuthenticated
+                          ? (id) => { void toggleWishlist(id) }
+                          : undefined
+                      }
                     />
                   ) : (
                     <div

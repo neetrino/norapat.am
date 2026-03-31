@@ -140,7 +140,7 @@ function ProductsPageContent() {
   const [totalProductCount, setTotalProductCount] = useState(0)
   const [addedToCart, setAddedToCart] = useState<Set<string>>(new Set())
   const { addItem } = useCart()
-  const { isInWishlist, toggle: toggleWishlist } = useWishlist()
+  const { isInWishlist, toggle: toggleWishlist, isAuthenticated } = useWishlist()
   const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const productGridTopRef = useRef<HTMLDivElement>(null)
 
@@ -554,8 +554,8 @@ function ProductsPageContent() {
                 onAddToCart={handleAddToCart}
                 variant={gridCols === 2 ? 'horizontal' : gridCols === 3 ? 'default' : 'compact'}
                 addedToCart={addedToCart}
-                isInWishlist={isInWishlist(product.id)}
-                onToggleWishlist={handleToggleWishlist}
+                isInWishlist={isAuthenticated ? isInWishlist(product.id) : false}
+                onToggleWishlist={isAuthenticated ? handleToggleWishlist : undefined}
               />
             ))}
           </div>
