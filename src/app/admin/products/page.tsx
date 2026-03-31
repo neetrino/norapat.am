@@ -422,13 +422,8 @@ export default function AdminProducts() {
                     </span>
                   </th>
 
-                  {/* Active */}
-                  <th className="px-4 py-3 text-center text-xs font-semibold text-gray-500 uppercase tracking-wide">
-                    Ակտիվ
-                  </th>
-
                   {/* Actions */}
-                  <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                  <th className="px-4 py-3 text-center text-xs font-semibold text-gray-500 uppercase tracking-wide">
                     Գործողություններ
                   </th>
                 </tr>
@@ -534,31 +529,27 @@ export default function AdminProducts() {
                       </span>
                     </td>
 
-                    {/* Toggle */}
-                    <td className="px-4 py-3 text-center">
-                      <button
-                        onClick={() => handleToggleAvailable(product.id)}
-                        title={product.isAvailable ? 'Ապաակտիվացնել' : 'Ակտիվացնել'}
-                        className={`relative inline-flex h-5 w-9 items-center rounded-full focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-orange-400 cursor-pointer ${
-                          product.isAvailable
-                            ? 'bg-orange-500'
-                            : 'bg-gray-200'
-                        }`}
-                        style={{ transition: 'background-color 120ms ease' }}
-                      >
-                        <span
-                          className="inline-block h-3.5 w-3.5 rounded-full bg-white shadow-sm"
-                          style={{
-                            transform: product.isAvailable ? 'translateX(18px)' : 'translateX(2px)',
-                            transition: 'transform 120ms ease',
-                          }}
-                        />
-                      </button>
-                    </td>
-
                     {/* Actions */}
                     <td className="px-4 py-3">
-                      <div className="flex items-center justify-end gap-1.5">
+                      <div className="flex items-center justify-center gap-1.5">
+                        <button
+                          onClick={() => handleToggleAvailable(product.id)}
+                          title={product.isAvailable ? 'Ապաակտիվացնել' : 'Ակտիվացնել'}
+                          className={`relative inline-flex h-5 w-9 items-center rounded-full focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-orange-400 cursor-pointer ${
+                            product.isAvailable
+                              ? 'bg-orange-500'
+                              : 'bg-gray-200'
+                          }`}
+                          style={{ transition: 'background-color 120ms ease' }}
+                        >
+                          <span
+                            className="inline-block h-3.5 w-3.5 rounded-full bg-white shadow-sm"
+                            style={{
+                              transform: product.isAvailable ? 'translateX(18px)' : 'translateX(2px)',
+                              transition: 'transform 120ms ease',
+                            }}
+                          />
+                        </button>
                         <Link
                           href={`/admin/products/${product.id}/edit`}
                           title="Խմբագրել"
