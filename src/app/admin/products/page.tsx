@@ -20,7 +20,13 @@ import {
   ChevronsUpDown,
   Copy,
 } from 'lucide-react'
-import { Product, ProductStatus } from '@/types'
+import { ProductStatus, type ProductWithCategory } from '@/types'
+
+/** Ադմին ցուցակի տող — boolean դաշտերը միշտ ներկա են (API / Prisma) */
+type AdminProductRow = ProductWithCategory & {
+  isBestSeller: boolean
+  isSpecialOffer: boolean
+}
 
 type SortField = 'name' | 'price' | 'updatedAt'
 type SortDir = 'asc' | 'desc'
@@ -43,11 +49,22 @@ const STATUS_COLORS: Record<ProductStatus, string> = {
   BANNER:  'bg-purple-100 text-purple-700',
 }
 
+/** API-ից եկող ապրանքների boolean դաշտերը հաստատուն են դարձնում (կորած undefined → false) */
+function normalizeProductFlags(p: ProductWithCategory): AdminProductRow {
+  const row = p as AdminProductRow
+  return {
+    ...row,
+    isAvailable: Boolean(row.isAvailable),
+    isBestSeller: Boolean(row.isBestSeller),
+    isSpecialOffer: Boolean(row.isSpecialOffer),
+  }
+}
+
 export default function AdminProducts() {
   const { data: session, status } = useSession()
   const router = useRouter()
 
-  const [products, setProducts] = useState<Product[]>([])
+  const [products, setProducts] = useState<AdminProductRow[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('')
@@ -55,14 +72,8 @@ export default function AdminProducts() {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
   const [sortField, setSortField] = useState<SortField>('name')
   const [sortDir, setSortDir] = useState<SortDir>('asc')
-  // productsRef — latest products snapshot for debounce callbacks
-  const productsRef = useRef<Product[]>([])
-  // toggleDebounce — per-product-per-field: pending timer + server-side value for rollback
-  // key format: `${productId}:${field}`
-  const toggleDebounceRef = useRef<Map<string, { timer: ReturnType<typeof setTimeout>; serverValue: boolean }>>(new Map())
-
-  // Keep ref in sync so debounce callbacks always read the latest state
-  useEffect(() => { productsRef.current = products }, [products])
+  /** Նույն ապրանքի+դաշտի հին PATCH-ը չեղարկելու համար (արագ կրկին սեղմելիս վերջին արժեքը մնա) */
+  const toggleAbortRef = useRef<Map<string, AbortController>>(new Map())
 
   useEffect(() => {
     if (status === 'loading') return
@@ -78,7 +89,11 @@ export default function AdminProducts() {
       const response = await fetch('/api/admin/products')
       if (response.ok) {
         const data = await response.json()
-        setProducts(data)
+        setProducts(
+          Array.isArray(data)
+            ? data.map(item => normalizeProductFlags(item as ProductWithCategory))
+            : []
+        )
       }
     } catch (err) {
       console.error('Error fetching products:', err)
@@ -106,45 +121,75 @@ export default function AdminProducts() {
   type ToggleField = 'isAvailable' | 'isBestSeller' | 'isSpecialOffer'
 
   const handleToggle = useCallback((productId: string, field: ToggleField) => {
-    // 1. Flip UI immediately — every click responds at once
-    setProducts(prev =>
-      prev.map(p => p.id === productId ? { ...p, [field]: !p[field as keyof typeof p] } : p)
-    )
-
     const key = `${productId}:${field}`
-    const existing = toggleDebounceRef.current.get(key)
+    let previousValue = false
+    let nextValue = false
+    let productFound = false
 
-    // serverValue = the value actually saved on the server before pending flips
-    const serverValue = existing?.serverValue
-      ?? ((productsRef.current.find(p => p.id === productId)?.[field as keyof Product] as boolean) ?? false)
+    setProducts(prev => {
+      const p = prev.find(x => x.id === productId)
+      if (!p) return prev
+      productFound = true
+      const cur = p[field as keyof AdminProductRow]
+      const currentBool = typeof cur === 'boolean' ? cur : false
+      previousValue = currentBool
+      nextValue = !currentBool
+      return prev.map(x => (x.id === productId ? { ...x, [field]: nextValue } : x))
+    })
 
-    // Cancel the previous scheduled API call (user hasn't stopped clicking yet)
-    if (existing) clearTimeout(existing.timer)
+    if (!productFound) return
 
-    // Schedule a single API call 250ms after the LAST click
-    const timer = setTimeout(() => {
-      toggleDebounceRef.current.delete(key)
+    toggleAbortRef.current.get(key)?.abort()
+    const ac = new AbortController()
+    toggleAbortRef.current.set(key, ac)
 
-      const latest = productsRef.current.find(p => p.id === productId)
-      if (!latest) return
-
-      fetch(`/api/admin/products/${productId}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ [field]: latest[field as keyof typeof latest] }),
-      })
-        .then(res => {
-          if (!res.ok) throw new Error('patch failed')
+    void (async () => {
+      try {
+        const res = await fetch(`/api/admin/products/${productId}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ [field]: nextValue }),
+          signal: ac.signal,
         })
-        .catch(() => {
-          // API failed → revert to last known server value
-          setProducts(prev =>
-            prev.map(p => p.id === productId ? { ...p, [field]: serverValue } : p)
+
+        if (ac.signal.aborted) return
+        if (!res.ok) throw new Error('patch failed')
+
+        const updated = (await res.json()) as {
+          id: string
+          isAvailable: boolean
+          isBestSeller: boolean
+          isSpecialOffer: boolean
+        }
+
+        if (ac.signal.aborted) return
+
+        setProducts(prev =>
+          prev.map(p =>
+            p.id === productId
+              ? {
+                  ...p,
+                  isAvailable: updated.isAvailable,
+                  isBestSeller: updated.isBestSeller,
+                  isSpecialOffer: updated.isSpecialOffer,
+                }
+              : p
           )
-        })
-    }, 250)
+        )
+      } catch (err: unknown) {
+        const isAbort =
+          err instanceof DOMException && err.name === 'AbortError'
+        if (isAbort) return
 
-    toggleDebounceRef.current.set(key, { timer, serverValue })
+        setProducts(prev =>
+          prev.map(p => (p.id === productId ? { ...p, [field]: previousValue } : p))
+        )
+      } finally {
+        if (toggleAbortRef.current.get(key) === ac) {
+          toggleAbortRef.current.delete(key)
+        }
+      }
+    })()
   }, [])
 
   const handleDuplicate = async (productId: string) => {
@@ -172,7 +217,10 @@ export default function AdminProducts() {
 
       if (res.ok) {
         const newProduct = await res.json()
-        setProducts(prev => [newProduct, ...prev])
+        setProducts(prev => [
+          normalizeProductFlags(newProduct as ProductWithCategory),
+          ...prev,
+        ])
       } else {
         alert('Սխալ ապրանքը պատճենելիս')
       }
@@ -334,9 +382,9 @@ export default function AdminProducts() {
                 onChange={e => setSelectedStatus(e.target.value)}
                 className="w-full pl-9 pr-3 py-2.5 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent bg-white appearance-none transition"
               >
-                <option value="">????? ??????????????</option>
-                <option value="special">?????? (??? / ??? / ?????? / ??????)</option>
-                <option value="discounted">???????</option>
+                <option value="">Բոլոր կարգավիճակները</option>
+                <option value="special">Հատուկ (Հիթ / Նոր / Կլասիկ / Բաններ)</option>
+                <option value="discounted">Զեղչված</option>
               </select>
             </div>
           </div>
