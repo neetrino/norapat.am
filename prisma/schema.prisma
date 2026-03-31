@@ -48,8 +48,10 @@ model Product {
   images        String[]       @default([]) // Մի քանի նկար (gallery)
   categoryId    String
   ingredients   String[]
-  isAvailable   Boolean        @default(true)
-  status        ProductStatus  @default(REGULAR)
+  isAvailable    Boolean        @default(true)
+  isBestSeller   Boolean        @default(false)
+  isSpecialOffer Boolean        @default(false)
+  status         ProductStatus  @default(REGULAR)
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
   orderItems    OrderItem[]

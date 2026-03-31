@@ -183,16 +183,22 @@ export async function PATCH(
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
 
-    const { isAvailable } = await request.json()
+    const body = await request.json()
+    const { isAvailable, isBestSeller, isSpecialOffer } = body
 
-    if (typeof isAvailable !== 'boolean') {
-      return NextResponse.json({ error: 'isAvailable must be boolean' }, { status: 400 })
+    const data: { isAvailable?: boolean; isBestSeller?: boolean; isSpecialOffer?: boolean } = {}
+    if (typeof isAvailable === 'boolean') data.isAvailable = isAvailable
+    if (typeof isBestSeller === 'boolean') data.isBestSeller = isBestSeller
+    if (typeof isSpecialOffer === 'boolean') data.isSpecialOffer = isSpecialOffer
+
+    if (Object.keys(data).length === 0) {
+      return NextResponse.json({ error: 'No valid fields to update' }, { status: 400 })
     }
 
     const updated = await prisma.product.update({
       where: { id },
-      data: { isAvailable },
-      select: { id: true, isAvailable: true },
+      data,
+      select: { id: true, isAvailable: true, isBestSeller: true, isSpecialOffer: true },
     })
 
     return NextResponse.json(updated)

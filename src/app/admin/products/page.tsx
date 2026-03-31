@@ -16,6 +16,7 @@ import {
   ChevronUp,
   ChevronDown,
   Star,
+  Heart,
   ChevronsUpDown,
   Copy,
 } from 'lucide-react'
@@ -56,7 +57,8 @@ export default function AdminProducts() {
   const [sortDir, setSortDir] = useState<SortDir>('asc')
   // productsRef — latest products snapshot for debounce callbacks
   const productsRef = useRef<Product[]>([])
-  // toggleDebounce — per-product: pending timer + server-side value for rollback
+  // toggleDebounce — per-product-per-field: pending timer + server-side value for rollback
+  // key format: `${productId}:${field}`
   const toggleDebounceRef = useRef<Map<string, { timer: ReturnType<typeof setTimeout>; serverValue: boolean }>>(new Map())
 
   // Keep ref in sync so debounce callbacks always read the latest state
@@ -101,24 +103,27 @@ export default function AdminProducts() {
     }
   }
 
-  const handleToggleAvailable = useCallback((productId: string) => {
+  type ToggleField = 'isAvailable' | 'isBestSeller' | 'isSpecialOffer'
+
+  const handleToggle = useCallback((productId: string, field: ToggleField) => {
     // 1. Flip UI immediately — every click responds at once
     setProducts(prev =>
-      prev.map(p => p.id === productId ? { ...p, isAvailable: !p.isAvailable } : p)
+      prev.map(p => p.id === productId ? { ...p, [field]: !p[field as keyof typeof p] } : p)
     )
 
-    const existing = toggleDebounceRef.current.get(productId)
+    const key = `${productId}:${field}`
+    const existing = toggleDebounceRef.current.get(key)
 
     // serverValue = the value actually saved on the server before pending flips
     const serverValue = existing?.serverValue
-      ?? (productsRef.current.find(p => p.id === productId)?.isAvailable ?? true)
+      ?? ((productsRef.current.find(p => p.id === productId)?.[field as keyof Product] as boolean) ?? false)
 
     // Cancel the previous scheduled API call (user hasn't stopped clicking yet)
     if (existing) clearTimeout(existing.timer)
 
     // Schedule a single API call 250ms after the LAST click
     const timer = setTimeout(() => {
-      toggleDebounceRef.current.delete(productId)
+      toggleDebounceRef.current.delete(key)
 
       const latest = productsRef.current.find(p => p.id === productId)
       if (!latest) return
@@ -126,7 +131,7 @@ export default function AdminProducts() {
       fetch(`/api/admin/products/${productId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ isAvailable: latest.isAvailable }),
+        body: JSON.stringify({ [field]: latest[field as keyof typeof latest] }),
       })
         .then(res => {
           if (!res.ok) throw new Error('patch failed')
@@ -134,12 +139,12 @@ export default function AdminProducts() {
         .catch(() => {
           // API failed → revert to last known server value
           setProducts(prev =>
-            prev.map(p => p.id === productId ? { ...p, isAvailable: serverValue } : p)
+            prev.map(p => p.id === productId ? { ...p, [field]: serverValue } : p)
           )
         })
     }, 250)
 
-    toggleDebounceRef.current.set(productId, { timer, serverValue })
+    toggleDebounceRef.current.set(key, { timer, serverValue })
   }, [])
 
   const handleDuplicate = async (productId: string) => {
@@ -407,6 +412,11 @@ export default function AdminProducts() {
                     Կատեգորիա
                   </th>
 
+                  {/* Labels */}
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                    Պիտակներ
+                  </th>
+
                   {/* Status */}
                   <th className="px-4 py-3 text-center text-xs font-semibold text-gray-500 uppercase tracking-wide">
                     Կարգավիճակ
@@ -500,21 +510,46 @@ export default function AdminProducts() {
                       </span>
                     </td>
 
-                    {/* Status */}
+                    {/* Labels */}
+                    <td className="px-4 py-3">
+                      {product.status !== 'REGULAR' ? (
+                        <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${STATUS_COLORS[product.status]}`}>
+                          {STATUS_LABELS[product.status]}
+                        </span>
+                      ) : (
+                        <span className="text-gray-300 text-xs">—</span>
+                      )}
+                    </td>
+
+                    {/* Status — isBestSeller (star) + isSpecialOffer (heart) */}
                     <td className="px-4 py-3 text-center">
-                      <div className="flex items-center justify-center gap-1.5">
-                        <Star
-                          className={`h-4 w-4 shrink-0 ${
-                            SPECIAL_STATUSES.includes(product.status)
-                              ? 'fill-orange-400 text-orange-400'
-                              : 'text-gray-300'
-                          }`}
-                        />
-                        {product.status !== 'REGULAR' && (
-                          <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${STATUS_COLORS[product.status]}`}>
-                            {STATUS_LABELS[product.status]}
-                          </span>
-                        )}
+                      <div className="flex items-center justify-center gap-2">
+                        <button
+                          onClick={() => handleToggle(product.id, 'isBestSeller')}
+                          title={product.isBestSeller ? 'Հեռացնել լավագույն վաճառք' : 'Նշել որպես լավագույն վաճառք'}
+                          className="p-1 rounded-md hover:bg-yellow-50 transition-colors"
+                        >
+                          <Star
+                            className={`h-4 w-4 shrink-0 transition-colors ${
+                              product.isBestSeller
+                                ? 'fill-yellow-400 text-yellow-400'
+                                : 'text-gray-300 hover:text-yellow-300'
+                            }`}
+                          />
+                        </button>
+                        <button
+                          onClick={() => handleToggle(product.id, 'isSpecialOffer')}
+                          title={product.isSpecialOffer ? 'Հեռացնել հատուկ առաջարկ' : 'Նշել որպես հատուկ առաջարկ'}
+                          className="p-1 rounded-md hover:bg-pink-50 transition-colors"
+                        >
+                          <Heart
+                            className={`h-4 w-4 shrink-0 transition-colors ${
+                              product.isSpecialOffer
+                                ? 'fill-pink-500 text-pink-500'
+                                : 'text-gray-300 hover:text-pink-300'
+                            }`}
+                          />
+                        </button>
                       </div>
                     </td>
 
@@ -533,7 +568,7 @@ export default function AdminProducts() {
                     <td className="px-4 py-3">
                       <div className="flex items-center justify-center gap-1.5">
                         <button
-                          onClick={() => handleToggleAvailable(product.id)}
+                          onClick={() => handleToggle(product.id, 'isAvailable')}
                           title={product.isAvailable ? 'Ապաակտիվացնել' : 'Ակտիվացնել'}
                           className={`relative inline-flex h-5 w-9 items-center rounded-full focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-orange-400 cursor-pointer ${
                             product.isAvailable
