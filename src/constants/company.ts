@@ -8,8 +8,9 @@ export const companyInfo = {
   email: 'info@pideh.am',
   workingHours: 'Mon-Sun: 10:00 - 22:00',
   socialMedia: {
-    facebook: 'https://www.facebook.com',
-    instagram: 'https://www.instagram.com',
+    facebook: 'https://www.facebook.com/noorapatfoodcourt/?locale=hy_AM',
+    instagram:
+      'https://www.instagram.com/norapatfoodcourt?igsh=dDV4YnIxYmxwcXFs',
     website: '/',
   },
 }

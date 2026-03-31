@@ -6,6 +6,7 @@ import { Phone, Mail, MapPin, Clock, Facebook, Instagram } from 'lucide-react'
 import { useI18n } from '@/i18n/I18nContext'
 import { usePublicSiteSettings } from '@/hooks/usePublicSiteSettings'
 import { SiteBrandMark } from '@/components/SiteBrandMark'
+import { companyInfo } from '@/constants/company'
 
 const LINK_HOVER = 'transition-colors hover:text-red-800'
 const LINK_BASE = `text-sm text-stone-600 ${LINK_HOVER}`
@@ -37,7 +38,7 @@ export default function Footer() {
                 </p>
                 <div className="flex flex-wrap items-center gap-2">
                   <a
-                    href="https://www.facebook.com"
+                    href={companyInfo.socialMedia.facebook}
                     target="_blank"
                     rel="noopener noreferrer"
                     className={SOCIAL_BTN}
@@ -46,7 +47,7 @@ export default function Footer() {
                     <Facebook className="h-4 w-4" />
                   </a>
                   <a
-                    href="https://www.instagram.com"
+                    href={companyInfo.socialMedia.instagram}
                     target="_blank"
                     rel="noopener noreferrer"
                     className={SOCIAL_BTN}
