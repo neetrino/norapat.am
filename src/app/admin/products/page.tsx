@@ -3,7 +3,7 @@
 import Image from 'next/image'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
-import { useEffect, useState, useCallback, useRef } from 'react'
+import { useEffect, useState, useCallback, useRef, useMemo } from 'react'
 import Link from 'next/link'
 import {
   Plus,
@@ -19,6 +19,7 @@ import {
   Heart,
   ChevronsUpDown,
   Copy,
+  Save,
 } from 'lucide-react'
 import { ProductStatus, type ProductWithCategory } from '@/types'
 
@@ -30,6 +31,12 @@ type AdminProductRow = ProductWithCategory & {
 
 type SortField = 'name' | 'price' | 'updatedAt'
 type SortDir = 'asc' | 'desc'
+
+/** Սերվերում պահված ⭐ / ❤️ արժեքներ — черновикից տարբերելու համար */
+type PromotionFlags = {
+  isBestSeller: boolean
+  isSpecialOffer: boolean
+}
 
 const SPECIAL_STATUSES: ProductStatus[] = ['HIT', 'NEW', 'CLASSIC', 'BANNER']
 
@@ -72,6 +79,11 @@ export default function AdminProducts() {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
   const [sortField, setSortField] = useState<SortField>('name')
   const [sortDir, setSortDir] = useState<SortDir>('asc')
+  /** Սերվերից վերջին պահված isBestSeller / isSpecialOffer (⭐ / ❤️) */
+  const [savedPromotionById, setSavedPromotionById] = useState<
+    Record<string, PromotionFlags>
+  >({})
+  const [isSavingPromotion, setIsSavingPromotion] = useState(false)
   /** Նույն ապրանքի+դաշտի հին PATCH-ը չեղարկելու համար (արագ կրկին սեղմելիս վերջին արժեքը մնա) */
   const toggleAbortRef = useRef<Map<string, AbortController>>(new Map())
 
@@ -89,10 +101,17 @@ export default function AdminProducts() {
       const response = await fetch('/api/admin/products')
       if (response.ok) {
         const data = await response.json()
-        setProducts(
-          Array.isArray(data)
-            ? data.map(item => normalizeProductFlags(item as ProductWithCategory))
-            : []
+        const normalized = Array.isArray(data)
+          ? data.map(item => normalizeProductFlags(item as ProductWithCategory))
+          : []
+        setProducts(normalized)
+        setSavedPromotionById(
+          Object.fromEntries(
+            normalized.map(p => [
+              p.id,
+              { isBestSeller: p.isBestSeller, isSpecialOffer: p.isSpecialOffer },
+            ])
+          )
         )
       }
     } catch (err) {
@@ -109,6 +128,11 @@ export default function AdminProducts() {
       if (res.ok) {
         setProducts(prev => prev.filter(p => p.id !== productId))
         setSelectedIds(prev => { const next = new Set(prev); next.delete(productId); return next })
+        setSavedPromotionById(prev => {
+          const next = { ...prev }
+          delete next[productId]
+          return next
+        })
       } else {
         alert('Սխալ ապրանքը ջնջելիս')
       }
@@ -121,6 +145,18 @@ export default function AdminProducts() {
   type ToggleField = 'isAvailable' | 'isBestSeller' | 'isSpecialOffer'
 
   const handleToggle = useCallback((productId: string, field: ToggleField) => {
+    if (field === 'isBestSeller' || field === 'isSpecialOffer') {
+      setProducts(prev =>
+        prev.map(x => {
+          if (x.id !== productId) return x
+          const cur = x[field]
+          const currentBool = typeof cur === 'boolean' ? cur : false
+          return { ...x, [field]: !currentBool }
+        })
+      )
+      return
+    }
+
     const key = `${productId}:${field}`
     let previousValue = false
     let nextValue = false
@@ -176,6 +212,13 @@ export default function AdminProducts() {
               : p
           )
         )
+        setSavedPromotionById(prevSnap => ({
+          ...prevSnap,
+          [productId]: {
+            isBestSeller: updated.isBestSeller,
+            isSpecialOffer: updated.isSpecialOffer,
+          },
+        }))
       } catch (err: unknown) {
         const isAbort =
           err instanceof DOMException && err.name === 'AbortError'
@@ -217,10 +260,15 @@ export default function AdminProducts() {
 
       if (res.ok) {
         const newProduct = await res.json()
-        setProducts(prev => [
-          normalizeProductFlags(newProduct as ProductWithCategory),
-          ...prev,
-        ])
+        const norm = normalizeProductFlags(newProduct as ProductWithCategory)
+        setProducts(prev => [norm, ...prev])
+        setSavedPromotionById(prevSnap => ({
+          ...prevSnap,
+          [norm.id]: {
+            isBestSeller: norm.isBestSeller,
+            isSpecialOffer: norm.isSpecialOffer,
+          },
+        }))
       } else {
         alert('Սխալ ապրանքը պատճենելիս')
       }
@@ -314,6 +362,64 @@ export default function AdminProducts() {
   const allSelected = filteredProducts.length > 0 && selectedIds.size === filteredProducts.length
   const someSelected = selectedIds.size > 0 && !allSelected
 
+  const hasUnsavedPromotionChanges = useMemo(() => {
+    return products.some(p => {
+      const s = savedPromotionById[p.id]
+      return (
+        s !== undefined &&
+        (p.isBestSeller !== s.isBestSeller || p.isSpecialOffer !== s.isSpecialOffer)
+      )
+    })
+  }, [products, savedPromotionById])
+
+  const savePromotionLockRef = useRef(false)
+
+  const handleSavePromotionFlags = useCallback(async () => {
+    if (savePromotionLockRef.current) return
+    const dirty = products.filter(p => {
+      const s = savedPromotionById[p.id]
+      if (s === undefined) return false
+      return p.isBestSeller !== s.isBestSeller || p.isSpecialOffer !== s.isSpecialOffer
+    })
+    if (dirty.length === 0) return
+
+    savePromotionLockRef.current = true
+    setIsSavingPromotion(true)
+    try {
+      const responses = await Promise.all(
+        dirty.map(p =>
+          fetch(`/api/admin/products/${p.id}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              isBestSeller: p.isBestSeller,
+              isSpecialOffer: p.isSpecialOffer,
+            }),
+          })
+        )
+      )
+      if (responses.some(r => !r.ok)) {
+        alert('Սխալ պիտակները պահելիս')
+        return
+      }
+      setSavedPromotionById(prevSnap => {
+        const next = { ...prevSnap }
+        for (const p of dirty) {
+          next[p.id] = {
+            isBestSeller: p.isBestSeller,
+            isSpecialOffer: p.isSpecialOffer,
+          }
+        }
+        return next
+      })
+    } catch {
+      alert('Սխալ պիտակները պահելիս')
+    } finally {
+      savePromotionLockRef.current = false
+      setIsSavingPromotion(false)
+    }
+  }, [products, savedPromotionById])
+
   if (status === 'loading' || isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -404,8 +510,22 @@ export default function AdminProducts() {
                 </span>
               )}
             </span>
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center justify-end gap-2">
+              {hasUnsavedPromotionChanges && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    void handleSavePromotionFlags()
+                  }}
+                  disabled={isSavingPromotion}
+                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-white bg-orange-500 border border-orange-600 hover:bg-orange-600 px-3 py-1.5 rounded-lg transition-colors disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  <Save className="h-3.5 w-3.5 shrink-0" />
+                  {isSavingPromotion ? 'Պահպանվում է…' : 'Պահպանել'}
+                </button>
+              )}
               <button
+                type="button"
                 onClick={exportCSV}
                 className="inline-flex items-center gap-1.5 text-xs font-medium text-orange-600 border border-orange-300 hover:bg-orange-50 px-3 py-1.5 rounded-lg transition-colors"
               >
