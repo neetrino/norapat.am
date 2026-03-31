@@ -92,7 +92,6 @@ export default function AdminOrdersPage() {
   const [orders, setOrders] = useState<OrderWithDetails[]>([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
-  const [statusFilter, setStatusFilter] = useState('')
   const [filterGroup, setFilterGroup] = useState<'all' | 'new' | 'in_progress' | 'delivered' | 'cancelled'>('all')
   const [currentPage, setCurrentPage] = useState(1)
   const [selectedOrder, setSelectedOrder] = useState<OrderWithDetails | null>(null)
@@ -126,8 +125,6 @@ export default function AdminOrdersPage() {
       
       if (filterGroup !== 'all') {
         params.append('filter', filterGroup)
-      } else if (statusFilter) {
-        params.append('status', statusFilter)
       }
 
       const response = await fetch(`/api/admin/orders?${params}`)
@@ -144,7 +141,7 @@ export default function AdminOrdersPage() {
     } finally {
       setLoading(false)
     }
-  }, [currentPage, filterGroup, statusFilter])
+  }, [currentPage, filterGroup])
 
   // Բացել պատվերի մանրամասնությամբ մոդալ պատուհան
   const openOrderDetails = (order: OrderWithDetails) => {
@@ -267,7 +264,7 @@ export default function AdminOrdersPage() {
 
   useEffect(() => {
     setSelectedIds(new Set())
-  }, [currentPage, filterGroup, statusFilter, searchTerm])
+  }, [currentPage, filterGroup, searchTerm])
 
   // Զտել պատվերները որոնման հարցման համաձայն
   const filteredOrders = orders.filter(order => {
@@ -344,7 +341,6 @@ export default function AdminOrdersPage() {
               size="sm"
               onClick={() => {
                 setFilterGroup('all')
-                setStatusFilter('')
                 setCurrentPage(1)
               }}
               className={filterGroup === 'all' ? 'bg-orange-500 hover:bg-orange-600' : ''}
@@ -357,7 +353,6 @@ export default function AdminOrdersPage() {
               size="sm"
               onClick={() => {
                 setFilterGroup('new')
-                setStatusFilter('')
                 setCurrentPage(1)
               }}
               className={filterGroup === 'new' ? 'bg-yellow-500 hover:bg-yellow-600' : ''}
@@ -370,7 +365,6 @@ export default function AdminOrdersPage() {
               size="sm"
               onClick={() => {
                 setFilterGroup('in_progress')
-                setStatusFilter('')
                 setCurrentPage(1)
               }}
               className={filterGroup === 'in_progress' ? 'bg-blue-500 hover:bg-blue-600' : ''}
@@ -383,7 +377,6 @@ export default function AdminOrdersPage() {
               size="sm"
               onClick={() => {
                 setFilterGroup('delivered')
-                setStatusFilter('')
                 setCurrentPage(1)
               }}
               className={filterGroup === 'delivered' ? 'bg-green-500 hover:bg-green-600' : ''}
@@ -396,7 +389,6 @@ export default function AdminOrdersPage() {
               size="sm"
               onClick={() => {
                 setFilterGroup('cancelled')
-                setStatusFilter('')
                 setCurrentPage(1)
               }}
               className={filterGroup === 'cancelled' ? 'bg-red-500 hover:bg-red-600' : ''}
@@ -406,37 +398,15 @@ export default function AdminOrdersPage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          <div className="relative max-w-md md:max-w-none">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
-            <input
-              type="text"
-              value={searchTerm}
-              onChange={e => setSearchTerm(e.target.value)}
-              placeholder="Որոնում՝ անուն, email, հեռախոս, ID..."
-              className="w-full pl-9 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent"
-            />
-          </div>
-          <div className="relative">
-            <Filter className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
-            <select
-              value={filterGroup !== 'all' ? '' : statusFilter}
-              onChange={e => {
-                setStatusFilter(e.target.value)
-                setFilterGroup('all')
-                setCurrentPage(1)
-              }}
-              className="w-full pl-9 pr-3 py-2.5 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent bg-white appearance-none"
-            >
-              <option value="">Բոլոր կարգավիճակները (մանրամասն)</option>
-              <option value="PENDING">Սպասում</option>
-              <option value="CONFIRMED">Հաստատված</option>
-              <option value="PREPARING">Պատրաստվում</option>
-              <option value="READY">Պատրաստ</option>
-              <option value="DELIVERED">Առաքված</option>
-              <option value="CANCELLED">Չեղարկված</option>
-            </select>
-          </div>
+        <div className="relative max-w-md md:max-w-none">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+          <input
+            type="text"
+            value={searchTerm}
+            onChange={e => setSearchTerm(e.target.value)}
+            placeholder="Որոնում՝ անուն, email, հեռախոս, ID..."
+            className="w-full pl-9 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent"
+          />
         </div>
       </div>
 
@@ -516,7 +486,7 @@ export default function AdminOrdersPage() {
                     <ShoppingCart className="h-10 w-10 mx-auto mb-3 text-gray-200" />
                     Պատվերներ չեն գտնվել
                     <p className="text-xs mt-2 text-gray-400 font-normal normal-case">
-                      {searchTerm || statusFilter || filterGroup !== 'all'
+                      {searchTerm || filterGroup !== 'all'
                         ? 'Փորձեք փոխել ֆիլտրերը'
                         : 'Դեռ պատվերներ չկան'}
                     </p>
