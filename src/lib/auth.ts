@@ -2,10 +2,12 @@ import type { NextAuthOptions } from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
 import type { UserRole } from "@prisma/client"
 import bcrypt from 'bcryptjs'
+import { PHASE_PRODUCTION_BUILD } from 'next/constants'
 import { prisma } from '@/lib/prisma'
 
 const secret = process.env.NEXTAUTH_SECRET ?? process.env.AUTH_SECRET
-if (!secret && process.env.NODE_ENV === 'production') {
+const isNextProductionBuild = process.env.NEXT_PHASE === PHASE_PRODUCTION_BUILD
+if (!secret && process.env.NODE_ENV === 'production' && !isNextProductionBuild) {
   throw new Error('NEXTAUTH_SECRET or AUTH_SECRET must be set in production')
 }
 
