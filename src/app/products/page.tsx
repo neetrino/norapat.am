@@ -6,7 +6,6 @@ import {
   Search,
   ArrowDownUp,
   ChevronDown,
-  LayoutGrid,
   SlidersHorizontal,
 } from 'lucide-react'
 import Image from 'next/image'
@@ -141,7 +140,7 @@ function ProductsPageContent() {
   const [totalProductCount, setTotalProductCount] = useState(0)
   const [addedToCart, setAddedToCart] = useState<Set<string>>(new Set())
   const { addItem } = useCart()
-  const { isInWishlist, toggle: toggleWishlist } = useWishlist()
+  const { isInWishlist, toggle: toggleWishlist, isAuthenticated } = useWishlist()
   const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const productGridTopRef = useRef<HTMLDivElement>(null)
 
@@ -485,9 +484,7 @@ function ProductsPageContent() {
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between gap-3 rounded-2xl border border-[#eadfd9] bg-[#fcfaf8] px-3 py-2 shadow-sm">
-                  <LayoutGrid className="h-4 w-4 shrink-0 text-slate-400" />
-
+                <div className="flex items-center justify-end gap-3 rounded-2xl border border-[#eadfd9] bg-[#fcfaf8] px-3 py-2 shadow-sm">
                   <div className="flex items-center gap-1 rounded-full bg-white p-1">
                     {([2, 3, 4] as const).map((cols) => (
                       <button
@@ -557,8 +554,8 @@ function ProductsPageContent() {
                 onAddToCart={handleAddToCart}
                 variant={gridCols === 2 ? 'horizontal' : gridCols === 3 ? 'default' : 'compact'}
                 addedToCart={addedToCart}
-                isInWishlist={isInWishlist(product.id)}
-                onToggleWishlist={handleToggleWishlist}
+                isInWishlist={isAuthenticated ? isInWishlist(product.id) : false}
+                onToggleWishlist={isAuthenticated ? handleToggleWishlist : undefined}
               />
             ))}
           </div>

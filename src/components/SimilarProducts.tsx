@@ -14,7 +14,7 @@ const CART_FEEDBACK_MS = 2000
 
 export function SimilarProducts({ products }: SimilarProductsProps) {
   const { addItem } = useCart()
-  const { isInWishlist, toggle: toggleWishlist } = useWishlist()
+  const { isInWishlist, toggle: toggleWishlist, isAuthenticated } = useWishlist()
   const [addedToCart, setAddedToCart] = useState<Set<string>>(new Set())
 
   const handleAddToCart = useCallback(
@@ -43,8 +43,10 @@ export function SimilarProducts({ products }: SimilarProductsProps) {
           variant="default"
           onAddToCart={handleAddToCart}
           addedToCart={addedToCart}
-          isInWishlist={isInWishlist(p.id)}
-          onToggleWishlist={(id) => { void toggleWishlist(id) }}
+          isInWishlist={isAuthenticated ? isInWishlist(p.id) : false}
+          onToggleWishlist={
+            isAuthenticated ? (id) => { void toggleWishlist(id) } : undefined
+          }
         />
       ))}
     </div>
