@@ -6,9 +6,9 @@
  * Գործարկում. pnpm exec tsx scripts/set-showcase-demo-status.ts
  */
 
-import { PrismaClient } from '@prisma/client'
+import { createPrismaClient } from '../src/lib/prisma'
 
-const prisma = new PrismaClient()
+const prisma = createPrismaClient()
 
 const PROMO_SAMPLE = 3
 const BEST_ONLY_SAMPLE = 3

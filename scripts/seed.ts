@@ -1,8 +1,9 @@
-import { PrismaClient } from '@prisma/client'
+import 'dotenv/config'
+import { createPrismaClient } from '../src/lib/prisma'
 import fs from 'fs'
 import path from 'path'
 
-const prisma = new PrismaClient()
+const prisma = createPrismaClient()
 
 type SeedProduct = {
   name: string

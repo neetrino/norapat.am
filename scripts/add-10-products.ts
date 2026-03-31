@@ -1,6 +1,6 @@
-import { PrismaClient } from '@prisma/client'
+import { createPrismaClient } from '../src/lib/prisma'
 
-const prisma = new PrismaClient()
+const prisma = createPrismaClient()
 
 const PRODUCTS = [
   { name: 'Пиде с мясом', description: 'Классическое пиде с мясной начинкой и специями', price: 850, image: '/images/pide-myaso.png', category: 'Пиде', ingredients: ['Тесто', 'Мясо', 'Лук', 'Специи'] },
