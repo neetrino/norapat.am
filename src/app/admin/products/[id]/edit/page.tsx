@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { ArrowLeft, Save, X, Trash2 } from 'lucide-react'
+import { Save, X, Trash2 } from 'lucide-react'
 import Link from 'next/link'
 import { Product, Category } from '@/types'
 import ImageSelectorMultiple from '@/components/ImageSelectorMultiple'
@@ -252,25 +252,12 @@ export default function EditProductPage({ params }: EditProductPageProps) {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      
-      {/* Ֆիքսված վերնագրի բացատ */}
-      <div className="h-header-spacer-mobile lg:hidden" aria-hidden />
-      <div className="h-header-spacer-desktop hidden lg:block" aria-hidden />
-      
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-2 pb-8 sm:pt-3">
         {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center gap-4 mb-4">
-            <Link href="/admin/products">
-              <Button variant="outline" size="sm" className="flex items-center gap-2">
-                <ArrowLeft className="h-4 w-4" />
-                Վերադարձ
-              </Button>
-            </Link>
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">Խմբագրել ապրանքը</h1>
-              <p className="text-gray-600 mt-2">Ապրանքի տվյալների փոփոխում</p>
-            </div>
+        <div className="mb-4 text-center">
+          <div className="mb-2">
+            <h1 className="text-3xl font-bold text-gray-900">Խմբագրել ապրանքը</h1>
+            <p className="text-gray-600 mt-1.5">Ապրանքի տվյալների փոփոխում</p>
           </div>
         </div>
 
