@@ -84,6 +84,7 @@ export default function AdminProducts() {
     Record<string, PromotionFlags>
   >({})
   const [isSavingPromotion, setIsSavingPromotion] = useState(false)
+  const [isBulkDeleting, setIsBulkDeleting] = useState(false)
   /** Նույն ապրանքի+դաշտի հին PATCH-ը չեղարկելու համար (արագ կրկին սեղմելիս վերջին արժեքը մնա) */
   const toggleAbortRef = useRef<Map<string, AbortController>>(new Map())
 
@@ -139,6 +140,64 @@ export default function AdminProducts() {
     } catch (err) {
       console.error('Error deleting product:', err)
       alert('Սխալ ապրանքը ջնջելիս')
+    }
+  }
+
+  const handleBulkDelete = async () => {
+    const toDelete = products.filter(p => selectedIds.has(p.id))
+    if (toDelete.length === 0) {
+      setSelectedIds(new Set())
+      return
+    }
+    const msg =
+      toDelete.length === 1
+        ? 'Համոզվա՞ծ եք, որ ցանկանում եք ջնջել այս ապրանքը։'
+        : `Համոզվա՞ծ եք, որ ցանկանում եք ջնջել ${toDelete.length} ապրանք։`
+    if (!confirm(msg)) return
+
+    setIsBulkDeleting(true)
+    const deletedIds: string[] = []
+    let failedCount = 0
+
+    try {
+      for (const p of toDelete) {
+        try {
+          const res = await fetch(`/api/products/${p.id}`, { method: 'DELETE' })
+          if (res.ok) {
+            deletedIds.push(p.id)
+          } else {
+            failedCount += 1
+          }
+        } catch {
+          failedCount += 1
+        }
+      }
+
+      if (deletedIds.length > 0) {
+        setProducts(prev => prev.filter(x => !deletedIds.includes(x.id)))
+        setSelectedIds(prev => {
+          const next = new Set(prev)
+          for (const id of deletedIds) {
+            next.delete(id)
+          }
+          return next
+        })
+        setSavedPromotionById(prev => {
+          const next = { ...prev }
+          for (const id of deletedIds) {
+            delete next[id]
+          }
+          return next
+        })
+      }
+
+      if (failedCount > 0) {
+        alert(
+          `${failedCount} ապրանք չջնջվեց (օր․ կապված է պատվերի հետ կամ սերվերի սխալ)։`
+        )
+      }
+    } finally {
+      setIsBulkDeleting(false)
     }
   }
 
@@ -522,6 +581,19 @@ export default function AdminProducts() {
                 >
                   <Save className="h-3.5 w-3.5 shrink-0" />
                   {isSavingPromotion ? 'Պահպանվում է…' : 'Պահպանել'}
+                </button>
+              )}
+              {selectedIds.size > 0 && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    void handleBulkDelete()
+                  }}
+                  disabled={isBulkDeleting}
+                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-red-700 bg-red-100 border border-red-200 hover:bg-red-200 px-3 py-1.5 rounded-lg transition-colors disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  <Trash2 className="h-3.5 w-3.5 shrink-0" />
+                  {isBulkDeleting ? 'Ջնջվում է…' : 'Ջնջել ընտրվածը'}
                 </button>
               )}
               <button
