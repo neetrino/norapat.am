@@ -306,6 +306,8 @@ export const hy: AppMessages = {
     add: 'Գնել',
     wishlistAdd: 'Ավելացնել նախընտրածում',
     wishlistRemove: 'Հանել նախընտրածից',
+    starAdd: 'Նշել աստղով',
+    starRemove: 'Հանել աստղը',
   },
   legal: {
     privacyShort: 'Գաղտնիություն',

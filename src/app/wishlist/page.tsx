@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useSession } from 'next-auth/react'
 import { ArrowLeft, Heart } from 'lucide-react'
 import { useWishlist, type WishlistProduct } from '@/hooks/useWishlist'
+import { useStarred } from '@/hooks/useStarred'
 import { useCart } from '@/hooks/useCart'
 import Footer from '@/components/Footer'
 import ProductCard from '@/components/ProductCard'
@@ -19,7 +20,7 @@ type WishlistGridItem =
 
 export default function WishlistPage() {
   const { t } = useI18n()
-  const { wishlist: wishlistCopy, auth } = t
+  const { wishlist: wishlistCopy } = t
   const { data: session, status: sessionStatus } = useSession()
   const {
     products: wishlistRows,
@@ -28,6 +29,7 @@ export default function WishlistPage() {
     isInWishlist,
     remove: removeFromWishlist
   } = useWishlist()
+  const { isStarred, toggle: toggleStar } = useStarred()
   const { addItem } = useCart()
   const [detailProducts, setDetailProducts] = useState<ProductWithCategory[]>([])
   const [detailsLoading, setDetailsLoading] = useState(false)
@@ -93,33 +95,7 @@ export default function WishlistPage() {
   )
 
   const showInitialLoading =
-    sessionStatus === 'loading' || (session?.user && wishlistLoading)
-
-  if (sessionStatus !== 'loading' && !session?.user) {
-    return (
-      <div className="min-h-screen bg-white">
-        <div className="h-header-spacer-mobile lg:h-header-spacer-desktop" aria-hidden />
-        <div className="max-w-xl mx-auto px-4 py-16 text-center">
-          <div className="w-24 h-24 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-6">
-            <Heart className="h-12 w-12 text-orange-500" />
-          </div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-3">{wishlistCopy.pageTitle}</h1>
-          <p className="text-gray-600 mb-8">
-            {wishlistCopy.loginPrompt}
-          </p>
-          <Link
-            href="/login"
-            className="inline-flex items-center justify-center bg-orange-500 text-white px-8 py-3 rounded-xl font-semibold hover:bg-orange-600 transition-colors"
-          >
-            {auth.login}
-          </Link>
-        </div>
-        <div className="hidden lg:block">
-          <Footer />
-        </div>
-      </div>
-    )
-  }
+    sessionStatus === 'loading' || (!!session?.user && wishlistLoading)
 
   if (showInitialLoading) {
     return (
@@ -192,8 +168,10 @@ export default function WishlistPage() {
                       variant="compact"
                       onAddToCart={handleAddToCart}
                       addedToCart={addedToCart}
+                      isStarred={isStarred(item.product.id)}
+                      onToggleStar={(id) => { void toggleStar(id) }}
                       isInWishlist={isInWishlist(item.product.id)}
-                      onToggleWishlist={toggleWishlist}
+                      onToggleWishlist={(id) => { void toggleWishlist(id) }}
                     />
                   ) : (
                     <div

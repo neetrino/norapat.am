@@ -3,7 +3,7 @@
 import { memo } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { ShoppingCart, Star, Zap, Heart, X } from 'lucide-react'
+import { ShoppingCart, Star, Zap, Heart } from 'lucide-react'
 import { Product } from '@/types'
 import { useI18n } from '@/i18n/I18nContext'
 import { getProductDisplayName } from '@/i18n/getProductDisplayName'
@@ -14,6 +14,8 @@ interface ProductCardProps {
   onAddToCart?: (product: Product) => void
   variant?: 'default' | 'compact' | 'horizontal'
   addedToCart?: Set<string>
+  isStarred?: boolean
+  onToggleStar?: (productId: string) => void
   isInWishlist?: boolean
   onToggleWishlist?: (productId: string) => void
 }
@@ -59,6 +61,8 @@ const ProductCard = memo(
     onAddToCart,
     variant = 'default',
     addedToCart,
+    isStarred = false,
+    onToggleStar,
     isInWishlist,
     onToggleWishlist,
   }: ProductCardProps) => {
@@ -81,6 +85,10 @@ const ProductCard = memo(
           : product.status === 'CLASSIC'
             ? { tone: 'blue' as const, icon: 'star' as const, label: pc.badgeClassic }
             : null
+
+    const showStarBtn = Boolean(onToggleStar)
+    const showHeartBtn = Boolean(onToggleWishlist)
+    const hasTopQuickActions = showStarBtn || showHeartBtn
 
     if (variant === 'horizontal') {
       return (
@@ -107,7 +115,11 @@ const ProductCard = memo(
               <div className="absolute inset-0 flex items-center justify-center text-4xl">🍽️</div>
             )}
 
-            <div className="absolute left-2.5 top-0.5 flex flex-col gap-1.5 sm:left-3 sm:top-1">
+            <div
+              className={`absolute left-2.5 flex flex-col gap-1.5 sm:left-3 ${
+                hasTopQuickActions ? 'top-14 sm:top-[3.5rem]' : 'top-0.5 sm:top-1'
+              }`}
+            >
               {hasDiscount && (
                 <div className="inline-flex w-fit items-center rounded-full bg-[#E53225] px-3 py-1.5 text-[10px] font-black leading-none tracking-[0.12em] text-white shadow-[0_12px_22px_rgba(229,50,37,0.28)]">
                   -{discountPercent}%
@@ -184,26 +196,52 @@ const ProductCard = memo(
             </div>
           </div>
 
-          {onToggleWishlist && (
+          {showStarBtn && (
+            <button
+              type="button"
+              aria-label={isStarred ? pc.starRemove : pc.starAdd}
+              onClick={(e) => {
+                e.preventDefault()
+                e.stopPropagation()
+                onToggleStar?.(product.id)
+              }}
+              className={`absolute left-3 top-3 z-20 flex h-9 w-9 items-center justify-center rounded-full border bg-white/90 shadow-sm backdrop-blur transition-all duration-200 active:scale-90 ${
+                isStarred
+                  ? 'border-amber-200 bg-amber-50'
+                  : 'border-white/70 hover:bg-white'
+              }`}
+            >
+              <Star
+                className={`h-4 w-4 transition-colors duration-200 ${
+                  isStarred
+                    ? 'fill-amber-400 text-amber-500'
+                    : 'text-slate-400 hover:text-amber-500'
+                }`}
+              />
+            </button>
+          )}
+          {showHeartBtn && (
             <button
               type="button"
               aria-label={isInWishlist ? pc.wishlistRemove : pc.wishlistAdd}
               onClick={(e) => {
                 e.preventDefault()
                 e.stopPropagation()
-                onToggleWishlist(product.id)
+                onToggleWishlist?.(product.id)
               }}
-              className={`absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full border shadow-sm backdrop-blur transition-all duration-200 active:scale-90 ${
+              className={`absolute right-3 top-3 z-20 flex h-9 w-9 items-center justify-center rounded-full border shadow-sm backdrop-blur transition-all duration-200 active:scale-90 ${
                 isInWishlist
-                  ? 'border-red-100 bg-red-50'
+                  ? 'border-red-200 bg-red-50'
                   : 'border-white/70 bg-white/90 hover:bg-white'
               }`}
             >
-              {isInWishlist ? (
-                <X className="h-4 w-4 text-red-500" />
-              ) : (
-                <Heart className="h-4 w-4 text-slate-400 transition-all duration-200 hover:text-slate-600" />
-              )}
+              <Heart
+                className={`h-4 w-4 transition-colors duration-200 ${
+                  isInWishlist
+                    ? 'fill-red-500 text-red-500'
+                    : 'text-slate-400 hover:text-red-400'
+                }`}
+              />
             </button>
           )}
         </Link>
@@ -229,28 +267,62 @@ const ProductCard = memo(
           <div aria-hidden className="absolute -left-8 bottom-0 h-28 w-28 rounded-full bg-[#ffd8c8]/45 blur-3xl" />
           <div aria-hidden className="absolute -right-8 top-0 h-24 w-24 rounded-full bg-white/80 blur-2xl" />
 
-          {onToggleWishlist && (
+          {showStarBtn && (
+            <button
+              type="button"
+              aria-label={isStarred ? pc.starRemove : pc.starAdd}
+              onClick={(e) => {
+                e.preventDefault()
+                e.stopPropagation()
+                onToggleStar?.(product.id)
+              }}
+              className={`absolute left-3 top-3 z-20 flex items-center justify-center rounded-full border bg-white/90 shadow-sm backdrop-blur transition-all active:scale-90 ${
+                isCompact ? 'h-9 w-9' : 'h-10 w-10'
+              } ${isStarred ? 'border-amber-200 bg-amber-50' : 'border-white/70 hover:bg-white'}`}
+            >
+              <Star
+                className={`${isCompact ? 'h-4 w-4' : 'h-5 w-5'} transition-colors duration-200 ${
+                  isStarred
+                    ? 'fill-amber-400 text-amber-500'
+                    : 'text-slate-400 hover:text-amber-500'
+                }`}
+              />
+            </button>
+          )}
+          {showHeartBtn && (
             <button
               type="button"
               aria-label={isInWishlist ? pc.wishlistRemove : pc.wishlistAdd}
               onClick={(e) => {
                 e.preventDefault()
                 e.stopPropagation()
-                onToggleWishlist(product.id)
+                onToggleWishlist?.(product.id)
               }}
               className={`absolute right-3 top-3 z-20 flex items-center justify-center rounded-full border bg-white/90 shadow-sm backdrop-blur transition-all active:scale-90 ${
                 isCompact ? 'h-9 w-9' : 'h-10 w-10'
-              } ${isInWishlist ? 'border-red-100 bg-red-50' : 'border-white/70 hover:bg-white'}`}
+              } ${isInWishlist ? 'border-red-200 bg-red-50' : 'border-white/70 hover:bg-white'}`}
             >
-              {isInWishlist ? (
-                <X className={`${isCompact ? 'h-4 w-4' : 'h-5 w-5'} text-red-500`} />
-              ) : (
-                <Heart className={`${isCompact ? 'h-4 w-4' : 'h-5 w-5'} text-slate-400`} />
-              )}
+              <Heart
+                className={`${isCompact ? 'h-4 w-4' : 'h-5 w-5'} transition-colors duration-200 ${
+                  isInWishlist
+                    ? 'fill-red-500 text-red-500'
+                    : 'text-slate-400 hover:text-red-400'
+                }`}
+              />
             </button>
           )}
 
-          <div className={`absolute left-2.5 top-0.5 z-20 flex flex-col gap-1.5 ${isCompact ? '' : 'sm:left-3 sm:top-1'}`}>
+          <div
+            className={`absolute left-2.5 z-20 flex flex-col gap-1.5 sm:left-3 ${
+              hasTopQuickActions
+                ? isCompact
+                  ? 'top-14'
+                  : 'top-14 sm:top-[3.75rem]'
+                : isCompact
+                  ? 'top-0.5'
+                  : 'top-0.5 sm:top-1'
+            }`}
+          >
             {hasDiscount && (
               <div className="inline-flex w-fit items-center rounded-full bg-[#E53225] px-3 py-1.5 text-[10px] font-black leading-none tracking-[0.12em] text-white shadow-[0_12px_22px_rgba(229,50,37,0.28)]">
                 -{discountPercent}%

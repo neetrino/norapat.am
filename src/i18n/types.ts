@@ -294,6 +294,8 @@ export interface AppMessages {
     add: string
     wishlistAdd: string
     wishlistRemove: string
+    starAdd: string
+    starRemove: string
   }
   legal: {
     privacyShort: string

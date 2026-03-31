@@ -197,6 +197,8 @@ function ShowcaseCarouselTrack(props: {
   viewEntireLabel: string
   onAddToCart?: (product: Product) => void
   addedToCart?: Set<string>
+  isStarred?: (productId: string) => boolean
+  onToggleStar?: (productId: string) => void
   isInWishlist?: (productId: string) => boolean
   onToggleWishlist?: (productId: string) => void
 }) {
@@ -233,6 +235,8 @@ function ShowcaseCarouselTrack(props: {
                 onAddToCart={props.onAddToCart}
                 variant="compact"
                 addedToCart={props.addedToCart}
+                isStarred={props.isStarred?.(product.id)}
+                onToggleStar={props.onToggleStar}
                 isInWishlist={props.isInWishlist?.(product.id)}
                 onToggleWishlist={props.onToggleWishlist}
               />
@@ -256,6 +260,8 @@ export interface HomeShowcaseCarouselProps {
   viewEntireLabel: string
   onAddToCart?: (product: Product) => void
   addedToCart?: Set<string>
+  isStarred?: (productId: string) => boolean
+  onToggleStar?: (productId: string) => void
   isInWishlist?: (productId: string) => boolean
   onToggleWishlist?: (productId: string) => void
 }
@@ -269,6 +275,8 @@ export function HomeShowcaseCarousel({
   viewEntireLabel,
   onAddToCart,
   addedToCart,
+  isStarred,
+  onToggleStar,
   isInWishlist,
   onToggleWishlist,
 }: HomeShowcaseCarouselProps) {
@@ -299,6 +307,8 @@ export function HomeShowcaseCarousel({
           viewEntireLabel={viewEntireLabel}
           onAddToCart={onAddToCart}
           addedToCart={addedToCart}
+          isStarred={isStarred}
+          onToggleStar={onToggleStar}
           isInWishlist={isInWishlist}
           onToggleWishlist={onToggleWishlist}
         />

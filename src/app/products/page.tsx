@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback, useRef, Suspense, useMemo } from 'react'
-import { useSearchParams, useRouter } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 import {
   Search,
   ArrowDownUp,
@@ -12,6 +12,7 @@ import {
 import Image from 'next/image'
 import { useCart } from '@/hooks/useCart'
 import { useWishlist } from '@/hooks/useWishlist'
+import { useStarred } from '@/hooks/useStarred'
 import { Product, type CategoryWithCount } from '@/types'
 import Footer from '@/components/Footer'
 import ProductCard from '@/components/ProductCard'
@@ -140,9 +141,9 @@ function ProductsPageContent() {
   const [menuPage, setMenuPage] = useState(1)
   const [totalProductCount, setTotalProductCount] = useState(0)
   const [addedToCart, setAddedToCart] = useState<Set<string>>(new Set())
-  const router = useRouter()
   const { addItem } = useCart()
-  const { isInWishlist, toggle: toggleWishlist, isAuthenticated } = useWishlist()
+  const { isInWishlist, toggle: toggleWishlist } = useWishlist()
+  const { isStarred, toggle: toggleStar } = useStarred()
   const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const productGridTopRef = useRef<HTMLDivElement>(null)
 
@@ -261,13 +262,16 @@ function ProductsPageContent() {
 
   const handleToggleWishlist = useCallback(
     (productId: string) => {
-      if (!isAuthenticated) {
-        router.push('/login')
-        return
-      }
-      toggleWishlist(productId)
+      void toggleWishlist(productId)
     },
-    [isAuthenticated, toggleWishlist, router]
+    [toggleWishlist]
+  )
+
+  const handleToggleStar = useCallback(
+    (productId: string) => {
+      void toggleStar(productId)
+    },
+    [toggleStar]
   )
 
   if (loading) {
@@ -562,8 +566,10 @@ function ProductsPageContent() {
                 onAddToCart={handleAddToCart}
                 variant={gridCols === 2 ? 'horizontal' : gridCols === 3 ? 'default' : 'compact'}
                 addedToCart={addedToCart}
-                isInWishlist={isAuthenticated ? isInWishlist(product.id) : undefined}
-                onToggleWishlist={isAuthenticated ? handleToggleWishlist : undefined}
+                isStarred={isStarred(product.id)}
+                onToggleStar={handleToggleStar}
+                isInWishlist={isInWishlist(product.id)}
+                onToggleWishlist={handleToggleWishlist}
               />
             ))}
           </div>
