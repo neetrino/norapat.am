@@ -85,6 +85,24 @@ const _statusLabels = {
   CANCELLED: 'Չեղարկված'
 }
 
+const ORDER_STATUSES_LIST: OrderStatus[] = [
+  'PENDING',
+  'CONFIRMED',
+  'PREPARING',
+  'READY',
+  'DELIVERED',
+  'CANCELLED',
+]
+
+const statusFilterActiveClass: Record<OrderStatus, string> = {
+  PENDING: 'bg-yellow-500 hover:bg-yellow-600',
+  CONFIRMED: 'bg-blue-500 hover:bg-blue-600',
+  PREPARING: 'bg-orange-500 hover:bg-orange-600',
+  READY: 'bg-green-500 hover:bg-green-600',
+  DELIVERED: 'bg-emerald-500 hover:bg-emerald-600',
+  CANCELLED: 'bg-red-500 hover:bg-red-600',
+}
+
 export default function AdminOrdersPage() {
   const { data: session, status } = useSession()
   const router = useRouter()
@@ -92,7 +110,7 @@ export default function AdminOrdersPage() {
   const [orders, setOrders] = useState<OrderWithDetails[]>([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
-  const [filterGroup, setFilterGroup] = useState<'all' | 'new' | 'in_progress' | 'delivered' | 'cancelled'>('all')
+  const [orderStatusFilter, setOrderStatusFilter] = useState<'all' | OrderStatus>('all')
   const [currentPage, setCurrentPage] = useState(1)
   const [selectedOrder, setSelectedOrder] = useState<OrderWithDetails | null>(null)
   const [showModal, setShowModal] = useState(false)
@@ -123,8 +141,8 @@ export default function AdminOrdersPage() {
         limit: '20'
       })
       
-      if (filterGroup !== 'all') {
-        params.append('filter', filterGroup)
+      if (orderStatusFilter !== 'all') {
+        params.append('status', orderStatusFilter)
       }
 
       const response = await fetch(`/api/admin/orders?${params}`)
@@ -141,7 +159,7 @@ export default function AdminOrdersPage() {
     } finally {
       setLoading(false)
     }
-  }, [currentPage, filterGroup])
+  }, [currentPage, orderStatusFilter])
 
   // Բացել պատվերի մանրամասնությամբ մոդալ պատուհան
   const openOrderDetails = (order: OrderWithDetails) => {
@@ -264,7 +282,7 @@ export default function AdminOrdersPage() {
 
   useEffect(() => {
     setSelectedIds(new Set())
-  }, [currentPage, filterGroup, searchTerm])
+  }, [currentPage, orderStatusFilter, searchTerm])
 
   // Զտել պատվերները որոնման հարցման համաձայն
   const filteredOrders = orders.filter(order => {
@@ -337,64 +355,31 @@ export default function AdminOrdersPage() {
           <div className="flex flex-wrap gap-2">
             <Button
               type="button"
-              variant={filterGroup === 'all' ? 'default' : 'outline'}
+              variant={orderStatusFilter === 'all' ? 'default' : 'outline'}
               size="sm"
               onClick={() => {
-                setFilterGroup('all')
+                setOrderStatusFilter('all')
                 setCurrentPage(1)
               }}
-              className={filterGroup === 'all' ? 'bg-orange-500 hover:bg-orange-600' : ''}
+              className={orderStatusFilter === 'all' ? 'bg-orange-500 hover:bg-orange-600' : ''}
             >
               Բոլորը
             </Button>
-            <Button
-              type="button"
-              variant={filterGroup === 'new' ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => {
-                setFilterGroup('new')
-                setCurrentPage(1)
-              }}
-              className={filterGroup === 'new' ? 'bg-yellow-500 hover:bg-yellow-600' : ''}
-            >
-              Նոր
-            </Button>
-            <Button
-              type="button"
-              variant={filterGroup === 'in_progress' ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => {
-                setFilterGroup('in_progress')
-                setCurrentPage(1)
-              }}
-              className={filterGroup === 'in_progress' ? 'bg-blue-500 hover:bg-blue-600' : ''}
-            >
-              Ընթացքում
-            </Button>
-            <Button
-              type="button"
-              variant={filterGroup === 'delivered' ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => {
-                setFilterGroup('delivered')
-                setCurrentPage(1)
-              }}
-              className={filterGroup === 'delivered' ? 'bg-green-500 hover:bg-green-600' : ''}
-            >
-              Առաքված
-            </Button>
-            <Button
-              type="button"
-              variant={filterGroup === 'cancelled' ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => {
-                setFilterGroup('cancelled')
-                setCurrentPage(1)
-              }}
-              className={filterGroup === 'cancelled' ? 'bg-red-500 hover:bg-red-600' : ''}
-            >
-              Չեղարկված
-            </Button>
+            {ORDER_STATUSES_LIST.map(s => (
+              <Button
+                key={s}
+                type="button"
+                variant={orderStatusFilter === s ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => {
+                  setOrderStatusFilter(s)
+                  setCurrentPage(1)
+                }}
+                className={orderStatusFilter === s ? statusFilterActiveClass[s] : ''}
+              >
+                {_statusLabels[s]}
+              </Button>
+            ))}
           </div>
         </div>
 
@@ -486,7 +471,7 @@ export default function AdminOrdersPage() {
                     <ShoppingCart className="h-10 w-10 mx-auto mb-3 text-gray-200" />
                     Պատվերներ չեն գտնվել
                     <p className="text-xs mt-2 text-gray-400 font-normal normal-case">
-                      {searchTerm || filterGroup !== 'all'
+                      {searchTerm || orderStatusFilter !== 'all'
                         ? 'Փորձեք փոխել ֆիլտրերը'
                         : 'Դեռ պատվերներ չկան'}
                     </p>
