@@ -17,6 +17,9 @@ const SECTION_LABEL =
 const CONTACT_ICON_BOX = `mt-0.5 h-3.5 w-3.5 shrink-0 ${ICON_ACCENT}`
 const SOCIAL_BTN =
   'inline-flex h-9 w-9 items-center justify-center rounded-lg border border-stone-200/80 bg-white/60 text-stone-600 shadow-sm transition-colors hover:border-stone-300 hover:text-red-800'
+/** Extra top offset: mobile — once after brand; lg — all three columns aligned below footer top */
+const FOOTER_NAV_TOP = 'pt-6 sm:pt-7 lg:pt-8'
+const FOOTER_POLICIES_CONTACT_TOP = 'max-lg:pt-0 lg:pt-8'
 
 export default function Footer() {
   const { t } = useI18n()
@@ -59,7 +62,7 @@ export default function Footer() {
               </div>
 
               <nav
-                className="lg:col-span-2 lg:border-r lg:border-stone-200/70 lg:pr-6 xl:pr-8"
+                className={`${FOOTER_NAV_TOP} lg:col-span-2 lg:border-r lg:border-stone-200/70 lg:pr-6 xl:pr-8`}
                 aria-labelledby="footer-nav-heading"
               >
                 <h2 id="footer-nav-heading" className={SECTION_LABEL}>
@@ -85,7 +88,7 @@ export default function Footer() {
               </nav>
 
               <div
-                className="lg:col-span-3 lg:border-r lg:border-stone-200/70 lg:pl-6 lg:pr-10 xl:pl-8 xl:pr-12"
+                className={`${FOOTER_POLICIES_CONTACT_TOP} lg:col-span-3 lg:border-r lg:border-stone-200/70 lg:pl-6 lg:pr-10 xl:pl-8 xl:pr-12`}
                 aria-labelledby="footer-policies-heading"
               >
                 <h2 id="footer-policies-heading" className={SECTION_LABEL}>
@@ -107,7 +110,10 @@ export default function Footer() {
                 </div>
               </div>
 
-              <div className="lg:col-span-3 lg:pl-8 xl:pl-10" aria-labelledby="footer-contact-heading">
+              <div
+                className={`${FOOTER_POLICIES_CONTACT_TOP} lg:col-span-3 lg:pl-8 xl:pl-10`}
+                aria-labelledby="footer-contact-heading"
+              >
                 <h2 id="footer-contact-heading" className={SECTION_LABEL}>
                   {f.contactsHeading}
                 </h2>
