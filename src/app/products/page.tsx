@@ -12,7 +12,6 @@ import {
 import Image from 'next/image'
 import { useCart } from '@/hooks/useCart'
 import { useWishlist } from '@/hooks/useWishlist'
-import { useStarred } from '@/hooks/useStarred'
 import { Product, type CategoryWithCount } from '@/types'
 import Footer from '@/components/Footer'
 import ProductCard from '@/components/ProductCard'
@@ -143,7 +142,6 @@ function ProductsPageContent() {
   const [addedToCart, setAddedToCart] = useState<Set<string>>(new Set())
   const { addItem } = useCart()
   const { isInWishlist, toggle: toggleWishlist } = useWishlist()
-  const { isStarred, toggle: toggleStar } = useStarred()
   const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const productGridTopRef = useRef<HTMLDivElement>(null)
 
@@ -265,13 +263,6 @@ function ProductsPageContent() {
       void toggleWishlist(productId)
     },
     [toggleWishlist]
-  )
-
-  const handleToggleStar = useCallback(
-    (productId: string) => {
-      void toggleStar(productId)
-    },
-    [toggleStar]
   )
 
   if (loading) {
@@ -566,8 +557,6 @@ function ProductsPageContent() {
                 onAddToCart={handleAddToCart}
                 variant={gridCols === 2 ? 'horizontal' : gridCols === 3 ? 'default' : 'compact'}
                 addedToCart={addedToCart}
-                isStarred={isStarred(product.id)}
-                onToggleStar={handleToggleStar}
                 isInWishlist={isInWishlist(product.id)}
                 onToggleWishlist={handleToggleWishlist}
               />

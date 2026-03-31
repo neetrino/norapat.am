@@ -7,7 +7,6 @@ import { useState, useEffect } from "react";
 import { useI18n } from "@/i18n/I18nContext";
 import { useCart } from "@/hooks/useCart";
 import { useWishlist } from "@/hooks/useWishlist";
-import { useStarred } from "@/hooks/useStarred";
 import { Product, ProductWithCategory } from "@/types";
 import Footer from "@/components/Footer";
 import { BrandBannerSection } from "@/components/home/BrandBannerSection";
@@ -35,7 +34,6 @@ export default function Home() {
   const [addedToCart, setAddedToCart] = useState<Set<string>>(new Set())
   const { addItem } = useCart()
   const { isInWishlist, toggle: toggleWishlist } = useWishlist()
-  const { isStarred, toggle: toggleStar } = useStarred()
 
   useEffect(() => {
     const controller = new AbortController()
@@ -148,8 +146,6 @@ export default function Home() {
                 viewEntireLabel={h.viewEntireShort}
                 onAddToCart={handleAddToCart}
                 addedToCart={addedToCart}
-                isStarred={isStarred}
-                onToggleStar={(id) => { void toggleStar(id) }}
                 isInWishlist={isInWishlist}
                 onToggleWishlist={(id) => { void toggleWishlist(id) }}
               />
@@ -196,8 +192,6 @@ export default function Home() {
                 viewEntireLabel={h.viewEntireShort}
                 onAddToCart={handleAddToCart}
                 addedToCart={addedToCart}
-                isStarred={isStarred}
-                onToggleStar={(id) => { void toggleStar(id) }}
                 isInWishlist={isInWishlist}
                 onToggleWishlist={(id) => { void toggleWishlist(id) }}
               />

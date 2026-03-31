@@ -5,7 +5,6 @@ import Link from 'next/link'
 import { useSession } from 'next-auth/react'
 import { ArrowLeft, Heart } from 'lucide-react'
 import { useWishlist, type WishlistProduct } from '@/hooks/useWishlist'
-import { useStarred } from '@/hooks/useStarred'
 import { useCart } from '@/hooks/useCart'
 import Footer from '@/components/Footer'
 import ProductCard from '@/components/ProductCard'
@@ -29,7 +28,6 @@ export default function WishlistPage() {
     isInWishlist,
     remove: removeFromWishlist
   } = useWishlist()
-  const { isStarred, toggle: toggleStar } = useStarred()
   const { addItem } = useCart()
   const [detailProducts, setDetailProducts] = useState<ProductWithCategory[]>([])
   const [detailsLoading, setDetailsLoading] = useState(false)
@@ -168,8 +166,6 @@ export default function WishlistPage() {
                       variant="compact"
                       onAddToCart={handleAddToCart}
                       addedToCart={addedToCart}
-                      isStarred={isStarred(item.product.id)}
-                      onToggleStar={(id) => { void toggleStar(id) }}
                       isInWishlist={isInWishlist(item.product.id)}
                       onToggleWishlist={(id) => { void toggleWishlist(id) }}
                     />

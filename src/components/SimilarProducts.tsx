@@ -4,7 +4,6 @@ import { useCallback, useState } from 'react'
 import ProductCard from '@/components/ProductCard'
 import { useCart } from '@/hooks/useCart'
 import { useWishlist } from '@/hooks/useWishlist'
-import { useStarred } from '@/hooks/useStarred'
 import type { Product } from '@/types'
 
 interface SimilarProductsProps {
@@ -16,7 +15,6 @@ const CART_FEEDBACK_MS = 2000
 export function SimilarProducts({ products }: SimilarProductsProps) {
   const { addItem } = useCart()
   const { isInWishlist, toggle: toggleWishlist } = useWishlist()
-  const { isStarred, toggle: toggleStar } = useStarred()
   const [addedToCart, setAddedToCart] = useState<Set<string>>(new Set())
 
   const handleAddToCart = useCallback(
@@ -45,8 +43,6 @@ export function SimilarProducts({ products }: SimilarProductsProps) {
           variant="default"
           onAddToCart={handleAddToCart}
           addedToCart={addedToCart}
-          isStarred={isStarred(p.id)}
-          onToggleStar={(id) => { void toggleStar(id) }}
           isInWishlist={isInWishlist(p.id)}
           onToggleWishlist={(id) => { void toggleWishlist(id) }}
         />

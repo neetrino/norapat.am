@@ -14,8 +14,6 @@ interface ProductCardProps {
   onAddToCart?: (product: Product) => void
   variant?: 'default' | 'compact' | 'horizontal'
   addedToCart?: Set<string>
-  isStarred?: boolean
-  onToggleStar?: (productId: string) => void
   isInWishlist?: boolean
   onToggleWishlist?: (productId: string) => void
 }
@@ -61,8 +59,6 @@ const ProductCard = memo(
     onAddToCart,
     variant = 'default',
     addedToCart,
-    isStarred = false,
-    onToggleStar,
     isInWishlist,
     onToggleWishlist,
   }: ProductCardProps) => {
@@ -86,9 +82,8 @@ const ProductCard = memo(
             ? { tone: 'blue' as const, icon: 'star' as const, label: pc.badgeClassic }
             : null
 
-    const showStarBtn = Boolean(onToggleStar)
     const showHeartBtn = Boolean(onToggleWishlist)
-    const hasTopQuickActions = showStarBtn || showHeartBtn
+    const hasTopQuickActions = showHeartBtn
 
     if (variant === 'horizontal') {
       return (
@@ -196,30 +191,6 @@ const ProductCard = memo(
             </div>
           </div>
 
-          {showStarBtn && (
-            <button
-              type="button"
-              aria-label={isStarred ? pc.starRemove : pc.starAdd}
-              onClick={(e) => {
-                e.preventDefault()
-                e.stopPropagation()
-                onToggleStar?.(product.id)
-              }}
-              className={`absolute left-3 top-3 z-20 flex h-9 w-9 items-center justify-center rounded-full border bg-white/90 shadow-sm backdrop-blur transition-all duration-200 active:scale-90 ${
-                isStarred
-                  ? 'border-amber-200 bg-amber-50'
-                  : 'border-white/70 hover:bg-white'
-              }`}
-            >
-              <Star
-                className={`h-4 w-4 transition-colors duration-200 ${
-                  isStarred
-                    ? 'fill-amber-400 text-amber-500'
-                    : 'text-slate-400 hover:text-amber-500'
-                }`}
-              />
-            </button>
-          )}
           {showHeartBtn && (
             <button
               type="button"
@@ -267,28 +238,6 @@ const ProductCard = memo(
           <div aria-hidden className="absolute -left-8 bottom-0 h-28 w-28 rounded-full bg-[#ffd8c8]/45 blur-3xl" />
           <div aria-hidden className="absolute -right-8 top-0 h-24 w-24 rounded-full bg-white/80 blur-2xl" />
 
-          {showStarBtn && (
-            <button
-              type="button"
-              aria-label={isStarred ? pc.starRemove : pc.starAdd}
-              onClick={(e) => {
-                e.preventDefault()
-                e.stopPropagation()
-                onToggleStar?.(product.id)
-              }}
-              className={`absolute left-3 top-3 z-20 flex items-center justify-center rounded-full border bg-white/90 shadow-sm backdrop-blur transition-all active:scale-90 ${
-                isCompact ? 'h-9 w-9' : 'h-10 w-10'
-              } ${isStarred ? 'border-amber-200 bg-amber-50' : 'border-white/70 hover:bg-white'}`}
-            >
-              <Star
-                className={`${isCompact ? 'h-4 w-4' : 'h-5 w-5'} transition-colors duration-200 ${
-                  isStarred
-                    ? 'fill-amber-400 text-amber-500'
-                    : 'text-slate-400 hover:text-amber-500'
-                }`}
-              />
-            </button>
-          )}
           {showHeartBtn && (
             <button
               type="button"
