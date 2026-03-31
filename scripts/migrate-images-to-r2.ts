@@ -14,12 +14,12 @@
  *   Կամ public/images/ թղթապանակում պետք է լինեն ֆայլերը
  */
 import 'dotenv/config'
-import { PrismaClient } from '@prisma/client'
+import { createPrismaClient } from '../src/lib/prisma'
 import { existsSync, readFileSync, unlinkSync } from 'fs'
 import { join } from 'path'
 import { uploadToR2, isR2Configured } from '../src/lib/r2'
 
-const prisma = new PrismaClient()
+const prisma = createPrismaClient()
 
 const SOURCE_URL = process.env.MIGRATION_SOURCE_URL ?? process.env.NEXTAUTH_URL ?? ''
 

@@ -2,9 +2,9 @@
  * Ս크րիպտ: ջնջել բոլոր արտադրանքները և ստեղծել 40 նոր ամբողջական տվյալներով։
  * Գործարկում: pnpm exec tsx scripts/seed-40-products.ts
  */
-import { PrismaClient } from '@prisma/client'
+import { createPrismaClient } from '../src/lib/prisma'
 
-const prisma = new PrismaClient()
+const prisma = createPrismaClient()
 
 type ProductStatus = 'REGULAR' | 'HIT' | 'NEW' | 'CLASSIC' | 'BANNER'
 

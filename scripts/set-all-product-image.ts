@@ -3,11 +3,11 @@
  * Գործարկում: pnpm exec tsx scripts/set-all-product-image.ts
  */
 import 'dotenv/config'
-import { PrismaClient } from '@prisma/client'
+import { createPrismaClient } from '../src/lib/prisma'
 import { readFileSync } from 'fs'
 import { uploadToR2 } from '../src/lib/r2'
 
-const prisma = new PrismaClient()
+const prisma = createPrismaClient()
 
 const IMAGE_SOURCE_PATH =
   'C:\\Users\\ROG\\.cursor\\projects\\c-Users-ROG-OneDrive-Desktop-norapat\\assets\\c__Users_ROG_AppData_Roaming_Cursor_User_workspaceStorage_864597b7046e9c4052ef62e4dbaa892c_images_23290-pizza-dough-iii-VAT-Beauty-4x3-06192801c8fa48fe8afaadfea28f532b-1bf1543a-7bcc-4798-94ed-228a72a72807.png'
