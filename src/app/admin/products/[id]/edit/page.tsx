@@ -10,6 +10,7 @@ import { ArrowLeft, Save, X, Trash2 } from 'lucide-react'
 import Link from 'next/link'
 import { Product, Category } from '@/types'
 import ImageSelectorMultiple from '@/components/ImageSelectorMultiple'
+import { parseProductPriceForm, productApiToPriceFormFields } from '@/lib/productPriceForm'
 
 const statuses = [
   { value: 'HIT', label: 'Վաճառքի հիթ' },
@@ -35,8 +36,8 @@ export default function EditProductPage({ params }: EditProductPageProps) {
     name: '',
     shortDescription: '',
     description: '',
-    price: '',
-    originalPrice: '',
+    listPrice: '',
+    discountedPrice: '',
     categoryId: '',
     image: '',
     images: [] as string[],
@@ -99,12 +100,16 @@ export default function EditProductPage({ params }: EditProductPageProps) {
           : productData.image && productData.image !== 'no-image'
           ? [productData.image]
           : []
+        const priceFields = productApiToPriceFormFields({
+          price: productData.price,
+          originalPrice: productData.originalPrice
+        })
         setFormData({
           name: productData.name || '',
           shortDescription: productData.shortDescription || '',
           description: productData.description || '',
-          price: productData.price?.toString() || '',
-          originalPrice: productData.originalPrice != null ? productData.originalPrice.toString() : '',
+          listPrice: priceFields.listPrice,
+          discountedPrice: priceFields.discountedPrice,
           categoryId: productData.categoryId || productData.category?.id || '',
           image: productData.image || '',
           images: productImages,
@@ -153,11 +158,18 @@ export default function EditProductPage({ params }: EditProductPageProps) {
     setError('')
 
     try {
-      // Պատրաստում ենք տվյալները
+      const { listPrice, discountedPrice, ...restForm } = formData
+      const parsed = parseProductPriceForm(listPrice, discountedPrice)
+      if (!parsed.ok) {
+        setError(parsed.error)
+        setSaving(false)
+        return
+      }
+
       const productData = {
-        ...formData,
-        price: parseFloat(formData.price),
-        originalPrice: formData.originalPrice ? parseFloat(formData.originalPrice) : null,
+        ...restForm,
+        price: parsed.price,
+        originalPrice: parsed.originalPrice,
         ingredients: formData.ingredients ? formData.ingredients.split(',').map(i => i.trim()) : [],
         image: formData.images?.length ? formData.images[0] : formData.image || 'no-image',
         images: formData.images || []
@@ -322,20 +334,23 @@ export default function EditProductPage({ params }: EditProductPageProps) {
                   />
                 </div>
 
-                {/* Գին */}
+                {/* Լիարժեք / սկզբնական գին */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Գին (֏) *
+                    Լիարժեք գին (֏) *
                   </label>
                   <Input
                     type="number"
                     step="0.01"
                     min="0"
-                    value={formData.price}
-                    onChange={(e) => handleInputChange('price', e.target.value)}
+                    value={formData.listPrice}
+                    onChange={(e) => handleInputChange('listPrice', e.target.value)}
                     placeholder="0.00"
                     required
                   />
+                  <p className="text-sm text-gray-500 mt-1">
+                    Զեղչի դեպքում մուտքագրեք սկզբնական գինը, ապա ներքևում՝ զեղչվածը
+                  </p>
                 </div>
 
                 {/* Կատեգորիա */}
@@ -377,17 +392,17 @@ export default function EditProductPage({ params }: EditProductPageProps) {
                   </select>
                 </div>
 
-                {/* Հին գին */}
+                {/* Զեղչված գին */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Հին գին (֏) — զեղչի համար
+                    Զեղչված գին (֏)
                   </label>
                   <Input
                     type="number"
                     min="0"
                     step="0.01"
-                    value={formData.originalPrice}
-                    onChange={(e) => handleInputChange('originalPrice', e.target.value)}
+                    value={formData.discountedPrice}
+                    onChange={(e) => handleInputChange('discountedPrice', e.target.value)}
                     placeholder="Թողեք դատարկ, եթե զեղչ չկա"
                     className="w-full"
                   />
