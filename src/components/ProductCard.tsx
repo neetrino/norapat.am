@@ -3,7 +3,7 @@
 import { memo } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { ShoppingCart, Star, Zap, Heart } from 'lucide-react'
+import { ShoppingCart, Star, Zap, Heart, X } from 'lucide-react'
 import { Product } from '@/types'
 import { useI18n } from '@/i18n/I18nContext'
 import { getProductDisplayName } from '@/i18n/getProductDisplayName'
@@ -199,11 +199,11 @@ const ProductCard = memo(
                   : 'border-white/70 bg-white/90 hover:bg-white'
               }`}
             >
-              <Heart
-                className={`h-4 w-4 transition-all duration-200 ${
-                  isInWishlist ? 'scale-110 fill-red-500 text-red-500' : 'text-slate-400 hover:text-slate-600'
-                }`}
-              />
+              {isInWishlist ? (
+                <X className="h-4 w-4 text-red-500" />
+              ) : (
+                <Heart className="h-4 w-4 text-slate-400 transition-all duration-200 hover:text-slate-600" />
+              )}
             </button>
           )}
         </Link>
@@ -242,11 +242,11 @@ const ProductCard = memo(
                 isCompact ? 'h-9 w-9' : 'h-10 w-10'
               } ${isInWishlist ? 'border-red-100 bg-red-50' : 'border-white/70 hover:bg-white'}`}
             >
-              <Heart
-                className={`${isCompact ? 'h-4 w-4' : 'h-5 w-5'} ${
-                  isInWishlist ? 'fill-red-500 text-red-500' : 'text-slate-400'
-                }`}
-              />
+              {isInWishlist ? (
+                <X className={`${isCompact ? 'h-4 w-4' : 'h-5 w-5'} text-red-500`} />
+              ) : (
+                <Heart className={`${isCompact ? 'h-4 w-4' : 'h-5 w-5'} text-slate-400`} />
+              )}
             </button>
           )}
 
