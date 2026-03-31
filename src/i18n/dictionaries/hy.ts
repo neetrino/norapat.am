@@ -94,7 +94,8 @@ export const hy: AppMessages = {
     removeFromWishlist: 'Հանել նախընտրածից',
   },
   footer: {
-    tagline: 'Հայկական պիդե` 15 եզակի համ իսկական գուրմանների համար։',
+    tagline:
+      'Norapat Food Court-ը պարզապես սնվելու վայր չէ․ սա այն տեղն է, որտեղ համը, մթնոլորտը և տրամադրությունը միավորվում են՝ ստեղծելով հիշվող պահեր։',
     navHeading: 'Նավիգացիա',
     contactsHeading: 'Կապ',
     policiesHeading: 'Քաղաքականություն',
