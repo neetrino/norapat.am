@@ -74,7 +74,7 @@ export default function CartPage() {
       <div className="h-header-spacer-mobile lg:h-header-spacer-desktop" aria-hidden />
       
       {/* Mobile App Style Container */}
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 lg:py-8 pb-20 lg:pb-8">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-20 lg:py-20">
         {/* Mobile Header */}
         <div className="lg:hidden mb-6">
           <div className="flex items-center justify-between mb-4">
