@@ -30,6 +30,11 @@ export const metadata: Metadata = {
   description:
     "Ավանդական ձև՝ ժամանակակից լցոնումներով։ 15 եզակի համ իրական գուրմանների համար։ Առաքում Երևանում։",
   keywords: "NORAPAT, պիդե, հայկական պիդե, մինի պիցցա, ուտելիքի առաքում, Երևան, Հայաստան",
+  icons: {
+    icon: [{ url: "/icon/norapat.svg", type: "image/svg+xml" }],
+    shortcut: "/icon/norapat.svg",
+    apple: "/icon/norapat.svg",
+  },
 };
 
 export default function RootLayout({
