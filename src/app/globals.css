@@ -260,6 +260,29 @@ html {
   }
 }
 
+@keyframes call-panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(-50%) translateX(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(-50%) translateX(0);
+  }
+}
+
+.animate-call-panel-in {
+  animation: call-panel-in 0.32s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-call-panel-in {
+    animation: none;
+    opacity: 1;
+    transform: translateY(-50%) translateX(0);
+  }
+}
+
 .animate-fade-in {
   animation: fade-in 0.8s ease-out;
 }

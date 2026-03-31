@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
-import { Search, RefreshCw, Users, Mail } from 'lucide-react'
+import { Search, RefreshCw, Users } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
 interface AdminUser {
@@ -223,15 +223,12 @@ export default function AdminUsersPage() {
                 <th className="px-4 py-3 text-center">Դերեր</th>
                 <th className="px-4 py-3 text-center">Կարգավիճակ</th>
                 <th className="px-4 py-3 text-center">Ստեղծված</th>
-                <th className="px-4 py-3 text-center">
-                  <Mail className="h-4 w-4 inline" /> Վերականգնում
-                </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50">
               {users.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="text-center py-16 text-gray-400">
+                  <td colSpan={7} className="text-center py-16 text-gray-400">
                     <Users className="h-10 w-10 mx-auto mb-3 text-gray-200" />
                     Օգտատերեր չեն գտնվել
                   </td>
@@ -299,24 +296,6 @@ export default function AdminUsersPage() {
                           day: 'numeric',
                           year: 'numeric',
                         })}
-                      </td>
-                      {/* Reset password */}
-                      <td className="px-4 py-3 text-center">
-                        <button
-                          onClick={() => {
-                            if (confirm(`Ուղարկե՞լ գաղտնաբառի վերականգնման հղում ${user.email}-ին`)) {
-                              fetch('/api/auth/forgot-password', {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({ email: user.email }),
-                              })
-                            }
-                          }}
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-cyan-400 text-cyan-600 text-xs font-medium hover:bg-cyan-50 transition-colors"
-                        >
-                          <Mail className="h-3.5 w-3.5" />
-                          Վերականգնում
-                        </button>
                       </td>
                     </tr>
                   )

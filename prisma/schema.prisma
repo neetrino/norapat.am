@@ -20,6 +20,7 @@ model User {
   role          UserRole       @default(USER)
   orders        Order[]
   wishlistItems WishlistItem[]
+  starredItems  StarredItem[]
 
   @@map("users")
 }
@@ -48,13 +49,16 @@ model Product {
   images        String[]       @default([]) // Մի քանի նկար (gallery)
   categoryId    String
   ingredients   String[]
-  isAvailable   Boolean        @default(true)
-  status        ProductStatus  @default(REGULAR)
+  isAvailable    Boolean        @default(true)
+  isBestSeller   Boolean        @default(false)
+  isSpecialOffer Boolean        @default(false)
+  status         ProductStatus  @default(REGULAR)
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
   orderItems    OrderItem[]
   category      Category       @relation(fields: [categoryId], references: [id])
   wishlistItems WishlistItem[]
+  starredItems  StarredItem[]
 
   @@map("products")
 }
@@ -173,4 +177,16 @@ model WishlistItem {
 
   @@unique([userId, productId])
   @@map("wishlist_items")
+}
+
+model StarredItem {
+  id        String   @id @default(cuid())
+  userId    String
+  productId String
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, productId])
+  @@map("starred_items")
 }

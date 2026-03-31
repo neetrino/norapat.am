@@ -6,6 +6,7 @@ import MobileBottomNav from "@/components/MobileBottomNav";
 import ServiceWorkerProvider from "@/components/ServiceWorkerProvider";
 import PullToRefresh from "@/components/PullToRefresh";
 import Header from "@/components/Header";
+import FloatingCallWidget from "@/components/FloatingCallWidget";
 import { HeaderStackProvider } from "@/contexts/HeaderStackContext";
 
 const inter = Inter({
@@ -29,6 +30,11 @@ export const metadata: Metadata = {
   description:
     "Ավանդական ձև՝ ժամանակակից լցոնումներով։ 15 եզակի համ իրական գուրմանների համար։ Առաքում Երևանում։",
   keywords: "NORAPAT, պիդե, հայկական պիդե, մինի պիցցա, ուտելիքի առաքում, Երևան, Հայաստան",
+  icons: {
+    icon: [{ url: "/icon/norapat.svg", type: "image/svg+xml" }],
+    shortcut: "/icon/norapat.svg",
+    apple: "/icon/norapat.svg",
+  },
 };
 
 export default function RootLayout({
@@ -48,6 +54,7 @@ export default function RootLayout({
             <PullToRefresh>
               {children}
             </PullToRefresh>
+            <FloatingCallWidget />
             <MobileBottomNav />
           </HeaderStackProvider>
         </ClientProviders>

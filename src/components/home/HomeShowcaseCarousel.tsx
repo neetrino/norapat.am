@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useState, useEffect, useCallback, type RefObject } from 'react'
+import { useRef, useState, useEffect, useCallback, type CSSProperties, type RefObject } from 'react'
 import Link from 'next/link'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import ProductCard from '@/components/ProductCard'
@@ -76,6 +76,58 @@ function useShowcaseCarouselScroll(listLength: number) {
   return { scrollRef, canScrollLeft, canScrollRight, scrollByDirection }
 }
 
+function useCenteredCardScale(listLength: number, scrollRef: RefObject<HTMLDivElement | null>) {
+  useEffect(() => {
+    const outer = scrollRef.current
+    if (!outer) return
+    const inner = outer.firstElementChild as HTMLElement | null
+    if (!inner) return
+
+    let frameId = 0
+
+    const applyScale = () => {
+      frameId = 0
+      const outerRect = outer.getBoundingClientRect()
+      const viewportCenter = outerRect.left + outerRect.width / 2
+      const items = Array.from(inner.querySelectorAll<HTMLElement>('[data-showcase-item="true"]'))
+
+      items.forEach((item) => {
+        const itemRect = item.getBoundingClientRect()
+        const itemCenter = itemRect.left + itemRect.width / 2
+        const distance = Math.abs(viewportCenter - itemCenter)
+        const falloff = outerRect.width * 0.65
+        const proximity = Math.max(0, 1 - distance / Math.max(falloff, 1))
+        const scale = 0.88 + proximity * 0.2
+        const opacity = 0.65 + proximity * 0.35
+
+        item.style.setProperty('--showcase-card-scale', scale.toFixed(3))
+        item.style.setProperty('--showcase-card-opacity', opacity.toFixed(3))
+        item.style.zIndex = String(Math.round(scale * 100))
+      })
+    }
+
+    const scheduleScale = () => {
+      if (frameId) return
+      frameId = window.requestAnimationFrame(applyScale)
+    }
+
+    scheduleScale()
+    outer.addEventListener('scroll', scheduleScale, { passive: true })
+    window.addEventListener('resize', scheduleScale)
+
+    const ro = new ResizeObserver(scheduleScale)
+    ro.observe(outer)
+    ro.observe(inner)
+
+    return () => {
+      if (frameId) window.cancelAnimationFrame(frameId)
+      outer.removeEventListener('scroll', scheduleScale)
+      window.removeEventListener('resize', scheduleScale)
+      ro.disconnect()
+    }
+  }, [listLength, scrollRef])
+}
+
 function CarouselArrowButton(props: {
   direction: 'prev' | 'next'
   disabled: boolean
@@ -148,6 +200,13 @@ function ShowcaseCarouselTrack(props: {
   isInWishlist?: (productId: string) => boolean
   onToggleWishlist?: (productId: string) => void
 }) {
+  useCenteredCardScale(props.list.length, props.scrollRef)
+
+  const cardScaleStyle = {
+    '--showcase-card-scale': 0.88,
+    '--showcase-card-opacity': 0.65,
+  } as CSSProperties
+
   return (
     <div
       ref={props.scrollRef}
@@ -157,16 +216,27 @@ function ShowcaseCarouselTrack(props: {
         {props.list.map((product) => (
           <div
             key={product.id}
-            className={`snap-start snap-always overflow-visible ${CARD_WIDTH_CLASS}`}
+            data-showcase-item="true"
+            style={cardScaleStyle}
+            className={`snap-start snap-always overflow-visible ${CARD_WIDTH_CLASS} transform-gpu transition-[transform,opacity] duration-300 ease-out will-change-transform`}
           >
-            <ProductCard
-              product={product}
-              onAddToCart={props.onAddToCart}
-              variant="compact"
-              addedToCart={props.addedToCart}
-              isInWishlist={props.isInWishlist?.(product.id)}
-              onToggleWishlist={props.onToggleWishlist}
-            />
+            <div
+              className="transition-[transform,filter] duration-300 ease-out"
+              style={{
+                opacity: 'var(--showcase-card-opacity)',
+                transform: 'scale(var(--showcase-card-scale))',
+                transformOrigin: 'center center',
+              }}
+            >
+              <ProductCard
+                product={product}
+                onAddToCart={props.onAddToCart}
+                variant="compact"
+                addedToCart={props.addedToCart}
+                isInWishlist={props.isInWishlist?.(product.id)}
+                onToggleWishlist={props.onToggleWishlist}
+              />
+            </div>
           </div>
         ))}
         <ViewEntireStripLink

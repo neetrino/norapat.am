@@ -99,6 +99,7 @@ export async function GET(request: NextRequest) {
       shortDescription: true,
       description: true,
       price: true,
+      originalPrice: true,
       categoryId: true,
       category: {
         select: {

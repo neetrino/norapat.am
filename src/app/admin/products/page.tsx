@@ -3,7 +3,7 @@
 import Image from 'next/image'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
-import { useEffect, useState, useCallback, useRef } from 'react'
+import { useEffect, useState, useCallback, useRef, useMemo } from 'react'
 import Link from 'next/link'
 import {
   Plus,
@@ -16,13 +16,27 @@ import {
   ChevronUp,
   ChevronDown,
   Star,
+  Heart,
   ChevronsUpDown,
   Copy,
+  Save,
 } from 'lucide-react'
-import { Product, ProductStatus } from '@/types'
+import { ProductStatus, type ProductWithCategory } from '@/types'
+
+/** Ադմին ցուցակի տող — boolean դաշտերը միշտ ներկա են (API / Prisma) */
+type AdminProductRow = ProductWithCategory & {
+  isBestSeller: boolean
+  isSpecialOffer: boolean
+}
 
 type SortField = 'name' | 'price' | 'updatedAt'
 type SortDir = 'asc' | 'desc'
+
+/** Սերվերում պահված ⭐ / ❤️ արժեքներ — черновикից տարբերելու համար */
+type PromotionFlags = {
+  isBestSeller: boolean
+  isSpecialOffer: boolean
+}
 
 const SPECIAL_STATUSES: ProductStatus[] = ['HIT', 'NEW', 'CLASSIC', 'BANNER']
 
@@ -42,11 +56,22 @@ const STATUS_COLORS: Record<ProductStatus, string> = {
   BANNER:  'bg-purple-100 text-purple-700',
 }
 
+/** API-ից եկող ապրանքների boolean դաշտերը հաստատուն են դարձնում (կորած undefined → false) */
+function normalizeProductFlags(p: ProductWithCategory): AdminProductRow {
+  const row = p as AdminProductRow
+  return {
+    ...row,
+    isAvailable: Boolean(row.isAvailable),
+    isBestSeller: Boolean(row.isBestSeller),
+    isSpecialOffer: Boolean(row.isSpecialOffer),
+  }
+}
+
 export default function AdminProducts() {
   const { data: session, status } = useSession()
   const router = useRouter()
 
-  const [products, setProducts] = useState<Product[]>([])
+  const [products, setProducts] = useState<AdminProductRow[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('')
@@ -54,13 +79,14 @@ export default function AdminProducts() {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
   const [sortField, setSortField] = useState<SortField>('name')
   const [sortDir, setSortDir] = useState<SortDir>('asc')
-  // productsRef — latest products snapshot for debounce callbacks
-  const productsRef = useRef<Product[]>([])
-  // toggleDebounce — per-product: pending timer + server-side value for rollback
-  const toggleDebounceRef = useRef<Map<string, { timer: ReturnType<typeof setTimeout>; serverValue: boolean }>>(new Map())
-
-  // Keep ref in sync so debounce callbacks always read the latest state
-  useEffect(() => { productsRef.current = products }, [products])
+  /** Սերվերից վերջին պահված isBestSeller / isSpecialOffer (⭐ / ❤️) */
+  const [savedPromotionById, setSavedPromotionById] = useState<
+    Record<string, PromotionFlags>
+  >({})
+  const [isSavingPromotion, setIsSavingPromotion] = useState(false)
+  const [isBulkDeleting, setIsBulkDeleting] = useState(false)
+  /** Նույն ապրանքի+դաշտի հին PATCH-ը չեղարկելու համար (արագ կրկին սեղմելիս վերջին արժեքը մնա) */
+  const toggleAbortRef = useRef<Map<string, AbortController>>(new Map())
 
   useEffect(() => {
     if (status === 'loading') return
@@ -76,7 +102,18 @@ export default function AdminProducts() {
       const response = await fetch('/api/admin/products')
       if (response.ok) {
         const data = await response.json()
-        setProducts(data)
+        const normalized = Array.isArray(data)
+          ? data.map(item => normalizeProductFlags(item as ProductWithCategory))
+          : []
+        setProducts(normalized)
+        setSavedPromotionById(
+          Object.fromEntries(
+            normalized.map(p => [
+              p.id,
+              { isBestSeller: p.isBestSeller, isSpecialOffer: p.isSpecialOffer },
+            ])
+          )
+        )
       }
     } catch (err) {
       console.error('Error fetching products:', err)
@@ -92,6 +129,11 @@ export default function AdminProducts() {
       if (res.ok) {
         setProducts(prev => prev.filter(p => p.id !== productId))
         setSelectedIds(prev => { const next = new Set(prev); next.delete(productId); return next })
+        setSavedPromotionById(prev => {
+          const next = { ...prev }
+          delete next[productId]
+          return next
+        })
       } else {
         alert('Սխալ ապրանքը ջնջելիս')
       }
@@ -101,45 +143,155 @@ export default function AdminProducts() {
     }
   }
 
-  const handleToggleAvailable = useCallback((productId: string) => {
-    // 1. Flip UI immediately — every click responds at once
-    setProducts(prev =>
-      prev.map(p => p.id === productId ? { ...p, isAvailable: !p.isAvailable } : p)
-    )
+  const handleBulkDelete = async () => {
+    const toDelete = products.filter(p => selectedIds.has(p.id))
+    if (toDelete.length === 0) {
+      setSelectedIds(new Set())
+      return
+    }
+    const msg =
+      toDelete.length === 1
+        ? 'Համոզվա՞ծ եք, որ ցանկանում եք ջնջել այս ապրանքը։'
+        : `Համոզվա՞ծ եք, որ ցանկանում եք ջնջել ${toDelete.length} ապրանք։`
+    if (!confirm(msg)) return
 
-    const existing = toggleDebounceRef.current.get(productId)
+    setIsBulkDeleting(true)
+    const deletedIds: string[] = []
+    let failedCount = 0
 
-    // serverValue = the value actually saved on the server before pending flips
-    const serverValue = existing?.serverValue
-      ?? (productsRef.current.find(p => p.id === productId)?.isAvailable ?? true)
+    try {
+      for (const p of toDelete) {
+        try {
+          const res = await fetch(`/api/products/${p.id}`, { method: 'DELETE' })
+          if (res.ok) {
+            deletedIds.push(p.id)
+          } else {
+            failedCount += 1
+          }
+        } catch {
+          failedCount += 1
+        }
+      }
 
-    // Cancel the previous scheduled API call (user hasn't stopped clicking yet)
-    if (existing) clearTimeout(existing.timer)
-
-    // Schedule a single API call 250ms after the LAST click
-    const timer = setTimeout(() => {
-      toggleDebounceRef.current.delete(productId)
-
-      const latest = productsRef.current.find(p => p.id === productId)
-      if (!latest) return
-
-      fetch(`/api/admin/products/${productId}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ isAvailable: latest.isAvailable }),
-      })
-        .then(res => {
-          if (!res.ok) throw new Error('patch failed')
+      if (deletedIds.length > 0) {
+        setProducts(prev => prev.filter(x => !deletedIds.includes(x.id)))
+        setSelectedIds(prev => {
+          const next = new Set(prev)
+          for (const id of deletedIds) {
+            next.delete(id)
+          }
+          return next
         })
-        .catch(() => {
-          // API failed → revert to last known server value
-          setProducts(prev =>
-            prev.map(p => p.id === productId ? { ...p, isAvailable: serverValue } : p)
+        setSavedPromotionById(prev => {
+          const next = { ...prev }
+          for (const id of deletedIds) {
+            delete next[id]
+          }
+          return next
+        })
+      }
+
+      if (failedCount > 0) {
+        alert(
+          `${failedCount} ապրանք չջնջվեց (օր․ կապված է պատվերի հետ կամ սերվերի սխալ)։`
+        )
+      }
+    } finally {
+      setIsBulkDeleting(false)
+    }
+  }
+
+  type ToggleField = 'isAvailable' | 'isBestSeller' | 'isSpecialOffer'
+
+  const handleToggle = useCallback((productId: string, field: ToggleField) => {
+    if (field === 'isBestSeller' || field === 'isSpecialOffer') {
+      setProducts(prev =>
+        prev.map(x => {
+          if (x.id !== productId) return x
+          const cur = x[field]
+          const currentBool = typeof cur === 'boolean' ? cur : false
+          return { ...x, [field]: !currentBool }
+        })
+      )
+      return
+    }
+
+    const key = `${productId}:${field}`
+    let previousValue = false
+    let nextValue = false
+    let productFound = false
+
+    setProducts(prev => {
+      const p = prev.find(x => x.id === productId)
+      if (!p) return prev
+      productFound = true
+      const cur = p[field as keyof AdminProductRow]
+      const currentBool = typeof cur === 'boolean' ? cur : false
+      previousValue = currentBool
+      nextValue = !currentBool
+      return prev.map(x => (x.id === productId ? { ...x, [field]: nextValue } : x))
+    })
+
+    if (!productFound) return
+
+    toggleAbortRef.current.get(key)?.abort()
+    const ac = new AbortController()
+    toggleAbortRef.current.set(key, ac)
+
+    void (async () => {
+      try {
+        const res = await fetch(`/api/admin/products/${productId}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ [field]: nextValue }),
+          signal: ac.signal,
+        })
+
+        if (ac.signal.aborted) return
+        if (!res.ok) throw new Error('patch failed')
+
+        const updated = (await res.json()) as {
+          id: string
+          isAvailable: boolean
+          isBestSeller: boolean
+          isSpecialOffer: boolean
+        }
+
+        if (ac.signal.aborted) return
+
+        setProducts(prev =>
+          prev.map(p =>
+            p.id === productId
+              ? {
+                  ...p,
+                  isAvailable: updated.isAvailable,
+                  isBestSeller: updated.isBestSeller,
+                  isSpecialOffer: updated.isSpecialOffer,
+                }
+              : p
           )
-        })
-    }, 250)
+        )
+        setSavedPromotionById(prevSnap => ({
+          ...prevSnap,
+          [productId]: {
+            isBestSeller: updated.isBestSeller,
+            isSpecialOffer: updated.isSpecialOffer,
+          },
+        }))
+      } catch (err: unknown) {
+        const isAbort =
+          err instanceof DOMException && err.name === 'AbortError'
+        if (isAbort) return
 
-    toggleDebounceRef.current.set(productId, { timer, serverValue })
+        setProducts(prev =>
+          prev.map(p => (p.id === productId ? { ...p, [field]: previousValue } : p))
+        )
+      } finally {
+        if (toggleAbortRef.current.get(key) === ac) {
+          toggleAbortRef.current.delete(key)
+        }
+      }
+    })()
   }, [])
 
   const handleDuplicate = async (productId: string) => {
@@ -167,7 +319,15 @@ export default function AdminProducts() {
 
       if (res.ok) {
         const newProduct = await res.json()
-        setProducts(prev => [newProduct, ...prev])
+        const norm = normalizeProductFlags(newProduct as ProductWithCategory)
+        setProducts(prev => [norm, ...prev])
+        setSavedPromotionById(prevSnap => ({
+          ...prevSnap,
+          [norm.id]: {
+            isBestSeller: norm.isBestSeller,
+            isSpecialOffer: norm.isSpecialOffer,
+          },
+        }))
       } else {
         alert('Սխալ ապրանքը պատճենելիս')
       }
@@ -239,7 +399,8 @@ export default function AdminProducts() {
       const matchStatus =
         !selectedStatus ||
         selectedStatus === 'all' ||
-        (selectedStatus === 'special' && SPECIAL_STATUSES.includes(p.status))
+        (selectedStatus === 'special' && SPECIAL_STATUSES.includes(p.status)) ||
+        (selectedStatus === 'discounted' && p.originalPrice != null && p.originalPrice > p.price)
       return matchSearch && matchCat && matchStatus
     })
     .sort((a, b) => {
@@ -259,6 +420,64 @@ export default function AdminProducts() {
 
   const allSelected = filteredProducts.length > 0 && selectedIds.size === filteredProducts.length
   const someSelected = selectedIds.size > 0 && !allSelected
+
+  const hasUnsavedPromotionChanges = useMemo(() => {
+    return products.some(p => {
+      const s = savedPromotionById[p.id]
+      return (
+        s !== undefined &&
+        (p.isBestSeller !== s.isBestSeller || p.isSpecialOffer !== s.isSpecialOffer)
+      )
+    })
+  }, [products, savedPromotionById])
+
+  const savePromotionLockRef = useRef(false)
+
+  const handleSavePromotionFlags = useCallback(async () => {
+    if (savePromotionLockRef.current) return
+    const dirty = products.filter(p => {
+      const s = savedPromotionById[p.id]
+      if (s === undefined) return false
+      return p.isBestSeller !== s.isBestSeller || p.isSpecialOffer !== s.isSpecialOffer
+    })
+    if (dirty.length === 0) return
+
+    savePromotionLockRef.current = true
+    setIsSavingPromotion(true)
+    try {
+      const responses = await Promise.all(
+        dirty.map(p =>
+          fetch(`/api/admin/products/${p.id}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              isBestSeller: p.isBestSeller,
+              isSpecialOffer: p.isSpecialOffer,
+            }),
+          })
+        )
+      )
+      if (responses.some(r => !r.ok)) {
+        alert('Սխալ պիտակները պահելիս')
+        return
+      }
+      setSavedPromotionById(prevSnap => {
+        const next = { ...prevSnap }
+        for (const p of dirty) {
+          next[p.id] = {
+            isBestSeller: p.isBestSeller,
+            isSpecialOffer: p.isSpecialOffer,
+          }
+        }
+        return next
+      })
+    } catch {
+      alert('Սխալ պիտակները պահելիս')
+    } finally {
+      savePromotionLockRef.current = false
+      setIsSavingPromotion(false)
+    }
+  }, [products, savedPromotionById])
 
   if (status === 'loading' || isLoading) {
     return (
@@ -320,6 +539,7 @@ export default function AdminProducts() {
               </select>
             </div>
 
+
             <div className="relative">
               <Filter className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
               <select
@@ -329,6 +549,7 @@ export default function AdminProducts() {
               >
                 <option value="">Բոլոր կարգավիճակները</option>
                 <option value="special">Հատուկ (Հիթ / Նոր / Կլասիկ / Բաններ)</option>
+                <option value="discounted">Զեղչված</option>
               </select>
             </div>
           </div>
@@ -348,8 +569,35 @@ export default function AdminProducts() {
                 </span>
               )}
             </span>
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center justify-end gap-2">
+              {hasUnsavedPromotionChanges && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    void handleSavePromotionFlags()
+                  }}
+                  disabled={isSavingPromotion}
+                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-white bg-orange-500 border border-orange-600 hover:bg-orange-600 px-3 py-1.5 rounded-lg transition-colors disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  <Save className="h-3.5 w-3.5 shrink-0" />
+                  {isSavingPromotion ? 'Պահպանվում է…' : 'Պահպանել'}
+                </button>
+              )}
+              {selectedIds.size > 0 && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    void handleBulkDelete()
+                  }}
+                  disabled={isBulkDeleting}
+                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-red-700 bg-red-100 border border-red-200 hover:bg-red-200 px-3 py-1.5 rounded-lg transition-colors disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  <Trash2 className="h-3.5 w-3.5 shrink-0" />
+                  {isBulkDeleting ? 'Ջնջվում է…' : 'Ջնջել ընտրվածը'}
+                </button>
+              )}
               <button
+                type="button"
                 onClick={exportCSV}
                 className="inline-flex items-center gap-1.5 text-xs font-medium text-orange-600 border border-orange-300 hover:bg-orange-50 px-3 py-1.5 rounded-lg transition-colors"
               >
@@ -404,6 +652,11 @@ export default function AdminProducts() {
                     Կատեգորիա
                   </th>
 
+                  {/* Labels */}
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                    Պիտակներ
+                  </th>
+
                   {/* Status */}
                   <th className="px-4 py-3 text-center text-xs font-semibold text-gray-500 uppercase tracking-wide">
                     Կարգավիճակ
@@ -419,13 +672,8 @@ export default function AdminProducts() {
                     </span>
                   </th>
 
-                  {/* Active */}
-                  <th className="px-4 py-3 text-center text-xs font-semibold text-gray-500 uppercase tracking-wide">
-                    Ակտիվ
-                  </th>
-
                   {/* Actions */}
-                  <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                  <th className="px-4 py-3 text-center text-xs font-semibold text-gray-500 uppercase tracking-wide">
                     Գործողություններ
                   </th>
                 </tr>
@@ -484,9 +732,14 @@ export default function AdminProducts() {
                       <span className="text-sm font-bold text-gray-900">{product.price.toLocaleString()}</span>
                       <span className="text-xs text-gray-400 ml-1">֏</span>
                       {product.originalPrice && product.originalPrice > product.price && (
+                        <>
                         <p className="text-xs text-gray-400 line-through mt-0.5">
                           {product.originalPrice.toLocaleString()} ֏
                         </p>
+                        <span className="mt-1 inline-flex rounded-full bg-orange-100 px-2 py-0.5 text-[10px] font-bold text-orange-700">
+                          -{Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}%
+                        </span>
+                        </>
                       )}
                     </td>
 
@@ -497,21 +750,46 @@ export default function AdminProducts() {
                       </span>
                     </td>
 
-                    {/* Status */}
+                    {/* Labels */}
+                    <td className="px-4 py-3">
+                      {product.status !== 'REGULAR' ? (
+                        <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${STATUS_COLORS[product.status]}`}>
+                          {STATUS_LABELS[product.status]}
+                        </span>
+                      ) : (
+                        <span className="text-gray-300 text-xs">—</span>
+                      )}
+                    </td>
+
+                    {/* Status — isBestSeller (star) + isSpecialOffer (heart) */}
                     <td className="px-4 py-3 text-center">
-                      <div className="flex items-center justify-center gap-1.5">
-                        <Star
-                          className={`h-4 w-4 shrink-0 ${
-                            SPECIAL_STATUSES.includes(product.status)
-                              ? 'fill-orange-400 text-orange-400'
-                              : 'text-gray-300'
-                          }`}
-                        />
-                        {product.status !== 'REGULAR' && (
-                          <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${STATUS_COLORS[product.status]}`}>
-                            {STATUS_LABELS[product.status]}
-                          </span>
-                        )}
+                      <div className="flex items-center justify-center gap-2">
+                        <button
+                          onClick={() => handleToggle(product.id, 'isBestSeller')}
+                          title={product.isBestSeller ? 'Հեռացնել լավագույն վաճառք' : 'Նշել որպես լավագույն վաճառք'}
+                          className="p-1 rounded-md hover:bg-yellow-50 transition-colors"
+                        >
+                          <Star
+                            className={`h-4 w-4 shrink-0 transition-colors ${
+                              product.isBestSeller
+                                ? 'fill-yellow-400 text-yellow-400'
+                                : 'text-gray-300 hover:text-yellow-300'
+                            }`}
+                          />
+                        </button>
+                        <button
+                          onClick={() => handleToggle(product.id, 'isSpecialOffer')}
+                          title={product.isSpecialOffer ? 'Հեռացնել հատուկ առաջարկ' : 'Նշել որպես հատուկ առաջարկ'}
+                          className="p-1 rounded-md hover:bg-pink-50 transition-colors"
+                        >
+                          <Heart
+                            className={`h-4 w-4 shrink-0 transition-colors ${
+                              product.isSpecialOffer
+                                ? 'fill-pink-500 text-pink-500'
+                                : 'text-gray-300 hover:text-pink-300'
+                            }`}
+                          />
+                        </button>
                       </div>
                     </td>
 
@@ -526,31 +804,27 @@ export default function AdminProducts() {
                       </span>
                     </td>
 
-                    {/* Toggle */}
-                    <td className="px-4 py-3 text-center">
-                      <button
-                        onClick={() => handleToggleAvailable(product.id)}
-                        title={product.isAvailable ? 'Ապաակտիվացնել' : 'Ակտիվացնել'}
-                        className={`relative inline-flex h-5 w-9 items-center rounded-full focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-orange-400 cursor-pointer ${
-                          product.isAvailable
-                            ? 'bg-orange-500'
-                            : 'bg-gray-200'
-                        }`}
-                        style={{ transition: 'background-color 120ms ease' }}
-                      >
-                        <span
-                          className="inline-block h-3.5 w-3.5 rounded-full bg-white shadow-sm"
-                          style={{
-                            transform: product.isAvailable ? 'translateX(18px)' : 'translateX(2px)',
-                            transition: 'transform 120ms ease',
-                          }}
-                        />
-                      </button>
-                    </td>
-
                     {/* Actions */}
                     <td className="px-4 py-3">
-                      <div className="flex items-center justify-end gap-1.5">
+                      <div className="flex items-center justify-center gap-1.5">
+                        <button
+                          onClick={() => handleToggle(product.id, 'isAvailable')}
+                          title={product.isAvailable ? 'Ապաակտիվացնել' : 'Ակտիվացնել'}
+                          className={`relative inline-flex h-5 w-9 items-center rounded-full focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-orange-400 cursor-pointer ${
+                            product.isAvailable
+                              ? 'bg-orange-500'
+                              : 'bg-gray-200'
+                          }`}
+                          style={{ transition: 'background-color 120ms ease' }}
+                        >
+                          <span
+                            className="inline-block h-3.5 w-3.5 rounded-full bg-white shadow-sm"
+                            style={{
+                              transform: product.isAvailable ? 'translateX(18px)' : 'translateX(2px)',
+                              transition: 'transform 120ms ease',
+                            }}
+                          />
+                        </button>
                         <Link
                           href={`/admin/products/${product.id}/edit`}
                           title="Խմբագրել"
@@ -595,3 +869,4 @@ export default function AdminProducts() {
     </div>
   )
 }
+

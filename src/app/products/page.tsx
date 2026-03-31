@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback, useRef, Suspense, useMemo } from 'react'
-import { useSearchParams, useRouter } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 import {
   Search,
   ArrowDownUp,
@@ -140,9 +140,8 @@ function ProductsPageContent() {
   const [menuPage, setMenuPage] = useState(1)
   const [totalProductCount, setTotalProductCount] = useState(0)
   const [addedToCart, setAddedToCart] = useState<Set<string>>(new Set())
-  const router = useRouter()
   const { addItem } = useCart()
-  const { isInWishlist, toggle: toggleWishlist, isAuthenticated } = useWishlist()
+  const { isInWishlist, toggle: toggleWishlist } = useWishlist()
   const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const productGridTopRef = useRef<HTMLDivElement>(null)
 
@@ -261,13 +260,9 @@ function ProductsPageContent() {
 
   const handleToggleWishlist = useCallback(
     (productId: string) => {
-      if (!isAuthenticated) {
-        router.push('/login')
-        return
-      }
-      toggleWishlist(productId)
+      void toggleWishlist(productId)
     },
-    [isAuthenticated, toggleWishlist, router]
+    [toggleWishlist]
   )
 
   if (loading) {
@@ -307,7 +302,7 @@ function ProductsPageContent() {
               <button
                 type="button"
                 onClick={() => selectCategory(null)}
-                className={`group flex w-full items-center gap-2 rounded-full px-3 py-2 text-[11px] font-semibold transition-all duration-300 ${
+                className={`group flex w-full cursor-pointer items-center gap-2 rounded-full px-3 py-2 text-[11px] font-semibold transition-all duration-300 ${
                   selectedCategoryName === null
                     ? 'bg-[#ffd9df] text-[#E53225] shadow-[0_8px_20px_rgba(229,50,37,0.12)]'
                     : 'text-slate-600 hover:bg-[#fff5f3] hover:text-slate-900'
@@ -351,7 +346,7 @@ function ProductsPageContent() {
                         key={cat.id}
                         type="button"
                         onClick={() => selectCategory(cat.name)}
-                        className={`group flex w-full items-center gap-2 rounded-full px-3 py-2 text-[11px] font-semibold transition-all duration-300 ${
+                        className={`group flex w-full cursor-pointer items-center gap-2 rounded-full px-3 py-2 text-[11px] font-semibold transition-all duration-300 ${
                           active
                             ? 'bg-[#ffd9df] text-[#E53225] shadow-[0_8px_20px_rgba(229,50,37,0.12)]'
                             : 'text-slate-600 hover:bg-[#fff5f3] hover:text-slate-900'
@@ -448,7 +443,7 @@ function ProductsPageContent() {
                         setMenuPage(1)
                         setSortOrder(e.target.value)
                       }}
-                      className="appearance-none rounded-2xl border border-[#eadfd9] bg-white py-3 pl-9 pr-9 text-xs font-semibold text-slate-700 shadow-sm transition-colors focus:border-[#E53225] focus:outline-none focus:ring-4 focus:ring-[#E53225]/10"
+                      className="cursor-pointer appearance-none rounded-2xl border border-[#eadfd9] bg-white py-3 pl-9 pr-9 text-xs font-semibold text-slate-700 shadow-sm transition-colors focus:border-[#E53225] focus:outline-none focus:ring-4 focus:ring-[#E53225]/10"
                     >
                       <option value="newest">{productsCopy.sortNewest}</option>
                       <option value="price_asc">{productsCopy.sortPriceAsc}</option>

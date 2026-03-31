@@ -104,6 +104,7 @@ export interface AppMessages {
     tagline: string
     navHeading: string
     contactsHeading: string
+    policiesHeading: string
     privacy: string
     terms: string
     copyright: string
@@ -112,8 +113,7 @@ export interface AppMessages {
     deliveryPolicy: string
     refundShort: string
     deliveryShort: string
-    addressZoravar: string
-    addressEznik: string
+    addressLine: string
     hoursWeek: string
     hoursDelivery: string
     ariaPhone: string
@@ -294,6 +294,8 @@ export interface AppMessages {
     add: string
     wishlistAdd: string
     wishlistRemove: string
+    starAdd: string
+    starRemove: string
   }
   legal: {
     privacyShort: string
@@ -320,6 +322,7 @@ export interface AppMessages {
     wishlistEmpty: string
     removeWishlistAria: string
     ordersHistory: string
+    viewAllOrders: string
     noOrders: string
     placeOrder: string
     orderLabel: string
@@ -418,9 +421,10 @@ export interface AppMessages {
     quickOrderTitle: string
     quickOrderSubtitle: string
     callPhoneBtn: string
-    branchesTitle: string
-    addressZoravar: string
-    addressEznik: string
+    locationTitle: string
+    locationLabel: string
+    addressLine: string
+    openMapBtn: string
     onMap: string
     mapTitle: string
     faqTitle: string

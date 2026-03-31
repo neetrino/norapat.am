@@ -1,27 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth'
-import { PrismaClient } from '@prisma/client'
-
-const prisma = new PrismaClient()
+import { prisma } from '@/lib/prisma'
 
 export async function GET(request: NextRequest) {
   void request
+
   try {
     const session = await getServerSession(authOptions)
 
-    if (!session) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      )
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // Получаем данные пользователя (только не удаленных)
-    const user = await prisma.user.findUnique({
+    const user = await prisma.user.findFirst({
       where: {
         id: session.user.id,
-        deletedAt: null
+        deletedAt: null,
       },
       select: {
         id: true,
@@ -29,24 +24,18 @@ export async function GET(request: NextRequest) {
         email: true,
         phone: true,
         address: true,
-        createdAt: true
-      }
+        createdAt: true,
+      },
     })
 
     if (!user) {
-      return NextResponse.json(
-        { error: 'User not found' },
-        { status: 404 }
-      )
+      return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
 
     return NextResponse.json(user)
   } catch (error) {
     console.error('User profile API error:', error)
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
 
@@ -54,25 +43,37 @@ export async function PUT(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions)
 
-    if (!session) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      )
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     const { name, phone, address } = await request.json()
+    const normalizedName = typeof name === 'string' ? name.trim() : ''
+    const normalizedPhone = typeof phone === 'string' ? phone.trim() : ''
+    const normalizedAddress = typeof address === 'string' ? address.trim() : ''
 
-    // Обновляем данные пользователя (только не удаленных)
-    const updatedUser = await prisma.user.update({
+    const user = await prisma.user.findFirst({
       where: {
         id: session.user.id,
-        deletedAt: null
+        deletedAt: null,
+      },
+      select: {
+        id: true,
+      },
+    })
+
+    if (!user) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 })
+    }
+
+    const updatedUser = await prisma.user.update({
+      where: {
+        id: user.id,
       },
       data: {
-        name: name || undefined,
-        phone: phone || undefined,
-        address: address || undefined
+        name: normalizedName || null,
+        phone: normalizedPhone || null,
+        address: normalizedAddress || null,
       },
       select: {
         id: true,
@@ -80,16 +81,13 @@ export async function PUT(request: NextRequest) {
         email: true,
         phone: true,
         address: true,
-        updatedAt: true
-      }
+        updatedAt: true,
+      },
     })
 
     return NextResponse.json(updatedUser)
   } catch (error) {
     console.error('User profile update API error:', error)
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

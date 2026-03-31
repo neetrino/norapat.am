@@ -28,6 +28,14 @@ interface Order {
 }
 
 type Section = 'dashboard' | 'orders' | 'personal' | 'addresses' | 'password'
+type FeedbackTone = 'success' | 'error'
+
+function getFeedbackClass(tone: FeedbackTone) {
+  return tone === 'success'
+    ? 'border-emerald-200 bg-emerald-50 text-emerald-700'
+    : 'border-rose-200 bg-rose-50 text-rose-700'
+}
+
 
 const CURRENCY = '֏'
 
@@ -52,6 +60,9 @@ export default function ProfilePage() {
   const [personalFeedback, setPersonalFeedback] = useState('')
   const [addressFeedback, setAddressFeedback] = useState('')
   const [passwordFeedback, setPasswordFeedback] = useState('')
+  const [personalFeedbackTone, setPersonalFeedbackTone] = useState<FeedbackTone>('success')
+  const [addressFeedbackTone, setAddressFeedbackTone] = useState<FeedbackTone>('success')
+  const [passwordFeedbackTone, setPasswordFeedbackTone] = useState<FeedbackTone>('success')
   const [isSavingPersonal, setIsSavingPersonal] = useState(false)
   const [isSavingAddress, setIsSavingAddress] = useState(false)
   const [isSavingPassword, setIsSavingPassword] = useState(false)
@@ -91,6 +102,9 @@ export default function ProfilePage() {
 
   const cardClass = 'rounded-3xl border border-slate-200 bg-white p-5 sm:p-6'
   const inputClass = 'w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition-colors placeholder:text-slate-400 focus:border-orange-300'
+  const isPersonalDirty = personalForm.name !== userProfile.name || personalForm.phone !== userProfile.phone
+  const isAddressDirty = addressForm.address !== userProfile.address
+  const isPasswordDirty = Boolean(passwordForm.currentPassword || passwordForm.newPassword || passwordForm.confirmPassword)
   const navItems: Array<{ key: Section; label: string; icon: typeof User }> = [
     { key: 'dashboard', label: 'Վահանակ', icon: Wallet },
     { key: 'orders', label: 'Պատվերներ', icon: Package },
@@ -119,26 +133,42 @@ export default function ProfilePage() {
   }
 
   const handlePersonalSave = async () => {
+    if (!isPersonalDirty) {
+      setPersonalFeedbackTone('success')
+      setPersonalFeedback('No changes to save.')
+      return
+    }
+
     setIsSavingPersonal(true)
     setPersonalFeedback('')
     try {
-      await saveProfile({ name: personalForm.name, phone: personalForm.phone, address: userProfile.address })
-      setPersonalFeedback('Անձնական տվյալները պահպանվեցին։')
+      await saveProfile({ name: personalForm.name, phone: personalForm.phone, address: addressForm.address })
+      setPersonalFeedbackTone('success')
+      setPersonalFeedback('Saved successfully.')
     } catch (error) {
-      setPersonalFeedback(error instanceof Error ? error.message : 'Չհաջողվեց պահպանել տվյալները։')
+      setPersonalFeedbackTone('error')
+      setPersonalFeedback(error instanceof Error ? error.message : 'Failed to save changes.')
     } finally {
       setIsSavingPersonal(false)
     }
   }
 
   const handleAddressSave = async () => {
+    if (!isAddressDirty) {
+      setAddressFeedbackTone('success')
+      setAddressFeedback('No changes to save.')
+      return
+    }
+
     setIsSavingAddress(true)
     setAddressFeedback('')
     try {
-      await saveProfile({ name: userProfile.name, phone: userProfile.phone, address: addressForm.address })
-      setAddressFeedback('Հասցեն պահպանվեց։')
+      await saveProfile({ name: personalForm.name, phone: personalForm.phone, address: addressForm.address })
+      setAddressFeedbackTone('success')
+      setAddressFeedback('Address saved successfully.')
     } catch (error) {
-      setAddressFeedback(error instanceof Error ? error.message : 'Չհաջողվեց պահպանել հասցեն։')
+      setAddressFeedbackTone('error')
+      setAddressFeedback(error instanceof Error ? error.message : 'Failed to save address.')
     } finally {
       setIsSavingAddress(false)
     }
@@ -146,9 +176,10 @@ export default function ProfilePage() {
 
   const handlePasswordSave = async () => {
     setPasswordFeedback('')
-    if (!passwordForm.currentPassword || !passwordForm.newPassword || !passwordForm.confirmPassword) return setPasswordFeedback('Լրացրու բոլոր դաշտերը։')
-    if (passwordForm.newPassword.length < 6) return setPasswordFeedback('Նոր գաղտնաբառը պետք է լինի առնվազն 6 նիշ։')
-    if (passwordForm.newPassword !== passwordForm.confirmPassword) return setPasswordFeedback('Նոր գաղտնաբառերը չեն համընկնում։')
+    setPasswordFeedbackTone('error')
+    if (!passwordForm.currentPassword || !passwordForm.newPassword || !passwordForm.confirmPassword) return setPasswordFeedback('Please fill in all fields.')
+    if (passwordForm.newPassword.length < 6) return setPasswordFeedback('New password must be at least 6 characters.')
+    if (passwordForm.newPassword !== passwordForm.confirmPassword) return setPasswordFeedback('New passwords do not match.')
 
     setIsSavingPassword(true)
     try {
@@ -158,11 +189,13 @@ export default function ProfilePage() {
         body: JSON.stringify({ currentPassword: passwordForm.currentPassword, newPassword: passwordForm.newPassword }),
       })
       const data = await response.json().catch(() => null)
-      if (!response.ok) throw new Error(data?.error || 'Չհաջողվեց փոխել գաղտնաբառը։')
+      if (!response.ok) throw new Error(data?.error || 'Failed to change password.')
       setPasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' })
-      setPasswordFeedback('Գաղտնաբառը փոխվեց։')
+      setPasswordFeedbackTone('success')
+      setPasswordFeedback('Password changed successfully.')
     } catch (error) {
-      setPasswordFeedback(error instanceof Error ? error.message : 'Չհաջողվեց փոխել գաղտնաբառը։')
+      setPasswordFeedbackTone('error')
+      setPasswordFeedback(error instanceof Error ? error.message : 'Failed to change password.')
     } finally {
       setIsSavingPassword(false)
     }
@@ -330,7 +363,7 @@ export default function ProfilePage() {
                         onClick={() => setActiveSection('orders')}
                         className="inline-flex items-center justify-center rounded-full border border-red-200 bg-white px-4 py-2.5 text-sm font-semibold text-red-600 transition-colors hover:bg-red-50"
                       >
-                        ?????? ??????
+                        {profilePage.viewAllOrders}
                       </button>
                     )}
                   </div>
@@ -426,11 +459,12 @@ export default function ProfilePage() {
               <section className={cardClass}>
                 <h2 className="text-xl font-semibold text-slate-950">Անձնական տեղեկություն</h2>
                 <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
-                  <div><label className="mb-2 block text-sm font-semibold text-slate-700">Անուն</label><input className={inputClass} value={personalForm.name} onChange={(event) => setPersonalForm((prev) => ({ ...prev, name: event.target.value }))} placeholder="Մուտքագրիր անունը" /></div>
-                  <div><label className="mb-2 block text-sm font-semibold text-slate-700">Հեռախոս</label><input className={inputClass} value={personalForm.phone} onChange={(event) => setPersonalForm((prev) => ({ ...prev, phone: event.target.value }))} placeholder="Մուտքագրիր հեռախոսահամարը" /></div>
+                  <div><label className="mb-2 block text-sm font-semibold text-slate-700">Անուն</label><input className={inputClass} value={personalForm.name} onChange={(event) => { setPersonalFeedback(''); setPersonalForm((prev) => ({ ...prev, name: event.target.value })) }} placeholder="Մուտքագրիր անունը" /></div>
+                  <div><label className="mb-2 block text-sm font-semibold text-slate-700">Հեռախոս</label><input className={inputClass} value={personalForm.phone} onChange={(event) => { setPersonalFeedback(''); setPersonalForm((prev) => ({ ...prev, phone: event.target.value })) }} placeholder="Մուտքագրիր հեռախոսահամարը" /></div>
                 </div>
                 <div className="mt-4"><label className="mb-2 block text-sm font-semibold text-slate-700">Էլ. հասցե</label><input className={`${inputClass} bg-slate-100 text-slate-500`} value={userProfile.email} disabled readOnly /></div>
-                {personalFeedback && <div className="mt-4 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">{personalFeedback}</div>}
+                {isPersonalDirty && !personalFeedback && <div className="mt-4 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700">Unsaved changes.</div>}
+                {personalFeedback && <div className={`mt-4 rounded-2xl border px-4 py-3 text-sm ${getFeedbackClass(personalFeedbackTone)}`}>{personalFeedback}</div>}
                 <button type="button" onClick={handlePersonalSave} disabled={isSavingPersonal} className="mt-6 rounded-2xl bg-red-500 px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-red-600 disabled:cursor-not-allowed disabled:opacity-60">{isSavingPersonal ? profilePage.loading : 'Պահպանել'}</button>
               </section>
             )}
@@ -438,8 +472,9 @@ export default function ProfilePage() {
             {activeSection === 'addresses' && (
               <section className={cardClass}>
                 <h2 className="text-xl font-semibold text-slate-950">Հասցեներ</h2>
-                <div className="mt-6"><label className="mb-2 block text-sm font-semibold text-slate-700">Հիմնական հասցե</label><textarea rows={5} className={inputClass} value={addressForm.address} onChange={(event) => setAddressForm({ address: event.target.value })} placeholder="Մուտքագրիր հասցեն" /></div>
-                {addressFeedback && <div className="mt-4 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">{addressFeedback}</div>}
+                <div className="mt-6"><label className="mb-2 block text-sm font-semibold text-slate-700">Հիմնական հասցե</label><textarea rows={5} className={inputClass} value={addressForm.address} onChange={(event) => { setAddressFeedback(''); setAddressForm({ address: event.target.value }) }} placeholder="Մուտքագրիր հասցեն" /></div>
+                {isAddressDirty && !addressFeedback && <div className="mt-4 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700">Address has unsaved changes.</div>}
+                {addressFeedback && <div className={`mt-4 rounded-2xl border px-4 py-3 text-sm ${getFeedbackClass(addressFeedbackTone)}`}>{addressFeedback}</div>}
                 <button type="button" onClick={handleAddressSave} disabled={isSavingAddress} className="mt-6 rounded-2xl bg-red-500 px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-red-600 disabled:cursor-not-allowed disabled:opacity-60">{isSavingAddress ? profilePage.loading : 'Պահպանել հասցեն'}</button>
               </section>
             )}
@@ -448,11 +483,12 @@ export default function ProfilePage() {
               <section className={cardClass}>
                 <h2 className="text-xl font-semibold text-slate-950">Փոխել գաղտնաբառը</h2>
                 <div className="mt-6 grid grid-cols-1 gap-4">
-                  <div><label className="mb-2 block text-sm font-semibold text-slate-700">Ընթացիկ գաղտնաբառ</label><input type="password" className={inputClass} value={passwordForm.currentPassword} onChange={(event) => setPasswordForm((prev) => ({ ...prev, currentPassword: event.target.value }))} /></div>
-                  <div><label className="mb-2 block text-sm font-semibold text-slate-700">Նոր գաղտնաբառ</label><input type="password" className={inputClass} value={passwordForm.newPassword} onChange={(event) => setPasswordForm((prev) => ({ ...prev, newPassword: event.target.value }))} /></div>
-                  <div><label className="mb-2 block text-sm font-semibold text-slate-700">Կրկնել նոր գաղտնաբառը</label><input type="password" className={inputClass} value={passwordForm.confirmPassword} onChange={(event) => setPasswordForm((prev) => ({ ...prev, confirmPassword: event.target.value }))} /></div>
+                  <div><label className="mb-2 block text-sm font-semibold text-slate-700">Ընթացիկ գաղտնաբառ</label><input type="password" className={inputClass} value={passwordForm.currentPassword} onChange={(event) => { setPasswordFeedback(''); setPasswordForm((prev) => ({ ...prev, currentPassword: event.target.value })) }} /></div>
+                  <div><label className="mb-2 block text-sm font-semibold text-slate-700">Նոր գաղտնաբառ</label><input type="password" className={inputClass} value={passwordForm.newPassword} onChange={(event) => { setPasswordFeedback(''); setPasswordForm((prev) => ({ ...prev, newPassword: event.target.value })) }} /></div>
+                  <div><label className="mb-2 block text-sm font-semibold text-slate-700">Կրկնել նոր գաղտնաբառը</label><input type="password" className={inputClass} value={passwordForm.confirmPassword} onChange={(event) => { setPasswordFeedback(''); setPasswordForm((prev) => ({ ...prev, confirmPassword: event.target.value })) }} /></div>
                 </div>
-                {passwordFeedback && <div className="mt-4 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">{passwordFeedback}</div>}
+                {isPasswordDirty && !passwordFeedback && <div className="mt-4 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700">Password is not saved yet.</div>}
+                {passwordFeedback && <div className={`mt-4 rounded-2xl border px-4 py-3 text-sm ${getFeedbackClass(passwordFeedbackTone)}`}>{passwordFeedback}</div>}
                 <button type="button" onClick={handlePasswordSave} disabled={isSavingPassword} className="mt-6 rounded-2xl bg-red-500 px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-red-600 disabled:cursor-not-allowed disabled:opacity-60">{isSavingPassword ? profilePage.loading : 'Փոխել գաղտնաբառը'}</button>
               </section>
             )}
@@ -461,7 +497,7 @@ export default function ProfilePage() {
       </div>
       <section className="hidden lg:block">
         <div className="mx-auto flex w-full max-w-7xl justify-center px-8 pb-6">
-          <div className="relative mt-6 flex w-full max-w-4xl justify-center overflow-hidden rounded-[32px] border border-red-100 bg-gradient-to-b from-red-50 via-white to-white px-8 pt-6">
+          <div className="relative mt-6 flex w-full max-w-4xl justify-center px-8 pt-6">
             <Image
               src="/profile-footer-couple.png"
               alt="Traditional Armenian couple"

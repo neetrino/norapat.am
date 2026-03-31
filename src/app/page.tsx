@@ -14,15 +14,11 @@ import { CategoriesSection } from "@/components/home/CategoriesSection";
 import { ActionsSection } from "@/components/home/ActionsSection";
 import { HomeShowcaseCarousel } from "@/components/home/HomeShowcaseCarousel";
 import { BRAND_RED_CTA_IDLE_HOVER_CLASS } from "@/components/home/promo-food-banner/promoFoodBanner.constants";
+import { HOME_BEST_STATUS_IN, HOME_PROMO_STATUS_IN } from "@/lib/homeShowcase";
 const ADDED_TO_CART_FEEDBACK_MS = 2000
 /** Next/Image ներքին չափեր — ցուցադրման ժամանակ պահպանվում է հարաբերակցությունը `object-contain`-ով */
 const HOME_CTA_CHARACTER_IMAGE_WIDTH_PX = 480
 const HOME_CTA_CHARACTER_IMAGE_HEIGHT_PX = 640
-
-/** Հատուկ առաջարկներ — ինչպես /api/products/promo (HIT, NEW) */
-const PROMO_STATUS_IN = 'HIT,NEW'
-/** Լավագույն ապրանքներ — ինչպես /api/products/featured (HIT, NEW, CLASSIC) */
-const BEST_STATUS_IN = 'HIT,NEW,CLASSIC'
 
 export default function Home() {
   const { t } = useI18n()
@@ -64,8 +60,8 @@ export default function Home() {
 
     setLoadingBest(true)
     setLoadingPromo(true)
-    load(BEST_STATUS_IN, setBestProducts, () => setLoadingBest(false))
-    load(PROMO_STATUS_IN, setPromoProducts, () => setLoadingPromo(false))
+    load(HOME_BEST_STATUS_IN, setBestProducts, () => setLoadingBest(false))
+    load(HOME_PROMO_STATUS_IN, setPromoProducts, () => setLoadingPromo(false))
 
     return () => controller.abort()
   }, [])
@@ -104,12 +100,12 @@ export default function Home() {
       {/* 5. Products Showcase — նույն visual ռիթմը, ինչ BestSellersSection / PromoSection / ActionsSection */}
       <section
         id="products-section"
-        className="scroll-mt-24"
+        className="scroll-mt-24 py-16 lg:py-20"
         aria-label={`${h.bestSellers.title} · ${h.promo.title}`}
       >
         {/* Լավագույն — ինչպես BestSellersSection (`from-orange-50/60 to-white`) */}
-        <div className="bg-gradient-to-b from-orange-50/60 to-white py-16 lg:py-20">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="rounded-[2rem] bg-gradient-to-b from-orange-50/60 to-white px-4 py-12 sm:px-6 lg:px-8 lg:py-14">
             <div className="mb-10 text-center lg:mb-12">
               <h2 className="mb-2 text-2xl font-bold text-gray-900 sm:text-3xl lg:text-4xl">
                 {h.bestSellers.title}
@@ -147,15 +143,15 @@ export default function Home() {
                 onAddToCart={handleAddToCart}
                 addedToCart={addedToCart}
                 isInWishlist={isInWishlist}
-                onToggleWishlist={toggleWishlist}
+                onToggleWishlist={(id) => { void toggleWishlist(id) }}
               />
             )}
           </div>
         </div>
 
         {/* Հատուկ առաջարկներ — ինչպես PromoSection (`from-amber-50/80 to-white`) */}
-        <div className="bg-gradient-to-b from-amber-50/80 to-white py-16 lg:py-20">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto mt-6 max-w-7xl px-4 sm:mt-8 sm:px-6 lg:mt-10 lg:px-8">
+          <div className="rounded-[2rem] bg-gradient-to-b from-amber-50/80 to-white px-4 py-12 sm:px-6 lg:px-8 lg:py-14">
             <div className="mb-10 text-center lg:mb-12">
               <h2 className="mb-2 text-2xl font-bold text-gray-900 sm:text-3xl lg:text-4xl">
                 {h.promo.title}
@@ -193,7 +189,7 @@ export default function Home() {
                 onAddToCart={handleAddToCart}
                 addedToCart={addedToCart}
                 isInWishlist={isInWishlist}
-                onToggleWishlist={toggleWishlist}
+                onToggleWishlist={(id) => { void toggleWishlist(id) }}
               />
             )}
           </div>
