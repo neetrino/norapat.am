@@ -6,7 +6,6 @@ import {
   Search,
   ArrowDownUp,
   ChevronDown,
-  LayoutGrid,
   SlidersHorizontal,
 } from 'lucide-react'
 import Image from 'next/image'
@@ -485,9 +484,7 @@ function ProductsPageContent() {
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between gap-3 rounded-2xl border border-[#eadfd9] bg-[#fcfaf8] px-3 py-2 shadow-sm">
-                  <LayoutGrid className="h-4 w-4 shrink-0 text-slate-400" />
-
+                <div className="flex items-center justify-end gap-3 rounded-2xl border border-[#eadfd9] bg-[#fcfaf8] px-3 py-2 shadow-sm">
                   <div className="flex items-center gap-1 rounded-full bg-white p-1">
                     {([2, 3, 4] as const).map((cols) => (
                       <button
