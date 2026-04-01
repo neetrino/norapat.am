@@ -1,8 +1,26 @@
+import { randomBytes } from 'crypto'
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import type { OrderItemForm } from '@/types'
+
+const ALLOWED_PAYMENT_METHODS = new Set([
+  'cash',
+  'arca',
+  'mastercard',
+  'visa',
+  'ameriabank',
+  'idram',
+])
+
+function stripIdramInitSecret<T extends { idramInitSecret?: string | null }>(
+  row: T
+): Omit<T, 'idramInitSecret'> {
+  const { idramInitSecret, ...rest } = row
+  void idramInitSecret
+  return rest
+}
 
 export async function GET(request: NextRequest) {
   void request
@@ -38,7 +56,7 @@ export async function GET(request: NextRequest) {
       }
     })
 
-    return NextResponse.json(orders)
+    return NextResponse.json(orders.map(stripIdramInitSecret))
   } catch (error) {
     console.error('Orders API error:', error)
     return NextResponse.json(
@@ -51,7 +69,15 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions)
-    const { name, phone, address, paymentMethod, notes, items, total, deliveryTime, promoCode } = await request.json()
+    const { name, phone, address, paymentMethod, notes, items, total, deliveryTime, promoCode } =
+      await request.json()
+
+    if (
+      typeof paymentMethod !== 'string' ||
+      !ALLOWED_PAYMENT_METHODS.has(paymentMethod)
+    ) {
+      return NextResponse.json({ error: 'Invalid payment method' }, { status: 400 })
+    }
 
     const orderItems = (items ?? []) as OrderItemForm[]
 
@@ -84,6 +110,9 @@ export async function POST(request: NextRequest) {
       })
     }
 
+    const idramInitSecret =
+      paymentMethod === 'idram' ? randomBytes(24).toString('hex') : null
+
     const order = await prisma.order.create({
       data: {
         userId: session?.user?.id || null,
@@ -95,6 +124,7 @@ export async function POST(request: NextRequest) {
         notes,
         paymentMethod,
         deliveryTime,
+        idramInitSecret,
         items: {
           create: orderItems.map((item) => ({
             productId: item.productId,

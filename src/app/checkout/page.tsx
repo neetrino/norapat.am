@@ -3,12 +3,37 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft, MapPin, Clock, CreditCard, Phone, User } from 'lucide-react'
+import { ArrowLeft, MapPin, Clock, CreditCard, Phone, User, Wallet } from 'lucide-react'
 import { useCart } from '@/hooks/useCart'
 import { useSession } from 'next-auth/react'
 import Footer from '@/components/Footer'
 import { useI18n } from '@/i18n/I18nContext'
+import type { AppLocale } from '@/i18n/types'
 import { getProductDisplayName } from '@/i18n/getProductDisplayName'
+
+function mapLocaleToIdramLanguage(locale: AppLocale): 'EN' | 'AM' | 'RU' {
+  if (locale === 'hy') return 'AM'
+  return 'EN'
+}
+
+function postFormToIdram(
+  formAction: string,
+  formFields: Record<string, string>
+): void {
+  const form = document.createElement('form')
+  form.method = 'POST'
+  form.action = formAction
+  form.acceptCharset = 'UTF-8'
+  for (const [name, value] of Object.entries(formFields)) {
+    const input = document.createElement('input')
+    input.type = 'hidden'
+    input.name = name
+    input.value = value
+    form.appendChild(input)
+  }
+  document.body.appendChild(form)
+  form.submit()
+}
 
 export default function CheckoutPage() {
   const { locale, t } = useI18n()
@@ -182,6 +207,40 @@ export default function CheckoutPage() {
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}))
         throw new Error(errorData.error || response.statusText)
+      }
+
+      const orderJson = (await response.json()) as {
+        id: string
+        idramInitSecret?: string | null
+      }
+
+      if (formData.paymentMethod === 'idram') {
+        const secret = orderJson.idramInitSecret
+        if (!secret) {
+          throw new Error('Idram init secret missing')
+        }
+        const initRes = await fetch('/api/payments/idram/init', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            orderId: orderJson.id,
+            idramInitSecret: secret,
+            language: mapLocaleToIdramLanguage(locale),
+          }),
+        })
+        const initData = (await initRes.json()) as {
+          error?: string
+          formAction?: string
+          formFields?: Record<string, string>
+        }
+        if (!initRes.ok) {
+          throw new Error(initData.error ?? 'Idram init failed')
+        }
+        if (!initData.formAction || !initData.formFields) {
+          throw new Error('Invalid Idram init response')
+        }
+        postFormToIdram(initData.formAction, initData.formFields)
+        return
       }
 
       clearCart()
@@ -406,6 +465,22 @@ export default function CheckoutPage() {
                   <div className="flex-1 min-w-0">
                     <h3 className="text-sm font-semibold text-gray-900">Visa</h3>
                     <p className="text-xs text-gray-500 mt-0.5">Վճարեք Visa քարտով</p>
+                  </div>
+                </label>
+
+                {/* Idram */}
+                <label className={`flex items-center p-4 rounded-2xl cursor-pointer transition-all duration-200 border-2 ${
+                  formData.paymentMethod === 'idram'
+                    ? 'border-orange-400 bg-orange-50/40'
+                    : 'border-gray-100 bg-white hover:border-gray-200'
+                }`}>
+                  <input type="radio" name="paymentMethod" value="idram" checked={formData.paymentMethod === 'idram'} onChange={handleInputChange} className="sr-only" />
+                  <div className="w-12 h-12 bg-white border border-gray-100 rounded-xl flex items-center justify-center mr-4 shrink-0 shadow-sm">
+                    <Wallet className="h-6 w-6 text-violet-600" aria-hidden />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-sm font-semibold text-gray-900">{cp.idram}</h3>
+                    <p className="text-xs text-gray-500 mt-0.5">{cp.idramDesc}</p>
                   </div>
                 </label>
 
@@ -674,6 +749,22 @@ export default function CheckoutPage() {
                         <div className="flex-1">
                           <h3 className="text-sm font-semibold text-gray-900">Visa</h3>
                           <p className="text-sm text-gray-500 mt-0.5">Վճարեք Visa քարտով</p>
+                        </div>
+                      </label>
+
+                      {/* Idram */}
+                      <label className={`flex items-center p-4 rounded-2xl cursor-pointer transition-all duration-200 border-2 ${
+                        formData.paymentMethod === 'idram'
+                          ? 'border-orange-400 bg-orange-50/40'
+                          : 'border-gray-100 bg-white hover:border-gray-200'
+                      }`}>
+                        <input type="radio" name="paymentMethod" value="idram" checked={formData.paymentMethod === 'idram'} onChange={handleInputChange} className="sr-only" />
+                        <div className="w-14 h-14 bg-white border border-gray-100 rounded-xl flex items-center justify-center mr-5 shrink-0 shadow-sm">
+                          <Wallet className="h-7 w-7 text-violet-600" aria-hidden />
+                        </div>
+                        <div className="flex-1">
+                          <h3 className="text-sm font-semibold text-gray-900">{cp.idram}</h3>
+                          <p className="text-sm text-gray-500 mt-0.5">{cp.idramDesc}</p>
                         </div>
                       </label>
 

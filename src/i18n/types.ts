@@ -394,6 +394,8 @@ export interface AppMessages {
     card: string
     cardDesc: string
     cardDescFull: string
+    idram: string
+    idramDesc: string
     comment: string
     commentPlaceholder: string
     yourOrder: string

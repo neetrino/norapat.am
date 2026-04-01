@@ -405,6 +405,8 @@ export const hy: AppMessages = {
     card: 'Քարտ',
     cardDesc: 'Վճարում քարտով տերմինալով',
     cardDescFull: 'Վճարում քարտով առաքչի տերմինալով',
+    idram: 'Idram',
+    idramDesc: 'Վճարում Idram դրամապանակով (AMD)։ Կհայտնվեք Idram-ի էջում։',
     comment: 'Մեկնաբանություն',
     commentPlaceholder: 'Լրացուցիչ ցանկություններ պատվերի վերաբերյալ…',
     yourOrder: 'Ձեր պատվերը',

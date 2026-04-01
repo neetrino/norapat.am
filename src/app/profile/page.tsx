@@ -266,6 +266,8 @@ export default function ProfilePage() {
         return 'Visa'
       case 'ameriabank':
         return 'Ameriabank'
+      case 'idram':
+        return 'Idram'
       default:
         return paymentMethod
     }
