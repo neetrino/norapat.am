@@ -10,11 +10,11 @@ export const metadata: Metadata = {
 
 export default function PrivacyPage() {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen">
       <div className="h-16" />
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-16">
-        <div className="bg-white rounded-2xl shadow-lg px-4 pb-4 pt-6 sm:px-8 sm:pb-8 sm:pt-10 mb-20 lg:mb-16">
+        <div className="px-4 pb-4 pt-6 sm:px-8 sm:pb-8 sm:pt-10 mb-20 lg:mb-16">
           <header className="mb-6 text-center">
             <h1 className="inline-block text-xl sm:text-2xl font-semibold tracking-tight text-slate-900 pb-2.5 border-b-2 border-orange-500 max-w-full">
               <span className="block leading-snug">Գաղտնիության</span>
