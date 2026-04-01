@@ -1,5 +1,8 @@
 import { withAuth } from "next-auth/middleware"
 import { NextResponse } from "next/server"
+import { AUTH_SESSION_TOKEN_COOKIE_NAME } from '@/lib/nextAuthCookie'
+
+const authSecret = process.env.NEXTAUTH_SECRET ?? process.env.AUTH_SECRET
 
 export default withAuth(
   function middleware(req) {
@@ -12,6 +15,15 @@ export default withAuth(
     }
   },
   {
+    secret: authSecret,
+    pages: {
+      signIn: '/login',
+    },
+    cookies: {
+      sessionToken: {
+        name: AUTH_SESSION_TOKEN_COOKIE_NAME,
+      },
+    },
     callbacks: {
       authorized: ({ token, req }) => {
         // Если пользователь пытается зайти в админку или профиль, проверяем авторизацию
@@ -25,5 +37,5 @@ export default withAuth(
 )
 
 export const config = {
-  matcher: ['/admin/:path*', '/profile/:path*']
+  matcher: ['/admin/:path*', '/profile', '/profile/:path*'],
 }
