@@ -54,6 +54,9 @@ Desktop.ini
 # prisma/migrations/ — НЕ игнорируем, они в репо
 # node_modules/.prisma/ — внутри node_modules
 
+# ─── Local CLI binaries (e.g. cloudflared) ───────────────────────────────────
+.tools/
+
 # ─── Misc ────────────────────────────────────────────────────────────────────
 *.pem
 .ssl/
