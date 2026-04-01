@@ -1,7 +1,7 @@
 'use client'
 
 import Image from 'next/image'
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { Order, OrderItem, OrderStatus, PaymentStatus, User } from '@/types'
@@ -24,7 +24,6 @@ import {
   CheckSquare,
   ShoppingCart,
   Download,
-  ScanSearch,
 } from 'lucide-react'
 
 interface OrderWithDetails extends Order {
@@ -135,6 +134,8 @@ export default function AdminOrdersPage() {
   })
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
   const [paymentStatusChecking, setPaymentStatusChecking] = useState<Set<string>>(new Set())
+  const ordersRef = useRef<OrderWithDetails[]>([])
+  const checkPaymentStatusRef = useRef<(id: string) => Promise<void>>(async () => { /* placeholder */ })
 
   // Ստուգել մուտքի իրավունքները
   useEffect(() => {
@@ -190,6 +191,19 @@ export default function AdminOrdersPage() {
   useEffect(() => {
     fetchOrders()
   }, [fetchOrders])
+
+  // Sync refs for stable polling closure
+  useEffect(() => { ordersRef.current = orders }, [orders])
+  useEffect(() => { checkPaymentStatusRef.current = checkPaymentStatus })
+
+  // Ավտոմատ polling — ստուգել PENDING ոչ-կանխիկ պատվերների վճարման կարգավիճակը
+  useEffect(() => {
+    const timer = setInterval(() => {
+      const pending = ordersRef.current.filter(o => o.paymentMethod !== 'cash' && o.paymentStatus === 'PENDING')
+      pending.forEach(o => void checkPaymentStatusRef.current(o.id))
+    }, 10000)
+    return () => clearInterval(timer)
+  }, [])
 
   // Փոխել պատվերի կարգավիճակը
   const updateOrderStatus = async (orderId: string, newStatus: OrderStatus) => {
@@ -614,17 +628,6 @@ export default function AdminOrdersPage() {
                           <option value="PAID">{paymentStatusLabels.PAID}</option>
                           <option value="FAILED">{paymentStatusLabels.FAILED}</option>
                         </select>
-                        {order.paymentMethod !== 'cash' && (
-                          <button
-                            type="button"
-                            onClick={() => void checkPaymentStatus(order.id)}
-                            disabled={paymentStatusChecking.has(order.id)}
-                            title="Ավտոմատ ստուգել"
-                            className="p-1.5 rounded-lg text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-colors disabled:opacity-50"
-                          >
-                            <ScanSearch className={`h-3.5 w-3.5 ${paymentStatusChecking.has(order.id) ? 'animate-pulse' : ''}`} />
-                          </button>
-                        )}
                       </div>
                     </td>
                     <td className="px-4 py-3 text-center align-middle">
@@ -745,17 +748,6 @@ export default function AdminOrdersPage() {
                         <option value="PAID">{paymentStatusLabels.PAID}</option>
                         <option value="FAILED">{paymentStatusLabels.FAILED}</option>
                       </select>
-                      {selectedOrder.paymentMethod !== 'cash' && (
-                        <button
-                          type="button"
-                          onClick={() => void checkPaymentStatus(selectedOrder.id)}
-                          disabled={paymentStatusChecking.has(selectedOrder.id)}
-                          className="w-full inline-flex items-center justify-center gap-2 px-3 py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-xl text-xs font-medium transition-colors disabled:opacity-50"
-                        >
-                          <ScanSearch className={`h-3.5 w-3.5 ${paymentStatusChecking.has(selectedOrder.id) ? 'animate-pulse' : ''}`} />
-                          {paymentStatusChecking.has(selectedOrder.id) ? 'Ստուգվում է...' : 'Ավտոմատ ստուգել'}
-                        </button>
-                      )}
                     </div>
                   </div>
                 </div>
