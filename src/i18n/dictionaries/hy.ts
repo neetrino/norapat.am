@@ -103,7 +103,7 @@ export const hy: AppMessages = {
     terms: 'Օգտագործման պայմաններ',
     copyright: 'Copyright © 2026. Բոլոր իրավունքները պաշտպանված են։',
     createdBy: 'Ստեղծել է',
-    refundPolicy: 'Վերադարձի քաղաքականություն',
+    refundPolicy: 'Վերադարձի և փոխանակման քաղաքականություն',
     deliveryPolicy: 'Առաքման քաղաքականություն',
     refundShort: 'Վերադարձ',
     deliveryShort: 'Առաքում',

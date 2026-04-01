@@ -112,7 +112,7 @@ export default function DeliveryPage() {
               ← Գլխավոր
             </Link>
             <Link href="/refund" className="text-orange-500 hover:text-orange-600 font-medium">
-              Վերադարձի քաղաքականություն →
+              Վերադարձի և փոխանակման քաղաքականություն →
             </Link>
           </div>
         </div>
