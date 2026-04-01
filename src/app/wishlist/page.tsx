@@ -165,6 +165,7 @@ export default function WishlistPage() {
                       key={item.product.id}
                       product={item.product}
                       variant="compact"
+                      wishlistButtonVariant="remove"
                       onAddToCart={handleAddToCart}
                       addedToCart={addedToCart}
                       isInWishlist={

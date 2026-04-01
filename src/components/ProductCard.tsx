@@ -3,7 +3,7 @@
 import { memo } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { ShoppingCart, Star, Zap, Heart } from 'lucide-react'
+import { ShoppingCart, Star, Zap, Heart, X } from 'lucide-react'
 import { Product } from '@/types'
 import { useI18n } from '@/i18n/I18nContext'
 import { getProductDisplayName } from '@/i18n/getProductDisplayName'
@@ -16,6 +16,8 @@ interface ProductCardProps {
   addedToCart?: Set<string>
   isInWishlist?: boolean
   onToggleWishlist?: (productId: string) => void
+  /** On wishlist page use `remove` so the control reads as dismiss (X), not favorite (heart). */
+  wishlistButtonVariant?: 'heart' | 'remove'
 }
 
 const PRODUCT_CARD_ADD_IDLE_BUTTON_CLASS = `${BRAND_RED_CTA_IDLE_HOVER_CLASS} shadow-[0_14px_26px_rgba(229,50,37,0.18)]`
@@ -63,6 +65,7 @@ const ProductCard = memo(
     addedToCart,
     isInWishlist,
     onToggleWishlist,
+    wishlistButtonVariant = 'heart',
   }: ProductCardProps) => {
     const { t, locale } = useI18n()
     const pc = t.productCard
@@ -85,6 +88,18 @@ const ProductCard = memo(
             : null
 
     const showHeartBtn = Boolean(onToggleWishlist)
+    const wishlistAriaLabel =
+      wishlistButtonVariant === 'remove'
+        ? pc.wishlistRemove
+        : isInWishlist
+          ? pc.wishlistRemove
+          : pc.wishlistAdd
+    const wishlistBtnSurfaceClass =
+      wishlistButtonVariant === 'remove'
+        ? 'border-slate-200/90 bg-white/95 hover:bg-red-50 hover:border-red-200'
+        : isInWishlist
+          ? 'border-red-200 bg-red-50'
+          : 'border-white/70 bg-white/90 hover:bg-white'
 
     if (variant === 'horizontal') {
       return (
@@ -191,25 +206,28 @@ const ProductCard = memo(
           {showHeartBtn && (
             <button
               type="button"
-              aria-label={isInWishlist ? pc.wishlistRemove : pc.wishlistAdd}
+              aria-label={wishlistAriaLabel}
               onClick={(e) => {
                 e.preventDefault()
                 e.stopPropagation()
                 onToggleWishlist?.(product.id)
               }}
-              className={`absolute right-3 top-3 z-20 flex h-9 w-9 items-center justify-center rounded-full border shadow-sm backdrop-blur transition-all duration-200 active:scale-90 ${
-                isInWishlist
-                  ? 'border-red-200 bg-red-50'
-                  : 'border-white/70 bg-white/90 hover:bg-white'
-              }`}
+              className={`absolute right-3 top-3 z-20 flex h-9 w-9 items-center justify-center rounded-full border shadow-sm backdrop-blur transition-all duration-200 active:scale-90 ${wishlistBtnSurfaceClass}`}
             >
-              <Heart
-                className={`h-4 w-4 transition-colors duration-200 ${
-                  isInWishlist
-                    ? 'fill-red-500 text-red-500'
-                    : 'text-slate-400 hover:text-red-400'
-                }`}
-              />
+              {wishlistButtonVariant === 'remove' ? (
+                <X
+                  className="h-4 w-4 text-slate-600 transition-colors duration-200 hover:text-red-600"
+                  strokeWidth={2.25}
+                />
+              ) : (
+                <Heart
+                  className={`h-4 w-4 transition-colors duration-200 ${
+                    isInWishlist
+                      ? 'fill-red-500 text-red-500'
+                      : 'text-slate-400 hover:text-red-400'
+                  }`}
+                />
+              )}
             </button>
           )}
         </Link>
@@ -238,23 +256,30 @@ const ProductCard = memo(
           {showHeartBtn && (
             <button
               type="button"
-              aria-label={isInWishlist ? pc.wishlistRemove : pc.wishlistAdd}
+              aria-label={wishlistAriaLabel}
               onClick={(e) => {
                 e.preventDefault()
                 e.stopPropagation()
                 onToggleWishlist?.(product.id)
               }}
-              className={`absolute right-3 top-3 z-20 flex items-center justify-center rounded-full border bg-white/90 shadow-sm backdrop-blur transition-all active:scale-90 ${
+              className={`absolute right-3 top-3 z-20 flex items-center justify-center rounded-full border shadow-sm backdrop-blur transition-all active:scale-90 ${
                 isCompact ? 'h-9 w-9' : 'h-10 w-10'
-              } ${isInWishlist ? 'border-red-200 bg-red-50' : 'border-white/70 hover:bg-white'}`}
+              } ${wishlistBtnSurfaceClass}`}
             >
-              <Heart
-                className={`${isCompact ? 'h-4 w-4' : 'h-5 w-5'} transition-colors duration-200 ${
-                  isInWishlist
-                    ? 'fill-red-500 text-red-500'
-                    : 'text-slate-400 hover:text-red-400'
-                }`}
-              />
+              {wishlistButtonVariant === 'remove' ? (
+                <X
+                  className={`${isCompact ? 'h-4 w-4' : 'h-5 w-5'} text-slate-600 transition-colors duration-200 hover:text-red-600`}
+                  strokeWidth={2.25}
+                />
+              ) : (
+                <Heart
+                  className={`${isCompact ? 'h-4 w-4' : 'h-5 w-5'} transition-colors duration-200 ${
+                    isInWishlist
+                      ? 'fill-red-500 text-red-500'
+                      : 'text-slate-400 hover:text-red-400'
+                  }`}
+                />
+              )}
             </button>
           )}
 
