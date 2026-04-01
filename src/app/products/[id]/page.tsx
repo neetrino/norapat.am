@@ -14,15 +14,15 @@ import { hy } from '@/i18n/dictionaries'
 const statusBadgeStyles = {
   HIT: {
     icon: Star,
-    className: 'bg-amber-50 text-amber-700 ring-1 ring-amber-200/80',
+    className: 'text-[#b86114]',
   },
   NEW: {
     icon: Zap,
-    className: 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200/80',
+    className: 'text-[#6c8a2b]',
   },
   CLASSIC: {
     icon: Star,
-    className: 'bg-blue-50 text-blue-700 ring-1 ring-blue-200/80',
+    className: 'text-[#6f633d]',
   },
 } as const
 
@@ -157,14 +157,14 @@ export default async function ProductPage({
                 <div className="relative">
                   <ProductImageGallery images={galleryImages} productName={product.name} />
 
-                  <div className="pointer-events-none absolute left-3 top-3 z-20 flex flex-wrap gap-2 sm:left-4 sm:top-4">
+                  <div className="pointer-events-none absolute left-3 top-2 z-20 flex flex-wrap gap-2 sm:left-4 sm:top-3">
                     <div className="inline-flex items-center rounded-full bg-white/95 px-3 py-1.5 text-xs font-semibold text-slate-700 shadow-sm ring-1 ring-slate-200/70 backdrop-blur">
                       <CategoryDisplayName apiName={product.category?.name} />
                     </div>
 
                     {statusLabel && statusStyle && StatusIcon && (
                       <div
-                        className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold shadow-sm backdrop-blur ${statusStyle.className}`}
+                        className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold drop-shadow-[0_1px_0_rgba(255,255,255,0.85)] ${statusStyle.className}`}
                       >
                         <StatusIcon className="h-3.5 w-3.5" />
                         {statusLabel}

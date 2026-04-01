@@ -3,7 +3,7 @@
 import Image from 'next/image'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
-import { useEffect, useState, useCallback, useRef } from 'react'
+import { useEffect, useState, useCallback, useRef, useMemo } from 'react'
 import Link from 'next/link'
 import {
   Plus,
@@ -19,11 +19,24 @@ import {
   Heart,
   ChevronsUpDown,
   Copy,
+  Save,
 } from 'lucide-react'
-import { Product, ProductStatus } from '@/types'
+import { ProductStatus, type ProductWithCategory } from '@/types'
+
+/** Ադմին ցուցակի տող — boolean դաշտերը միշտ ներկա են (API / Prisma) */
+type AdminProductRow = ProductWithCategory & {
+  isBestSeller: boolean
+  isSpecialOffer: boolean
+}
 
 type SortField = 'name' | 'price' | 'updatedAt'
 type SortDir = 'asc' | 'desc'
+
+/** Սերվերում պահված ⭐ / ❤️ արժեքներ — черновикից տարբերելու համար */
+type PromotionFlags = {
+  isBestSeller: boolean
+  isSpecialOffer: boolean
+}
 
 const SPECIAL_STATUSES: ProductStatus[] = ['HIT', 'NEW', 'CLASSIC', 'BANNER']
 
@@ -43,11 +56,22 @@ const STATUS_COLORS: Record<ProductStatus, string> = {
   BANNER:  'bg-purple-100 text-purple-700',
 }
 
+/** API-ից եկող ապրանքների boolean դաշտերը հաստատուն են դարձնում (կորած undefined → false) */
+function normalizeProductFlags(p: ProductWithCategory): AdminProductRow {
+  const row = p as AdminProductRow
+  return {
+    ...row,
+    isAvailable: Boolean(row.isAvailable),
+    isBestSeller: Boolean(row.isBestSeller),
+    isSpecialOffer: Boolean(row.isSpecialOffer),
+  }
+}
+
 export default function AdminProducts() {
   const { data: session, status } = useSession()
   const router = useRouter()
 
-  const [products, setProducts] = useState<Product[]>([])
+  const [products, setProducts] = useState<AdminProductRow[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('')
@@ -55,14 +79,14 @@ export default function AdminProducts() {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
   const [sortField, setSortField] = useState<SortField>('name')
   const [sortDir, setSortDir] = useState<SortDir>('asc')
-  // productsRef — latest products snapshot for debounce callbacks
-  const productsRef = useRef<Product[]>([])
-  // toggleDebounce — per-product-per-field: pending timer + server-side value for rollback
-  // key format: `${productId}:${field}`
-  const toggleDebounceRef = useRef<Map<string, { timer: ReturnType<typeof setTimeout>; serverValue: boolean }>>(new Map())
-
-  // Keep ref in sync so debounce callbacks always read the latest state
-  useEffect(() => { productsRef.current = products }, [products])
+  /** Սերվերից վերջին պահված isBestSeller / isSpecialOffer (⭐ / ❤️) */
+  const [savedPromotionById, setSavedPromotionById] = useState<
+    Record<string, PromotionFlags>
+  >({})
+  const [isSavingPromotion, setIsSavingPromotion] = useState(false)
+  const [isBulkDeleting, setIsBulkDeleting] = useState(false)
+  /** Նույն ապրանքի+դաշտի հին PATCH-ը չեղարկելու համար (արագ կրկին սեղմելիս վերջին արժեքը մնա) */
+  const toggleAbortRef = useRef<Map<string, AbortController>>(new Map())
 
   useEffect(() => {
     if (status === 'loading') return
@@ -78,7 +102,18 @@ export default function AdminProducts() {
       const response = await fetch('/api/admin/products')
       if (response.ok) {
         const data = await response.json()
-        setProducts(data)
+        const normalized = Array.isArray(data)
+          ? data.map(item => normalizeProductFlags(item as ProductWithCategory))
+          : []
+        setProducts(normalized)
+        setSavedPromotionById(
+          Object.fromEntries(
+            normalized.map(p => [
+              p.id,
+              { isBestSeller: p.isBestSeller, isSpecialOffer: p.isSpecialOffer },
+            ])
+          )
+        )
       }
     } catch (err) {
       console.error('Error fetching products:', err)
@@ -94,6 +129,11 @@ export default function AdminProducts() {
       if (res.ok) {
         setProducts(prev => prev.filter(p => p.id !== productId))
         setSelectedIds(prev => { const next = new Set(prev); next.delete(productId); return next })
+        setSavedPromotionById(prev => {
+          const next = { ...prev }
+          delete next[productId]
+          return next
+        })
       } else {
         alert('Սխալ ապրանքը ջնջելիս')
       }
@@ -103,48 +143,155 @@ export default function AdminProducts() {
     }
   }
 
+  const handleBulkDelete = async () => {
+    const toDelete = products.filter(p => selectedIds.has(p.id))
+    if (toDelete.length === 0) {
+      setSelectedIds(new Set())
+      return
+    }
+    const msg =
+      toDelete.length === 1
+        ? 'Համոզվա՞ծ եք, որ ցանկանում եք ջնջել այս ապրանքը։'
+        : `Համոզվա՞ծ եք, որ ցանկանում եք ջնջել ${toDelete.length} ապրանք։`
+    if (!confirm(msg)) return
+
+    setIsBulkDeleting(true)
+    const deletedIds: string[] = []
+    let failedCount = 0
+
+    try {
+      for (const p of toDelete) {
+        try {
+          const res = await fetch(`/api/products/${p.id}`, { method: 'DELETE' })
+          if (res.ok) {
+            deletedIds.push(p.id)
+          } else {
+            failedCount += 1
+          }
+        } catch {
+          failedCount += 1
+        }
+      }
+
+      if (deletedIds.length > 0) {
+        setProducts(prev => prev.filter(x => !deletedIds.includes(x.id)))
+        setSelectedIds(prev => {
+          const next = new Set(prev)
+          for (const id of deletedIds) {
+            next.delete(id)
+          }
+          return next
+        })
+        setSavedPromotionById(prev => {
+          const next = { ...prev }
+          for (const id of deletedIds) {
+            delete next[id]
+          }
+          return next
+        })
+      }
+
+      if (failedCount > 0) {
+        alert(
+          `${failedCount} ապրանք չջնջվեց (օր․ կապված է պատվերի հետ կամ սերվերի սխալ)։`
+        )
+      }
+    } finally {
+      setIsBulkDeleting(false)
+    }
+  }
+
   type ToggleField = 'isAvailable' | 'isBestSeller' | 'isSpecialOffer'
 
   const handleToggle = useCallback((productId: string, field: ToggleField) => {
-    // 1. Flip UI immediately — every click responds at once
-    setProducts(prev =>
-      prev.map(p => p.id === productId ? { ...p, [field]: !p[field as keyof typeof p] } : p)
-    )
+    if (field === 'isBestSeller' || field === 'isSpecialOffer') {
+      setProducts(prev =>
+        prev.map(x => {
+          if (x.id !== productId) return x
+          const cur = x[field]
+          const currentBool = typeof cur === 'boolean' ? cur : false
+          return { ...x, [field]: !currentBool }
+        })
+      )
+      return
+    }
 
     const key = `${productId}:${field}`
-    const existing = toggleDebounceRef.current.get(key)
+    let previousValue = false
+    let nextValue = false
+    let productFound = false
 
-    // serverValue = the value actually saved on the server before pending flips
-    const serverValue = existing?.serverValue
-      ?? ((productsRef.current.find(p => p.id === productId)?.[field as keyof Product] as boolean) ?? false)
+    setProducts(prev => {
+      const p = prev.find(x => x.id === productId)
+      if (!p) return prev
+      productFound = true
+      const cur = p[field as keyof AdminProductRow]
+      const currentBool = typeof cur === 'boolean' ? cur : false
+      previousValue = currentBool
+      nextValue = !currentBool
+      return prev.map(x => (x.id === productId ? { ...x, [field]: nextValue } : x))
+    })
 
-    // Cancel the previous scheduled API call (user hasn't stopped clicking yet)
-    if (existing) clearTimeout(existing.timer)
+    if (!productFound) return
 
-    // Schedule a single API call 250ms after the LAST click
-    const timer = setTimeout(() => {
-      toggleDebounceRef.current.delete(key)
+    toggleAbortRef.current.get(key)?.abort()
+    const ac = new AbortController()
+    toggleAbortRef.current.set(key, ac)
 
-      const latest = productsRef.current.find(p => p.id === productId)
-      if (!latest) return
-
-      fetch(`/api/admin/products/${productId}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ [field]: latest[field as keyof typeof latest] }),
-      })
-        .then(res => {
-          if (!res.ok) throw new Error('patch failed')
+    void (async () => {
+      try {
+        const res = await fetch(`/api/admin/products/${productId}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ [field]: nextValue }),
+          signal: ac.signal,
         })
-        .catch(() => {
-          // API failed → revert to last known server value
-          setProducts(prev =>
-            prev.map(p => p.id === productId ? { ...p, [field]: serverValue } : p)
+
+        if (ac.signal.aborted) return
+        if (!res.ok) throw new Error('patch failed')
+
+        const updated = (await res.json()) as {
+          id: string
+          isAvailable: boolean
+          isBestSeller: boolean
+          isSpecialOffer: boolean
+        }
+
+        if (ac.signal.aborted) return
+
+        setProducts(prev =>
+          prev.map(p =>
+            p.id === productId
+              ? {
+                  ...p,
+                  isAvailable: updated.isAvailable,
+                  isBestSeller: updated.isBestSeller,
+                  isSpecialOffer: updated.isSpecialOffer,
+                }
+              : p
           )
-        })
-    }, 250)
+        )
+        setSavedPromotionById(prevSnap => ({
+          ...prevSnap,
+          [productId]: {
+            isBestSeller: updated.isBestSeller,
+            isSpecialOffer: updated.isSpecialOffer,
+          },
+        }))
+      } catch (err: unknown) {
+        const isAbort =
+          err instanceof DOMException && err.name === 'AbortError'
+        if (isAbort) return
 
-    toggleDebounceRef.current.set(key, { timer, serverValue })
+        setProducts(prev =>
+          prev.map(p => (p.id === productId ? { ...p, [field]: previousValue } : p))
+        )
+      } finally {
+        if (toggleAbortRef.current.get(key) === ac) {
+          toggleAbortRef.current.delete(key)
+        }
+      }
+    })()
   }, [])
 
   const handleDuplicate = async (productId: string) => {
@@ -172,7 +319,15 @@ export default function AdminProducts() {
 
       if (res.ok) {
         const newProduct = await res.json()
-        setProducts(prev => [newProduct, ...prev])
+        const norm = normalizeProductFlags(newProduct as ProductWithCategory)
+        setProducts(prev => [norm, ...prev])
+        setSavedPromotionById(prevSnap => ({
+          ...prevSnap,
+          [norm.id]: {
+            isBestSeller: norm.isBestSeller,
+            isSpecialOffer: norm.isSpecialOffer,
+          },
+        }))
       } else {
         alert('Սխալ ապրանքը պատճենելիս')
       }
@@ -266,6 +421,64 @@ export default function AdminProducts() {
   const allSelected = filteredProducts.length > 0 && selectedIds.size === filteredProducts.length
   const someSelected = selectedIds.size > 0 && !allSelected
 
+  const hasUnsavedPromotionChanges = useMemo(() => {
+    return products.some(p => {
+      const s = savedPromotionById[p.id]
+      return (
+        s !== undefined &&
+        (p.isBestSeller !== s.isBestSeller || p.isSpecialOffer !== s.isSpecialOffer)
+      )
+    })
+  }, [products, savedPromotionById])
+
+  const savePromotionLockRef = useRef(false)
+
+  const handleSavePromotionFlags = useCallback(async () => {
+    if (savePromotionLockRef.current) return
+    const dirty = products.filter(p => {
+      const s = savedPromotionById[p.id]
+      if (s === undefined) return false
+      return p.isBestSeller !== s.isBestSeller || p.isSpecialOffer !== s.isSpecialOffer
+    })
+    if (dirty.length === 0) return
+
+    savePromotionLockRef.current = true
+    setIsSavingPromotion(true)
+    try {
+      const responses = await Promise.all(
+        dirty.map(p =>
+          fetch(`/api/admin/products/${p.id}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              isBestSeller: p.isBestSeller,
+              isSpecialOffer: p.isSpecialOffer,
+            }),
+          })
+        )
+      )
+      if (responses.some(r => !r.ok)) {
+        alert('Սխալ պիտակները պահելիս')
+        return
+      }
+      setSavedPromotionById(prevSnap => {
+        const next = { ...prevSnap }
+        for (const p of dirty) {
+          next[p.id] = {
+            isBestSeller: p.isBestSeller,
+            isSpecialOffer: p.isSpecialOffer,
+          }
+        }
+        return next
+      })
+    } catch {
+      alert('Սխալ պիտակները պահելիս')
+    } finally {
+      savePromotionLockRef.current = false
+      setIsSavingPromotion(false)
+    }
+  }, [products, savedPromotionById])
+
   if (status === 'loading' || isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -334,9 +547,9 @@ export default function AdminProducts() {
                 onChange={e => setSelectedStatus(e.target.value)}
                 className="w-full pl-9 pr-3 py-2.5 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent bg-white appearance-none transition"
               >
-                <option value="">????? ??????????????</option>
-                <option value="special">?????? (??? / ??? / ?????? / ??????)</option>
-                <option value="discounted">???????</option>
+                <option value="">Բոլոր կարգավիճակները</option>
+                <option value="special">Հատուկ (Հիթ / Նոր / Կլասիկ / Բաններ)</option>
+                <option value="discounted">Զեղչված</option>
               </select>
             </div>
           </div>
@@ -356,8 +569,35 @@ export default function AdminProducts() {
                 </span>
               )}
             </span>
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center justify-end gap-2">
+              {hasUnsavedPromotionChanges && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    void handleSavePromotionFlags()
+                  }}
+                  disabled={isSavingPromotion}
+                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-white bg-orange-500 border border-orange-600 hover:bg-orange-600 px-3 py-1.5 rounded-lg transition-colors disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  <Save className="h-3.5 w-3.5 shrink-0" />
+                  {isSavingPromotion ? 'Պահպանվում է…' : 'Պահպանել'}
+                </button>
+              )}
+              {selectedIds.size > 0 && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    void handleBulkDelete()
+                  }}
+                  disabled={isBulkDeleting}
+                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-red-700 bg-red-100 border border-red-200 hover:bg-red-200 px-3 py-1.5 rounded-lg transition-colors disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  <Trash2 className="h-3.5 w-3.5 shrink-0" />
+                  {isBulkDeleting ? 'Ջնջվում է…' : 'Ջնջել ընտրվածը'}
+                </button>
+              )}
               <button
+                type="button"
                 onClick={exportCSV}
                 className="inline-flex items-center gap-1.5 text-xs font-medium text-orange-600 border border-orange-300 hover:bg-orange-50 px-3 py-1.5 rounded-lg transition-colors"
               >

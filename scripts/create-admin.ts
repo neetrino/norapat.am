@@ -2,10 +2,10 @@
  * Creates or updates admin user: admin@gmail.com / admin123
  * Run: pnpm exec tsx scripts/create-admin.ts
  */
-import { PrismaClient } from '@prisma/client'
 import bcrypt from 'bcryptjs'
+import { createPrismaClient } from '../src/lib/prisma'
 
-const prisma = new PrismaClient()
+const prisma = createPrismaClient()
 
 const ADMIN_EMAIL = 'admin@gmail.com'
 const ADMIN_PASSWORD = 'admin123'

@@ -1,8 +1,8 @@
-import { PrismaClient } from '@prisma/client'
 import fs from 'fs'
 import path from 'path'
+import { createPrismaClient } from '../../src/lib/prisma'
 
-const prisma = new PrismaClient()
+const prisma = createPrismaClient()
 
 interface ProductData {
   name: string

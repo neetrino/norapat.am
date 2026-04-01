@@ -2,9 +2,9 @@
  * Ավելացնում է 30 արտադրանք R2 նկարով (առանց արդեն գոյություն ունեցողների ջնջման)։
  * Գործարկում: pnpm exec tsx scripts/seed-30-with-image.ts
  */
-import { PrismaClient } from '@prisma/client'
+import { createPrismaClient } from '../src/lib/prisma'
 
-const prisma = new PrismaClient()
+const prisma = createPrismaClient()
 
 const IMAGE_URL = 'https://pub-fed62730cf2e41ee9c9fbd0114855cd2.r2.dev/images/1774364084635-dpxyrp.jpg'
 

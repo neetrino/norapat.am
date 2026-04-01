@@ -11,8 +11,6 @@ import {
   Filter,
   Eye,
   RefreshCw,
-  ArrowLeft,
-  ChevronRight,
   Calendar,
   User as UserIcon,
   Phone,
@@ -24,12 +22,9 @@ import {
   AlertCircle,
   Truck,
   CheckSquare,
-  Square,
   ShoppingCart,
-  DollarSign,
   Download,
 } from 'lucide-react'
-import Link from 'next/link'
 
 interface OrderWithDetails extends Order {
   user: User
@@ -90,6 +85,24 @@ const _statusLabels = {
   CANCELLED: 'Չեղարկված'
 }
 
+const ORDER_STATUSES_LIST: OrderStatus[] = [
+  'PENDING',
+  'CONFIRMED',
+  'PREPARING',
+  'READY',
+  'DELIVERED',
+  'CANCELLED',
+]
+
+const statusFilterActiveClass: Record<OrderStatus, string> = {
+  PENDING: 'bg-yellow-500 hover:bg-yellow-600',
+  CONFIRMED: 'bg-blue-500 hover:bg-blue-600',
+  PREPARING: 'bg-orange-500 hover:bg-orange-600',
+  READY: 'bg-green-500 hover:bg-green-600',
+  DELIVERED: 'bg-emerald-500 hover:bg-emerald-600',
+  CANCELLED: 'bg-red-500 hover:bg-red-600',
+}
+
 export default function AdminOrdersPage() {
   const { data: session, status } = useSession()
   const router = useRouter()
@@ -97,17 +110,10 @@ export default function AdminOrdersPage() {
   const [orders, setOrders] = useState<OrderWithDetails[]>([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
-  const [statusFilter, setStatusFilter] = useState('')
-  const [filterGroup, setFilterGroup] = useState<'all' | 'new' | 'in_progress' | 'delivered' | 'cancelled'>('all')
+  const [orderStatusFilter, setOrderStatusFilter] = useState<'all' | OrderStatus>('all')
   const [currentPage, setCurrentPage] = useState(1)
   const [selectedOrder, setSelectedOrder] = useState<OrderWithDetails | null>(null)
   const [showModal, setShowModal] = useState(false)
-  const [stats, setStats] = useState({
-    totalOrders: 0,
-    pendingOrders: 0,
-    completedOrders: 0,
-    totalRevenue: 0
-  })
   const [pagination, setPagination] = useState({
     page: 1,
     limit: 20,
@@ -135,10 +141,8 @@ export default function AdminOrdersPage() {
         limit: '20'
       })
       
-      if (filterGroup !== 'all') {
-        params.append('filter', filterGroup)
-      } else if (statusFilter) {
-        params.append('status', statusFilter)
+      if (orderStatusFilter !== 'all') {
+        params.append('status', orderStatusFilter)
       }
 
       const response = await fetch(`/api/admin/orders?${params}`)
@@ -150,24 +154,12 @@ export default function AdminOrdersPage() {
       const data: OrdersResponse = await response.json()
       setOrders(data.orders)
       setPagination(data.pagination)
-      
-      // Հաշվել վիճակագրությունը
-      const totalRevenue = data.orders.reduce((sum, order) => sum + order.totalAmount, 0)
-      const pendingOrders = data.orders.filter(order => order.status === 'PENDING').length
-      const completedOrders = data.orders.filter(order => order.status === 'DELIVERED').length
-      
-      setStats({
-        totalOrders: data.pagination.total,
-        pendingOrders,
-        completedOrders,
-        totalRevenue
-      })
     } catch (error) {
       console.error('Error fetching orders:', error)
     } finally {
       setLoading(false)
     }
-  }, [currentPage, filterGroup, statusFilter])
+  }, [currentPage, orderStatusFilter])
 
   // Բացել պատվերի մանրամասնությամբ մոդալ պատուհան
   const openOrderDetails = (order: OrderWithDetails) => {
@@ -240,6 +232,41 @@ export default function AdminOrdersPage() {
     setSelectedIds(new Set())
   }
 
+  const exportOrdersCsv = () => {
+    const rows = [
+      [
+        'ID',
+        'Հաճախորդ',
+        'Email',
+        'Հեռախոս',
+        'Գումար (֏)',
+        'Ապրանքներ',
+        'Կարգավիճակ',
+        'Ամսաթիվ',
+        'Հասցե',
+      ],
+      ...filteredOrders.map(order => [
+        order.id,
+        order.user?.name || order.name || '',
+        order.user?.email || '',
+        order.user?.phone || order.phone || '',
+        String(order.totalAmount),
+        String(order.items.length),
+        _statusLabels[order.status as OrderStatus] ?? order.status,
+        new Date(order.createdAt).toLocaleString('hy-AM'),
+        order.deliveryAddress || '',
+      ]),
+    ]
+    const csv = rows.map(r => r.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(',')).join('\n')
+    const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = 'patverner.csv'
+    a.click()
+    URL.revokeObjectURL(url)
+  }
+
   // Ստանալ կարգավիճակի պատկերը
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -255,7 +282,7 @@ export default function AdminOrdersPage() {
 
   useEffect(() => {
     setSelectedIds(new Set())
-  }, [currentPage, filterGroup, statusFilter, searchTerm])
+  }, [currentPage, orderStatusFilter, searchTerm])
 
   // Զտել պատվերները որոնման հարցման համաձայն
   const filteredOrders = orders.filter(order => {
@@ -274,394 +301,295 @@ export default function AdminOrdersPage() {
 
   if (status === 'loading' || loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <RefreshCw className="h-8 w-8 animate-spin mx-auto mb-4 text-orange-500" />
-          <p className="text-gray-600">Բեռնում պատվերներ...</p>
-        </div>
+      <div className="flex items-center justify-center min-h-[400px]">
+        <RefreshCw className="h-8 w-8 animate-spin text-orange-500" />
       </div>
     )
   }
 
-  if (!session || session.user.role !== 'ADMIN') {
+  if (!session || session.user?.role !== 'ADMIN') {
     return null
   }
 
+  const allFilteredSelected =
+    filteredOrders.length > 0 && selectedIds.size === filteredOrders.length
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center space-x-4">
-            <Link 
-              href="/admin"
-              className="flex items-center text-gray-600 hover:text-orange-500 transition-colors"
+    <div className="max-w-7xl mx-auto">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+        <div className="flex items-center gap-3">
+          <ShoppingCart className="h-7 w-7 text-orange-500 shrink-0" />
+          <h1 className="text-2xl font-bold text-gray-900">Պատվերներ</h1>
+          <span className="text-sm text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">
+            {pagination.total}
+          </span>
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => void fetchOrders()}
+            className="text-sm border-gray-200"
+          >
+            <RefreshCw className="h-4 w-4 mr-1.5" />
+            Թարմացնել
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={exportOrdersCsv}
+            className="text-sm border-cyan-400 text-cyan-600 hover:bg-cyan-50"
+          >
+            <Download className="h-4 w-4 mr-1.5" />
+            Export CSV
+          </Button>
+        </div>
+      </div>
+
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 mb-4 space-y-4">
+        <div>
+          <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2 flex items-center gap-1">
+            <Filter className="h-3.5 w-3.5" />
+            Ֆիլտրել ըստ
+          </p>
+          <div className="flex flex-wrap gap-2">
+            <Button
+              type="button"
+              variant={orderStatusFilter === 'all' ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => {
+                setOrderStatusFilter('all')
+                setCurrentPage(1)
+              }}
+              className={orderStatusFilter === 'all' ? 'bg-orange-500 hover:bg-orange-600' : ''}
             >
-              <ArrowLeft className="h-5 w-5 mr-2" />
-              Վերադարձ
-            </Link>
-            <div className="h-8 w-px bg-gray-300"></div>
-            <h1 className="text-3xl font-bold text-gray-900">Պատվերների կառավարում</h1>
+              Բոլորը
+            </Button>
+            {ORDER_STATUSES_LIST.map(s => (
+              <Button
+                key={s}
+                type="button"
+                variant={orderStatusFilter === s ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => {
+                  setOrderStatusFilter(s)
+                  setCurrentPage(1)
+                }}
+                className={orderStatusFilter === s ? statusFilterActiveClass[s] : ''}
+              >
+                {_statusLabels[s]}
+              </Button>
+            ))}
           </div>
-          
-          <div className="flex items-center space-x-3">
-            <Button 
-              onClick={fetchOrders} 
-              variant="outline" 
-              className="flex items-center gap-2"
+        </div>
+
+        <div className="relative max-w-md md:max-w-none">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+          <input
+            type="text"
+            value={searchTerm}
+            onChange={e => setSearchTerm(e.target.value)}
+            placeholder="Որոնում՝ անուն, email, հեռախոս, ID..."
+            className="w-full pl-9 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent"
+          />
+        </div>
+      </div>
+
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+        {selectedIds.size > 0 && (
+          <div className="px-4 py-3 border-b border-gray-100 flex flex-wrap items-center gap-2 bg-orange-50/50">
+            <span className="text-sm text-gray-600">Ընտրված՝ {selectedIds.size}</span>
+            <button
+              type="button"
+              onClick={() => bulkUpdateStatus('CONFIRMED')}
+              className="inline-flex items-center px-3 py-1.5 bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-lg text-xs font-medium transition-colors"
             >
-              <RefreshCw className="h-4 w-4" />
-              Թարմացնել
-            </Button>
-            <Button className="flex items-center gap-2 bg-orange-500 hover:bg-orange-600">
-              <Download className="h-4 w-4" />
-              Արտահանել
-            </Button>
+              <CheckCircle className="h-3.5 w-3.5 mr-1" />
+              Հաստատել
+            </button>
+            <button
+              type="button"
+              onClick={() => bulkUpdateStatus('PREPARING')}
+              className="inline-flex items-center px-3 py-1.5 bg-orange-100 hover:bg-orange-200 text-orange-700 rounded-lg text-xs font-medium transition-colors"
+            >
+              <Package className="h-3.5 w-3.5 mr-1" />
+              Պատրաստվում
+            </button>
+            <button
+              type="button"
+              onClick={() => bulkUpdateStatus('READY')}
+              className="inline-flex items-center px-3 py-1.5 bg-green-100 hover:bg-green-200 text-green-700 rounded-lg text-xs font-medium transition-colors"
+            >
+              <Package className="h-3.5 w-3.5 mr-1" />
+              Պատրաստ
+            </button>
+            <button
+              type="button"
+              onClick={() => bulkUpdateStatus('DELIVERED')}
+              className="inline-flex items-center px-3 py-1.5 bg-emerald-100 hover:bg-emerald-200 text-emerald-700 rounded-lg text-xs font-medium transition-colors"
+            >
+              <Truck className="h-3.5 w-3.5 mr-1" />
+              Առաքված
+            </button>
+            <button
+              type="button"
+              onClick={() => bulkUpdateStatus('CANCELLED')}
+              className="inline-flex items-center px-3 py-1.5 bg-red-100 hover:bg-red-200 text-red-700 rounded-lg text-xs font-medium transition-colors"
+            >
+              <X className="h-3.5 w-3.5 mr-1" />
+              Մերժել
+            </button>
           </div>
-        </div>
+        )}
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white rounded-2xl shadow-lg p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Ընդամենը պատվերներ</p>
-                <p className="text-3xl font-bold text-gray-900">{stats.totalOrders}</p>
-              </div>
-              <div className="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center">
-                <ShoppingCart className="h-6 w-6 text-orange-500" />
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-2xl shadow-lg p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Սպասում</p>
-                <p className="text-3xl font-bold text-gray-900">{stats.pendingOrders}</p>
-              </div>
-              <div className="w-12 h-12 bg-yellow-100 rounded-xl flex items-center justify-center">
-                <Clock className="h-6 w-6 text-yellow-500" />
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-2xl shadow-lg p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Ավարտված</p>
-                <p className="text-3xl font-bold text-gray-900">{stats.completedOrders}</p>
-              </div>
-              <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
-                <CheckCircle className="h-6 w-6 text-green-500" />
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-2xl shadow-lg p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Եկամուտ</p>
-                <p className="text-3xl font-bold text-gray-900">{stats.totalRevenue.toLocaleString()} ֏</p>
-              </div>
-              <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
-                <DollarSign className="h-6 w-6 text-purple-500" />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Filters */}
-        <div className="bg-white rounded-2xl shadow-lg p-6 mb-8">
-          {/* Quick filter chips - Նոր, Ընթացքում, Առաքված, Չեղարկված */}
-          <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-700 mb-3">
-              <Filter className="inline h-4 w-4 mr-1" />
-              Ֆիլտրել ըստ
-            </label>
-            <div className="flex flex-wrap gap-2">
-              <Button
-                variant={filterGroup === 'all' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => { setFilterGroup('all'); setStatusFilter(''); setCurrentPage(1) }}
-                className={filterGroup === 'all' ? 'bg-orange-500 hover:bg-orange-600' : ''}
-              >
-                Բոլորը
-              </Button>
-              <Button
-                variant={filterGroup === 'new' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => { setFilterGroup('new'); setStatusFilter(''); setCurrentPage(1) }}
-                className={filterGroup === 'new' ? 'bg-yellow-500 hover:bg-yellow-600' : ''}
-              >
-                Նոր
-              </Button>
-              <Button
-                variant={filterGroup === 'in_progress' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => { setFilterGroup('in_progress'); setStatusFilter(''); setCurrentPage(1) }}
-                className={filterGroup === 'in_progress' ? 'bg-blue-500 hover:bg-blue-600' : ''}
-              >
-                Ընթացքում
-              </Button>
-              <Button
-                variant={filterGroup === 'delivered' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => { setFilterGroup('delivered'); setStatusFilter(''); setCurrentPage(1) }}
-                className={filterGroup === 'delivered' ? 'bg-green-500 hover:bg-green-600' : ''}
-              >
-                Առաքված
-              </Button>
-              <Button
-                variant={filterGroup === 'cancelled' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => { setFilterGroup('cancelled'); setStatusFilter(''); setCurrentPage(1) }}
-                className={filterGroup === 'cancelled' ? 'bg-red-500 hover:bg-red-600' : ''}
-              >
-                Չեղարկված
-              </Button>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                <span className="inline-flex items-center gap-1">
-                  <Search className="inline h-4 w-4 shrink-0" aria-hidden />
-                  <span className="underline underline-offset-2">Որոնում</span>
-                </span>
-              </label>
-              <input
-                type="text"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full px-4 py-3 bg-white border-2 border-gray-500 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors text-gray-900 font-medium"
-                placeholder="Որոնում՝ անուն, email, հեռախոս կամ ID..."
-              />
-            </div>
-            
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                <Filter className="inline h-4 w-4 mr-1" />
-                Կարգավիճակ (մանրամասն)
-              </label>
-              <select
-                value={filterGroup !== 'all' ? '' : statusFilter}
-                onChange={(e) => { setStatusFilter(e.target.value); setFilterGroup('all'); setCurrentPage(1) }}
-                className="w-full px-4 py-3 bg-white border-2 border-gray-500 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors text-gray-900 font-medium"
-              >
-                <option value="">Բոլոր կարգավիճակները</option>
-                <option value="PENDING">Սպասում</option>
-                <option value="CONFIRMED">Հաստատված</option>
-                <option value="PREPARING">Պատրաստվում</option>
-                <option value="READY">Պատրաստ</option>
-                <option value="DELIVERED">Առաքված</option>
-                <option value="CANCELLED">Չեղարկված</option>
-              </select>
-            </div>
-          </div>
-        </div>
-
-        {/* Orders List */}
-        <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
-          <div className="px-6 py-4 border-b border-gray-300 flex items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <button onClick={toggleSelectAll} className="text-gray-400 hover:text-orange-500 transition-colors">
-                {selectedIds.size === filteredOrders.length && filteredOrders.length > 0
-                  ? <CheckSquare className="h-5 w-5 text-orange-500" />
-                  : <Square className="h-5 w-5" />}
-              </button>
-              <h2 className="text-xl font-semibold text-gray-900">
-                Պատվերներ ({filteredOrders.length})
-              </h2>
-            </div>
-
-            {selectedIds.size > 0 && (
-              <div className="flex items-center gap-2 flex-wrap">
-                <span className="text-sm text-gray-500">Ընտրված՝ {selectedIds.size}</span>
-                <button
-                  onClick={() => bulkUpdateStatus('CONFIRMED')}
-                  className="flex items-center px-3 py-1.5 bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-lg text-sm transition-colors"
-                >
-                  <CheckCircle className="h-3.5 w-3.5 mr-1" />
-                  Հաստատել
-                </button>
-                <button
-                  onClick={() => bulkUpdateStatus('PREPARING')}
-                  className="flex items-center px-3 py-1.5 bg-orange-100 hover:bg-orange-200 text-orange-700 rounded-lg text-sm transition-colors"
-                >
-                  <Package className="h-3.5 w-3.5 mr-1" />
-                  Պատրաստվում
-                </button>
-                <button
-                  onClick={() => bulkUpdateStatus('READY')}
-                  className="flex items-center px-3 py-1.5 bg-green-100 hover:bg-green-200 text-green-700 rounded-lg text-sm transition-colors"
-                >
-                  <CheckSquare className="h-3.5 w-3.5 mr-1" />
-                  Պատրաստ
-                </button>
-                <button
-                  onClick={() => bulkUpdateStatus('DELIVERED')}
-                  className="flex items-center px-3 py-1.5 bg-emerald-100 hover:bg-emerald-200 text-emerald-700 rounded-lg text-sm transition-colors"
-                >
-                  <Truck className="h-3.5 w-3.5 mr-1" />
-                  Առաքված
-                </button>
-                <button
-                  onClick={() => bulkUpdateStatus('CANCELLED')}
-                  className="flex items-center px-3 py-1.5 bg-red-100 hover:bg-red-200 text-red-700 rounded-lg text-sm transition-colors"
-                >
-                  <X className="h-3.5 w-3.5 mr-1" />
-                  Մերժել
-                </button>
-              </div>
-            )}
-          </div>
-          
-          <div className="divide-y divide-gray-200">
-            {filteredOrders.length === 0 ? (
-              <div className="text-center py-12 text-gray-500">
-                <ShoppingCart className="h-12 w-12 mx-auto mb-4 text-gray-300" />
-                <p className="text-lg">Պատվերներ չեն գտնվել</p>
-                <p className="text-sm mt-2">
-                  {searchTerm || statusFilter || filterGroup !== 'all'
-                    ? 'Փորձեք փոխել որոնման ֆիլտրերը'
-                    : 'Դեռ պատվերներ չկան'
-                  }
-                </p>
-              </div>
-            ) : (
-              filteredOrders.map((order) => (
-                <div key={order.id} className={`p-6 hover:bg-gray-50 transition-colors ${selectedIds.has(order.id) ? 'bg-orange-50' : ''}`}>
-                  <div className="flex items-center justify-between">
-                    {/* Պատվերի ինֆո - միայն հիմնական */}
-                    <div className="flex items-center space-x-4">
-                      <button
-                        onClick={() => toggleSelect(order.id)}
-                        className="flex-shrink-0 text-gray-400 hover:text-orange-500 transition-colors"
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-gray-100 text-gray-500 text-xs uppercase tracking-wide">
+                <th className="w-10 px-4 py-3 text-left">
+                  <input
+                    type="checkbox"
+                    checked={allFilteredSelected}
+                    onChange={toggleSelectAll}
+                    className="rounded border-gray-300"
+                    aria-label="Ընտրել բոլորը"
+                  />
+                </th>
+                <th className="px-4 py-3 text-left">Պատվեր</th>
+                <th className="px-4 py-3 text-left">Հաճախորդ</th>
+                <th className="px-4 py-3 text-right">Գումար</th>
+                <th className="px-4 py-3 text-center">Ապրանքներ</th>
+                <th className="px-4 py-3 text-center">Ամսաթիվ</th>
+                <th className="px-4 py-3 text-left min-w-[9rem]">Կարգավիճակ</th>
+                <th className="px-4 py-3 text-center">Գործողություն</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-50">
+              {filteredOrders.length === 0 ? (
+                <tr>
+                  <td colSpan={8} className="text-center py-16 text-gray-400">
+                    <ShoppingCart className="h-10 w-10 mx-auto mb-3 text-gray-200" />
+                    Պատվերներ չեն գտնվել
+                    <p className="text-xs mt-2 text-gray-400 font-normal normal-case">
+                      {searchTerm || orderStatusFilter !== 'all'
+                        ? 'Փորձեք փոխել ֆիլտրերը'
+                        : 'Դեռ պատվերներ չկան'}
+                    </p>
+                  </td>
+                </tr>
+              ) : (
+                filteredOrders.map(order => (
+                  <tr
+                    key={order.id}
+                    className={`hover:bg-gray-50 transition-colors ${selectedIds.has(order.id) ? 'bg-orange-50/60' : ''}`}
+                  >
+                    <td className="px-4 py-3 align-middle">
+                      <input
+                        type="checkbox"
+                        checked={selectedIds.has(order.id)}
+                        onChange={() => toggleSelect(order.id)}
+                        className="rounded border-gray-300"
+                        aria-label={`Ընտրել պատվեր ${order.id.slice(-8)}`}
+                      />
+                    </td>
+                    <td className="px-4 py-3 align-middle">
+                      <div className="font-semibold text-gray-900">#{order.id.slice(-8)}</div>
+                      <div className="text-xs text-gray-400 mt-0.5 font-mono truncate max-w-[10rem] md:max-w-xs">
+                        {order.id}
+                      </div>
+                    </td>
+                    <td className="px-4 py-3 align-middle">
+                      <div className="text-gray-900 font-medium">
+                        {order.user?.name || order.name || 'Հյուր'}
+                      </div>
+                      <div className="text-xs text-gray-500 mt-0.5">
+                        {order.user?.email || '—'}
+                      </div>
+                      {(order.user?.phone || order.phone) && (
+                        <div className="text-xs text-gray-400 mt-0.5">{order.user?.phone || order.phone}</div>
+                      )}
+                    </td>
+                    <td className="px-4 py-3 text-right align-middle whitespace-nowrap">
+                      <span className="font-semibold text-orange-600">
+                        {order.totalAmount.toLocaleString()} ֏
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 text-center align-middle text-gray-700 font-medium">
+                      {order.items.length}
+                    </td>
+                    <td className="px-4 py-3 text-center align-middle text-gray-500 text-xs whitespace-nowrap">
+                      {new Date(order.createdAt).toLocaleDateString('hy-AM', {
+                        day: 'numeric',
+                        month: 'short',
+                        year: 'numeric',
+                      })}
+                      <span className="block text-gray-400 mt-0.5 normal-case">
+                        {new Date(order.createdAt).toLocaleTimeString('hy-AM', {
+                          hour: '2-digit',
+                          minute: '2-digit',
+                        })}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 align-middle">
+                      <select
+                        value={order.status}
+                        onChange={e => updateOrderStatus(order.id, e.target.value as OrderStatus)}
+                        aria-label={_statusLabels[order.status as OrderStatus]}
+                        className={`w-full max-w-[11rem] text-xs font-medium rounded-lg border-0 py-2 pl-2 pr-7 cursor-pointer appearance-none ${statusColors[order.status]}`}
                       >
-                        {selectedIds.has(order.id)
-                          ? <CheckSquare className="h-5 w-5 text-orange-500" />
-                          : <Square className="h-5 w-5" />}
-                      </button>
-                      <div className="w-12 h-12 bg-orange-50 rounded-xl flex items-center justify-center">
-                        <ShoppingCart className="h-6 w-6 text-orange-500" />
-                      </div>
-                      
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center space-x-3 mb-2">
-                          <h3 className="text-lg font-semibold text-gray-900">
-                            Պատվեր #{order.id.slice(-8)}
-                          </h3>
-                        </div>
-                        
-                        {/* Միայն հիմնական ինֆո */}
-                        <div className="flex items-center space-x-6 text-sm">
-                          {/* Գումար */}
-                          <div>
-                            <span className="text-gray-500 text-xs">Գումար:</span>
-                            <div className="text-lg font-bold text-orange-600">
-                              {order.totalAmount.toLocaleString()} ֏
-                            </div>
-                          </div>
-                          
-                          <div>
-                            <span className="text-gray-500 text-xs">Ապրանքներ:</span>
-                            <div className="text-base font-semibold text-gray-900">
-                              {order.items.length} հատ
-                            </div>
-                          </div>
-                          
-                          <div>
-                            <span className="text-gray-500 text-xs">Ժամանակ:</span>
-                            <div className="text-sm font-medium text-gray-900">
-                              {new Date(order.createdAt).toLocaleDateString('hy-AM')} {new Date(order.createdAt).toLocaleTimeString('hy-AM', { 
-                                hour: '2-digit', 
-                                minute: '2-digit' 
-                              })}
-                            </div>
-                          </div>
-                          
-                          <div>
-                            <span className="text-gray-500 text-xs">Հաճախորդ:</span>
-                            <div className="text-sm font-medium text-gray-900">
-                              {order.user?.name || order.name || 'Հյուր'}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    {/* Actions */}
-                    <div className="flex items-center space-x-3">
+                        <option value="PENDING">{_statusLabels.PENDING}</option>
+                        <option value="CONFIRMED">{_statusLabels.CONFIRMED}</option>
+                        <option value="PREPARING">{_statusLabels.PREPARING}</option>
+                        <option value="READY">{_statusLabels.READY}</option>
+                        <option value="DELIVERED">{_statusLabels.DELIVERED}</option>
+                        <option value="CANCELLED">{_statusLabels.CANCELLED}</option>
+                      </select>
+                    </td>
+                    <td className="px-4 py-3 text-center align-middle">
                       <Button
+                        type="button"
                         onClick={() => openOrderDetails(order)}
                         variant="outline"
-                        className="flex items-center gap-2"
+                        size="sm"
+                        className="inline-flex items-center gap-1 text-xs border-gray-200"
                       >
-                        <Eye className="h-4 w-4" />
+                        <Eye className="h-3.5 w-3.5" />
                         Մանրամասներ
                       </Button>
-                      
-                      {/* Կարգավիճակի ընտրություն */}
-                      <div className="relative">
-                        <select
-                          value={order.status}
-                          onChange={(e) => updateOrderStatus(order.id, e.target.value as OrderStatus)}
-                          aria-label={_statusLabels[order.status as OrderStatus]}
-                          className={`px-4 py-2 rounded-xl border-0 focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors cursor-pointer appearance-none pr-10 ${statusColors[order.status]} font-medium`}
-                        >
-                          <option value="PENDING">⏳ Սպասում</option>
-                          <option value="CONFIRMED">✅ Հաստատված</option>
-                          <option value="PREPARING">👨‍🍳 Պատրաստվում</option>
-                          <option value="READY">📦 Պատրաստ</option>
-                          <option value="DELIVERED">🚚 Առաքված</option>
-                          <option value="CANCELLED">❌ Չեղարկված</option>
-                        </select>
-                        <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                          <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                          </svg>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
         </div>
 
-        {/* Էջավորում */}
         {pagination.pages > 1 && (
-          <div className="flex items-center justify-center gap-2 mt-8">
+          <div className="flex items-center justify-center gap-2 p-4 border-t border-gray-100">
             <Button
+              type="button"
               variant="outline"
-              onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+              size="sm"
+              onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
               disabled={currentPage === 1}
-              className="flex items-center gap-2"
             >
-              <ChevronRight className="h-4 w-4 rotate-180" />
               Հետ
             </Button>
-            
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-gray-600">
-                Էջ {currentPage} {pagination.pages}-ից
-              </span>
-            </div>
-            
+            <span className="text-sm text-gray-500">
+              {currentPage} / {pagination.pages}
+            </span>
             <Button
+              type="button"
               variant="outline"
-              onClick={() => setCurrentPage(prev => Math.min(pagination.pages, prev + 1))}
+              size="sm"
+              onClick={() => setCurrentPage(p => Math.min(pagination.pages, p + 1))}
               disabled={currentPage === pagination.pages}
-              className="flex items-center gap-2"
             >
               Առաջ
-              <ChevronRight className="h-4 w-4" />
             </Button>
           </div>
         )}
+      </div>
 
         {/* Պատվերի մանրամասնությամբ մոդալ պատուհան */}
         {showModal && selectedOrder && (
@@ -814,7 +742,6 @@ export default function AdminOrdersPage() {
             </div>
           </div>
         )}
-      </div>
     </div>
   )
 }

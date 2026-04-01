@@ -14,15 +14,11 @@ import { CategoriesSection } from "@/components/home/CategoriesSection";
 import { ActionsSection } from "@/components/home/ActionsSection";
 import { HomeShowcaseCarousel } from "@/components/home/HomeShowcaseCarousel";
 import { BRAND_RED_CTA_IDLE_HOVER_CLASS } from "@/components/home/promo-food-banner/promoFoodBanner.constants";
+import { HOME_BEST_STATUS_IN, HOME_PROMO_STATUS_IN } from "@/lib/homeShowcase";
 const ADDED_TO_CART_FEEDBACK_MS = 2000
 /** Next/Image ներքին չափեր — ցուցադրման ժամանակ պահպանվում է հարաբերակցությունը `object-contain`-ով */
 const HOME_CTA_CHARACTER_IMAGE_WIDTH_PX = 480
 const HOME_CTA_CHARACTER_IMAGE_HEIGHT_PX = 640
-
-/** Հատուկ առաջարկներ — ինչպես /api/products/promo (HIT, NEW) */
-const PROMO_STATUS_IN = 'HIT,NEW'
-/** Լավագույն ապրանքներ — ինչպես /api/products/featured (HIT, NEW, CLASSIC) */
-const BEST_STATUS_IN = 'HIT,NEW,CLASSIC'
 
 export default function Home() {
   const { t } = useI18n()
@@ -64,8 +60,8 @@ export default function Home() {
 
     setLoadingBest(true)
     setLoadingPromo(true)
-    load(BEST_STATUS_IN, setBestProducts, () => setLoadingBest(false))
-    load(PROMO_STATUS_IN, setPromoProducts, () => setLoadingPromo(false))
+    load(HOME_BEST_STATUS_IN, setBestProducts, () => setLoadingBest(false))
+    load(HOME_PROMO_STATUS_IN, setPromoProducts, () => setLoadingPromo(false))
 
     return () => controller.abort()
   }, [])
@@ -147,7 +143,9 @@ export default function Home() {
                 onAddToCart={handleAddToCart}
                 addedToCart={addedToCart}
                 isInWishlist={isAuthenticated ? isInWishlist : undefined}
-                onToggleWishlist={isAuthenticated ? toggleWishlist : undefined}
+                onToggleWishlist={
+                  isAuthenticated ? (id) => { void toggleWishlist(id) } : undefined
+                }
               />
             )}
           </div>
@@ -193,7 +191,9 @@ export default function Home() {
                 onAddToCart={handleAddToCart}
                 addedToCart={addedToCart}
                 isInWishlist={isAuthenticated ? isInWishlist : undefined}
-                onToggleWishlist={isAuthenticated ? toggleWishlist : undefined}
+                onToggleWishlist={
+                  isAuthenticated ? (id) => { void toggleWishlist(id) } : undefined
+                }
               />
             )}
           </div>

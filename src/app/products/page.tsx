@@ -1,12 +1,11 @@
 'use client'
 
 import { useState, useEffect, useCallback, useRef, Suspense, useMemo } from 'react'
-import { useSearchParams, useRouter } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 import {
   Search,
   ArrowDownUp,
   ChevronDown,
-  LayoutGrid,
   SlidersHorizontal,
 } from 'lucide-react'
 import Image from 'next/image'
@@ -140,7 +139,6 @@ function ProductsPageContent() {
   const [menuPage, setMenuPage] = useState(1)
   const [totalProductCount, setTotalProductCount] = useState(0)
   const [addedToCart, setAddedToCart] = useState<Set<string>>(new Set())
-  const router = useRouter()
   const { addItem } = useCart()
   const { isInWishlist, toggle: toggleWishlist, isAuthenticated } = useWishlist()
   const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null)
@@ -261,13 +259,9 @@ function ProductsPageContent() {
 
   const handleToggleWishlist = useCallback(
     (productId: string) => {
-      if (!isAuthenticated) {
-        router.push('/login')
-        return
-      }
-      toggleWishlist(productId)
+      void toggleWishlist(productId)
     },
-    [isAuthenticated, toggleWishlist, router]
+    [toggleWishlist]
   )
 
   if (loading) {
@@ -490,9 +484,7 @@ function ProductsPageContent() {
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between gap-3 rounded-2xl border border-[#eadfd9] bg-[#fcfaf8] px-3 py-2 shadow-sm">
-                  <LayoutGrid className="h-4 w-4 shrink-0 text-slate-400" />
-
+                <div className="flex items-center justify-end gap-3 rounded-2xl border border-[#eadfd9] bg-[#fcfaf8] px-3 py-2 shadow-sm">
                   <div className="flex items-center gap-1 rounded-full bg-white p-1">
                     {([2, 3, 4] as const).map((cols) => (
                       <button
@@ -562,7 +554,7 @@ function ProductsPageContent() {
                 onAddToCart={handleAddToCart}
                 variant={gridCols === 2 ? 'horizontal' : gridCols === 3 ? 'default' : 'compact'}
                 addedToCart={addedToCart}
-                isInWishlist={isAuthenticated ? isInWishlist(product.id) : undefined}
+                isInWishlist={isAuthenticated ? isInWishlist(product.id) : false}
                 onToggleWishlist={isAuthenticated ? handleToggleWishlist : undefined}
               />
             ))}

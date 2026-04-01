@@ -1,6 +1,6 @@
-import { PrismaClient } from '@prisma/client'
+import { createPrismaClient } from '../../src/lib/prisma'
 
-const prisma = new PrismaClient()
+const prisma = createPrismaClient()
 
 async function setBannerProduct() {
   try {

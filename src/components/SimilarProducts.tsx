@@ -43,8 +43,10 @@ export function SimilarProducts({ products }: SimilarProductsProps) {
           variant="default"
           onAddToCart={handleAddToCart}
           addedToCart={addedToCart}
-          isInWishlist={isAuthenticated ? isInWishlist(p.id) : undefined}
-          onToggleWishlist={isAuthenticated ? toggleWishlist : undefined}
+          isInWishlist={isAuthenticated ? isInWishlist(p.id) : false}
+          onToggleWishlist={
+            isAuthenticated ? (id) => { void toggleWishlist(id) } : undefined
+          }
         />
       ))}
     </div>

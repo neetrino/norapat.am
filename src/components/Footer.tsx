@@ -6,6 +6,7 @@ import { Phone, Mail, MapPin, Clock, Facebook, Instagram } from 'lucide-react'
 import { useI18n } from '@/i18n/I18nContext'
 import { usePublicSiteSettings } from '@/hooks/usePublicSiteSettings'
 import { SiteBrandMark } from '@/components/SiteBrandMark'
+import { companyInfo } from '@/constants/company'
 
 const LINK_HOVER = 'transition-colors hover:text-red-800'
 const LINK_BASE = `text-sm text-stone-600 ${LINK_HOVER}`
@@ -16,6 +17,13 @@ const SECTION_LABEL =
 const CONTACT_ICON_BOX = `mt-0.5 h-3.5 w-3.5 shrink-0 ${ICON_ACCENT}`
 const SOCIAL_BTN =
   'inline-flex h-9 w-9 items-center justify-center rounded-lg border border-stone-200/80 bg-white/60 text-stone-600 shadow-sm transition-colors hover:border-stone-300 hover:text-red-800'
+/** Extra top offset: mobile — once after brand; lg — all three columns aligned below footer top */
+const FOOTER_NAV_TOP = 'pt-6 sm:pt-7 lg:pt-8'
+const FOOTER_POLICIES_CONTACT_TOP = 'max-lg:pt-0 lg:pt-8'
+
+/** Next/Image intrinsic size (PNG aspect); display height via Tailwind — same footprint for Idram and Ardshinbank */
+const FOOTER_PARTNER_LOGO = { width: 240, height: 80 } as const
+const FOOTER_PARTNER_LOGO_MAX_WIDTH_PX = 200
 
 export default function Footer() {
   const { t } = useI18n()
@@ -37,7 +45,7 @@ export default function Footer() {
                 </p>
                 <div className="flex flex-wrap items-center gap-2">
                   <a
-                    href="https://www.facebook.com"
+                    href={companyInfo.socialMedia.facebook}
                     target="_blank"
                     rel="noopener noreferrer"
                     className={SOCIAL_BTN}
@@ -46,7 +54,7 @@ export default function Footer() {
                     <Facebook className="h-4 w-4" />
                   </a>
                   <a
-                    href="https://www.instagram.com"
+                    href={companyInfo.socialMedia.instagram}
                     target="_blank"
                     rel="noopener noreferrer"
                     className={SOCIAL_BTN}
@@ -58,7 +66,7 @@ export default function Footer() {
               </div>
 
               <nav
-                className="lg:col-span-2 lg:border-r lg:border-stone-200/70 lg:pr-6 xl:pr-8"
+                className={`${FOOTER_NAV_TOP} lg:col-span-2 lg:border-r lg:border-stone-200/70 lg:pr-6 xl:pr-8`}
                 aria-labelledby="footer-nav-heading"
               >
                 <h2 id="footer-nav-heading" className={SECTION_LABEL}>
@@ -84,7 +92,7 @@ export default function Footer() {
               </nav>
 
               <div
-                className="lg:col-span-3 lg:border-r lg:border-stone-200/70 lg:pl-6 lg:pr-10 xl:pl-8 xl:pr-12"
+                className={`${FOOTER_POLICIES_CONTACT_TOP} lg:col-span-3 lg:border-r lg:border-stone-200/70 lg:pl-6 lg:pr-10 xl:pl-8 xl:pr-12`}
                 aria-labelledby="footer-policies-heading"
               >
                 <h2 id="footer-policies-heading" className={SECTION_LABEL}>
@@ -106,7 +114,10 @@ export default function Footer() {
                 </div>
               </div>
 
-              <div className="lg:col-span-3 lg:pl-8 xl:pl-10" aria-labelledby="footer-contact-heading">
+              <div
+                className={`${FOOTER_POLICIES_CONTACT_TOP} lg:col-span-3 lg:pl-8 xl:pl-10`}
+                aria-labelledby="footer-contact-heading"
+              >
                 <h2 id="footer-contact-heading" className={SECTION_LABEL}>
                   {f.contactsHeading}
                 </h2>
@@ -166,18 +177,44 @@ export default function Footer() {
 
       <div className="promo-food-banner-bg promo-food-banner-vignette relative border-t border-white/10 text-white">
         <div className="relative z-10 mx-auto max-w-7xl px-4 py-5 sm:px-6 sm:py-6 lg:px-8">
-          <div className="flex justify-center md:justify-end">
-            <p className="text-center text-[11px] font-normal leading-relaxed tracking-wide text-white/85 sm:text-xs md:text-right lg:whitespace-nowrap">
-              {f.copyright} {f.createdBy}{' '}
-              <a
-                href="https://neetrino.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="font-semibold text-[#FACC15] transition-colors hover:text-[#fde047]"
-              >
-                Neetrino IT Company
-              </a>
-            </p>
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
+            <div className="min-w-0">
+              <p className="text-left text-[11px] font-normal leading-relaxed tracking-wide text-white/85 sm:text-xs lg:whitespace-nowrap">
+                {f.copyright} {f.createdBy}{' '}
+                <a
+                  href="https://neetrino.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-semibold text-[#FACC15] transition-colors hover:text-[#fde047]"
+                >
+                  Neetrino IT Company
+                </a>
+              </p>
+            </div>
+            <div className="flex w-full shrink-0 flex-wrap items-center justify-end gap-4 sm:w-auto sm:gap-5">
+              <Image
+                src="/ardshinbank-logo.png"
+                alt={f.ardshinbankLogoAlt}
+                width={FOOTER_PARTNER_LOGO.width}
+                height={FOOTER_PARTNER_LOGO.height}
+                className="h-7 w-auto select-none object-contain sm:h-8"
+                style={{
+                  maxWidth: `min(100%, ${FOOTER_PARTNER_LOGO_MAX_WIDTH_PX}px)`,
+                }}
+                sizes="(max-width: 640px) 180px, 200px"
+              />
+              <Image
+                src="/idram-logo.png"
+                alt={f.idramLogoAlt}
+                width={FOOTER_PARTNER_LOGO.width}
+                height={FOOTER_PARTNER_LOGO.height}
+                className="h-7 w-auto select-none object-contain sm:h-8"
+                style={{
+                  maxWidth: `min(100%, ${FOOTER_PARTNER_LOGO_MAX_WIDTH_PX}px)`,
+                }}
+                sizes="(max-width: 640px) 180px, 200px"
+              />
+            </div>
           </div>
         </div>
       </div>

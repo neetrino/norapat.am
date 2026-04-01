@@ -16,6 +16,8 @@ interface ProductCardProps {
   addedToCart?: Set<string>
   isInWishlist?: boolean
   onToggleWishlist?: (productId: string) => void
+  /** On wishlist page use `remove` so the control reads as dismiss (X), not favorite (heart). */
+  wishlistButtonVariant?: 'heart' | 'remove'
 }
 
 const PRODUCT_CARD_ADD_IDLE_BUTTON_CLASS = `${BRAND_RED_CTA_IDLE_HOVER_CLASS} shadow-[0_14px_26px_rgba(229,50,37,0.18)]`
@@ -39,14 +41,16 @@ function ProductBadge({
 }) {
   const toneClass =
     tone === 'amber'
-      ? 'bg-[linear-gradient(180deg,rgba(255,251,244,0.96)_0%,rgba(255,246,235,0.92)_100%)] text-[#b86114] shadow-[0_10px_22px_rgba(207,145,39,0.12)]'
+      ? 'text-[#b86114]'
       : tone === 'green'
-        ? 'bg-[linear-gradient(180deg,rgba(255,251,244,0.96)_0%,rgba(248,244,232,0.92)_100%)] text-[#6c8a2b] shadow-[0_10px_22px_rgba(168,157,92,0.12)]'
-        : 'bg-[linear-gradient(180deg,rgba(255,251,244,0.96)_0%,rgba(246,241,233,0.92)_100%)] text-[#6f633d] shadow-[0_10px_22px_rgba(154,132,95,0.12)]'
+        ? 'text-[#6c8a2b]'
+        : 'text-[#6f633d]'
   const Icon = icon === 'zap' ? Zap : Star
 
   return (
-    <div className={`inline-flex max-w-[9.5rem] items-center gap-1.5 rounded-[999px] ${toneClass} px-3 py-1.5 text-[10px] font-semibold leading-none tracking-[0.12em] backdrop-blur-sm`}>
+    <div
+      className={`inline-flex max-w-[9.5rem] items-center gap-1.5 ${toneClass} px-3 py-1.5 text-[10px] font-semibold leading-none tracking-[0.12em] drop-shadow-[0_1px_0_rgba(255,255,255,0.85)]`}
+    >
       <Icon className="h-3 w-3 shrink-0 stroke-[2.2]" />
       {label}
     </div>
@@ -61,6 +65,7 @@ const ProductCard = memo(
     addedToCart,
     isInWishlist,
     onToggleWishlist,
+    wishlistButtonVariant = 'heart',
   }: ProductCardProps) => {
     const { t, locale } = useI18n()
     const pc = t.productCard
@@ -82,13 +87,27 @@ const ProductCard = memo(
             ? { tone: 'blue' as const, icon: 'star' as const, label: pc.badgeClassic }
             : null
 
+    const showHeartBtn = Boolean(onToggleWishlist)
+    const wishlistAriaLabel =
+      wishlistButtonVariant === 'remove'
+        ? pc.wishlistRemove
+        : isInWishlist
+          ? pc.wishlistRemove
+          : pc.wishlistAdd
+    const wishlistBtnSurfaceClass =
+      wishlistButtonVariant === 'remove'
+        ? 'border-slate-200/90 bg-white/95 hover:bg-red-50 hover:border-red-200'
+        : isInWishlist
+          ? 'border-red-200 bg-red-50'
+          : 'border-white/70 bg-white/90 hover:bg-white'
+
     if (variant === 'horizontal') {
       return (
         <Link
           href={`/products/${product.id}`}
           className="group relative flex overflow-hidden rounded-[2rem] border border-[#eadfd9] bg-[linear-gradient(140deg,#ffffff_0%,#fffaf6_55%,#fff3ec_100%)] shadow-[0_16px_38px_rgba(15,23,42,0.06)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_22px_46px_rgba(15,23,42,0.1)]"
         >
-          <div className="relative w-36 shrink-0 self-stretch overflow-hidden border-r border-[#f1e5de] bg-[radial-gradient(circle_at_50%_45%,rgba(255,230,219,0.95)_0%,rgba(255,245,240,0.9)_52%,rgba(255,255,255,0.75)_100%)] sm:w-40">
+          <div className="relative w-36 shrink-0 self-stretch overflow-hidden bg-[radial-gradient(circle_at_50%_45%,rgba(255,230,219,0.95)_0%,rgba(255,245,240,0.9)_52%,rgba(255,255,255,0.75)_100%)] sm:w-40">
             <div aria-hidden className="absolute -bottom-6 -left-6 h-24 w-24 rounded-full bg-[#ffd8c8]/50 blur-2xl" />
             <div aria-hidden className="absolute -right-5 top-4 h-16 w-16 rounded-full bg-white/70 blur-xl" />
 
@@ -107,7 +126,7 @@ const ProductCard = memo(
               <div className="absolute inset-0 flex items-center justify-center text-4xl">🍽️</div>
             )}
 
-            <div className="absolute left-2.5 top-0.5 flex flex-col gap-1.5 sm:left-3 sm:top-1">
+            <div className="absolute left-2 top-1 z-10 flex flex-col gap-1.5 sm:left-2.5 sm:top-1.5">
               {hasDiscount && (
                 <div className="inline-flex w-fit items-center rounded-full bg-[#E53225] px-3 py-1.5 text-[10px] font-black leading-none tracking-[0.12em] text-white shadow-[0_12px_22px_rgba(229,50,37,0.28)]">
                   -{discountPercent}%
@@ -184,25 +203,30 @@ const ProductCard = memo(
             </div>
           </div>
 
-          {onToggleWishlist && (
+          {showHeartBtn && (
             <button
               type="button"
-              aria-label={isInWishlist ? pc.wishlistRemove : pc.wishlistAdd}
+              aria-label={wishlistAriaLabel}
               onClick={(e) => {
                 e.preventDefault()
                 e.stopPropagation()
-                onToggleWishlist(product.id)
+                onToggleWishlist?.(product.id)
               }}
-              className={`absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full border shadow-sm backdrop-blur transition-all duration-200 active:scale-90 ${
-                isInWishlist
-                  ? 'border-red-100 bg-red-50'
-                  : 'border-white/70 bg-white/90 hover:bg-white'
-              }`}
+              className={`absolute right-3 top-3 z-20 flex h-9 w-9 items-center justify-center rounded-full border shadow-sm backdrop-blur transition-all duration-200 active:scale-90 ${wishlistBtnSurfaceClass}`}
             >
-              {isInWishlist ? (
-                <X className="h-4 w-4 text-red-500" />
+              {wishlistButtonVariant === 'remove' ? (
+                <X
+                  className="h-4 w-4 text-slate-600 transition-colors duration-200 hover:text-red-600"
+                  strokeWidth={2.25}
+                />
               ) : (
-                <Heart className="h-4 w-4 text-slate-400 transition-all duration-200 hover:text-slate-600" />
+                <Heart
+                  className={`h-4 w-4 transition-colors duration-200 ${
+                    isInWishlist
+                      ? 'fill-red-500 text-red-500'
+                      : 'text-slate-400 hover:text-red-400'
+                  }`}
+                />
               )}
             </button>
           )}
@@ -220,7 +244,7 @@ const ProductCard = memo(
         }`}
       >
         <div
-          className={`relative overflow-hidden border-b border-[#f1e5de] ${
+          className={`relative overflow-hidden ${
             isCompact ? 'rounded-t-[1.6rem]' : 'rounded-t-[2rem]'
           }`}
           style={{ aspectRatio: isCompact ? '1 / 1' : '1500 / 1125' }}
@@ -229,28 +253,37 @@ const ProductCard = memo(
           <div aria-hidden className="absolute -left-8 bottom-0 h-28 w-28 rounded-full bg-[#ffd8c8]/45 blur-3xl" />
           <div aria-hidden className="absolute -right-8 top-0 h-24 w-24 rounded-full bg-white/80 blur-2xl" />
 
-          {onToggleWishlist && (
+          {showHeartBtn && (
             <button
               type="button"
-              aria-label={isInWishlist ? pc.wishlistRemove : pc.wishlistAdd}
+              aria-label={wishlistAriaLabel}
               onClick={(e) => {
                 e.preventDefault()
                 e.stopPropagation()
-                onToggleWishlist(product.id)
+                onToggleWishlist?.(product.id)
               }}
-              className={`absolute right-3 top-3 z-20 flex items-center justify-center rounded-full border bg-white/90 shadow-sm backdrop-blur transition-all active:scale-90 ${
+              className={`absolute right-3 top-3 z-20 flex items-center justify-center rounded-full border shadow-sm backdrop-blur transition-all active:scale-90 ${
                 isCompact ? 'h-9 w-9' : 'h-10 w-10'
-              } ${isInWishlist ? 'border-red-100 bg-red-50' : 'border-white/70 hover:bg-white'}`}
+              } ${wishlistBtnSurfaceClass}`}
             >
-              {isInWishlist ? (
-                <X className={`${isCompact ? 'h-4 w-4' : 'h-5 w-5'} text-red-500`} />
+              {wishlistButtonVariant === 'remove' ? (
+                <X
+                  className={`${isCompact ? 'h-4 w-4' : 'h-5 w-5'} text-slate-600 transition-colors duration-200 hover:text-red-600`}
+                  strokeWidth={2.25}
+                />
               ) : (
-                <Heart className={`${isCompact ? 'h-4 w-4' : 'h-5 w-5'} text-slate-400`} />
+                <Heart
+                  className={`${isCompact ? 'h-4 w-4' : 'h-5 w-5'} transition-colors duration-200 ${
+                    isInWishlist
+                      ? 'fill-red-500 text-red-500'
+                      : 'text-slate-400 hover:text-red-400'
+                  }`}
+                />
               )}
             </button>
           )}
 
-          <div className={`absolute left-2.5 top-0.5 z-20 flex flex-col gap-1.5 ${isCompact ? '' : 'sm:left-3 sm:top-1'}`}>
+          <div className="absolute left-2 top-1 z-20 flex flex-col gap-1.5 sm:left-2.5 sm:top-1.5">
             {hasDiscount && (
               <div className="inline-flex w-fit items-center rounded-full bg-[#E53225] px-3 py-1.5 text-[10px] font-black leading-none tracking-[0.12em] text-white shadow-[0_12px_22px_rgba(229,50,37,0.28)]">
                 -{discountPercent}%
@@ -269,7 +302,7 @@ const ProductCard = memo(
             <div className="relative z-10 h-full w-full overflow-hidden">
               <div
                 className={`absolute inset-0 ${
-                  isCompact ? 'px-3 pb-3 pt-10 sm:px-4 sm:pb-4' : 'px-4 pb-4 pt-14 sm:px-5 sm:pb-5 sm:pt-16'
+                  isCompact ? 'px-3 pb-3 pt-8 sm:px-4 sm:pb-4 sm:pt-9' : 'px-4 pb-4 pt-10 sm:px-5 sm:pb-5 sm:pt-11'
                 }`}
                 style={{
                   transform: isCompact ? undefined : 'perspective(1000px) rotateX(6deg) rotateY(-2deg)',

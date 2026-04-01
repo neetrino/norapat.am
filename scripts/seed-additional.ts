@@ -2,9 +2,9 @@
  * Добавляет в базу ~30 дополнительных товаров без удаления существующих данных.
  * Использует существующие категории на армянском языке.
  */
-import { PrismaClient } from '@prisma/client'
+import { createPrismaClient } from '../src/lib/prisma'
 
-const prisma = new PrismaClient()
+const prisma = createPrismaClient()
 
 const CATEGORY_NAME_MAP: Record<string, string> = {
   'Пиде': 'Պիդե',
