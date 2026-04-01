@@ -173,8 +173,8 @@ export default function Footer() {
 
       <div className="promo-food-banner-bg promo-food-banner-vignette relative border-t border-white/10 text-white">
         <div className="relative z-10 mx-auto max-w-7xl px-4 py-5 sm:px-6 sm:py-6 lg:px-8">
-          <div className="flex justify-center md:justify-end">
-            <p className="text-center text-[11px] font-normal leading-relaxed tracking-wide text-white/85 sm:text-xs md:text-right lg:whitespace-nowrap">
+          <div className="flex justify-start">
+            <p className="text-left text-[11px] font-normal leading-relaxed tracking-wide text-white/85 sm:text-xs lg:whitespace-nowrap">
               {f.copyright} {f.createdBy}{' '}
               <a
                 href="https://neetrino.com"
