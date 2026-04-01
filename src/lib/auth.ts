@@ -4,6 +4,7 @@ import type { UserRole } from "@prisma/client"
 import bcrypt from 'bcryptjs'
 import { PHASE_PRODUCTION_BUILD } from 'next/constants'
 import { prisma } from '@/lib/prisma'
+import { useSecureAuthCookies } from '@/lib/nextAuthCookie'
 
 const secret = process.env.NEXTAUTH_SECRET ?? process.env.AUTH_SECRET
 const isNextProductionBuild = process.env.NEXT_PHASE === PHASE_PRODUCTION_BUILD
@@ -13,6 +14,7 @@ if (!secret && process.env.NODE_ENV === 'production' && !isNextProductionBuild) 
 
 export const authOptions: NextAuthOptions = {
   secret: secret || 'dev-fallback-secret-change-me',
+  useSecureCookies: useSecureAuthCookies,
   providers: [
     CredentialsProvider({
       name: "credentials",
