@@ -5,14 +5,7 @@ import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import type { OrderItemForm } from '@/types'
 
-const ALLOWED_PAYMENT_METHODS = new Set([
-  'cash',
-  'arca',
-  'mastercard',
-  'visa',
-  'ameriabank',
-  'idram',
-])
+const ALLOWED_PAYMENT_METHODS = new Set(['cash', 'idram', 'ardshinbank'])
 
 function stripIdramInitSecret<T extends { idramInitSecret?: string | null }>(
   row: T

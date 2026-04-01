@@ -258,6 +258,10 @@ export default function ProfilePage() {
     switch (paymentMethod) {
       case 'cash':
         return checkoutPage.cash
+      case 'idram':
+        return checkoutPage.idram
+      case 'ardshinbank':
+        return checkoutPage.ardshinbank
       case 'arca':
         return 'ArCa'
       case 'mastercard':
@@ -266,8 +270,6 @@ export default function ProfilePage() {
         return 'Visa'
       case 'ameriabank':
         return 'Ameriabank'
-      case 'idram':
-        return 'Idram'
       default:
         return paymentMethod
     }
