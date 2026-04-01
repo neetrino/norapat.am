@@ -1,6 +1,12 @@
 import Footer from '@/components/Footer'
+import { companyInfo } from '@/constants/company'
 import Link from 'next/link'
 import type { Metadata } from 'next'
+
+function buildTelHref(phone: string): string {
+  const digits = phone.replace(/\D/g, '')
+  return digits ? `tel:+${digits}` : '#'
+}
 
 export const metadata: Metadata = {
   title: 'Վերադարձի և փոխանակման քաղաքականություն | Pideh Armenia',
@@ -154,12 +160,28 @@ export default function RefundPage() {
               <p className="text-gray-700 mb-4">
                 Վերադարձի կամ փոխանակման հարցերով դիմեք.
               </p>
-              <div className="bg-gray-50 p-4 rounded-lg">
-                <p className="text-gray-700 mb-2">
-                  <strong>Հեռ.</strong> +374 95-044-888
-                </p>
-                <p className="text-gray-700">
-                  <strong>Էլ. փոստ.</strong> info@pideh.am
+              <div className="space-y-2 rounded-lg bg-gray-50 p-4">
+                {companyInfo.callNowPhones.map((phone, index) => (
+                  <p key={phone} className="mb-0 text-gray-700">
+                    <strong>
+                      {index === 0 ? 'Հեռ. (հիմնական)' : 'Հեռ. (լրացուցիչ)'}
+                    </strong>{' '}
+                    <a
+                      href={buildTelHref(phone)}
+                      className="text-orange-600 underline-offset-2 hover:text-orange-700 hover:underline"
+                    >
+                      {phone}
+                    </a>
+                  </p>
+                ))}
+                <p className="mb-0 text-gray-700">
+                  <strong>Էլ. փոստ.</strong>{' '}
+                  <a
+                    href={`mailto:${companyInfo.email}`}
+                    className="text-orange-600 underline-offset-2 hover:text-orange-700 hover:underline"
+                  >
+                    {companyInfo.email}
+                  </a>
                 </p>
               </div>
             </section>
