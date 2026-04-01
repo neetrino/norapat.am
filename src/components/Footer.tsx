@@ -21,6 +21,10 @@ const SOCIAL_BTN =
 const FOOTER_NAV_TOP = 'pt-6 sm:pt-7 lg:pt-8'
 const FOOTER_POLICIES_CONTACT_TOP = 'max-lg:pt-0 lg:pt-8'
 
+/** Next/Image intrinsic size (PNG aspect); display height via Tailwind — same footprint for Idram and Ardshinbank */
+const FOOTER_PARTNER_LOGO = { width: 240, height: 80 } as const
+const FOOTER_PARTNER_LOGO_MAX_WIDTH_PX = 200
+
 export default function Footer() {
   const { t } = useI18n()
   const { nav, footer: f } = t
@@ -173,18 +177,44 @@ export default function Footer() {
 
       <div className="promo-food-banner-bg promo-food-banner-vignette relative border-t border-white/10 text-white">
         <div className="relative z-10 mx-auto max-w-7xl px-4 py-5 sm:px-6 sm:py-6 lg:px-8">
-          <div className="flex justify-center md:justify-end">
-            <p className="text-center text-[11px] font-normal leading-relaxed tracking-wide text-white/85 sm:text-xs md:text-right lg:whitespace-nowrap">
-              {f.copyright} {f.createdBy}{' '}
-              <a
-                href="https://neetrino.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="font-semibold text-[#FACC15] transition-colors hover:text-[#fde047]"
-              >
-                Neetrino IT Company
-              </a>
-            </p>
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
+            <div className="min-w-0">
+              <p className="text-left text-[11px] font-normal leading-relaxed tracking-wide text-white/85 sm:text-xs lg:whitespace-nowrap">
+                {f.copyright} {f.createdBy}{' '}
+                <a
+                  href="https://neetrino.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-semibold text-[#FACC15] transition-colors hover:text-[#fde047]"
+                >
+                  Neetrino IT Company
+                </a>
+              </p>
+            </div>
+            <div className="flex w-full shrink-0 flex-wrap items-center justify-end gap-4 sm:w-auto sm:gap-5">
+              <Image
+                src="/ardshinbank-logo.png"
+                alt={f.ardshinbankLogoAlt}
+                width={FOOTER_PARTNER_LOGO.width}
+                height={FOOTER_PARTNER_LOGO.height}
+                className="h-7 w-auto select-none object-contain sm:h-8"
+                style={{
+                  maxWidth: `min(100%, ${FOOTER_PARTNER_LOGO_MAX_WIDTH_PX}px)`,
+                }}
+                sizes="(max-width: 640px) 180px, 200px"
+              />
+              <Image
+                src="/idram-logo.png"
+                alt={f.idramLogoAlt}
+                width={FOOTER_PARTNER_LOGO.width}
+                height={FOOTER_PARTNER_LOGO.height}
+                className="h-7 w-auto select-none object-contain sm:h-8"
+                style={{
+                  maxWidth: `min(100%, ${FOOTER_PARTNER_LOGO_MAX_WIDTH_PX}px)`,
+                }}
+                sizes="(max-width: 640px) 180px, 200px"
+              />
+            </div>
           </div>
         </div>
       </div>

@@ -103,7 +103,7 @@ export const hy: AppMessages = {
     terms: 'Օգտագործման պայմաններ',
     copyright: 'Copyright © 2026. Բոլոր իրավունքները պաշտպանված են։',
     createdBy: 'Ստեղծել է',
-    refundPolicy: 'Վերադարձի քաղաքականություն',
+    refundPolicy: 'Վերադարձի և փոխանակման քաղաքականություն',
     deliveryPolicy: 'Առաքման քաղաքականություն',
     refundShort: 'Վերադարձ',
     deliveryShort: 'Առաքում',
@@ -114,6 +114,8 @@ export const hy: AppMessages = {
     ariaEmail: 'Էլ․ փոստ',
     mascotAlt:
       'Ստիլիզացված պատկեր՝ հայկական տարազի տարրերով, բրենդի դեկորատիվ տարր',
+    idramLogoAlt: 'Idram վճարային համակարգ',
+    ardshinbankLogoAlt: 'Արդշինբանկ',
   },
   home: {
     ariaBrandBanner: 'Բրենդային բաններ',

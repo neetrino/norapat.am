@@ -222,8 +222,12 @@ export default function RegisterPage() {
               />
               <label className="text-sm text-gray-700">
                 Ընդունում եմ{' '}
+                <Link href="/terms" className="text-orange-500 hover:text-orange-600 underline">
+                  օգտագործման պայմանները
+                </Link>
+                {' '}և{' '}
                 <Link href="/privacy" className="text-orange-500 hover:text-orange-600 underline">
-                  օգտագործման պայմանները և գաղտնիության քաղաքականությունը
+                  գաղտնիության քաղաքականությունը
                 </Link>
               </label>
             </div>
