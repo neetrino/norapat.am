@@ -24,8 +24,6 @@ const FOOTER_POLICIES_CONTACT_TOP = 'max-lg:pt-0 lg:pt-8'
 /** Next/Image intrinsic size (PNG aspect); display height via Tailwind */
 const FOOTER_IDRAM_LOGO = { width: 240, height: 80 } as const
 const FOOTER_IDRAM_LOGO_MAX_WIDTH_PX = 200
-const FOOTER_ARDSHIN_LOGO = { width: 400, height: 120 } as const
-const FOOTER_ARDSHIN_LOGO_MAX_WIDTH_PX = 220
 
 export default function Footer() {
   const { t } = useI18n()
@@ -192,17 +190,6 @@ export default function Footer() {
               </a>
             </p>
             <div className="flex w-full shrink-0 flex-wrap items-center justify-end gap-4 sm:w-auto sm:gap-5">
-              <Image
-                src="/ardshinbank-logo.png"
-                alt={f.ardshinbankLogoAlt}
-                width={FOOTER_ARDSHIN_LOGO.width}
-                height={FOOTER_ARDSHIN_LOGO.height}
-                className="h-8 w-auto select-none object-contain sm:h-9"
-                style={{
-                  maxWidth: `min(100%, ${FOOTER_ARDSHIN_LOGO_MAX_WIDTH_PX}px)`,
-                }}
-                sizes="(max-width: 640px) 200px, 220px"
-              />
               <Image
                 src="/idram-logo.png"
                 alt={f.idramLogoAlt}

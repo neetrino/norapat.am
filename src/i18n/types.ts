@@ -122,8 +122,6 @@ export interface AppMessages {
     mascotAlt: string
     /** Idram վճարային համակարգի լոգո (կոպիրայթի գոտի) */
     idramLogoAlt: string
-    /** Ardshinbank բանկի լոգո (կոպիրայթի գոտի) */
-    ardshinbankLogoAlt: string
   }
   home: {
     ariaBrandBanner: string

@@ -115,7 +115,6 @@ export const hy: AppMessages = {
     mascotAlt:
       'Ստիլիզացված պատկեր՝ հայկական տարազի տարրերով, բրենդի դեկորատիվ տարր',
     idramLogoAlt: 'Idram վճարային համակարգ',
-    ardshinbankLogoAlt: 'Ardshinbank բանկ',
   },
   home: {
     ariaBrandBanner: 'Բրենդային բաններ',
