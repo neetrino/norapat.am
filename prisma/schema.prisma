@@ -79,6 +79,10 @@ model Order {
   idramInitSecret    String?
   /// Idram EDP_TRANS_ID after successful payment
   idramTransactionId String?
+  /// One-time token for POST /api/payments/arca/init (Arca orders only)
+  arcaInitSecret     String?
+  /// Arca internal orderId returned from register.do (used to query status)
+  arcaOrderId        String?
   items              OrderItem[]
   user               User?       @relation(fields: [userId], references: [id])
 

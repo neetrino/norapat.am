@@ -16,6 +16,11 @@ function mapLocaleToIdramLanguage(locale: AppLocale): 'EN' | 'AM' | 'RU' {
   return 'EN'
 }
 
+function mapLocaleToArcaLanguage(locale: AppLocale): 'am' | 'en' | 'ru' {
+  if (locale === 'hy') return 'am'
+  return 'en'
+}
+
 function postFormToIdram(
   formAction: string,
   formFields: Record<string, string>
@@ -212,6 +217,7 @@ export default function CheckoutPage() {
       const orderJson = (await response.json()) as {
         id: string
         idramInitSecret?: string | null
+        arcaInitSecret?: string | null
       }
 
       if (formData.paymentMethod === 'idram') {
@@ -240,6 +246,34 @@ export default function CheckoutPage() {
           throw new Error('Invalid Idram init response')
         }
         postFormToIdram(initData.formAction, initData.formFields)
+        return
+      }
+
+      if (formData.paymentMethod === 'arca') {
+        const secret = orderJson.arcaInitSecret
+        if (!secret) {
+          throw new Error('Arca init secret missing')
+        }
+        const initRes = await fetch('/api/payments/arca/init', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            orderId: orderJson.id,
+            arcaInitSecret: secret,
+            language: mapLocaleToArcaLanguage(locale),
+          }),
+        })
+        const initData = (await initRes.json()) as {
+          error?: string
+          redirectUrl?: string
+        }
+        if (!initRes.ok) {
+          throw new Error(initData.error ?? 'Arca init failed')
+        }
+        if (!initData.redirectUrl) {
+          throw new Error('Invalid Arca init response')
+        }
+        window.location.href = initData.redirectUrl
         return
       }
 
@@ -445,6 +479,22 @@ export default function CheckoutPage() {
                   <div className="flex-1 min-w-0">
                     <h3 className="text-sm font-semibold text-gray-900">{cp.ardshinbank}</h3>
                     <p className="text-xs text-gray-500 mt-0.5">{cp.ardshinbankDesc}</p>
+                  </div>
+                </label>
+
+                {/* Arca */}
+                <label className={`flex items-center p-4 rounded-2xl cursor-pointer transition-all duration-200 border-2 ${
+                  formData.paymentMethod === 'arca'
+                    ? 'border-orange-400 bg-orange-50/40'
+                    : 'border-gray-100 bg-white hover:border-gray-200'
+                }`}>
+                  <input type="radio" name="paymentMethod" value="arca" checked={formData.paymentMethod === 'arca'} onChange={handleInputChange} className="sr-only" />
+                  <div className="w-12 h-12 bg-white border border-gray-100 rounded-xl flex items-center justify-center mr-4 shrink-0 shadow-sm">
+                    <CreditCard className="h-6 w-6 text-red-600" aria-hidden />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-sm font-semibold text-gray-900">{cp.arca}</h3>
+                    <p className="text-xs text-gray-500 mt-0.5">{cp.arcaDesc}</p>
                   </div>
                 </label>
 
@@ -693,6 +743,22 @@ export default function CheckoutPage() {
                         <div className="flex-1">
                           <h3 className="text-sm font-semibold text-gray-900">{cp.ardshinbank}</h3>
                           <p className="text-sm text-gray-500 mt-0.5">{cp.ardshinbankDesc}</p>
+                        </div>
+                      </label>
+
+                      {/* Arca */}
+                      <label className={`flex items-center p-4 rounded-2xl cursor-pointer transition-all duration-200 border-2 ${
+                        formData.paymentMethod === 'arca'
+                          ? 'border-orange-400 bg-orange-50/40'
+                          : 'border-gray-100 bg-white hover:border-gray-200'
+                      }`}>
+                        <input type="radio" name="paymentMethod" value="arca" checked={formData.paymentMethod === 'arca'} onChange={handleInputChange} className="sr-only" />
+                        <div className="w-14 h-14 bg-white border border-gray-100 rounded-xl flex items-center justify-center mr-5 shrink-0 shadow-sm">
+                          <CreditCard className="h-7 w-7 text-red-600" aria-hidden />
+                        </div>
+                        <div className="flex-1">
+                          <h3 className="text-sm font-semibold text-gray-900">{cp.arca}</h3>
+                          <p className="text-sm text-gray-500 mt-0.5">{cp.arcaDesc}</p>
                         </div>
                       </label>
 

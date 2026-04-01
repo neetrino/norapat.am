@@ -5,13 +5,14 @@ import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import type { OrderItemForm } from '@/types'
 
-const ALLOWED_PAYMENT_METHODS = new Set(['cash', 'idram', 'ardshinbank'])
+const ALLOWED_PAYMENT_METHODS = new Set(['cash', 'idram', 'ardshinbank', 'arca'])
 
-function stripIdramInitSecret<T extends { idramInitSecret?: string | null }>(
-  row: T
-): Omit<T, 'idramInitSecret'> {
-  const { idramInitSecret, ...rest } = row
+function stripPaymentSecrets<
+  T extends { idramInitSecret?: string | null; arcaInitSecret?: string | null }
+>(row: T): Omit<T, 'idramInitSecret' | 'arcaInitSecret'> {
+  const { idramInitSecret, arcaInitSecret, ...rest } = row
   void idramInitSecret
+  void arcaInitSecret
   return rest
 }
 
@@ -49,7 +50,7 @@ export async function GET(request: NextRequest) {
       }
     })
 
-    return NextResponse.json(orders.map(stripIdramInitSecret))
+    return NextResponse.json(orders.map(stripPaymentSecrets))
   } catch (error) {
     console.error('Orders API error:', error)
     return NextResponse.json(
@@ -106,6 +107,9 @@ export async function POST(request: NextRequest) {
     const idramInitSecret =
       paymentMethod === 'idram' ? randomBytes(24).toString('hex') : null
 
+    const arcaInitSecret =
+      paymentMethod === 'arca' ? randomBytes(24).toString('hex') : null
+
     const order = await prisma.order.create({
       data: {
         userId: session?.user?.id || null,
@@ -118,6 +122,7 @@ export async function POST(request: NextRequest) {
         paymentMethod,
         deliveryTime,
         idramInitSecret,
+        arcaInitSecret,
         items: {
           create: orderItems.map((item) => ({
             productId: item.productId,
