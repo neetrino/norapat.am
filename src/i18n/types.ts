@@ -120,6 +120,8 @@ export interface AppMessages {
     ariaEmail: string
     /** Դեկորատիվ պատկեր ֆուտերում (մասկոտ) */
     mascotAlt: string
+    /** Idram վճարային համակարգի լոգո (կոպիրայթի գոտի) */
+    idramLogoAlt: string
   }
   home: {
     ariaBrandBanner: string

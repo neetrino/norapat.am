@@ -114,6 +114,7 @@ export const hy: AppMessages = {
     ariaEmail: 'Էլ․ փոստ',
     mascotAlt:
       'Ստիլիզացված պատկեր՝ հայկական տարազի տարրերով, բրենդի դեկորատիվ տարր',
+    idramLogoAlt: 'Idram վճարային համակարգ',
   },
   home: {
     ariaBrandBanner: 'Բրենդային բաններ',
