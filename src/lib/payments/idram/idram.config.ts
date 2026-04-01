@@ -1,3 +1,8 @@
+import {
+  IDRAM_DEV_STUB_SECRET_PLACEHOLDER,
+  IDRAM_DOC_SAMPLE_REC_ACCOUNT,
+} from '@/lib/payments/idram/idram.constants'
+
 export type IdramCredentials = {
   recAccount: string
   secretKey: string
@@ -56,11 +61,26 @@ export function getIdramCredentials(): IdramCredentials {
   const rec = useTest ? testRec : liveRec
   const sec = useTest ? testSec : liveSec
 
-  if (!rec || !sec) {
-    const hint = useTest
-      ? 'Set IDRAM_REC_ACCOUNT and IDRAM_SECRET_KEY (aliases: IDRAM_TEST_REC_ACCOUNT, IDRAM_TEST_SECRET_KEY), or IDRAM_TEST_MODE=false with live keys.'
-      : 'Set IDRAM_LIVE_REC_ACCOUNT and IDRAM_LIVE_SECRET_KEY (or IDRAM_TEST_MODE=true with test keys).'
-    throw new Error(`Idram is not configured: ${hint}`)
+  if (rec && sec) {
+    return { recAccount: rec, secretKey: sec }
   }
-  return { recAccount: rec, secretKey: sec }
+
+  const useDevStub =
+    process.env.NODE_ENV === 'development' &&
+    process.env.IDRAM_USE_DEV_STUB === 'true'
+
+  if (useDevStub) {
+    const stubSecret =
+      trimEnv(process.env.IDRAM_DEV_STUB_SECRET) ||
+      IDRAM_DEV_STUB_SECRET_PLACEHOLDER
+    return {
+      recAccount: IDRAM_DOC_SAMPLE_REC_ACCOUNT,
+      secretKey: stubSecret,
+    }
+  }
+
+  const hint = useTest
+    ? 'Set IDRAM_REC_ACCOUNT and IDRAM_SECRET_KEY (aliases: IDRAM_TEST_REC_ACCOUNT, IDRAM_TEST_SECRET_KEY), IDRAM_USE_DEV_STUB=true for local dev only, or IDRAM_TEST_MODE=false with live keys.'
+    : 'Set IDRAM_LIVE_REC_ACCOUNT and IDRAM_LIVE_SECRET_KEY (or IDRAM_TEST_MODE=true with test keys). For local dev without keys: IDRAM_USE_DEV_STUB=true.'
+  throw new Error(`Idram is not configured: ${hint}`)
 }
