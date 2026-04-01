@@ -76,6 +76,13 @@ export async function POST(request: NextRequest) {
     })
   } catch (e) {
     const message = e instanceof Error ? e.message : 'Init failed'
-    return NextResponse.json({ error: message }, { status: 500 })
+    const notConfigured = message.startsWith('Idram is not configured')
+    return NextResponse.json(
+      {
+        error: message,
+        ...(notConfigured ? { code: 'IDRAM_NOT_CONFIGURED' as const } : {}),
+      },
+      { status: notConfigured ? 503 : 500 }
+    )
   }
 }
