@@ -10,18 +10,17 @@ export const metadata: Metadata = {
 
 export default function RefundPage() {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen">
       <div className="h-16" />
+
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-16">
-        <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-8 mb-20 lg:mb-16">
-          <div className="text-center mb-8">
-            <h1 className="text-2xl sm:text-4xl font-bold text-gray-900 mb-4">
-              Վերադարձի և փոխանակման քաղաքականություն
+        <div className="px-4 pb-4 pt-6 sm:px-8 sm:pb-8 sm:pt-10 mb-20 lg:mb-16">
+          <header className="mb-6 text-center">
+            <h1 className="inline-block text-xl sm:text-2xl font-semibold tracking-tight text-slate-900 pb-2.5 border-b-2 border-orange-500 max-w-full">
+              <span className="block leading-snug">Վերադարձի և փոխանակման</span>
+              <span className="block leading-snug">Քաղաքականություն</span>
             </h1>
-            <p className="text-gray-600">
-              Վերջին թարմացում. {new Date().toLocaleDateString('hy-AM')}
-            </p>
-          </div>
+          </header>
 
           <div className="prose prose-lg max-w-none">
             <section className="mb-8">
