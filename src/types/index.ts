@@ -68,7 +68,7 @@ export interface OrderFormData {
   phone: string
   address: string
   notes?: string
-  paymentMethod: 'cash' | 'idram' | 'ardshinbank'
+  paymentMethod: 'cash' | 'idram' | 'arca'
 }
 
 export interface ContactFormData {
@@ -99,7 +99,7 @@ export const PRODUCT_STATUS_LABELS: Record<ProductStatus, string> = {
 export const PAYMENT_METHODS = {
   cash: 'Cash',
   idram: 'Idram',
-  ardshinbank: 'Ardshinbank',
+  arca: 'Arca',
 } as const
 
 export type PaymentMethod = keyof typeof PAYMENT_METHODS

@@ -260,8 +260,6 @@ export default function ProfilePage() {
         return checkoutPage.cash
       case 'idram':
         return checkoutPage.idram
-      case 'ardshinbank':
-        return checkoutPage.ardshinbank
       case 'arca':
         return 'ArCa'
       case 'mastercard':

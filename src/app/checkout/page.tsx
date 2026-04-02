@@ -466,22 +466,6 @@ export default function CheckoutPage() {
                   </div>
                 </label>
 
-                {/* Ardshinbank */}
-                <label className={`flex items-center p-4 rounded-2xl cursor-pointer transition-all duration-200 border-2 ${
-                  formData.paymentMethod === 'ardshinbank'
-                    ? 'border-orange-400 bg-orange-50/40'
-                    : 'border-gray-100 bg-white hover:border-gray-200'
-                }`}>
-                  <input type="radio" name="paymentMethod" value="ardshinbank" checked={formData.paymentMethod === 'ardshinbank'} onChange={handleInputChange} className="sr-only" />
-                  <div className="w-12 h-12 bg-white border border-gray-100 rounded-xl flex items-center justify-center mr-4 shrink-0 shadow-sm">
-                    <Landmark className="h-6 w-6 text-sky-700" aria-hidden />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="text-sm font-semibold text-gray-900">{cp.ardshinbank}</h3>
-                    <p className="text-xs text-gray-500 mt-0.5">{cp.ardshinbankDesc}</p>
-                  </div>
-                </label>
-
                 {/* Arca */}
                 <label className={`flex items-center p-4 rounded-2xl cursor-pointer transition-all duration-200 border-2 ${
                   formData.paymentMethod === 'arca'
@@ -727,22 +711,6 @@ export default function CheckoutPage() {
                         <div className="flex-1">
                           <h3 className="text-sm font-semibold text-gray-900">{cp.idram}</h3>
                           <p className="text-sm text-gray-500 mt-0.5">{cp.idramDesc}</p>
-                        </div>
-                      </label>
-
-                      {/* Ardshinbank */}
-                      <label className={`flex items-center p-4 rounded-2xl cursor-pointer transition-all duration-200 border-2 ${
-                        formData.paymentMethod === 'ardshinbank'
-                          ? 'border-orange-400 bg-orange-50/40'
-                          : 'border-gray-100 bg-white hover:border-gray-200'
-                      }`}>
-                        <input type="radio" name="paymentMethod" value="ardshinbank" checked={formData.paymentMethod === 'ardshinbank'} onChange={handleInputChange} className="sr-only" />
-                        <div className="w-14 h-14 bg-white border border-gray-100 rounded-xl flex items-center justify-center mr-5 shrink-0 shadow-sm">
-                          <Landmark className="h-7 w-7 text-sky-700" aria-hidden />
-                        </div>
-                        <div className="flex-1">
-                          <h3 className="text-sm font-semibold text-gray-900">{cp.ardshinbank}</h3>
-                          <p className="text-sm text-gray-500 mt-0.5">{cp.ardshinbankDesc}</p>
                         </div>
                       </label>
 
