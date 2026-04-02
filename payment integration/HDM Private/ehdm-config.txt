@@ -1,0 +1,29 @@
+# E-HDM: данные для интеграции (из WordPress wp_options)
+# Папка Private в .gitignore — эти данные не попадают в git.
+# Пароль (passphrase) хранится только в .env (EHDM_KEY_PASSPHRASE).
+
+CRN=52031720
+TIN=00505298
+INITIAL_SEQ=65
+# Код АТГ по умолчанию для позиций чека (из перечня ПЕК)
+DEFAULT_ADG_CODE=2201
+# Режим налога: 1=с НДС, 2=без НДС, 3=оборотный, 7=микро
+DEP=1
+# Единица по умолчанию
+DEFAULT_UNIT=Հատ
+# ID кассира
+CASHIER_ID=1
+# Доставка в чеке (шаг 4 плагина)
+SHIPPING_ENABLED=1
+SHIPPING_ADG_CODE=49.42
+SHIPPING_GOOD_CODE=007
+SHIPPING_DESCRIPTION=Առաքում
+SHIPPING_UNIT=Հատ
+
+Файлы сертификата:
+  00505298.crt  — клиентский сертификат ПЕК
+  00505298.key  — приватный ключ (пароль в .env)
+
+API: https://ecrm.taxservice.am/taxsystem-rs-vcr/api/v1.0
+
+При первом вызове API использовать seq=65, затем сохранять в БД и увеличивать на 1 после каждого успешного запроса.

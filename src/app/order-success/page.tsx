@@ -1,12 +1,17 @@
 'use client'
 
+import { Suspense } from 'react'
 import Link from 'next/link'
 import { CheckCircle, Clock, Phone, ArrowRight } from 'lucide-react'
 import Footer from '@/components/Footer'
+import { OrderSuccessClearCart } from '@/components/order/OrderSuccessClearCart'
 
 export default function OrderSuccessPage() {
   return (
     <div className="min-h-screen bg-white">
+      <Suspense fallback={null}>
+        <OrderSuccessClearCart />
+      </Suspense>
       
       {/* Отступ для fixed хедера */}
       <div className="h-header-spacer-mobile lg:h-header-spacer-desktop" aria-hidden />

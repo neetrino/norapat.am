@@ -1,0 +1,49 @@
+# IMPORTANT:
+# This repository uses advanced CodeQL configuration via GitHub Actions (custom config file below).
+# GitHub CodeQL Default Setup must be disabled in repository Security settings
+# (Settings → Code security and analysis → CodeQL analysis),
+# otherwise SARIF upload fails with:
+# "CodeQL analyses from advanced configurations cannot be processed when the default setup is enabled"
+#
+# Custom config: `.github/codeql/codeql-config.yml` — Idram MD5 suppression is handled via inline codeql[] comment in source.
+name: CodeQL
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+    branches: [main, dev]
+  schedule:
+    - cron: '26 5 * * 1'
+
+jobs:
+  analyze:
+    name: Analyze
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [javascript-typescript]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v4
+        with:
+          languages: ${{ matrix.language }}
+          config-file: ./.github/codeql/codeql-config.yml
+
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v4
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v4
+        with:
+          category: '/language:${{ matrix.language }}'

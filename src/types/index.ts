@@ -4,6 +4,7 @@ import {
   Order,
   OrderItem,
   OrderStatus,
+  PaymentStatus,
   ProductStatus,
   Category,
   Campaign,
@@ -17,6 +18,7 @@ export {
   Order,
   OrderItem,
   OrderStatus,
+  PaymentStatus,
   ProductStatus,
   Category,
   Campaign,
@@ -66,7 +68,7 @@ export interface OrderFormData {
   phone: string
   address: string
   notes?: string
-  paymentMethod: 'cash' | 'arca' | 'mastercard' | 'visa' | 'ameriabank'
+  paymentMethod: 'cash' | 'idram' | 'arca'
 }
 
 export interface ContactFormData {
@@ -96,10 +98,8 @@ export const PRODUCT_STATUS_LABELS: Record<ProductStatus, string> = {
 
 export const PAYMENT_METHODS = {
   cash: 'Cash',
-  arca: 'ArCa',
-  mastercard: 'Mastercard',
-  visa: 'Visa',
-  ameriabank: 'Ameriabank'
+  idram: 'Idram',
+  arca: 'Arca',
 } as const
 
 export type PaymentMethod = keyof typeof PAYMENT_METHODS

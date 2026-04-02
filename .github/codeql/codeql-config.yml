@@ -1,0 +1,11 @@
+# CodeQL — custom config (Advanced Setup only).
+# This file is loaded by `.github/workflows/codeql.yml` via the `config-file` parameter.
+# GitHub's Default Setup does NOT load this file — the custom workflow (Advanced Setup)
+# must be used instead. See workflow header comment for steps to disable Default Setup.
+#
+# Idram MD5 note:
+# The Idram Merchant API mandates MD5 for EDP_CHECKSUM. The single call site in
+# src/lib/payments/idram/idram.checksum.ts is suppressed with an inline
+# `// codeql[js/weak-cryptographic-algorithm]` comment — more targeted than paths-ignore,
+# and allows CodeQL to still analyse the rest of that file normally.
+name: norapat-codeql

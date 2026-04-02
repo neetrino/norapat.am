@@ -1,10 +1,10 @@
 'use client'
 
 import Image from 'next/image'
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
-import { Order, OrderItem, OrderStatus, User } from '@/types'
+import { Order, OrderItem, OrderStatus, PaymentStatus, User } from '@/types'
 import { Button } from '@/components/ui/button'
 import {
   Search,
@@ -85,6 +85,18 @@ const _statusLabels = {
   CANCELLED: 'Չեղարկված'
 }
 
+const paymentStatusColors: Record<string, string> = {
+  PENDING: 'bg-yellow-100 text-yellow-800',
+  PAID: 'bg-green-100 text-green-800',
+  FAILED: 'bg-red-100 text-red-800',
+}
+
+const paymentStatusLabels: Record<string, string> = {
+  PENDING: 'Սպասվում է',
+  PAID: 'Վճարված',
+  FAILED: 'Ձախողված',
+}
+
 const ORDER_STATUSES_LIST: OrderStatus[] = [
   'PENDING',
   'CONFIRMED',
@@ -121,6 +133,9 @@ export default function AdminOrdersPage() {
     pages: 0
   })
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
+  const [, setPaymentStatusChecking] = useState<Set<string>>(new Set())
+  const ordersRef = useRef<OrderWithDetails[]>([])
+  const checkPaymentStatusRef = useRef<(id: string) => Promise<void>>(async () => { /* placeholder */ })
 
   // Ստուգել մուտքի իրավունքները
   useEffect(() => {
@@ -177,6 +192,19 @@ export default function AdminOrdersPage() {
     fetchOrders()
   }, [fetchOrders])
 
+  // Sync refs for stable polling closure
+  useEffect(() => { ordersRef.current = orders }, [orders])
+  useEffect(() => { checkPaymentStatusRef.current = checkPaymentStatus })
+
+  // Ավտոմատ polling — ստուգել PENDING ոչ-կանխիկ պատվերների վճարման կարգավիճակը
+  useEffect(() => {
+    const timer = setInterval(() => {
+      const pending = ordersRef.current.filter(o => o.paymentMethod !== 'cash' && o.paymentStatus === 'PENDING')
+      pending.forEach(o => void checkPaymentStatusRef.current(o.id))
+    }, 10000)
+    return () => clearInterval(timer)
+  }, [])
+
   // Փոխել պատվերի կարգավիճակը
   const updateOrderStatus = async (orderId: string, newStatus: OrderStatus) => {
     try {
@@ -205,6 +233,48 @@ export default function AdminOrdersPage() {
       }
     } catch (error) {
       console.error('Error updating order status:', error)
+    }
+  }
+
+  const updatePaymentStatus = async (orderId: string, newStatus: string) => {
+    try {
+      const res = await fetch(`/api/admin/orders/${orderId}/payment-status`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ paymentStatus: newStatus }),
+      })
+      if (!res.ok) return
+      const data = await res.json() as { paymentStatus: PaymentStatus }
+      setOrders(prev => prev.map(o => o.id === orderId ? { ...o, paymentStatus: data.paymentStatus } : o))
+      if (selectedOrder?.id === orderId) {
+        setSelectedOrder(prev => prev ? { ...prev, paymentStatus: data.paymentStatus } : null)
+      }
+    } catch (e) {
+      console.error('Error updating payment status:', e)
+    }
+  }
+
+  const checkPaymentStatus = async (orderId: string) => {
+    setPaymentStatusChecking(prev => new Set(prev).add(orderId))
+    try {
+      const res = await fetch(`/api/admin/orders/${orderId}/payment-status`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ autoCheck: true }),
+      })
+      const data = await res.json() as { paymentStatus?: PaymentStatus; error?: string }
+      if (!res.ok) {
+        alert(data.error ?? 'Ստուգումը ձախողվեց')
+        return
+      }
+      setOrders(prev => prev.map(o => o.id === orderId ? { ...o, paymentStatus: data.paymentStatus ?? null } : o))
+      if (selectedOrder?.id === orderId) {
+        setSelectedOrder(prev => prev ? { ...prev, paymentStatus: data.paymentStatus ?? null } : null)
+      }
+    } catch (e) {
+      console.error('Error checking payment status:', e)
+    } finally {
+      setPaymentStatusChecking(prev => { const s = new Set(prev); s.delete(orderId); return s })
     }
   }
 
@@ -461,13 +531,14 @@ export default function AdminOrdersPage() {
                 <th className="px-4 py-3 text-center">Ապրանքներ</th>
                 <th className="px-4 py-3 text-center">Ամսաթիվ</th>
                 <th className="px-4 py-3 text-left min-w-[9rem]">Կարգավիճակ</th>
+                <th className="px-4 py-3 text-center min-w-[8rem]">Վճարում</th>
                 <th className="px-4 py-3 text-center">Գործողություն</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50">
               {filteredOrders.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="text-center py-16 text-gray-400">
+                  <td colSpan={9} className="text-center py-16 text-gray-400">
                     <ShoppingCart className="h-10 w-10 mx-auto mb-3 text-gray-200" />
                     Պատվերներ չեն գտնվել
                     <p className="text-xs mt-2 text-gray-400 font-normal normal-case">
@@ -544,6 +615,20 @@ export default function AdminOrdersPage() {
                         <option value="DELIVERED">{_statusLabels.DELIVERED}</option>
                         <option value="CANCELLED">{_statusLabels.CANCELLED}</option>
                       </select>
+                    </td>
+                    <td className="px-4 py-3 align-middle">
+                      <div className="flex items-center gap-1">
+                        <select
+                          value={order.paymentStatus ?? ''}
+                          onChange={e => { if (e.target.value) void updatePaymentStatus(order.id, e.target.value) }}
+                          className={`text-xs font-medium rounded-lg border-0 py-2 pl-2 pr-7 cursor-pointer appearance-none ${order.paymentStatus ? paymentStatusColors[order.paymentStatus] : 'bg-gray-100 text-gray-500'}`}
+                        >
+                          <option value="" disabled>—</option>
+                          <option value="PENDING">{paymentStatusLabels.PENDING}</option>
+                          <option value="PAID">{paymentStatusLabels.PAID}</option>
+                          <option value="FAILED">{paymentStatusLabels.FAILED}</option>
+                        </select>
+                      </div>
                     </td>
                     <td className="px-4 py-3 text-center align-middle">
                       <Button
@@ -651,6 +736,19 @@ export default function AdminOrdersPage() {
                       {selectedOrder.totalAmount.toLocaleString()} ֏
                     </div>
                     <div className="text-sm font-medium text-gray-700">{selectedOrder.paymentMethod}</div>
+                    <div className="mt-3 space-y-2">
+                      <p className="text-xs text-gray-500">Վճարման կարգավիճակ</p>
+                      <select
+                        value={selectedOrder.paymentStatus ?? ''}
+                        onChange={e => { if (e.target.value) void updatePaymentStatus(selectedOrder.id, e.target.value) }}
+                        className={`w-full text-sm font-medium rounded-xl border px-3 py-2 cursor-pointer ${selectedOrder.paymentStatus ? paymentStatusColors[selectedOrder.paymentStatus] : 'bg-gray-50 text-gray-500 border-gray-200'}`}
+                      >
+                        <option value="" disabled>—</option>
+                        <option value="PENDING">{paymentStatusLabels.PENDING}</option>
+                        <option value="PAID">{paymentStatusLabels.PAID}</option>
+                        <option value="FAILED">{paymentStatusLabels.FAILED}</option>
+                      </select>
+                    </div>
                   </div>
                 </div>
 

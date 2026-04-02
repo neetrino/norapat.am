@@ -3,12 +3,43 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import { ArrowLeft, MapPin, Clock, CreditCard, Phone, User } from 'lucide-react'
 import { useCart } from '@/hooks/useCart'
 import { useSession } from 'next-auth/react'
 import Footer from '@/components/Footer'
 import { useI18n } from '@/i18n/I18nContext'
+import type { AppLocale } from '@/i18n/types'
 import { getProductDisplayName } from '@/i18n/getProductDisplayName'
+ 
+function mapLocaleToIdramLanguage(locale: AppLocale): 'EN' | 'AM' | 'RU' {
+  if (locale === 'hy') return 'AM'
+  return 'EN'
+}
+ 
+function mapLocaleToArcaLanguage(locale: AppLocale): 'am' | 'en' | 'ru' {
+  if (locale === 'hy') return 'am'
+  return 'en'
+}
+
+function postFormToIdram(
+  formAction: string,
+  formFields: Record<string, string>
+): void {
+  const form = document.createElement('form')
+  form.method = 'POST'
+  form.action = formAction
+  form.acceptCharset = 'UTF-8'
+  for (const [name, value] of Object.entries(formFields)) {
+    const input = document.createElement('input')
+    input.type = 'hidden'
+    input.name = name
+    input.value = value
+    form.appendChild(input)
+  }
+  document.body.appendChild(form)
+  form.submit()
+}
 
 export default function CheckoutPage() {
   const { locale, t } = useI18n()
@@ -184,6 +215,69 @@ export default function CheckoutPage() {
         throw new Error(errorData.error || response.statusText)
       }
 
+      const orderJson = (await response.json()) as {
+        id: string
+        idramInitSecret?: string | null
+        arcaInitSecret?: string | null
+      }
+
+      if (formData.paymentMethod === 'idram') {
+        const secret = orderJson.idramInitSecret
+        if (!secret) {
+          throw new Error('Idram init secret missing')
+        }
+        const initRes = await fetch('/api/payments/idram/init', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            orderId: orderJson.id,
+            idramInitSecret: secret,
+            language: mapLocaleToIdramLanguage(locale),
+          }),
+        })
+        const initData = (await initRes.json()) as {
+          error?: string
+          formAction?: string
+          formFields?: Record<string, string>
+        }
+        if (!initRes.ok) {
+          throw new Error(initData.error ?? 'Idram init failed')
+        }
+        if (!initData.formAction || !initData.formFields) {
+          throw new Error('Invalid Idram init response')
+        }
+        postFormToIdram(initData.formAction, initData.formFields)
+        return
+      }
+
+      if (formData.paymentMethod === 'arca') {
+        const secret = orderJson.arcaInitSecret
+        if (!secret) {
+          throw new Error('Arca init secret missing')
+        }
+        const initRes = await fetch('/api/payments/arca/init', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            orderId: orderJson.id,
+            arcaInitSecret: secret,
+            language: mapLocaleToArcaLanguage(locale),
+          }),
+        })
+        const initData = (await initRes.json()) as {
+          error?: string
+          redirectUrl?: string
+        }
+        if (!initRes.ok) {
+          throw new Error(initData.error ?? 'Arca init failed')
+        }
+        if (!initData.redirectUrl) {
+          throw new Error('Invalid Arca init response')
+        }
+        window.location.href = initData.redirectUrl
+        return
+      }
+
       clearCart()
       window.location.href = '/order-success'
     } catch (error) {
@@ -357,7 +451,23 @@ export default function CheckoutPage() {
                   </div>
                 </label>
 
-                {/* ArCa */}
+                {/* Idram */}
+                <label className={`flex items-center p-4 rounded-2xl cursor-pointer transition-all duration-200 border-2 ${
+                  formData.paymentMethod === 'idram'
+                    ? 'border-orange-400 bg-orange-50/40'
+                    : 'border-gray-100 bg-white hover:border-gray-200'
+                }`}>
+                  <input type="radio" name="paymentMethod" value="idram" checked={formData.paymentMethod === 'idram'} onChange={handleInputChange} className="sr-only" />
+                  <div className="w-12 h-12 bg-white border border-gray-100 rounded-xl flex items-center justify-center mr-4 shrink-0 shadow-sm">
+                    <Image src="/idram-logo.png" alt="Idram" width={40} height={40} className="object-contain rounded-lg" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-sm font-semibold text-gray-900">{cp.idram}</h3>
+                    <p className="text-xs text-gray-500 mt-0.5">{cp.idramDesc}</p>
+                  </div>
+                </label>
+
+                {/* Arca */}
                 <label className={`flex items-center p-4 rounded-2xl cursor-pointer transition-all duration-200 border-2 ${
                   formData.paymentMethod === 'arca'
                     ? 'border-orange-400 bg-orange-50/40'
@@ -365,47 +475,11 @@ export default function CheckoutPage() {
                 }`}>
                   <input type="radio" name="paymentMethod" value="arca" checked={formData.paymentMethod === 'arca'} onChange={handleInputChange} className="sr-only" />
                   <div className="w-12 h-12 bg-white border border-gray-100 rounded-xl flex items-center justify-center mr-4 shrink-0 shadow-sm">
-                    <span className="text-sm font-extrabold tracking-tight text-blue-700">arc<span className="text-blue-500">a</span></span>
+                    <Image src="/arca-logo.png" alt="Arca" width={44} height={20} className="object-contain" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h3 className="text-sm font-semibold text-gray-900">ArCa</h3>
-                    <p className="text-xs text-gray-500 mt-0.5">Վճարեք ArCa քարտով</p>
-                  </div>
-                </label>
-
-                {/* Mastercard */}
-                <label className={`flex items-center p-4 rounded-2xl cursor-pointer transition-all duration-200 border-2 ${
-                  formData.paymentMethod === 'mastercard'
-                    ? 'border-orange-400 bg-orange-50/40'
-                    : 'border-gray-100 bg-white hover:border-gray-200'
-                }`}>
-                  <input type="radio" name="paymentMethod" value="mastercard" checked={formData.paymentMethod === 'mastercard'} onChange={handleInputChange} className="sr-only" />
-                  <div className="w-12 h-12 bg-white border border-gray-100 rounded-xl flex items-center justify-center mr-4 shrink-0 shadow-sm">
-                    <svg viewBox="0 0 38 24" className="w-8 h-5">
-                      <circle cx="15" cy="12" r="7" fill="#EB001B" />
-                      <circle cx="23" cy="12" r="7" fill="#F79E1B" />
-                      <path d="M19 6.8a7 7 0 010 10.4A7 7 0 0119 6.8z" fill="#FF5F00" />
-                    </svg>
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="text-sm font-semibold text-gray-900">Mastercard</h3>
-                    <p className="text-xs text-gray-500 mt-0.5">Վճարեք Mastercard քարտով</p>
-                  </div>
-                </label>
-
-                {/* Visa */}
-                <label className={`flex items-center p-4 rounded-2xl cursor-pointer transition-all duration-200 border-2 ${
-                  formData.paymentMethod === 'visa'
-                    ? 'border-orange-400 bg-orange-50/40'
-                    : 'border-gray-100 bg-white hover:border-gray-200'
-                }`}>
-                  <input type="radio" name="paymentMethod" value="visa" checked={formData.paymentMethod === 'visa'} onChange={handleInputChange} className="sr-only" />
-                  <div className="w-12 h-12 bg-white border border-gray-100 rounded-xl flex items-center justify-center mr-4 shrink-0 shadow-sm">
-                    <span className="text-sm font-extrabold italic text-blue-800 tracking-wider">VISA</span>
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="text-sm font-semibold text-gray-900">Visa</h3>
-                    <p className="text-xs text-gray-500 mt-0.5">Վճարեք Visa քարտով</p>
+                    <h3 className="text-sm font-semibold text-gray-900">{cp.arca}</h3>
+                    <p className="text-xs text-gray-500 mt-0.5">{cp.arcaDesc}</p>
                   </div>
                 </label>
 
@@ -625,7 +699,23 @@ export default function CheckoutPage() {
                         </div>
                       </label>
 
-                      {/* ArCa */}
+                      {/* Idram */}
+                      <label className={`flex items-center p-4 rounded-2xl cursor-pointer transition-all duration-200 border-2 ${
+                        formData.paymentMethod === 'idram'
+                          ? 'border-orange-400 bg-orange-50/40'
+                          : 'border-gray-100 bg-white hover:border-gray-200'
+                      }`}>
+                        <input type="radio" name="paymentMethod" value="idram" checked={formData.paymentMethod === 'idram'} onChange={handleInputChange} className="sr-only" />
+                        <div className="w-14 h-14 bg-white border border-gray-100 rounded-xl flex items-center justify-center mr-5 shrink-0 shadow-sm">
+                          <Image src="/idram-logo.png" alt="Idram" width={48} height={48} className="object-contain rounded-lg" />
+                        </div>
+                        <div className="flex-1">
+                          <h3 className="text-sm font-semibold text-gray-900">{cp.idram}</h3>
+                          <p className="text-sm text-gray-500 mt-0.5">{cp.idramDesc}</p>
+                        </div>
+                      </label>
+
+                      {/* Arca */}
                       <label className={`flex items-center p-4 rounded-2xl cursor-pointer transition-all duration-200 border-2 ${
                         formData.paymentMethod === 'arca'
                           ? 'border-orange-400 bg-orange-50/40'
@@ -633,47 +723,11 @@ export default function CheckoutPage() {
                       }`}>
                         <input type="radio" name="paymentMethod" value="arca" checked={formData.paymentMethod === 'arca'} onChange={handleInputChange} className="sr-only" />
                         <div className="w-14 h-14 bg-white border border-gray-100 rounded-xl flex items-center justify-center mr-5 shrink-0 shadow-sm">
-                          <span className="text-sm font-extrabold tracking-tight text-blue-700">arc<span className="text-blue-500">a</span></span>
+                          <Image src="/arca-logo.png" alt="Arca" width={52} height={22} className="object-contain" />
                         </div>
                         <div className="flex-1">
-                          <h3 className="text-sm font-semibold text-gray-900">ArCa</h3>
-                          <p className="text-sm text-gray-500 mt-0.5">Վճարեք ArCa քարտով</p>
-                        </div>
-                      </label>
-
-                      {/* Mastercard */}
-                      <label className={`flex items-center p-4 rounded-2xl cursor-pointer transition-all duration-200 border-2 ${
-                        formData.paymentMethod === 'mastercard'
-                          ? 'border-orange-400 bg-orange-50/40'
-                          : 'border-gray-100 bg-white hover:border-gray-200'
-                      }`}>
-                        <input type="radio" name="paymentMethod" value="mastercard" checked={formData.paymentMethod === 'mastercard'} onChange={handleInputChange} className="sr-only" />
-                        <div className="w-14 h-14 bg-white border border-gray-100 rounded-xl flex items-center justify-center mr-5 shrink-0 shadow-sm">
-                          <svg viewBox="0 0 38 24" className="w-9 h-6">
-                            <circle cx="15" cy="12" r="7" fill="#EB001B" />
-                            <circle cx="23" cy="12" r="7" fill="#F79E1B" />
-                            <path d="M19 6.8a7 7 0 010 10.4A7 7 0 0119 6.8z" fill="#FF5F00" />
-                          </svg>
-                        </div>
-                        <div className="flex-1">
-                          <h3 className="text-sm font-semibold text-gray-900">Mastercard</h3>
-                          <p className="text-sm text-gray-500 mt-0.5">Վճարեք Mastercard քարտով</p>
-                        </div>
-                      </label>
-
-                      {/* Visa */}
-                      <label className={`flex items-center p-4 rounded-2xl cursor-pointer transition-all duration-200 border-2 ${
-                        formData.paymentMethod === 'visa'
-                          ? 'border-orange-400 bg-orange-50/40'
-                          : 'border-gray-100 bg-white hover:border-gray-200'
-                      }`}>
-                        <input type="radio" name="paymentMethod" value="visa" checked={formData.paymentMethod === 'visa'} onChange={handleInputChange} className="sr-only" />
-                        <div className="w-14 h-14 bg-white border border-gray-100 rounded-xl flex items-center justify-center mr-5 shrink-0 shadow-sm">
-                          <span className="text-sm font-extrabold italic text-blue-800 tracking-wider">VISA</span>
-                        </div>
-                        <div className="flex-1">
-                          <h3 className="text-sm font-semibold text-gray-900">Visa</h3>
-                          <p className="text-sm text-gray-500 mt-0.5">Վճարեք Visa քարտով</p>
+                          <h3 className="text-sm font-semibold text-gray-900">{cp.arca}</h3>
+                          <p className="text-sm text-gray-500 mt-0.5">{cp.arcaDesc}</p>
                         </div>
                       </label>
 

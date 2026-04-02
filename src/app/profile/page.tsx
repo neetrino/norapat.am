@@ -258,6 +258,8 @@ export default function ProfilePage() {
     switch (paymentMethod) {
       case 'cash':
         return checkoutPage.cash
+      case 'idram':
+        return checkoutPage.idram
       case 'arca':
         return 'ArCa'
       case 'mastercard':

@@ -45,6 +45,48 @@ Template-ի կանոնները թարմացվում են։ Գոյություն 
 
 ---
 
+## Local run + Cloudflare Quick Tunnel
+
+Временный публичный URL через **trycloudflare.com** (без своего домена и без named tunnel). Локальное приложение должно быть запущено отдельно.
+
+### Как запустить приложение
+
+1. Установите зависимости: `pnpm install`
+2. Скопируйте `.env.example` в `.env` и задайте как минимум **`DATABASE_URL`** (и при необходимости `DIRECT_URL` для Prisma). Без `DATABASE_URL` приложение не стартует (Prisma).
+3. Запуск dev-сервера: **`pnpm dev`**
+4. Откройте в браузере: **http://localhost:8989**
+
+Порт зафиксирован в скрипте `dev` (`next dev -p 8989`), не 3000.
+
+### Cloudflare Quick Tunnel
+
+Установите [`cloudflared`](https://developers.cloudflare.com/cloudflare-one/connections/connect-apps/install-and-setup/installation/) (один раз). В **отдельном** терминале, пока `pnpm dev` работает:
+
+```bash
+cloudflared tunnel --url http://localhost:8989
+```
+
+В выводе появится URL вида `https://<случайный-поддомен>.trycloudflare.com`.
+
+**Доступ по туннелю (логин /admin, /profile):** для HTTPS-оригина задайте в `.env` на время теста:
+
+`NEXTAUTH_URL=https://<ваш-поддомен>.trycloudflare.com`
+
+(иначе имя cookie сессии может не совпасть с middleware — см. `src/lib/nextAuthCookie.ts`).
+
+### Конфликт с `~/.cloudflared/config.yml`
+
+Если у вас уже настроен **именованный** tunnel (`config.yml`, `tunnel run`), это **другой** режим. Команда выше (`tunnel --url ...`) — **quick tunnel**, она не требует `config.yml`. Не путайте с `cloudflared tunnel run` (named tunnel). При странном поведении проверьте, что запускаете именно `cloudflared tunnel --url http://localhost:8989`.
+
+### Если туннель не поднимается
+
+- Убедитесь, что `pnpm dev` уже слушает **8989** (`http://localhost:8989` открывается локально).
+- Проверьте, что `cloudflared` в PATH и обновлён.
+- Антивирус / брандмауэр Windows могут блокировать исходящие соединения `cloudflared` — временно разрешите или добавьте исключение.
+- Повторный запуск: остановите старый `cloudflared` (Ctrl+C) и запустите команду снова — URL будет новым.
+
+---
+
 ## Quality Automation
 
 Պրոյեկտ ստեղծելուց հետո. AI-ն (onboarding 3.1.1) — prettier, vitest, husky, commitlint, CI workflow. Մշակողը. Branch Protection (`main`), Secret Protection, Dependabot npm։ Մանրամասներ — `docs/QUALITY_AUTOMATION_PLAN.md`։

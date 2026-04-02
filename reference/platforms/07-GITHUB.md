@@ -271,6 +271,10 @@ jobs:
           extra_args: --only-verified
 ```
 
+### CodeQL (advanced workflow в репозитории)
+
+Если в проекте есть `.github/workflows/codeql.yml` с `github/codeql-action/*@v4` и кастомным `config-file`, это **advanced** настройка. В **Settings → Code security and analysis** отключите **CodeQL analysis → Default setup**, иначе GitHub не примет SARIF и покажет ошибку про конфликт default setup и advanced configuration.
+
 ### Deploy Workflow:
 
 ```yaml

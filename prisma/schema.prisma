@@ -63,20 +63,29 @@ model Product {
 }
 
 model Order {
-  id            String      @id @default(cuid())
-  userId        String?
-  status        OrderStatus @default(PENDING)
-  total         Float
-  address       String
-  phone         String
-  notes         String?
-  paymentMethod String
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
-  deliveryTime  String?
-  name          String      @default("Unknown Customer")
-  items         OrderItem[]
-  user          User?       @relation(fields: [userId], references: [id])
+  id                 String        @id @default(cuid())
+  userId             String?
+  status             OrderStatus   @default(PENDING)
+  total              Float
+  address            String
+  phone              String
+  notes              String?
+  paymentMethod      String
+  paymentStatus      PaymentStatus?
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+  deliveryTime       String?
+  name               String        @default("Unknown Customer")
+  /// One-time secret for POST /api/payments/idram/init (Idram orders only)
+  idramInitSecret    String?
+  /// Idram EDP_TRANS_ID after successful payment
+  idramTransactionId String?
+  /// One-time token for POST /api/payments/arca/init (Arca orders only)
+  arcaInitSecret     String?
+  /// Arca internal orderId returned from register.do (used to query status)
+  arcaOrderId        String?
+  items              OrderItem[]
+  user               User?         @relation(fields: [userId], references: [id])
 
   @@map("orders")
 }
@@ -105,6 +114,12 @@ enum OrderStatus {
   READY
   DELIVERED
   CANCELLED
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
 }
 
 enum ProductStatus {

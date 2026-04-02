@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "postinstall": "prisma generate",
-    "dev": "next dev",
+    "dev": "next dev -p 8989",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
@@ -45,6 +45,11 @@
     "react-hook-form": "^7.62.0",
     "tailwind-merge": "^3.3.1",
     "zod": "^4.1.9"
+  },
+  "pnpm": {
+    "overrides": {
+      "micromatch>picomatch": "^2.3.2"
+    }
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
