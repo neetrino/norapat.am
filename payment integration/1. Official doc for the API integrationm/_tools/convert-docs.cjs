@@ -73,9 +73,9 @@ function decodeBasicEntities(s) {
   return s
     .replace(/&quot;/g, '"')
     .replace(/&apos;/g, "'")
-    .replace(/&amp;/g, "&")
     .replace(/&lt;/g, "<")
-    .replace(/&gt;/g, ">");
+    .replace(/&gt;/g, ">")
+    .replace(/&amp;/g, "&"); // &amp; must be last to avoid double-unescaping (e.g. &amp;lt; → &lt; → <)
 }
 
 /**

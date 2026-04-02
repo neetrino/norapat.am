@@ -140,12 +140,12 @@ function generateShortcode(){
    var shortcode = '[arca-pg-form productid="'+productid+'" language="hy" currency="AMD"]';
    shortcode = shortcode.replace( /(language=")(.*?)(")/gi , "$1"+language+"$3");
    shortcode = shortcode.replace( /(currency=")(.*?)(")/gi , "$1"+currency+"$3");
-   document.getElementById("shortcode-1").innerHTML = shortcode;
+   document.getElementById("shortcode-1").textContent = shortcode;
 
    var shortcode = '[arca-pg-button productid="'+productid+'" language="hy" currency="AMD"]';
    shortcode = shortcode.replace( /(language=")(.*?)(")/gi , "$1"+language+"$3");
    shortcode = shortcode.replace( /(currency=")(.*?)(")/gi , "$1"+currency+"$3");
-   document.getElementById("shortcode-2").innerHTML = shortcode;
+   document.getElementById("shortcode-2").textContent = shortcode;
 }
 
 
