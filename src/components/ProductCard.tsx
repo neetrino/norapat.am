@@ -340,7 +340,7 @@ const ProductCard = memo(
           </div>
         </div>
 
-        <div className={`${isCompact ? 'flex h-full flex-col p-4' : 'p-5 sm:p-6'}`}>
+        <div className={`${isCompact ? 'flex flex-col p-4' : 'p-5 sm:p-6'}`}>
           <div className="mb-3 flex items-center gap-2">
             {isCompact && statusBadge && (
               <span className="inline-flex">
