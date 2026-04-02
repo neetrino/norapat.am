@@ -153,7 +153,7 @@ export default async function ProductPage({
 
           <div className="grid grid-cols-1 gap-5 lg:grid-cols-[minmax(0,1.02fr)_minmax(0,0.98fr)] lg:items-start">
             <div className="space-y-4">
-              <div className="overflow-hidden rounded-[1.75rem] border border-[#efe3dd] bg-white p-3 shadow-[0_18px_45px_rgba(15,23,42,0.06)] sm:p-4">
+              <div className="overflow-hidden rounded-[1.75rem] border border-[#efe3dd] bg-white shadow-[0_18px_45px_rgba(15,23,42,0.06)]">
                 <div className="relative">
                   <ProductImageGallery images={galleryImages} productName={product.name} />
 
