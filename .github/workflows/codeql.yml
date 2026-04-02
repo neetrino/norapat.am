@@ -5,7 +5,7 @@
 # otherwise SARIF upload fails with:
 # "CodeQL analyses from advanced configurations cannot be processed when the default setup is enabled"
 #
-# Custom config: `.github/codeql/codeql-config.yml` (paths-ignore for Idram protocol-mandated MD5 in idram.checksum.ts).
+# Custom config: `.github/codeql/codeql-config.yml` — Idram MD5 suppression is handled via inline codeql[] comment in source.
 name: CodeQL
 
 on:
@@ -32,7 +32,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
 
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v4
