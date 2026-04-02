@@ -1,0 +1,40 @@
+# Advanced CodeQL (workflow). GitHub-ի Default setup-ը պետք է անջատված լինի
+# (Settings → Code security → Code scanning → CodeQL → Default setup),
+# հակառակ դեպքում SARIF-ի վերբեռնումը կընկնի «advanced + default» հակասությամբ։
+name: CodeQL
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+    branches: [main, dev]
+
+concurrency:
+  group: codeql-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  analyze:
+    name: Analyze
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v4
+        with:
+          languages: javascript
+          config-file: ./.github/codeql/codeql-config.yml
+
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v4
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v4
