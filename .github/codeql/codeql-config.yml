@@ -1,6 +1,7 @@
-# CodeQL config — օգտագործվում է `.github/workflows/codeql.yml` (init + config-file)։
-# GitHub Default setup-ը պետք է անջատված լինի, թե չէ advanced SARIF-ը չի ընդունվի։
-# Settings → Code security → Code scanning → CodeQL → Default setup (off)։
+# CodeQL query filters — GitHub Default setup-ի հետ workflow չի օգտագործվում (SARIF հակասությունից խուսափելու համար)։
+# Այս ֆայլը Default setup-ը ավտոմատ չի կարդում. Եթե պետք է query-filters-ը, երկու տարբերակ.
+# 1) Advanced. Settings-ում անջատել Default setup, վերադարձնել `.github/workflows/codeql.yml` (init + config-file)։
+# 2) Կամ թողնել միայն Default setup — ալերտների դեպքում օգտագործել `codeql[js/weak-cryptographic-algorithm]` suppression կոդում (տե՛ս idram.checksum.ts)։
 #
 # CodeQL. Idram Merchant API-ում EDP_CHECKSUM-ը միայն MD5 է (SHA-2-ով չի փոխարինվում)։
 # Ռեպոյում այլ createHash('md5') չկա — այս հարցման բացառումը անվտանգ է։
