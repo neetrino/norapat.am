@@ -161,7 +161,7 @@ export default function Footer() {
             </div>
           </div>
 
-          <div className="flex shrink-0 justify-center lg:justify-end">
+          <div className="flex shrink-0 justify-center lg:justify-end lg:translate-x-12">
             <Image
               src="/footer-taraz-mascot.png"
               alt={f.mascotAlt}
