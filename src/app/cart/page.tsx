@@ -341,9 +341,14 @@ export default function CartPage() {
               >
                 {c.checkout}
               </Link>
-              
-              <div className="mt-4 text-center">
-                <Link 
+
+              <div className="mt-4 flex items-center justify-center gap-2">
+                <Image src="/idram-logo.png" alt="Idram" width={36} height={36} className="object-contain rounded-lg opacity-80" />
+                <Image src="/arca-logo.png" alt="Arca" width={48} height={20} className="object-contain opacity-80" />
+              </div>
+
+              <div className="mt-3 text-center">
+                <Link
                   href="/products"
                   className="text-gray-600 hover:text-orange-500 transition-colors text-sm"
                 >
@@ -382,9 +387,14 @@ export default function CartPage() {
             >
               {c.checkout}
             </Link>
-            
-            <div className="mt-4 text-center">
-              <Link 
+
+            <div className="mt-4 flex items-center justify-center gap-2">
+              <Image src="/idram-logo.png" alt="Idram" width={36} height={36} className="object-contain rounded-lg opacity-80" />
+              <Image src="/arca-logo.png" alt="Arca" width={48} height={20} className="object-contain opacity-80" />
+            </div>
+
+            <div className="mt-3 text-center">
+              <Link
                 href="/products"
                 className="text-gray-600 hover:text-orange-500 transition-colors text-sm"
               >

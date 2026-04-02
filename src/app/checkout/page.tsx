@@ -459,7 +459,7 @@ export default function CheckoutPage() {
                 }`}>
                   <input type="radio" name="paymentMethod" value="idram" checked={formData.paymentMethod === 'idram'} onChange={handleInputChange} className="sr-only" />
                   <div className="w-12 h-12 bg-white border border-gray-100 rounded-xl flex items-center justify-center mr-4 shrink-0 shadow-sm">
-                    <Wallet className="h-6 w-6 text-violet-600" aria-hidden />
+                    <Image src="/idram-logo.png" alt="Idram" width={40} height={40} className="object-contain rounded-lg" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <h3 className="text-sm font-semibold text-gray-900">{cp.idram}</h3>
@@ -707,7 +707,7 @@ export default function CheckoutPage() {
                       }`}>
                         <input type="radio" name="paymentMethod" value="idram" checked={formData.paymentMethod === 'idram'} onChange={handleInputChange} className="sr-only" />
                         <div className="w-14 h-14 bg-white border border-gray-100 rounded-xl flex items-center justify-center mr-5 shrink-0 shadow-sm">
-                          <Wallet className="h-7 w-7 text-violet-600" aria-hidden />
+                          <Image src="/idram-logo.png" alt="Idram" width={48} height={48} className="object-contain rounded-lg" />
                         </div>
                         <div className="flex-1">
                           <h3 className="text-sm font-semibold text-gray-900">{cp.idram}</h3>
