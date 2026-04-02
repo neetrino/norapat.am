@@ -16,7 +16,7 @@ function mapLocaleToIdramLanguage(locale: AppLocale): 'EN' | 'AM' | 'RU' {
   if (locale === 'hy') return 'AM'
   return 'EN'
 }
-
+ 
 function mapLocaleToArcaLanguage(locale: AppLocale): 'am' | 'en' | 'ru' {
   if (locale === 'hy') return 'am'
   return 'en'
