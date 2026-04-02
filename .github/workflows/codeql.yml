@@ -1,6 +1,11 @@
-# CodeQL with repo config (paths-ignore for Idram protocol-mandated MD5 in idram.checksum.ts).
-# If you also use GitHub "Default setup" for CodeQL, disable it under Settings → Code security → CodeQL analysis
-# to avoid duplicate runs and SARIF conflicts.
+# IMPORTANT:
+# This repository uses advanced CodeQL configuration via GitHub Actions (custom config file below).
+# GitHub CodeQL Default Setup must be disabled in repository Security settings
+# (Settings → Code security and analysis → CodeQL analysis),
+# otherwise SARIF upload fails with:
+# "CodeQL analyses from advanced configurations cannot be processed when the default setup is enabled"
+#
+# Custom config: `.github/codeql/codeql-config.yml` (paths-ignore for Idram protocol-mandated MD5 in idram.checksum.ts).
 name: CodeQL
 
 on:
