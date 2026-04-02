@@ -29,8 +29,9 @@ function buildIdramChecksumPayload(input: ChecksumInput): string {
  * Գործընկերոջ պրոտոկոլ — SHA-2-ը այս դաշտի համար չի ընդունվում։
  */
 function md5HexForIdramEdpChecksum(payload: string): string {
-  // lgtm[js/weak-cryptographic-algorithm] Idram EDP_CHECKSUM is specified as MD5 by the payment gateway; not used as a password hash.
-  // codeql[js/weak-cryptographic-algorithm]: Idram EDP_CHECKSUM is specified as MD5 by the payment gateway; SHA-2 is not supported.
+  // Idram EDP_CHECKSUM — միայն MD5 ըստ շաբлонի (ոչ գաղտնաբառի հաշվիչ)։
+  // codeql[js/weak-cryptographic-algorithm]: Obligatory MD5 for Idram EDP_CHECKSUM; gateway does not accept SHA-2.
+  // lgtm[js/weak-cryptographic-algorithm] Obligatory MD5 for Idram EDP_CHECKSUM per merchant API.
   return createHash('md5').update(payload, 'utf8').digest('hex')
 }
 
