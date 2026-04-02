@@ -26,7 +26,10 @@ export function computeIdramChecksum(input: ChecksumInput): string {
     input.edpTransId,
     input.edpTransDate,
   ].join(':')
-  return createHash('md5').update(str, 'utf8').digest('hex') // MD5 mandated by Idram Merchant API — cannot be replaced. // codeql[js/weak-cryptographic-algorithm]
+
+  // codeql[js/weak-cryptographic-algorithm]: Idram Merchant API defines EDP_CHECKSUM as MD5 over colon-separated fields; SHA-2 is not accepted by the gateway.
+  const checksumHex = createHash('md5').update(str, 'utf8').digest('hex')
+  return checksumHex
 }
 
 export function idramChecksumsMatch(received: string, computed: string): boolean {
