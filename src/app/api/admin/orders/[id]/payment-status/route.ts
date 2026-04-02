@@ -11,14 +11,14 @@ const VALID_STATUSES: PaymentStatus[] = ['PENDING', 'PAID', 'FAILED']
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const session = await getServerSession(authOptions)
   if (!session || session.user.role !== 'ADMIN') {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  const orderId = params.id
+  const { id: orderId } = await params
 
   let body: unknown
   try {
@@ -43,10 +43,7 @@ export async function PATCH(
 
     if (order.paymentMethod === 'arca') {
       if (!order.arcaOrderId) {
-        return NextResponse.json(
-          { error: 'Arca payment not initialized yet' },
-          { status: 422 }
-        )
+        return NextResponse.json({ paymentStatus: order.paymentStatus })
       }
       try {
         const config = getArcaConfig()
@@ -75,11 +72,8 @@ export async function PATCH(
       // Idram has no pull-status API — derive from stored transaction ID
       resolvedStatus = order.idramTransactionId ? 'PAID' : 'PENDING'
     } else {
-      // Cash — no gateway to check
-      return NextResponse.json(
-        { error: 'Auto-check is not available for cash orders' },
-        { status: 422 }
-      )
+      // Cash — no gateway to check, return current status as-is
+      return NextResponse.json({ paymentStatus: order.paymentStatus })
     }
 
     const updated = await prisma.order.update({
