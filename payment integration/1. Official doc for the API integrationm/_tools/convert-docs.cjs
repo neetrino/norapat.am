@@ -98,7 +98,8 @@ async function writeOdtMarkdown(filePath, sourceLabel) {
     .replace(/<text:p[^>]*>/g, "\n\n")
     .replace(/<text:line-break\/>/g, "\n")
     .replace(/<text:tab\/>/g, "\t");
-  text = text.replace(/<[^>]+>/g, "");
+  let _prev;
+  do { _prev = text; text = text.replace(/<[^>]+>/g, ""); } while (text !== _prev);
   text = decodeBasicEntities(text);
   text = text.replace(/[ \t]+\n/g, "\n").replace(/\n{3,}/g, "\n\n").trim() + "\n";
   const header =

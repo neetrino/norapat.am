@@ -26,8 +26,7 @@ export function computeIdramChecksum(input: ChecksumInput): string {
     input.edpTransId,
     input.edpTransDate,
   ].join(':')
-  // MD5 is mandated by the Idram Merchant API protocol — cannot be replaced. // codeql[js/weak-cryptographic-algorithm]
-  return createHash('md5').update(str, 'utf8').digest('hex')
+  return createHash('md5').update(str, 'utf8').digest('hex') // MD5 mandated by Idram Merchant API — cannot be replaced. // codeql[js/weak-cryptographic-algorithm]
 }
 
 export function idramChecksumsMatch(received: string, computed: string): boolean {
