@@ -133,7 +133,7 @@ export default function AdminOrdersPage() {
     pages: 0
   })
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
-  const [paymentStatusChecking, setPaymentStatusChecking] = useState<Set<string>>(new Set())
+  const [, setPaymentStatusChecking] = useState<Set<string>>(new Set())
   const ordersRef = useRef<OrderWithDetails[]>([])
   const checkPaymentStatusRef = useRef<(id: string) => Promise<void>>(async () => { /* placeholder */ })
 
