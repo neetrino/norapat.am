@@ -11,7 +11,7 @@ import Footer from '@/components/Footer'
 import { useI18n } from '@/i18n/I18nContext'
 import type { AppLocale } from '@/i18n/types'
 import { getProductDisplayName } from '@/i18n/getProductDisplayName'
-
+ 
 function mapLocaleToIdramLanguage(locale: AppLocale): 'EN' | 'AM' | 'RU' {
   if (locale === 'hy') return 'AM'
   return 'EN'
