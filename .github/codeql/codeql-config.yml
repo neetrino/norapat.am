@@ -1,3 +1,9 @@
+# CodeQL config — օգտագործվում է միայն advanced workflow-ի հետ (init + config-file).
+# Repo-ում GitHub Default setup միացված լինելու դեպքում `.github/workflows/codeql.yml`-ը
+# հանվել է — GitHub-ը չի ընդունում advanced SARIF-ը default-ի հետ միասին։
+# Advanced վերադարձնելու համար. Settings → Code security → CodeQL → անջատել Default setup,
+# վերականգնել workflow-ը git պատմությունից։
+#
 # CodeQL. Idram Merchant API-ում EDP_CHECKSUM-ը միայն MD5 է (SHA-2-ով չի փոխարինվում)։
 # Ռեպոյում այլ createHash('md5') չկա — այս հարցման բացառումը անվտանգ է։
 name: norapat-codeql
