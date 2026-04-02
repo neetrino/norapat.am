@@ -1,11 +1,9 @@
-# CodeQL query filters — GitHub Default setup-ի հետ workflow չի օգտագործվում (SARIF հակասությունից խուսափելու համար)։
-# Այս ֆայլը Default setup-ը ավտոմատ չի կարդում. Եթե պետք է query-filters-ը, երկու տարբերակ.
-# 1) Advanced. Settings-ում անջատել Default setup, վերադարձնել `.github/workflows/codeql.yml` (init + config-file)։
-# 2) Կամ թողնել միայն Default setup — ալերտների դեպքում օգտագործել `codeql[js/weak-cryptographic-algorithm]` suppression կոդում (տե՛ս idram.checksum.ts)։
+# CodeQL — custom config (use with Advanced setup: workflow init + config-file).
+# Default setup in repo Settings does not load this file; use `.github/workflows/codeql.yml` or switch to Advanced setup.
 #
-# CodeQL. Idram Merchant API-ում EDP_CHECKSUM-ը միայն MD5 է (SHA-2-ով չի փոխարինվում)։
-# Ռեպոյում այլ createHash('md5') չկա — այս հարցման բացառումը անվտանգ է։
+# Idram Merchant API requires MD5 for EDP_CHECKSUM only (see Idram Merchant API New.md in payment integration docs).
+# SHA-2 is not accepted by the gateway. We exclude only the checksum helper from analysis so the rest of the repo
+# still runs js/weak-cryptographic-algorithm everywhere else.
 name: norapat-codeql
-query-filters:
-  - exclude:
-      id: js/weak-cryptographic-algorithm
+paths-ignore:
+  - src/lib/payments/idram/idram.checksum.ts
