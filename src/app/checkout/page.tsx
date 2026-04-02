@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import { ArrowLeft, MapPin, Clock, CreditCard, Phone, User, Wallet, Landmark } from 'lucide-react'
 import { useCart } from '@/hooks/useCart'
 import { useSession } from 'next-auth/react'
@@ -474,7 +475,7 @@ export default function CheckoutPage() {
                 }`}>
                   <input type="radio" name="paymentMethod" value="arca" checked={formData.paymentMethod === 'arca'} onChange={handleInputChange} className="sr-only" />
                   <div className="w-12 h-12 bg-white border border-gray-100 rounded-xl flex items-center justify-center mr-4 shrink-0 shadow-sm">
-                    <CreditCard className="h-6 w-6 text-red-600" aria-hidden />
+                    <Image src="/arca-logo.png" alt="Arca" width={44} height={20} className="object-contain" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <h3 className="text-sm font-semibold text-gray-900">{cp.arca}</h3>
@@ -722,7 +723,7 @@ export default function CheckoutPage() {
                       }`}>
                         <input type="radio" name="paymentMethod" value="arca" checked={formData.paymentMethod === 'arca'} onChange={handleInputChange} className="sr-only" />
                         <div className="w-14 h-14 bg-white border border-gray-100 rounded-xl flex items-center justify-center mr-5 shrink-0 shadow-sm">
-                          <CreditCard className="h-7 w-7 text-red-600" aria-hidden />
+                          <Image src="/arca-logo.png" alt="Arca" width={52} height={22} className="object-contain" />
                         </div>
                         <div className="flex-1">
                           <h3 className="text-sm font-semibold text-gray-900">{cp.arca}</h3>
