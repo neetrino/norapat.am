@@ -178,14 +178,14 @@ export const hy: AppMessages = {
     ctaGirlIllustrationAlt: 'NORAPAT բրենդի ոճավորված աղջկա պատկերազարդում',
     ctaBoyIllustrationAlt: 'NORAPAT բրենդի ոճավորված տղայի պատկերազարդում',
     brandBannerPromo: {
-      super: 'Գերազանց',
-      delicious: 'Համեղ',
-      menu: 'Մենյու',
-      weekendBefore: 'Այս ',
-      weekendWord: 'շաբաթավերջին',
-      weekendAfter: ' միայն',
+      super: '',
+      delicious: 'Համեղ ընտրություն',
+      menu: 'բոլորի համար',
+      weekendBefore: '',
+      weekendWord: '',
+      weekendAfter: '',
       body:
-        'Թարմ բաղադրիչներ, արագ պատրաստում և առաքում Երևանի ողջ տարածքով։ Յուրաքանչյուր կտորը՝ համի երաշխիք։',
+        'Բացահայտեք բազմազան ու համեղ ուտեստներ, որոնք պատրաստված են ձեր առօրյան ավելի հաճելի և հագեցած դարձնելու համար։',
       cta: 'ՊԱՏՎԻՐԵԼ ՀԻՄԱ',
     },
     categories: {
