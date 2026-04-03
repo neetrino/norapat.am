@@ -15,7 +15,7 @@ export function BrandBannerSection() {
 
   return (
     <section
-      className="promo-food-banner-bg promo-food-banner-vignette relative overflow-hidden text-white"
+      className="promo-food-banner-bg brand-banner-bg-dark promo-food-banner-vignette relative overflow-hidden text-white"
       aria-label={homeAria}
     >
       <div className="relative z-10 mx-auto max-w-7xl px-4 pb-10 pt-8 sm:px-6 sm:pb-12 sm:pt-10 lg:px-8 lg:pb-14 lg:pt-12">

@@ -80,6 +80,10 @@ body {
   background-image: none;
 }
 
+.brand-banner-bg-dark {
+  background-color: #991b1b;
+}
+
 .promo-food-banner-vignette::before {
   content: "";
   position: absolute;
