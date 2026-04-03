@@ -239,8 +239,8 @@ const ProductCard = memo(
     return (
       <Link
         href={`/products/${product.id}`}
-        className={`group relative block w-full overflow-hidden rounded-[2rem] border border-[#eadfd9] bg-[linear-gradient(160deg,#ffffff_0%,#fffaf6_52%,#fff3ec_100%)] shadow-[0_16px_38px_rgba(15,23,42,0.06)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_24px_48px_rgba(15,23,42,0.1)] ${
-          isCompact ? 'rounded-[1.6rem]' : ''
+        className={`group relative w-full overflow-hidden rounded-[2rem] border border-[#eadfd9] bg-[linear-gradient(160deg,#ffffff_0%,#fffaf6_52%,#fff3ec_100%)] shadow-[0_16px_38px_rgba(15,23,42,0.06)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_24px_48px_rgba(15,23,42,0.1)] ${
+          isCompact ? 'flex flex-col rounded-[1.6rem]' : 'block'
         }`}
       >
         <div
@@ -289,7 +289,7 @@ const ProductCard = memo(
                 -{discountPercent}%
               </div>
             )}
-            {!isCompact && statusBadge && (
+            {statusBadge && (
               <ProductBadge
                 tone={statusBadge.tone}
                 icon={statusBadge.icon}
@@ -340,29 +340,17 @@ const ProductCard = memo(
           </div>
         </div>
 
-        <div className={`${isCompact ? 'flex flex-col p-4' : 'p-5 sm:p-6'}`}>
-          <div className="mb-3 flex items-center gap-2">
-            {isCompact && statusBadge && (
-              <span className="inline-flex">
-                <ProductBadge
-                  tone={statusBadge.tone}
-                  icon={statusBadge.icon}
-                  label={statusBadge.label}
-                />
-              </span>
-            )}
-          </div>
-
+        <div className={`${isCompact ? 'flex flex-1 flex-col p-4 pb-2' : 'p-5 pb-3 sm:p-6 sm:pb-4'}`}>
           <h3
             className={`font-black tracking-tight text-slate-900 ${
-              isCompact ? 'min-h-[2.75rem] line-clamp-2 text-base leading-snug' : 'line-clamp-2 text-xl leading-tight'
+              isCompact ? 'line-clamp-2 text-base leading-snug' : 'line-clamp-2 text-xl leading-tight'
             }`}
           >
             {displayName}
           </h3>
 
           {isCompact ? (
-            <p className="mt-2 min-h-[1.5rem] truncate text-sm leading-6 text-slate-500">
+            <p className="mt-2 truncate text-sm leading-6 text-slate-500">
               {description}
             </p>
           ) : (
@@ -381,34 +369,23 @@ const ProductCard = memo(
               </span>
             </div>
           )}
+        </div>
 
-          {productWithCategory.ingredients?.length ? (
-            <div className={`mt-4 flex flex-wrap gap-2 ${isCompact ? 'min-h-[2.5rem]' : ''}`}>
-              {productWithCategory.ingredients.slice(0, isCompact ? 2 : 3).map((ingredient) => (
-                <span
-                  key={ingredient}
-                  className="rounded-full border border-[#efe3dd] bg-[#fcfaf8] px-2.5 py-1 text-[11px] font-medium text-slate-500"
-                >
-                  {ingredient}
-                </span>
-              ))}
-            </div>
-          ) : null}
-
-          {onAddToCart && (
+        {onAddToCart && (
+          <div className={`${isCompact ? 'px-4 pb-4' : 'px-5 pb-5 sm:px-6 sm:pb-6'}`}>
             <button
               onClick={(e) => {
                 e.preventDefault()
                 e.stopPropagation()
                 onAddToCart(product)
               }}
-              className={`mt-5 flex w-full items-center justify-center gap-2 rounded-full font-semibold transition-all ${
+              className={`flex w-full items-center justify-center gap-2 rounded-full font-semibold transition-all ${
                 isCompact ? 'h-11 text-sm' : 'h-12 text-base'
               } ${
                 isAdded
                   ? 'bg-gradient-to-r from-emerald-500 to-green-600 text-white shadow-[0_14px_24px_rgba(34,197,94,0.22)]'
                   : PRODUCT_CARD_ADD_IDLE_BUTTON_CLASS
-              } ${isCompact ? 'mt-auto' : ''}`}
+              }`}
               title={pc.addToCartTitle}
             >
               {isAdded ? (
@@ -429,8 +406,8 @@ const ProductCard = memo(
                 </span>
               )}
             </button>
-          )}
-        </div>
+          </div>
+        )}
       </Link>
     )
   }
