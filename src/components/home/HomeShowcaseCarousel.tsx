@@ -170,20 +170,6 @@ function ViewEntireStripLink(props: {
           </span>
         ))}
       </span>
-      <span
-        className={`flex h-9 w-9 items-center justify-center rounded-full shadow-inner ring-1 transition-transform duration-300 group-hover:scale-105 ${props.stripIconClass}`}
-      >
-        <svg
-          className="h-4 w-4 shrink-0"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth={2.25}
-          viewBox="0 0 24 24"
-          aria-hidden
-        >
-          <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-        </svg>
-      </span>
     </Link>
   )
 }

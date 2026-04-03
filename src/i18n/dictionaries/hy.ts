@@ -131,7 +131,7 @@ export const hy: AppMessages = {
     showFirstCategory: (name: string) => `Ցուցադրել «${name}»`,
     showCategories: 'Ցուցադրել կատեգորիաները',
     viewFullMenu: 'Դիտել ամբողջ մենյուն',
-    viewEntireShort: 'Դիտել ամբողջը',
+    viewEntireShort: 'Դիտել',
     carouselScrollPrev: 'Ոլորել ձախ',
     carouselScrollNext: 'Ոլորել աջ',
     whyUsTitle: 'Ինչու՞ ընտրում են մեզ',
