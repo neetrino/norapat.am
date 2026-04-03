@@ -1,16 +1,17 @@
 'use client'
 
 import Link from 'next/link'
-import { ShoppingCart, User, LogOut, Heart } from 'lucide-react'
+import { ShoppingCart, User, LogOut, Heart, Search } from 'lucide-react'
 import { usePathname } from 'next/navigation'
 import { useSession, signOut } from 'next-auth/react'
+import { useState } from 'react'
 import { useCart } from '@/hooks/useCart'
 import { useWishlist } from '@/hooks/useWishlist'
 import { useHydration } from '@/hooks/useHydration'
 import { useI18n } from '@/i18n/I18nContext'
 import type { PublicSiteSettingsState } from '@/hooks/usePublicSiteSettings'
-import { HeaderSearch } from '@/components/HeaderSearch'
 import { SiteBrandMark } from '@/components/SiteBrandMark'
+import { SearchModal } from '@/components/SearchModal'
 import { useHeaderStack } from '@/contexts/HeaderStackContext'
 import {
   TOP_CONTACT_BAR_TRANSITION_EASING,
@@ -24,8 +25,9 @@ interface DesktopHeaderProps {
 export default function DesktopHeader({ branding }: DesktopHeaderProps) {
   const { topBarInsetPx } = useHeaderStack()
   const { t } = useI18n()
-  const { nav, auth, search, wishlist } = t
+  const { nav, auth, wishlist } = t
   const isHydrated = useHydration()
+  const [searchOpen, setSearchOpen] = useState(false)
   const { getTotalItems } = useCart()
   const { products: wishlistProducts } = useWishlist()
   const { data: session, status } = useSession()
@@ -48,6 +50,7 @@ export default function DesktopHeader({ branding }: DesktopHeaderProps) {
   ]
 
   return (
+    <>
     <header
       className="fixed left-0 right-0 z-[60] bg-white shadow-sm transition-[top]"
       style={{
@@ -89,13 +92,17 @@ export default function DesktopHeader({ branding }: DesktopHeaderProps) {
             ))}
           </nav>
 
-          {/* Search Bar - Compact */}
-          <div className="max-w-xs">
-            <HeaderSearch placeholder={search.short} />
-          </div>
-
           {/* Right side */}
           <div className="flex items-center space-x-4">
+            {/* Search icon */}
+            <button
+              onClick={() => setSearchOpen(true)}
+              className="p-3 rounded-xl text-gray-700 hover:text-orange-500 hover:bg-orange-50 transition-all duration-300"
+              aria-label="Որոնել"
+            >
+              <Search className="h-6 w-6" />
+            </button>
+
             {/* Cart */}
             <Link 
               href="/cart" 
@@ -237,5 +244,8 @@ export default function DesktopHeader({ branding }: DesktopHeaderProps) {
         </div>
       </div>
     </header>
+
+    <SearchModal isOpen={searchOpen} onClose={() => setSearchOpen(false)} />
+  </>
   )
 }
