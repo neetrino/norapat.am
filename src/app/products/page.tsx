@@ -452,7 +452,7 @@ function ProductsPageContent() {
                   </div>
                 </div>
 
-                <div className="flex items-center justify-end gap-3 rounded-2xl border border-[#eadfd9] bg-[#fcfaf8] px-3 py-2 shadow-sm">
+                <div className="hidden items-center justify-end gap-3 rounded-2xl border border-[#eadfd9] bg-[#fcfaf8] px-3 py-2 shadow-sm lg:flex">
                   <div className="flex items-center gap-1 rounded-full bg-white p-1">
                     {([2, 3, 4] as const).map((cols) => (
                       <button
