@@ -54,16 +54,16 @@ Template-ի կանոնները թարմացվում են։ Գոյություն 
 1. Установите зависимости: `pnpm install`
 2. Скопируйте `.env.example` в `.env` и задайте как минимум **`DATABASE_URL`** (и при необходимости `DIRECT_URL` для Prisma). Без `DATABASE_URL` приложение не стартует (Prisma).
 3. Запуск dev-сервера: **`pnpm dev`**
-4. Откройте в браузере: **http://localhost:8989**
+4. Откройте в браузере: **http://localhost:3000** (или порт из **`PORT`** в `.env.local`; по умолчанию Next.js — 3000).
 
-Порт зафиксирован в скрипте `dev` (`next dev -p 8989`), не 3000.
+Перед `next dev` подгружается `.env.local` через `dotenv`, чтобы **`PORT`** из env совпадал с портом сервера.
 
 ### Cloudflare Quick Tunnel
 
 Установите [`cloudflared`](https://developers.cloudflare.com/cloudflare-one/connections/connect-apps/install-and-setup/installation/) (один раз). В **отдельном** терминале, пока `pnpm dev` работает:
 
 ```bash
-cloudflared tunnel --url http://localhost:8989
+cloudflared tunnel --url http://localhost:3000
 ```
 
 В выводе появится URL вида `https://<случайный-поддомен>.trycloudflare.com`.
@@ -76,11 +76,11 @@ cloudflared tunnel --url http://localhost:8989
 
 ### Конфликт с `~/.cloudflared/config.yml`
 
-Если у вас уже настроен **именованный** tunnel (`config.yml`, `tunnel run`), это **другой** режим. Команда выше (`tunnel --url ...`) — **quick tunnel**, она не требует `config.yml`. Не путайте с `cloudflared tunnel run` (named tunnel). При странном поведении проверьте, что запускаете именно `cloudflared tunnel --url http://localhost:8989`.
+Если у вас уже настроен **именованный** tunnel (`config.yml`, `tunnel run`), это **другой** режим. Команда выше (`tunnel --url ...`) — **quick tunnel**, она не требует `config.yml`. Не путайте с `cloudflared tunnel run` (named tunnel). При странном поведении проверьте, что запускаете именно `cloudflared tunnel --url http://localhost:3000` (или тот же порт, что в `PORT` / `pnpm dev`).
 
 ### Если туннель не поднимается
 
-- Убедитесь, что `pnpm dev` уже слушает **8989** (`http://localhost:8989` открывается локально).
+- Убедитесь, что `pnpm dev` уже слушает нужный порт (по умолчанию **3000**; URL из вывода `next dev`).
 - Проверьте, что `cloudflared` в PATH и обновлён.
 - Антивирус / брандмауэр Windows могут блокировать исходящие соединения `cloudflared` — временно разрешите или добавьте исключение.
 - Повторный запуск: остановите старый `cloudflared` (Ctrl+C) и запустите команду снова — URL будет новым.
