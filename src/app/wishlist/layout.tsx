@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Նախընտրած | Pideh Armenia',
+  title: 'Նախընտրածներ | Pideh Armenia',
   description: 'Պահված ուտեստներ և կոմբոներ Pideh Armenia մենյուից',
 }
 

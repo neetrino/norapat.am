@@ -80,8 +80,8 @@ export const hy: AppMessages = {
   cart: { label: 'Զամբյուղ' },
   profile: { label: 'Պրոֆիլ' },
   wishlist: {
-    title: 'Նախընտրած',
-    pageTitle: 'Նախընտրած',
+    title: 'Նախընտրածներ',
+    pageTitle: 'Նախընտրածներ',
     pageDescription: 'Պահված ուտեստներ և կոմբոներ Pideh Armenia մենյուից',
     loginPrompt:
       'Մուտք գործեք հաշիվ, որպեսզի պահեք ուտեստները և տեսնեք դրանք այստեղ։',
