@@ -35,8 +35,8 @@ export default function Footer() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col gap-6 py-7 md:gap-7 md:py-8 lg:flex-row lg:items-end lg:gap-8 xl:gap-10">
           <div className="min-w-0 flex-1">
-            <div className="grid grid-cols-1 gap-7 lg:grid-cols-12 lg:gap-8 xl:gap-10">
-              <div className="lg:col-span-4 lg:border-r lg:border-stone-200/70 lg:pr-6 xl:pr-8">
+            <div className="grid grid-cols-1 gap-7 lg:grid-cols-12 lg:gap-14 xl:gap-16">
+              <div className="lg:col-span-4">
                 <div className="mb-0.5">
                   <SiteBrandMark variant="footer" branding={branding} />
                 </div>
@@ -66,7 +66,7 @@ export default function Footer() {
               </div>
 
               <nav
-                className={`${FOOTER_NAV_TOP} lg:col-span-2 lg:border-r lg:border-stone-200/70 lg:pr-6 xl:pr-8`}
+                className={`${FOOTER_NAV_TOP} lg:col-span-2`}
                 aria-labelledby="footer-nav-heading"
               >
                 <h2 id="footer-nav-heading" className={SECTION_LABEL}>
@@ -92,7 +92,7 @@ export default function Footer() {
               </nav>
 
               <div
-                className={`${FOOTER_POLICIES_CONTACT_TOP} lg:col-span-3 lg:border-r lg:border-stone-200/70 lg:pl-6 lg:pr-10 xl:pl-8 xl:pr-12`}
+                className={`${FOOTER_POLICIES_CONTACT_TOP} lg:col-span-3`}
                 aria-labelledby="footer-policies-heading"
               >
                 <h2 id="footer-policies-heading" className={SECTION_LABEL}>
@@ -115,7 +115,7 @@ export default function Footer() {
               </div>
 
               <div
-                className={`${FOOTER_POLICIES_CONTACT_TOP} lg:col-span-3 lg:pl-8 xl:pl-10`}
+                className={`${FOOTER_POLICIES_CONTACT_TOP} lg:col-span-3`}
                 aria-labelledby="footer-contact-heading"
               >
                 <h2 id="footer-contact-heading" className={SECTION_LABEL}>
@@ -138,7 +138,7 @@ export default function Footer() {
                     <div className="flex gap-2">
                       <MapPin className={CONTACT_ICON_BOX} aria-hidden />
                       <a
-                        href="https://maps.google.com/?q=5th+Street,+Village+of+Norapat,+Armavir,+Armenia"
+                        href="https://maps.google.com/?q=5-%D6%80%D5%A4+%D6%83%D5%B8%D5%B2%D5%B8%D6%81,+%D5%86%D5%B8%D6%80%D5%A1%D5%BA%D5%A1%D5%BF+%D5%A3%D5%B5%D5%B8%D6%82%D5%B2,+%D4%B1%D6%80%D5%B4%D5%A1%D5%BE%D5%AB%D6%80,+%D5%80%D5%A1%D5%B5%D5%A1%D5%BD%D5%BF%D5%A1%D5%B6"
                         target="_blank"
                         rel="noopener noreferrer"
                         className={LINK_BASE}
@@ -161,7 +161,7 @@ export default function Footer() {
             </div>
           </div>
 
-          <div className="flex shrink-0 justify-center lg:justify-end">
+          <div className="flex shrink-0 justify-center lg:justify-end lg:translate-x-12">
             <Image
               src="/footer-taraz-mascot.png"
               alt={f.mascotAlt}

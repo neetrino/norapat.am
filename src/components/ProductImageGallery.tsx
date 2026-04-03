@@ -62,7 +62,7 @@ export function ProductImageGallery({
   if (displayImages.length === 0) {
     return (
       <div
-        className="flex h-96 w-full items-center justify-center rounded-[1.5rem] border border-[#f1e3dc] bg-[radial-gradient(circle_at_top,#fff8f3_0%,#fff3eb_45%,#fdfaf7_100%)] text-8xl opacity-70"
+        className="flex h-96 w-full items-center justify-center rounded-[1.5rem] text-8xl opacity-70"
         aria-label={altText}
       >
         🍟
@@ -72,20 +72,14 @@ export function ProductImageGallery({
 
   return (
     <div className="space-y-4">
-      <div className="group relative overflow-hidden rounded-[1.6rem] border border-[#f1e3dc] bg-[linear-gradient(165deg,#fffdfa_0%,#fff6ef_48%,#fffaf7_100%)] p-3 shadow-[0_18px_42px_rgba(15,23,42,0.08)] sm:p-4">
-        <div aria-hidden className="absolute inset-x-8 top-0 h-24 rounded-full bg-[#ffd9c7]/45 blur-3xl" />
-        <div aria-hidden className="absolute -left-10 bottom-2 h-28 w-28 rounded-full bg-[#fff1e7] blur-3xl" />
-
-        <div className="relative overflow-hidden rounded-[1.3rem] border border-white/80 bg-[radial-gradient(circle_at_top,rgba(255,245,238,0.95)_0%,rgba(255,251,247,0.9)_52%,rgba(255,255,255,0.95)_100%)] shadow-[inset_0_1px_0_rgba(255,255,255,0.9)]">
-          <div className="absolute inset-x-0 top-0 z-10 h-14 bg-gradient-to-b from-white/60 to-transparent" />
-
-          <div className="relative aspect-[1.06/1] min-h-[18rem] max-h-[26rem] sm:min-h-[21rem]">
+      <div className="group relative w-full">
+          <div className="relative h-[22rem] w-full sm:h-[28rem]">
             <ProductImageWithLocalizedAlt
               src={currentImage}
               productName={productName}
               fill
               sizes="(max-width: 768px) 100vw, 50vw"
-              className="cursor-zoom-in object-contain p-4 transition-transform duration-500 group-hover:scale-[1.03] sm:p-5"
+              className="cursor-zoom-in object-cover transition-transform duration-500 group-hover:scale-[1.03]"
               onClick={() => setIsZoomOpen(true)}
             />
 
@@ -98,7 +92,6 @@ export function ProductImageGallery({
               <ZoomIn className="h-5 w-5 text-orange-600" />
             </button>
           </div>
-        </div>
       </div>
 
       {displayImages.length > 1 && (

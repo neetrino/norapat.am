@@ -2,7 +2,7 @@
 export const companyInfo = {
   name: 'NORAPAT',
   description: 'Traditional Armenian flavors with fast and reliable service.',
-  address: '5th Street, Village of Norapat, Armavir, Armenia',
+  address: '5-րդ փողոց, Նորապատ գյուղ, Արմավիր, Հայաստան',
   phone: '+374 41 440 003',
   callNowPhones: ['+374 41 440 003', '+374 77 777 174'],
   email: 'info@norapat.am',

@@ -18,7 +18,7 @@ export function ContactPageView() {
   const phoneNumber = contactPhone?.trim() || '+374 95-044-888'
   const emailAddress = contactEmail?.trim() || 'info@pideh.am'
   const locationAddress = c.addressLine
-  const locationMapQuery = '5th Street, Village of Norapat, Armavir, Armenia'
+  const locationMapQuery = '5-րդ փողոց, Նորապատ գյուղ, Արմավիր, Հայաստան'
   const phoneHref = `tel:${phoneNumber.replace(/[^\d+]/g, '')}`
   const emailHref = `mailto:${emailAddress}`
 

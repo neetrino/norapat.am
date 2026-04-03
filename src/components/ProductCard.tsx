@@ -70,9 +70,6 @@ const ProductCard = memo(
     const { t, locale } = useI18n()
     const pc = t.productCard
     const isAdded = addedToCart?.has(product.id) || false
-    const productWithCategory = product as Product & {
-      ingredients?: string[] | null
-    }
     const displayName = getProductDisplayName(product.name, locale)
     const description = product.shortDescription ?? product.description
     const discountPercent = getDiscountPercent(product.originalPrice, product.price)
@@ -155,15 +152,15 @@ const ProductCard = memo(
             </div>
 
             <div className="mt-5 flex items-end justify-between gap-3">
-              <div>
-                {hasDiscount && product.originalPrice != null && (
-                  <div className="mb-1 text-sm font-medium text-slate-400 line-through">
-                    {product.originalPrice} ֏
-                  </div>
-                )}
+              <div className="flex items-baseline gap-2">
                 <div className="text-xl font-black tracking-tight text-slate-900">
                   {product.price} ֏
                 </div>
+                {hasDiscount && product.originalPrice != null && (
+                  <div className="text-sm font-medium text-slate-400 line-through">
+                    {product.originalPrice} ֏
+                  </div>
+                )}
               </div>
 
               {onAddToCart && (
@@ -239,13 +236,13 @@ const ProductCard = memo(
     return (
       <Link
         href={`/products/${product.id}`}
-        className={`group relative block w-full overflow-hidden rounded-[2rem] border border-[#eadfd9] bg-[linear-gradient(160deg,#ffffff_0%,#fffaf6_52%,#fff3ec_100%)] shadow-[0_16px_38px_rgba(15,23,42,0.06)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_24px_48px_rgba(15,23,42,0.1)] ${
-          isCompact ? 'rounded-[1.6rem]' : ''
+        className={`group relative w-full overflow-hidden rounded-[2rem] border border-[#eadfd9] bg-[linear-gradient(160deg,#ffffff_0%,#fffaf6_52%,#fff3ec_100%)] shadow-[0_16px_38px_rgba(15,23,42,0.06)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_24px_48px_rgba(15,23,42,0.1)] ${
+          isCompact ? 'flex flex-col' : 'block'
         }`}
       >
         <div
           className={`relative overflow-hidden ${
-            isCompact ? 'rounded-t-[1.6rem]' : 'rounded-t-[2rem]'
+            isCompact ? 'rounded-t-[2rem]' : 'rounded-t-[2rem]'
           }`}
           style={{ aspectRatio: isCompact ? '1 / 1' : '1500 / 1125' }}
         >
@@ -289,7 +286,7 @@ const ProductCard = memo(
                 -{discountPercent}%
               </div>
             )}
-            {!isCompact && statusBadge && (
+            {statusBadge && (
               <ProductBadge
                 tone={statusBadge.tone}
                 icon={statusBadge.icon}
@@ -302,7 +299,7 @@ const ProductCard = memo(
             <div className="relative z-10 h-full w-full overflow-hidden">
               <div
                 className={`absolute inset-0 ${
-                  isCompact ? 'px-3 pb-3 pt-8 sm:px-4 sm:pb-4 sm:pt-9' : 'px-4 pb-4 pt-10 sm:px-5 sm:pb-5 sm:pt-11'
+                  isCompact ? 'px-4 pb-4 pt-10 sm:px-5 sm:pb-5 sm:pt-11' : 'px-4 pb-4 pt-10 sm:px-5 sm:pb-5 sm:pt-11'
                 }`}
                 style={{
                   transform: isCompact ? undefined : 'perspective(1000px) rotateX(6deg) rotateY(-2deg)',
@@ -332,37 +329,28 @@ const ProductCard = memo(
           )}
 
           <div
-            className={`absolute bottom-3 right-3 z-20 rounded-full border border-white/70 bg-white/92 font-black text-[#E53225] shadow-[0_12px_24px_rgba(15,23,42,0.08)] backdrop-blur ${
+            className={`absolute bottom-3 right-3 z-20 flex items-center gap-1.5 rounded-full border border-white/70 bg-white/92 shadow-[0_12px_24px_rgba(15,23,42,0.08)] backdrop-blur ${
               isCompact ? 'px-4 py-2 text-sm' : 'px-5 py-2.5 text-base'
             }`}
           >
-            {product.price} ֏
+            {hasDiscount && product.originalPrice != null && (
+              <span className="text-xs font-medium text-slate-400 line-through">{product.originalPrice} ֏</span>
+            )}
+            <span className="font-black text-[#E53225]">{product.price} ֏</span>
           </div>
         </div>
 
-        <div className={`${isCompact ? 'flex h-full flex-col p-4' : 'p-5 sm:p-6'}`}>
-          <div className="mb-3 flex items-center gap-2">
-            {isCompact && statusBadge && (
-              <span className="inline-flex">
-                <ProductBadge
-                  tone={statusBadge.tone}
-                  icon={statusBadge.icon}
-                  label={statusBadge.label}
-                />
-              </span>
-            )}
-          </div>
-
+        <div className={`${isCompact ? 'flex flex-1 flex-col p-4 pb-2' : 'p-5 pb-3 sm:p-6 sm:pb-4'}`}>
           <h3
             className={`font-black tracking-tight text-slate-900 ${
-              isCompact ? 'min-h-[2.75rem] line-clamp-2 text-base leading-snug' : 'line-clamp-2 text-xl leading-tight'
+              isCompact ? 'line-clamp-2 text-base leading-snug' : 'line-clamp-2 text-xl leading-tight'
             }`}
           >
             {displayName}
           </h3>
 
           {isCompact ? (
-            <p className="mt-2 min-h-[1.5rem] truncate text-sm leading-6 text-slate-500">
+            <p className="mt-2 truncate text-sm leading-6 text-slate-500">
               {description}
             </p>
           ) : (
@@ -371,44 +359,23 @@ const ProductCard = memo(
             </p>
           )}
 
-          {hasDiscount && product.originalPrice != null && (
-            <div className="mt-3 flex items-center gap-2">
-              <span className="text-sm font-medium text-slate-400 line-through">
-                {product.originalPrice} ֏
-              </span>
-              <span className="rounded-full bg-[#fff1ec] px-2.5 py-1 text-[11px] font-bold text-[#E53225]">
-                -{discountPercent}%
-              </span>
-            </div>
-          )}
+        </div>
 
-          {productWithCategory.ingredients?.length ? (
-            <div className={`mt-4 flex flex-wrap gap-2 ${isCompact ? 'min-h-[2.5rem]' : ''}`}>
-              {productWithCategory.ingredients.slice(0, isCompact ? 2 : 3).map((ingredient) => (
-                <span
-                  key={ingredient}
-                  className="rounded-full border border-[#efe3dd] bg-[#fcfaf8] px-2.5 py-1 text-[11px] font-medium text-slate-500"
-                >
-                  {ingredient}
-                </span>
-              ))}
-            </div>
-          ) : null}
-
-          {onAddToCart && (
+        {onAddToCart && (
+          <div className={`${isCompact ? 'px-4 pb-4' : 'px-5 pb-5 sm:px-6 sm:pb-6'}`}>
             <button
               onClick={(e) => {
                 e.preventDefault()
                 e.stopPropagation()
                 onAddToCart(product)
               }}
-              className={`mt-5 flex w-full items-center justify-center gap-2 rounded-full font-semibold transition-all ${
+              className={`flex w-full items-center justify-center gap-2 rounded-full font-semibold transition-all ${
                 isCompact ? 'h-11 text-sm' : 'h-12 text-base'
               } ${
                 isAdded
                   ? 'bg-gradient-to-r from-emerald-500 to-green-600 text-white shadow-[0_14px_24px_rgba(34,197,94,0.22)]'
                   : PRODUCT_CARD_ADD_IDLE_BUTTON_CLASS
-              } ${isCompact ? 'mt-auto' : ''}`}
+              }`}
               title={pc.addToCartTitle}
             >
               {isAdded ? (
@@ -429,8 +396,8 @@ const ProductCard = memo(
                 </span>
               )}
             </button>
-          )}
-        </div>
+          </div>
+        )}
       </Link>
     )
   }

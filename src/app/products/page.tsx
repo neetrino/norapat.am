@@ -6,7 +6,6 @@ import {
   Search,
   ArrowDownUp,
   ChevronDown,
-  SlidersHorizontal,
 } from 'lucide-react'
 import Image from 'next/image'
 import { useCart } from '@/hooks/useCart'
@@ -150,16 +149,6 @@ function ProductsPageContent() {
     if (!selectedCategoryName) return productsCopy.allCategories
     return getCategoryDisplayName(selectedCategoryName, locale)
   }, [selectedCategoryName, locale, productsCopy.allCategories])
-
-  const hasActiveFilters = useMemo(
-    () =>
-      selectedCategoryName !== null ||
-      debouncedSearchQuery.trim().length > 0 ||
-      minPrice.trim().length > 0 ||
-      maxPrice.trim().length > 0 ||
-      sortOrder !== 'newest',
-    [selectedCategoryName, debouncedSearchQuery, minPrice, maxPrice, sortOrder]
-  )
 
   const fetchProducts = useCallback(async () => {
     try {
@@ -390,27 +379,6 @@ function ProductsPageContent() {
 
         <main className="min-w-0 flex-1 pb-20 pt-1 lg:pb-8">
           <section className="mb-5 overflow-hidden rounded-[2rem] border border-[#eadfd9] bg-white/90 shadow-[0_16px_40px_rgba(15,23,42,0.05)] backdrop-blur">
-            <div className="border-b border-[#f2e7e1] px-5 py-4 sm:px-6">
-              <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#fff1ec] text-[#E53225] shadow-sm">
-                    <SlidersHorizontal className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <h2 className="text-lg font-bold tracking-tight text-slate-900">
-                      {productsCopy.sortLabel}
-                    </h2>
-                    <p className="text-sm text-slate-500">
-                      {hasActiveFilters ? totalProductCount : productsCopy.allCategories}
-                    </p>
-                  </div>
-                </div>
-                <div className="hidden rounded-full bg-[#fff6f1] px-3 py-1.5 text-xs font-semibold text-[#E53225] sm:inline-flex">
-                  {productsCopy.priceRange}
-                </div>
-              </div>
-            </div>
-
             <div className="space-y-4 px-5 py-5 sm:px-6">
               <div className="relative">
                 <Search
