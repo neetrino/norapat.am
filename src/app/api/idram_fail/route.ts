@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 
+import { getPublicOriginFromRequest } from '@/lib/http/getPublicOriginFromRequest'
+
 export const dynamic = 'force-dynamic'
 
 /**
@@ -7,7 +9,7 @@ export const dynamic = 'force-dynamic'
  */
 export function GET(request: NextRequest) {
   const url = new URL(request.url)
-  const dest = new URL('/payment/fail', `${url.protocol}//${url.host}`)
+  const dest = new URL('/payment/fail', getPublicOriginFromRequest(request))
   dest.searchParams.set('reason', 'idram')
   const order =
     url.searchParams.get('order_number') ?? url.searchParams.get('EDP_BILL_NO')
