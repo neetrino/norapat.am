@@ -70,9 +70,6 @@ const ProductCard = memo(
     const { t, locale } = useI18n()
     const pc = t.productCard
     const isAdded = addedToCart?.has(product.id) || false
-    const productWithCategory = product as Product & {
-      ingredients?: string[] | null
-    }
     const displayName = getProductDisplayName(product.name, locale)
     const description = product.shortDescription ?? product.description
     const discountPercent = getDiscountPercent(product.originalPrice, product.price)

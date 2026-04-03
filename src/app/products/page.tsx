@@ -150,16 +150,6 @@ function ProductsPageContent() {
     return getCategoryDisplayName(selectedCategoryName, locale)
   }, [selectedCategoryName, locale, productsCopy.allCategories])
 
-  const hasActiveFilters = useMemo(
-    () =>
-      selectedCategoryName !== null ||
-      debouncedSearchQuery.trim().length > 0 ||
-      minPrice.trim().length > 0 ||
-      maxPrice.trim().length > 0 ||
-      sortOrder !== 'newest',
-    [selectedCategoryName, debouncedSearchQuery, minPrice, maxPrice, sortOrder]
-  )
-
   const fetchProducts = useCallback(async () => {
     try {
       setLoading(true)
