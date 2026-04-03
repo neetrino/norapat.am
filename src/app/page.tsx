@@ -8,7 +8,7 @@ const DEFAULT_DESCRIPTION =
 function sanitize(value: string | undefined, maxLen: number): string | undefined {
   if (!value) return undefined;
   try {
-    const decoded = decodeURIComponent(value).trim();
+    const decoded = decodeURIComponent(value).replace(/<[^>]*>/g, "").trim();
     return decoded.slice(0, maxLen) || undefined;
   } catch {
     return undefined;
@@ -30,6 +30,13 @@ export async function generateMetadata({
     openGraph: {
       title,
       description,
+      images: ["/logo.png"],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: ["/logo.png"],
     },
   };
 }
