@@ -240,12 +240,12 @@ const ProductCard = memo(
       <Link
         href={`/products/${product.id}`}
         className={`group relative w-full overflow-hidden rounded-[2rem] border border-[#eadfd9] bg-[linear-gradient(160deg,#ffffff_0%,#fffaf6_52%,#fff3ec_100%)] shadow-[0_16px_38px_rgba(15,23,42,0.06)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_24px_48px_rgba(15,23,42,0.1)] ${
-          isCompact ? 'flex flex-col rounded-[1.6rem]' : 'block'
+          isCompact ? 'flex flex-col' : 'block'
         }`}
       >
         <div
           className={`relative overflow-hidden ${
-            isCompact ? 'rounded-t-[1.6rem]' : 'rounded-t-[2rem]'
+            isCompact ? 'rounded-t-[2rem]' : 'rounded-t-[2rem]'
           }`}
           style={{ aspectRatio: isCompact ? '1 / 1' : '1500 / 1125' }}
         >
@@ -302,7 +302,7 @@ const ProductCard = memo(
             <div className="relative z-10 h-full w-full overflow-hidden">
               <div
                 className={`absolute inset-0 ${
-                  isCompact ? 'px-3 pb-3 pt-8 sm:px-4 sm:pb-4 sm:pt-9' : 'px-4 pb-4 pt-10 sm:px-5 sm:pb-5 sm:pt-11'
+                  isCompact ? 'px-4 pb-4 pt-10 sm:px-5 sm:pb-5 sm:pt-11' : 'px-4 pb-4 pt-10 sm:px-5 sm:pb-5 sm:pt-11'
                 }`}
                 style={{
                   transform: isCompact ? undefined : 'perspective(1000px) rotateX(6deg) rotateY(-2deg)',
