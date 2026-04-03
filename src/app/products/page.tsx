@@ -433,7 +433,7 @@ function ProductsPageContent() {
                       }}
                       min={0}
                       step={100}
-                      className="w-24 rounded-xl border border-transparent bg-white px-3 py-2.5 text-xs font-medium text-slate-700 placeholder:text-slate-400 focus:border-[#E53225] focus:outline-none focus:ring-2 focus:ring-[#E53225]/10"
+                      className="w-[127px] md:w-24 rounded-xl border border-transparent bg-white px-3 py-2.5 text-xs font-medium text-slate-700 placeholder:text-slate-400 focus:border-[#E53225] focus:outline-none focus:ring-2 focus:ring-[#E53225]/10"
                     />
                     <span className="select-none text-sm text-slate-300">—</span>
                     <input
@@ -446,7 +446,7 @@ function ProductsPageContent() {
                       }}
                       min={0}
                       step={100}
-                      className="w-24 rounded-xl border border-transparent bg-white px-3 py-2.5 text-xs font-medium text-slate-700 placeholder:text-slate-400 focus:border-[#E53225] focus:outline-none focus:ring-2 focus:ring-[#E53225]/10"
+                      className="w-[120px] md:w-24 rounded-xl border border-transparent bg-white px-3 py-2.5 text-xs font-medium text-slate-700 placeholder:text-slate-400 focus:border-[#E53225] focus:outline-none focus:ring-2 focus:ring-[#E53225]/10"
                     />
                     <span className="pr-1 text-xs font-semibold text-slate-400">֏</span>
                   </div>
