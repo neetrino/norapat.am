@@ -1,3 +1,9 @@
+/** HTTP timeout for Arca REST calls (register.do, getOrderStatusExtended.do) */
+export const ARCA_HTTP_TIMEOUT_MS = 25_000 as const
+
+/** Delay before one retry when order is still in ACS (3DS) */
+export const ARCA_ACS_RETRY_DELAY_MS = 2_000 as const
+
 /** Arca (Armenian Card) vPOS — REST API base URLs */
 export const ARCA_TEST_BASE_URL =
   'https://ipaytest.arca.am:8445/payment/rest' as const

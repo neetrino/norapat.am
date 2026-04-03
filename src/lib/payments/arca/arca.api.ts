@@ -1,7 +1,24 @@
 import type { ArcaCredentials } from './arca.config'
-import { ARCA_CURRENCY_AMD } from './arca.constants'
+import {
+  ARCA_ACS_RETRY_DELAY_MS,
+  ARCA_CURRENCY_AMD,
+  ARCA_HTTP_TIMEOUT_MS,
+  ARCA_ORDER_STATUS,
+} from './arca.constants'
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms)
+  })
+}
+
+function arcaFetchSignal(): AbortSignal {
+  return AbortSignal.timeout(ARCA_HTTP_TIMEOUT_MS)
+}
 
 // ─── Register Order ────────────────────────────────────────────────────────────
+
+export type ArcaPageView = 'MOBILE' | 'DESKTOP'
 
 type RegisterOrderParams = {
   credentials: ArcaCredentials
@@ -14,8 +31,10 @@ type RegisterOrderParams = {
   returnUrl: string
   /** Short description shown on payment page (max 99 chars) */
   description: string
-  /** ISO 639-1 language code: 'am', 'en', 'ru' */
-  language?: string
+  /** ISO 639-1 language code (manual §7.1.1) */
+  language?: 'hy' | 'en' | 'ru'
+  /** Hosted payment page layout (manual §7.1.1) */
+  pageView?: ArcaPageView
 }
 
 type RegisterOrderResult = {
@@ -25,6 +44,8 @@ type RegisterOrderResult = {
   formUrl: string
 }
 
+const REGISTER_JSON_PARAMS = JSON.stringify({ FORCE_3DS2: 'true' })
+
 /**
  * Registers a new order with the Arca payment gateway.
  * Corresponds to POST /payment/rest/register.do
@@ -33,7 +54,6 @@ type RegisterOrderResult = {
 export async function arcaRegisterOrder(
   params: RegisterOrderParams
 ): Promise<RegisterOrderResult> {
-  // Arca expects amount in minimum currency units (lumas for AMD: 1 AMD = 100 lumas)
   const amountLumas = Math.round(params.amountAmd * 100)
 
   const body = new URLSearchParams({
@@ -45,7 +65,12 @@ export async function arcaRegisterOrder(
     returnUrl: params.returnUrl,
     description: params.description.slice(0, 99),
     language: params.language ?? 'en',
+    jsonParams: REGISTER_JSON_PARAMS,
   })
+
+  if (params.pageView) {
+    body.set('pageView', params.pageView)
+  }
 
   const url = `${params.baseUrl}/register.do`
   let response: Response
@@ -57,6 +82,7 @@ export async function arcaRegisterOrder(
         'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
       },
       body: body.toString(),
+      signal: arcaFetchSignal(),
     })
   } catch (err) {
     throw new Error(
@@ -90,9 +116,7 @@ export async function arcaRegisterOrder(
   }
 
   if (!data.orderId || !data.formUrl) {
-    throw new Error(
-      'Arca register.do: response missing orderId or formUrl'
-    )
+    throw new Error('Arca register.do: response missing orderId or formUrl')
   }
 
   return {
@@ -152,6 +176,7 @@ export async function arcaGetOrderStatus(
         'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
       },
       body: body.toString(),
+      signal: arcaFetchSignal(),
     })
   } catch (err) {
     throw new Error(
@@ -182,4 +207,18 @@ export async function arcaGetOrderStatus(
     errorCode: data.errorCode ?? -1,
     errorMessage: data.errorMessage,
   }
+}
+
+/**
+ * Fetches status; if still ACS (3DS in progress), waits and polls once more.
+ */
+export async function arcaGetOrderStatusWithAcsRetry(
+  params: GetOrderStatusParams
+): Promise<GetOrderStatusResult> {
+  let result = await arcaGetOrderStatus(params)
+  if (result.orderStatus === ARCA_ORDER_STATUS.ACS_AUTH) {
+    await sleep(ARCA_ACS_RETRY_DELAY_MS)
+    result = await arcaGetOrderStatus(params)
+  }
+  return result
 }

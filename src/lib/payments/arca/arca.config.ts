@@ -21,7 +21,6 @@ function shouldUseTestMode(
 ): boolean {
   if (mode === 'true') return true
   if (mode === 'false') return false
-  // If only test pair is configured, default to test
   if (hasTest && !hasLive) return true
   return false
 }
@@ -30,10 +29,9 @@ function shouldUseTestMode(
  * Reads Arca credentials and base URL from environment variables.
  *
  * Env vars:
- *   ARCA_TEST_USERNAME / ARCA_TEST_PASSWORD  — test merchant credentials
- *   ARCA_LIVE_USERNAME / ARCA_LIVE_PASSWORD  — production merchant credentials
- *   ARCA_TEST_MODE=true|false                — force test or live mode
- *   ARCA_USE_DEV_STUB=true                   — dev-only stub (NODE_ENV=development)
+ *   ARCA_TEST_USERNAME / ARCA_TEST_PASSWORD — test merchant credentials
+ *   ARCA_LIVE_USERNAME / ARCA_LIVE_PASSWORD — production merchant credentials
+ *   ARCA_TEST_MODE=true|false — force test or live mode
  */
 export function getArcaConfig(): ArcaConfig {
   const testUser = trimEnv(process.env.ARCA_TEST_USERNAME)
@@ -55,23 +53,8 @@ export function getArcaConfig(): ArcaConfig {
     }
   }
 
-  // Dev stub — never sends real requests; useful for local form testing
-  const isDevStub =
-    process.env.NODE_ENV === 'development' &&
-    process.env.ARCA_USE_DEV_STUB === 'true'
-
-  if (isDevStub) {
-    return {
-      credentials: {
-        userName: 'dev-stub-arca-merchant',
-        password: 'dev-stub-arca-password',
-      },
-      baseUrl: ARCA_TEST_BASE_URL,
-    }
-  }
-
   const hint = useTest
-    ? 'Set ARCA_TEST_USERNAME and ARCA_TEST_PASSWORD, or ARCA_USE_DEV_STUB=true for local dev.'
+    ? 'Set ARCA_TEST_USERNAME and ARCA_TEST_PASSWORD.'
     : 'Set ARCA_LIVE_USERNAME and ARCA_LIVE_PASSWORD (or ARCA_TEST_MODE=true with test keys).'
   throw new Error(`Arca is not configured: ${hint}`)
 }

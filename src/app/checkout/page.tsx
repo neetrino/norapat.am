@@ -17,9 +17,14 @@ function mapLocaleToIdramLanguage(locale: AppLocale): 'EN' | 'AM' | 'RU' {
   return 'EN'
 }
  
-function mapLocaleToArcaLanguage(locale: AppLocale): 'am' | 'en' | 'ru' {
-  if (locale === 'hy') return 'am'
+function mapLocaleToArcaLanguage(locale: AppLocale): 'hy' | 'en' | 'ru' {
+  if (locale === 'hy') return 'hy'
   return 'en'
+}
+
+function getArcaPageView(): 'MOBILE' | 'DESKTOP' {
+  if (typeof window === 'undefined') return 'DESKTOP'
+  return window.innerWidth < 768 ? 'MOBILE' : 'DESKTOP'
 }
 
 function postFormToIdram(
@@ -262,6 +267,7 @@ export default function CheckoutPage() {
             orderId: orderJson.id,
             arcaInitSecret: secret,
             language: mapLocaleToArcaLanguage(locale),
+            pageView: getArcaPageView(),
           }),
         })
         const initData = (await initRes.json()) as {
