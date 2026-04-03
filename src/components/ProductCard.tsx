@@ -155,15 +155,15 @@ const ProductCard = memo(
             </div>
 
             <div className="mt-5 flex items-end justify-between gap-3">
-              <div>
-                {hasDiscount && product.originalPrice != null && (
-                  <div className="mb-1 text-sm font-medium text-slate-400 line-through">
-                    {product.originalPrice} ֏
-                  </div>
-                )}
+              <div className="flex items-baseline gap-2">
                 <div className="text-xl font-black tracking-tight text-slate-900">
                   {product.price} ֏
                 </div>
+                {hasDiscount && product.originalPrice != null && (
+                  <div className="text-sm font-medium text-slate-400 line-through">
+                    {product.originalPrice} ֏
+                  </div>
+                )}
               </div>
 
               {onAddToCart && (
@@ -332,11 +332,14 @@ const ProductCard = memo(
           )}
 
           <div
-            className={`absolute bottom-3 right-3 z-20 rounded-full border border-white/70 bg-white/92 font-black text-[#E53225] shadow-[0_12px_24px_rgba(15,23,42,0.08)] backdrop-blur ${
+            className={`absolute bottom-3 right-3 z-20 flex items-center gap-1.5 rounded-full border border-white/70 bg-white/92 shadow-[0_12px_24px_rgba(15,23,42,0.08)] backdrop-blur ${
               isCompact ? 'px-4 py-2 text-sm' : 'px-5 py-2.5 text-base'
             }`}
           >
-            {product.price} ֏
+            {hasDiscount && product.originalPrice != null && (
+              <span className="text-xs font-medium text-slate-400 line-through">{product.originalPrice} ֏</span>
+            )}
+            <span className="font-black text-[#E53225]">{product.price} ֏</span>
           </div>
         </div>
 
@@ -359,16 +362,6 @@ const ProductCard = memo(
             </p>
           )}
 
-          {hasDiscount && product.originalPrice != null && (
-            <div className="mt-3 flex items-center gap-2">
-              <span className="text-sm font-medium text-slate-400 line-through">
-                {product.originalPrice} ֏
-              </span>
-              <span className="rounded-full bg-[#fff1ec] px-2.5 py-1 text-[11px] font-bold text-[#E53225]">
-                -{discountPercent}%
-              </span>
-            </div>
-          )}
         </div>
 
         {onAddToCart && (
