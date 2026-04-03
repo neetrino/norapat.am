@@ -1,15 +1,15 @@
 'use client'
 
 import Link from 'next/link'
-import { ShoppingCart, User, LogOut, Search, Heart } from 'lucide-react'
+import { ShoppingCart, User, LogOut, Heart } from 'lucide-react'
 import { usePathname } from 'next/navigation'
-import { useState } from 'react'
 import { useSession, signOut } from 'next-auth/react'
 import { useCart } from '@/hooks/useCart'
 import { useWishlist } from '@/hooks/useWishlist'
 import { useHydration } from '@/hooks/useHydration'
 import { useI18n } from '@/i18n/I18nContext'
 import type { PublicSiteSettingsState } from '@/hooks/usePublicSiteSettings'
+import { HeaderSearch } from '@/components/HeaderSearch'
 import { SiteBrandMark } from '@/components/SiteBrandMark'
 import { useHeaderStack } from '@/contexts/HeaderStackContext'
 import {
@@ -30,7 +30,6 @@ export default function DesktopHeader({ branding }: DesktopHeaderProps) {
   const { products: wishlistProducts } = useWishlist()
   const { data: session, status } = useSession()
   const pathname = usePathname()
-  const [searchQuery, setSearchQuery] = useState('')
 
   // Функция для определения активной ссылки
   const isActive = (path: string) => {
@@ -92,21 +91,7 @@ export default function DesktopHeader({ branding }: DesktopHeaderProps) {
 
           {/* Search Bar - Compact */}
           <div className="max-w-xs">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" />
-              <input
-                type="text"
-                placeholder={search.short}
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onKeyPress={(e) => {
-                  if (e.key === 'Enter' && searchQuery.trim()) {
-                    window.location.href = `/products?search=${encodeURIComponent(searchQuery)}`
-                  }
-                }}
-                className="w-full pl-10 pr-3 py-2 border border-gray-200 rounded-lg focus:ring-1 focus:ring-orange-500 focus:border-orange-500 text-sm text-gray-900 placeholder-gray-500 bg-gray-50 transition-all duration-300 hover:bg-white focus:bg-white"
-              />
-            </div>
+            <HeaderSearch placeholder={search.short} />
           </div>
 
           {/* Right side */}
