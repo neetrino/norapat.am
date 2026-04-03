@@ -26,6 +26,9 @@ const promoMarker = Permanent_Marker({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_APP_URL ?? "https://norapat.am"
+  ),
   title: "NORAPAT - երբ ուզում եք ուտել համեղ",
   description:
     "Բազմազան ուտեստների լայն ընտրանի, որտեղ յուրաքանչյուրը կգտնի իր սիրելի տարբերակը։",
