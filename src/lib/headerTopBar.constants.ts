@@ -12,4 +12,4 @@ export const TOP_CONTACT_BAR_TRANSITION_EASING =
 export const DEFAULT_PUBLIC_CONTACT_PHONE = '+374 95-044-888'
 
 export const DEFAULT_PUBLIC_ADDRESS =
-  '5th Street, Village of Norapat, Armavir, Armenia'
+  '5-րդ փողոց, Նորապատ գյուղ, Արմավիր, Հայաստան'

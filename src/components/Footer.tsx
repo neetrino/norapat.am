@@ -138,7 +138,7 @@ export default function Footer() {
                     <div className="flex gap-2">
                       <MapPin className={CONTACT_ICON_BOX} aria-hidden />
                       <a
-                        href="https://maps.google.com/?q=5th+Street,+Village+of+Norapat,+Armavir,+Armenia"
+                        href="https://maps.google.com/?q=5-%D6%80%D5%A4+%D6%83%D5%B8%D5%B2%D5%B8%D6%81,+%D5%86%D5%B8%D6%80%D5%A1%D5%BA%D5%A1%D5%BF+%D5%A3%D5%B5%D5%B8%D6%82%D5%B2,+%D4%B1%D6%80%D5%B4%D5%A1%D5%BE%D5%AB%D6%80,+%D5%80%D5%A1%D5%B5%D5%A1%D5%BD%D5%BF%D5%A1%D5%B6"
                         target="_blank"
                         rel="noopener noreferrer"
                         className={LINK_BASE}
