@@ -33,10 +33,10 @@ export default function MobileHeader({ branding }: MobileHeaderProps) {
     >
       <div className="px-4 py-1.5">
         <div className="flex items-center gap-2">
-          <div className="z-[101] flex min-w-0 flex-1 justify-start" />
-          <div className="flex-shrink-0">
+          <div className="z-[101] flex min-w-0 flex-1 justify-start">
             <SiteBrandMark variant="mobile" branding={branding} />
           </div>
+          <div className="flex-shrink-0" />
 
           <div className="flex min-w-0 flex-1 justify-end">
             <button

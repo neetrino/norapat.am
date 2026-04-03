@@ -1,35 +1,20 @@
 'use client'
 
 import Link from 'next/link'
-import { Home, ShoppingCart, User, Menu, LogIn } from 'lucide-react'
+import { Home, ShoppingCart, User, UtensilsCrossed, LogIn } from 'lucide-react'
 import { usePathname } from 'next/navigation'
 import { useSession } from 'next-auth/react'
 import { useCart } from '@/hooks/useCart'
 import { useHydration } from '@/hooks/useHydration'
-import { useState, useEffect } from 'react'
-import { createPortal } from 'react-dom'
 import { useI18n } from '@/i18n/I18nContext'
 
 export default function MobileBottomNav() {
   const { t } = useI18n()
-  const { nav, cart, profile, auth, legal } = t
+  const { nav, cart, profile, auth } = t
   const pathname = usePathname()
   const isHydrated = useHydration()
   const { getTotalItems } = useCart()
   const { data: session, status } = useSession()
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
-
-  // Բոլոր հուկերը կանչվում են return-ից առաջ (Rules of Hooks)
-  useEffect(() => {
-    if (isMenuOpen) {
-      document.body.style.overflow = 'hidden'
-    } else {
-      document.body.style.overflow = ''
-    }
-    return () => {
-      document.body.style.overflow = ''
-    }
-  }, [isMenuOpen])
 
   if (pathname?.startsWith('/admin')) {
     return null
@@ -43,172 +28,33 @@ export default function MobileBottomNav() {
   }
   const hideProfileActiveIndicator = pathname?.startsWith('/profile')
 
-  // Ссылки для меню
-  const menuLinks = [
-    { href: '/', label: nav.home },
-    { href: '/products', label: nav.menu },
-    { href: '/about', label: nav.about },
-    { href: '/contact', label: nav.contact },
-  ]
-
-  // Навигационные элементы в зависимости от состояния авторизации
   const navItems = session ? [
     { href: '/', label: nav.home, icon: Home },
-    { href: '/products', label: nav.menu, icon: Menu, isMenu: true },
+    { href: '/products', label: nav.menu, icon: UtensilsCrossed },
     { href: '/cart', label: cart.label, icon: ShoppingCart, showBadge: true },
     { href: '/profile', label: profile.label, icon: User },
   ] : [
     { href: '/', label: nav.home, icon: Home },
-    { href: '/products', label: nav.menu, icon: Menu, isMenu: true },
+    { href: '/products', label: nav.menu, icon: UtensilsCrossed },
     { href: '/cart', label: cart.label, icon: ShoppingCart, showBadge: true },
     { href: '/login', label: auth.login, icon: LogIn },
   ]
 
-  const menuOverlay = isMenuOpen && isHydrated && createPortal(
-    <div 
-      className="fixed inset-0 bg-white z-[9999] animate-menu-fade-in"
-      onClick={() => setIsMenuOpen(false)}
-      style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}
-    >
-      {/* Backdrop with blur effect */}
-      <div className="absolute inset-0 bg-white"></div>
-      
-      {/* Menu Content Container */}
-      <div className="relative z-10 h-full flex flex-col animate-menu-slide-in">
-        {/* Menu Header */}
-        <div className="bg-orange-500 text-white p-6 flex items-center justify-between shadow-lg">
-          <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
-              <Menu className="w-5 h-5" />
-            </div>
-            <h2 className="text-2xl font-bold">{nav.navigation}</h2>
-          </div>
-          <button
-            onClick={(e) => {
-              e.stopPropagation()
-              setIsMenuOpen(false)
-            }}
-            className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center hover:bg-white/30 transition-all duration-300 active:scale-95"
-          >
-            <span className="text-white text-xl font-bold">×</span>
-          </button>
-        </div>
-
-        {/* Menu Items - Centered */}
-        <div className="flex-1 flex flex-col justify-center px-6 py-8">
-          <div className="space-y-3">
-            {menuLinks.map((link, index) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={`
-                  group block px-8 py-6 rounded-2xl text-gray-700 hover:bg-orange-500 hover:text-white transition-all duration-300 font-semibold text-xl text-center shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95 animate-slide-in-up
-                  ${isActive(link.href) 
-                    ? 'bg-orange-500 text-white shadow-xl scale-105' 
-                    : 'bg-white/80 backdrop-blur-sm border border-gray-200'
-                  }
-                `}
-                onClick={() => setIsMenuOpen(false)}
-                style={{
-                  animationDelay: `${index * 100}ms`
-                }}
-              >
-                <span className="block">{link.label}</span>
-                {isActive(link.href) && (
-                  <div className="mt-2 w-8 h-1 bg-white/30 rounded-full mx-auto"></div>
-                )}
-              </Link>
-            ))}
-          </div>
-        </div>
-
-        {/* Bottom Info */}
-        <div
-          className="p-6 bg-white border-t border-gray-200"
-          onClick={(e) => e.stopPropagation()}
-        >
-          {/* Legal Links */}
-          <div className="flex justify-center space-x-4 mb-4">
-            <Link 
-              href="/privacy" 
-              className="text-xs text-gray-400 hover:text-orange-500 transition-colors duration-200 underline decoration-dotted underline-offset-2"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              {legal.privacyShort}
-            </Link>
-            <span className="text-xs text-gray-300">•</span>
-            <Link 
-              href="/terms" 
-              className="text-xs text-gray-400 hover:text-orange-500 transition-colors duration-200 underline decoration-dotted underline-offset-2"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              {legal.termsShort}
-            </Link>
-          </div>
-          
-          <div className="text-center text-gray-600">
-            <p className="text-xs text-gray-500 mb-2">
-              Copyright © 2025. All Rights Reserved.
-            </p>
-            <p className="text-xs text-gray-500">
-              Created by{' '}
-              <a 
-                href="https://neetrino.com" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="text-orange-500 hover:text-orange-600 font-semibold transition-colors duration-200"
-              >
-                Neetrino
-              </a>
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>,
-    document.body
-  )
-
   return (
-    <>
-      <nav className="lg:hidden fixed bottom-0 left-0 right-0 w-full bg-white/95 backdrop-blur-xl border-t border-gray-200 z-40 shadow-2xl">
-        <div className="flex justify-around items-center py-3">
-          {!isHydrated || status === 'loading' ? (
-            Array.from({ length: 4 }).map((_, index) => (
-              <div key={index} className="flex flex-col items-center justify-center py-3 px-4 rounded-2xl">
-                <div className="w-6 h-6 bg-gray-200 rounded-full animate-pulse"></div>
-                <div className="w-12 h-3 bg-gray-200 rounded mt-1 animate-pulse"></div>
-              </div>
-            ))
-          ) : (
-            navItems.map((item) => {
+    <nav className="lg:hidden fixed bottom-0 left-0 right-0 w-full bg-white/95 backdrop-blur-xl border-t border-gray-200 z-40 shadow-2xl">
+      <div className="flex justify-around items-center py-3">
+        {!isHydrated || status === 'loading' ? (
+          Array.from({ length: 4 }).map((_, index) => (
+            <div key={index} className="flex flex-col items-center justify-center py-3 px-4 rounded-2xl">
+              <div className="w-6 h-6 bg-gray-200 rounded-full animate-pulse"></div>
+              <div className="w-12 h-3 bg-gray-200 rounded mt-1 animate-pulse"></div>
+            </div>
+          ))
+        ) : (
+          navItems.map((item) => {
             const Icon = item.icon
             const active = isActive(item.href)
-            
-            // Если это меню, показываем кнопку
-            if (item.isMenu) {
-              return (
-                <button
-                  key={item.href}
-                  onClick={() => setIsMenuOpen(!isMenuOpen)}
-                  className={`flex flex-col items-center justify-center py-3 px-4 rounded-2xl transition-all duration-300 relative ${
-                    isMenuOpen
-                      ? 'text-orange-500 bg-orange-50'
-                      : 'text-gray-600 hover:text-orange-500 hover:bg-orange-50'
-                  }`}
-                >
-                  <div className="relative">
-                    <Icon className={`h-6 w-6 transition-transform duration-300 ${isMenuOpen ? 'scale-110' : ''}`} />
-                  </div>
-                  <span className={`text-xs font-semibold mt-1 transition-all duration-300 ${isMenuOpen ? 'text-orange-600' : ''}`}>{item.label}</span>
-                  
-                  {/* Active indicator */}
-                  {isMenuOpen && (
-                    <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-10 h-1 bg-gradient-to-r from-orange-500 to-red-500 rounded-b-full shadow-lg"></div>
-                  )}
-                </button>
-              )
-            }
-            
+
             return (
               <Link
                 key={item.href}
@@ -228,18 +74,15 @@ export default function MobileBottomNav() {
                   )}
                 </div>
                 <span className={`text-xs font-semibold mt-1 transition-all duration-300 ${active ? 'text-orange-600' : ''}`}>{item.label}</span>
-                
-                {/* Active indicator */}
+
                 {active && !hideProfileActiveIndicator && (
                   <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-10 h-1 bg-gradient-to-r from-orange-500 to-red-500 rounded-b-full shadow-lg"></div>
                 )}
               </Link>
             )
           })
-          )}
-        </div>
-      </nav>
-      {menuOverlay}
-    </>
+        )}
+      </div>
+    </nav>
   )
 }
