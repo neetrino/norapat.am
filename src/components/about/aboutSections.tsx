@@ -1,9 +1,7 @@
 import {
   Award,
-  ChefHat,
   Clock,
   Heart,
-  Truck,
   Users,
 } from 'lucide-react'
 import type { AppMessages } from '@/i18n/types'
@@ -70,60 +68,6 @@ export function AboutValues({ a }: { a: AboutCopy }) {
   )
 }
 
-export function AboutTeam({ a }: { a: AboutCopy }) {
-  const slots = [
-    { Icon: ChefHat, title: a.teamChefTitle, desc: a.teamChefDesc },
-    { Icon: Users, title: a.teamManagerTitle, desc: a.teamManagerDesc },
-    { Icon: Truck, title: a.teamDeliveryTitle, desc: a.teamDeliveryDesc },
-  ]
-  return (
-    <div className="mb-24">
-      <h2 className="text-4xl font-bold text-center text-gray-900 mb-16">
-        {a.teamTitle}
-      </h2>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-        {slots.map(({ Icon, title, desc }) => (
-          <div
-            key={title}
-            className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow text-center group"
-          >
-            <div className="w-32 h-32 bg-orange-200 rounded-full mx-auto mb-6 flex items-center justify-center group-hover:scale-105 transition-transform">
-              <Icon className="h-16 w-16 text-orange-500" aria-hidden />
-            </div>
-            <h3 className="text-2xl font-bold mb-3 text-gray-900">{title}</h3>
-            <p className="text-gray-700 leading-relaxed">{desc}</p>
-          </div>
-        ))}
-      </div>
-    </div>
-  )
-}
-
-export function AboutStats({ a }: { a: AboutCopy }) {
-  const stats = [
-    { value: a.statOrdersValue, label: a.statOrdersLabel },
-    { value: a.statFlavorsValue, label: a.statFlavorsLabel },
-    { value: a.statBranchesValue, label: a.statBranchesLabel },
-    { value: a.statPrepValue, label: a.statPrepLabel },
-  ]
-  return (
-    <div className="promo-food-banner-bg promo-food-banner-vignette relative mb-16 overflow-hidden rounded-3xl text-white">
-      <div className="relative z-10 flex min-h-[min(42vh,24rem)] flex-col justify-center gap-10 px-6 py-12 text-center sm:px-10 sm:py-14 md:min-h-[26rem] md:px-14 md:py-16">
-        <h2 className="text-4xl font-bold">{a.statsTitle}</h2>
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
-          {stats.map(({ value, label }) => (
-            <div key={label} className="group">
-              <div className="mb-4 text-6xl font-bold transition-transform group-hover:scale-110">
-                {value}
-              </div>
-              <div className="text-xl text-white/90">{label}</div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  )
-}
 
 export function AboutProcess({ a }: { a: AboutCopy }) {
   const steps = [
