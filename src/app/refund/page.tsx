@@ -9,9 +9,9 @@ function buildTelHref(phone: string): string {
 }
 
 export const metadata: Metadata = {
-  title: 'Վերադարձի և փոխանակման քաղաքականություն | Pideh Armenia',
+  title: 'Վերադարձի և փոխանակման քաղաքականություն | Norapat Food Court',
   description:
-    'Pideh Armenia — վերադարձ, փոխանակում, գումարի վերադարձ, պատվերի չեղարկում և անհատական պատվերների պայմաններ։',
+    'Norapat Food Court — վերադարձ, փոխանակում, գումարի վերադարձ, պատվերի չեղարկում և անհատական պատվերների պայմաններ։',
 }
 
 export default function RefundPage() {

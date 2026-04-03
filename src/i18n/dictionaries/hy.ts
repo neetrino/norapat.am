@@ -82,7 +82,7 @@ export const hy: AppMessages = {
   wishlist: {
     title: 'Նախընտրածներ',
     pageTitle: 'Նախընտրածներ',
-    pageDescription: 'Պահված ուտեստներ և կոմբոներ Pideh Armenia մենյուից',
+    pageDescription: 'Պահված ուտեստներ և կոմբոներ Norapat Food Court մենյուից',
     loginPrompt:
       'Մուտք գործեք հաշիվ, որպեսզի պահեք ուտեստները և տեսնեք դրանք այստեղ։',
     backToMenu: 'Մենյու',

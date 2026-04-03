@@ -1,14 +1,17 @@
 'use client'
 
 /**
- * Embed map centered on the selected Pideh Armenia branch.
+ * Embed map centered on the selected Norapat Food Court branch.
  */
 type MapEmbedProps = {
   addressQuery: string
   title?: string
 }
 
-export function MapEmbed({ addressQuery, title = 'Pideh Armenia - location on map' }: MapEmbedProps) {
+export function MapEmbed({
+  addressQuery,
+  title = 'Norapat Food Court - location on map',
+}: MapEmbedProps) {
   const src = `https://maps.google.com/maps?q=${encodeURIComponent(addressQuery)}&t=&z=16&ie=UTF8&iwloc=B&output=embed`
 
   return (

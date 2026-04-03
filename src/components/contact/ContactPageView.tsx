@@ -17,7 +17,7 @@ export function ContactPageView() {
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null)
 
   const phoneNumber = contactPhone?.trim() || companyInfo.phone
-  const emailAddress = contactEmail?.trim() || 'info@pideh.am'
+  const emailAddress = contactEmail?.trim() || 'info@norapat.am'
   const locationAddress = c.addressLine
   const locationMapQuery = '5-րդ փողոց, Նորապատ գյուղ, Արմավիր, Հայաստան'
   const phoneHref = `tel:${phoneNumber.replace(/[^\d+]/g, '')}`
