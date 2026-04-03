@@ -22,9 +22,11 @@ export function BrandBannerSection() {
         <div className="grid grid-cols-1 items-center gap-8 lg:grid-cols-2 lg:gap-6 xl:gap-10">
           <div className="relative z-10 max-w-xl space-y-4 sm:space-y-5">
             <div className="relative pl-1">
-              <span className="font-promo-caveat absolute -left-0.5 -top-7 text-base text-white sm:-top-8 sm:text-lg">
-                {p.super}
-              </span>
+              {p.super && (
+                <span className="font-promo-caveat absolute -left-0.5 -top-7 text-base text-white sm:-top-8 sm:text-lg">
+                  {p.super}
+                </span>
+              )}
               <span className="font-promo-marker block text-[clamp(2.5rem,8vw,3.75rem)] leading-[0.95] text-[#FACC15]">
                 {p.delicious}
               </span>
@@ -34,26 +36,28 @@ export function BrandBannerSection() {
               {p.menu}
             </h1>
 
-            <div className="font-promo-caveat text-[clamp(1.35rem,4.2vw,1.85rem)] font-semibold text-[#FACC15]">
-              {p.weekendBefore}
-              <span className="relative inline-block">
-                {p.weekendWord}
-                <svg
-                  className="absolute -bottom-1 left-0 h-3 w-[calc(100%+0.25rem)] text-white sm:h-3.5"
-                  viewBox="0 0 200 12"
-                  fill="none"
-                  aria-hidden
-                >
-                  <path
-                    d="M2 8c28-6 58 4 88-2 32-6 62 2 92-4"
-                    stroke="currentColor"
-                    strokeLinecap="round"
-                    strokeWidth="2.5"
-                  />
-                </svg>
-              </span>
-              {p.weekendAfter}
-            </div>
+            {(p.weekendBefore || p.weekendWord || p.weekendAfter) && (
+              <div className="font-promo-caveat text-[clamp(1.35rem,4.2vw,1.85rem)] font-semibold text-[#FACC15]">
+                {p.weekendBefore}
+                <span className="relative inline-block">
+                  {p.weekendWord}
+                  <svg
+                    className="absolute -bottom-1 left-0 h-3 w-[calc(100%+0.25rem)] text-white sm:h-3.5"
+                    viewBox="0 0 200 12"
+                    fill="none"
+                    aria-hidden
+                  >
+                    <path
+                      d="M2 8c28-6 58 4 88-2 32-6 62 2 92-4"
+                      stroke="currentColor"
+                      strokeLinecap="round"
+                      strokeWidth="2.5"
+                    />
+                  </svg>
+                </span>
+                {p.weekendAfter}
+              </div>
+            )}
 
             <p className="max-w-md font-sans text-sm leading-relaxed text-white/95 sm:text-base">
               {p.body}

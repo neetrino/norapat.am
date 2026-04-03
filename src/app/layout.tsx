@@ -26,9 +26,9 @@ const promoMarker = Permanent_Marker({
 });
 
 export const metadata: Metadata = {
-  title: "NORAPAT — հայկական պիդե, նոր համ",
+  title: "NORAPAT - երբ ուզում եք ուտել համեղ",
   description:
-    "Ավանդական ձև՝ ժամանակակից լցոնումներով։ 15 եզակի համ իրական գուրմանների համար։ Առաքում Երևանում։",
+    "Բազմազան ուտեստների լայն ընտրանի, որտեղ յուրաքանչյուրը կգտնի իր սիրելի տարբերակը։",
   keywords: "NORAPAT, պիդե, հայկական պիդե, մինի պիցցա, ուտելիքի առաքում, Երևան, Հայաստան",
   icons: {
     icon: [{ url: "/icon/norapat.svg", type: "image/svg+xml" }],
