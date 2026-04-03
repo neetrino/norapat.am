@@ -402,7 +402,7 @@ function ProductsPageContent() {
 
               <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
                 <div className="flex flex-wrap items-center gap-2.5">
-                  <div className="relative flex items-center">
+                  <div className="relative hidden sm:flex items-center">
                     <ArrowDownUp className="pointer-events-none absolute left-3 h-3.5 w-3.5 text-slate-400" />
                     <select
                       value={sortOrder}
