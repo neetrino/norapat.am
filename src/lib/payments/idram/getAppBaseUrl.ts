@@ -1,6 +1,6 @@
 /**
- * Base URL for wc-api callbacks (no trailing slash).
- * Idram panel must register SUCCESS_URL / FAIL_URL / RESULT_URL under this host.
+ * Public site origin for Idram (no trailing slash).
+ * Idram merchant panel: RESULT_URL, SUCCESS_URL, FAIL_URL = `{origin}/api/idram_*`.
  */
 export function getAppBaseUrl(): string {
   const raw =

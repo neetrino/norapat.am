@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server'
 export const dynamic = 'force-dynamic'
 
 /**
- * Idram FAIL_URL — user redirect after failed/cancelled payment.
+ * Idram FAIL_URL — browser redirect after failed or cancelled payment.
  */
 export function GET(request: NextRequest) {
   const url = new URL(request.url)

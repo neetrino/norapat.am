@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server'
 export const dynamic = 'force-dynamic'
 
 /**
- * Idram SUCCESS_URL — user redirect after successful payment.
+ * Idram SUCCESS_URL — browser redirect after successful payment.
  */
 export function GET(request: NextRequest) {
   const url = new URL(request.url)

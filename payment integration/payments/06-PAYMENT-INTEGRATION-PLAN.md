@@ -65,13 +65,13 @@
 | **Ameriabank** | Success | `https://borboraqua.am/wc-api/ameriabank_successful` |
 | **Ameriabank** | Failed | `https://borboraqua.am/wc-api/ameriabank_failed` |
 | **FastShift** | Callback | `https://borboraqua.am/wc-api/fastshift_response` |
-| **Idram** | SUCCESS_URL | `https://borboraqua.am/wc-api/idram_complete` |
-| **Idram** | FAIL_URL | `https://borboraqua.am/wc-api/idram_fail` |
-| **Idram** | RESULT_URL | `https://borboraqua.am/wc-api/idram_result` |
+| **Idram** | SUCCESS_URL | `https://borboraqua.am/api/idram_complete` |
+| **Idram** | FAIL_URL | `https://borboraqua.am/api/idram_fail` |
+| **Idram** | RESULT_URL | `https://borboraqua.am/api/idram_result` |
 | **Telcell** | RESULT_URL | `https://borboraqua.am/wc-api/telcell_result` |
 | **Telcell** | REDIRECT_URL | `https://borboraqua.am/wc-api/telcell_redirect` |
 
-**Իրականացում.** `apps/web/app/wc-api/<handler>/route.ts` — յուրաքանչյուր handler-ի համար GET/POST ըստ փաստաթղթի (օր. Ameriabank → GET with query; Idram RESULT_URL → POST form).
+**Իրականացում.** Idram՝ `src/app/api/idram_result/route.ts` (POST), `idram_complete` / `idram_fail` (GET redirect)։ Այլ համակարգեր՝ ըստ նախագծի (`wc-api` կամ `api/...`)։
 
 ---
 
@@ -137,9 +137,9 @@
 
 ### 7.4 Route-եր
 
-- `wc-api/idram_result` — POST (precheck + payment confirmation).
-- `wc-api/idram_complete` — GET (redirect success).
-- `wc-api/idram_fail` — GET (redirect fail).
+- `api/idram_result` — POST (precheck + payment confirmation).
+- `api/idram_complete` — GET (redirect success).
+- `api/idram_fail` — GET (redirect fail).
 
 ### 7.5 Փուլ 2 ավարտված
 
