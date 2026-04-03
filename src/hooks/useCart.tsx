@@ -1,6 +1,13 @@
 'use client'
 
-import { createContext, useContext, useEffect, useReducer, type ReactNode } from 'react'
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useReducer,
+  type ReactNode,
+} from 'react'
 import { useSession } from 'next-auth/react'
 import { Product, CartItem, CartContextType } from '@/types'
 import { useHydration } from './useHydration'
@@ -86,7 +93,7 @@ function cartReducer(state: CartItem[], action: CartAction): CartItem[] {
     }
 
     case 'CLEAR_CART':
-      return []
+      return state.length === 0 ? state : []
 
     case 'LOAD_CART':
       return action.payload
@@ -143,9 +150,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
     dispatch({ type: 'UPDATE_QUANTITY', payload: { productId, quantity } })
   }
 
-  const clearCart = () => {
+  const clearCart = useCallback(() => {
     dispatch({ type: 'CLEAR_CART' })
-  }
+  }, [])
 
   const getTotalPrice = () => {
     return items.reduce((total, item) => total + item.product.price * item.quantity, 0)

@@ -1,12 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server'
 
 import {
+  idramLogger,
   parseIdramFormBody,
   processIdramResult,
 } from '@/lib/payments/idram'
 
 export const dynamic = 'force-dynamic'
 
+/**
+ * Idram RESULT_URL — two POSTs (precheck + payment confirmation). Plain-text body; must be exactly "OK" when valid.
+ */
 export async function POST(request: NextRequest) {
   try {
     const fields = await parseIdramFormBody(request)
@@ -18,6 +22,7 @@ export async function POST(request: NextRequest) {
       },
     })
   } catch (e) {
+    idramLogger.error('idram_result_handler_failed', e)
     const msg = e instanceof Error ? e.message : 'Server error'
     return new NextResponse(msg, {
       status: 200,

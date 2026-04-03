@@ -6,10 +6,10 @@ import { PHASE_PRODUCTION_BUILD } from 'next/constants'
 import { prisma } from '@/lib/prisma'
 import { useSecureAuthCookies } from '@/lib/nextAuthCookie'
 
-const secret = process.env.NEXTAUTH_SECRET ?? process.env.AUTH_SECRET
+const secret = process.env.NEXTAUTH_SECRET
 const isNextProductionBuild = process.env.NEXT_PHASE === PHASE_PRODUCTION_BUILD
 if (!secret && process.env.NODE_ENV === 'production' && !isNextProductionBuild) {
-  throw new Error('NEXTAUTH_SECRET or AUTH_SECRET must be set in production')
+  throw new Error('NEXTAUTH_SECRET must be set in production')
 }
 
 export const authOptions: NextAuthOptions = {

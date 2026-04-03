@@ -9,6 +9,8 @@ import Footer from '@/components/Footer'
 export default function PaymentFailPage() {
   const searchParams = useSearchParams()
   const orderId = searchParams.get('orderId')
+  const reason = searchParams.get('reason')
+  const isArcaPending = reason === 'arca_pending'
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
@@ -28,10 +30,12 @@ export default function PaymentFailPage() {
           </div>
 
           <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            Վճարումը չեղարկվեց
+            {isArcaPending ? 'Վճարումը դեռ հաստատվում է' : 'Վճարումը չեղարկվեց'}
           </h1>
           <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
-            Վճարումը չի ավարտվել։ Կարող եք փորձել նորից կամ ընտրել այլ վճարման եղանակ։
+            {isArcaPending
+              ? 'Եթե գումարը գանձվել է, պատվերի կարգավիճակը կթարմանա մի քանի րոպեում։ Հակառակ դեպքում կարող եք կրկին փորձել։'
+              : 'Վճարումը չի ավարտվել։ Կարող եք փորձել նորից կամ ընտրել այլ վճարման եղանակ։'}
           </p>
 
           {orderId && (

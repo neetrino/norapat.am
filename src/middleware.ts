@@ -2,7 +2,7 @@ import { withAuth } from "next-auth/middleware"
 import { NextResponse } from "next/server"
 import { AUTH_SESSION_TOKEN_COOKIE_NAME } from '@/lib/nextAuthCookie'
 
-const authSecret = process.env.NEXTAUTH_SECRET ?? process.env.AUTH_SECRET
+const authSecret = process.env.NEXTAUTH_SECRET
 
 export default withAuth(
   function middleware(req) {

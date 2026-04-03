@@ -35,12 +35,22 @@ export async function runIdramPrecheck(
     return 'OK'
   }
 
-  if (!idramAmountMatchesOrder(order.total, input.amount)) {
-    return 'EDP_AMOUNT mismatch'
-  }
-
   if (order.status === 'CANCELLED') {
     return 'Order cancelled'
+  }
+
+  if (order.status !== 'PENDING') {
+    return 'Order not awaiting payment'
+  }
+
+  const paymentPending =
+    order.paymentStatus === 'PENDING' || order.paymentStatus === null
+  if (!paymentPending) {
+    return 'Payment not pending'
+  }
+
+  if (!idramAmountMatchesOrder(order.total, input.amount)) {
+    return 'EDP_AMOUNT mismatch'
   }
 
   return 'OK'

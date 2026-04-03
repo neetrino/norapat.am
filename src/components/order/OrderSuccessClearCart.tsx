@@ -10,12 +10,12 @@ import { useCart } from '@/hooks/useCart'
 export function OrderSuccessClearCart() {
   const searchParams = useSearchParams()
   const { clearCart } = useCart()
+  const paid = searchParams.get('paid')
 
   useEffect(() => {
-    if (searchParams.get('paid') === '1') {
-      clearCart()
-    }
-  }, [searchParams, clearCart])
+    if (paid !== '1') return
+    clearCart()
+  }, [paid, clearCart])
 
   return null
 }

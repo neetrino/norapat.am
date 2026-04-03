@@ -73,6 +73,7 @@ export async function runIdramConfirm(
       idramTransactionId: input.transId.trim(),
       idramInitSecret: null,
       status: 'CONFIRMED',
+      paymentStatus: 'PAID',
     },
   })
 

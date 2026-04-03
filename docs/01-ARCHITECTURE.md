@@ -180,7 +180,7 @@ Middleware: /admin, /profile պահանջում են token; admin — role === A
 
 ## 🚀 ԴԵՊԼՈՅ
 
-- **Development.** `pnpm dev` — localhost:8989
+- **Development.** `pnpm dev` — localhost (порт из `PORT` в `.env.local`, по умолчанию 3000)
 - **Production.** Vercel (Next.js) + Neon/Postgres; env: DATABASE_URL, NEXTAUTH_SECRET, բանկի keys
 
 ---

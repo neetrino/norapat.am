@@ -2,14 +2,20 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 
 import { prisma } from '@/lib/prisma'
-import { getArcaConfig, arcaRegisterOrder } from '@/lib/payments/arca'
+import {
+  getArcaConfig,
+  arcaRegisterOrder,
+  type ArcaPageView,
+} from '@/lib/payments/arca'
+import { arcaLogger } from '@/lib/payments/arca/arcaLogger'
 
 export const dynamic = 'force-dynamic'
 
 const bodySchema = z.object({
   orderId: z.string().min(1),
   arcaInitSecret: z.string().min(1),
-  language: z.enum(['am', 'en', 'ru']).optional(),
+  language: z.enum(['hy', 'en', 'ru']).optional(),
+  pageView: z.enum(['MOBILE', 'DESKTOP']).optional(),
 })
 
 function buildDescription(order: {
@@ -31,6 +37,12 @@ function getAppBaseUrl(): string {
   return raw.replace(/\/$/, '')
 }
 
+function inferPageViewFromUserAgent(ua: string | null): ArcaPageView {
+  if (!ua) return 'DESKTOP'
+  const mobile = /Mobile|Android|iPhone|iPad|webOS/i.test(ua)
+  return mobile ? 'MOBILE' : 'DESKTOP'
+}
+
 export async function POST(request: NextRequest) {
   try {
     const json: unknown = await request.json()
@@ -39,9 +51,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid request body' }, { status: 400 })
     }
 
-    const { orderId, arcaInitSecret, language } = parsed.data
+    const { orderId, arcaInitSecret, language, pageView: bodyPageView } = parsed.data
 
-    // Load order and verify it exists and belongs to Arca payment method
     const order = await prisma.order.findUnique({
       where: { id: orderId },
       include: {
@@ -53,12 +64,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Order not found' }, { status: 404 })
     }
 
-    // Verify the one-time init secret (prevents unauthorized init calls)
     if (!order.arcaInitSecret || order.arcaInitSecret !== arcaInitSecret) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
 
-    // Prevent re-initialization if Arca order ID already assigned
     if (order.arcaOrderId) {
       return NextResponse.json({ error: 'Payment already initialized' }, { status: 409 })
     }
@@ -66,15 +75,15 @@ export async function POST(request: NextRequest) {
     const config = getArcaConfig()
     const baseUrl = getAppBaseUrl()
 
-    // Build the return URL — Arca redirects user here after payment (success or fail)
-    // We include orderId and token so we can verify and check status on return
     const returnUrl =
-      `${baseUrl}/wc-api/arca_return` +
-      `?orderId=${encodeURIComponent(order.id)}` +
+      `${baseUrl}/api/payments/arca/return` +
+      `?shopOrderId=${encodeURIComponent(order.id)}` +
       `&token=${encodeURIComponent(arcaInitSecret)}`
 
     const lang = language ?? 'en'
     const description = buildDescription(order)
+    const pageView =
+      bodyPageView ?? inferPageViewFromUserAgent(request.headers.get('user-agent'))
 
     const { arcaOrderId, formUrl } = await arcaRegisterOrder({
       credentials: config.credentials,
@@ -84,9 +93,9 @@ export async function POST(request: NextRequest) {
       returnUrl,
       description,
       language: lang,
+      pageView,
     })
 
-    // Persist Arca's internal order ID so we can query status later
     await prisma.order.update({
       where: { id: order.id },
       data: { arcaOrderId },
@@ -96,7 +105,7 @@ export async function POST(request: NextRequest) {
   } catch (e) {
     const message = e instanceof Error ? e.message : 'Arca init failed'
     const notConfigured = message.startsWith('Arca is not configured')
-    console.error('[arca/init]', message)
+    arcaLogger.error('init_failed', e)
     return NextResponse.json(
       {
         error: message,
