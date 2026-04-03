@@ -74,11 +74,11 @@ export default function FloatingCallWidget() {
         {isOpen && (
           <div
             id={panelId}
-            className="animate-call-panel-in absolute right-[calc(100%+0.5rem)] top-1/2 z-[1] flex w-max max-w-[min(100vw-2rem,20rem)] flex-col gap-0 overflow-hidden rounded-2xl border border-white/12 bg-[linear-gradient(145deg,rgba(72,10,10,0.98),rgba(151,30,23,0.96),rgba(103,16,11,0.98))] py-1 shadow-[0_18px_40px_rgba(54,9,7,0.45),0_0_0_1px_rgba(238,49,36,0.12)_inset] ring-1 ring-[#ee3124]/25 backdrop-blur-md"
+            className="animate-call-panel-in absolute right-[calc(100%+0.5rem)] top-1/2 z-[1] flex w-max max-w-[min(100vw-2rem,20rem)] flex-col gap-0 overflow-hidden rounded-2xl border border-[#f19b93]/20 bg-[linear-gradient(145deg,rgba(92,16,13,0.98),rgba(168,31,22,0.97),rgba(124,22,17,0.98))] py-1 shadow-[0_18px_40px_rgba(95,18,14,0.45),0_0_0_1px_rgba(255,255,255,0.06)_inset] ring-1 ring-[#ee3124]/25 backdrop-blur-md"
             role="region"
             aria-label="Phone numbers"
           >
-            <div className="border-b border-white/[0.08] bg-black/15 px-3.5 py-2.5">
+            <div className="border-b border-white/[0.08] bg-black/10 px-3.5 py-2.5">
               <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#ffb0a9]/95">
                 Զանգել հիմա
               </p>
@@ -92,7 +92,7 @@ export default function FloatingCallWidget() {
                   <a
                     href={normalizeTelHref(phone)}
                     aria-label={`Call ${phone}`}
-                    className="group flex items-center gap-3 rounded-xl border border-transparent bg-white/[0.03] px-2.5 py-2 transition-all duration-200 hover:border-[#ee3124]/35 hover:bg-[#ee3124]/[0.08] hover:shadow-[0_0_20px_rgba(238,49,36,0.12)] focus-visible:border-[#ee3124]/50 focus-visible:bg-[#ee3124]/[0.1] focus-visible:outline-none"
+                    className="group flex items-center gap-3 rounded-xl border border-white/[0.05] bg-white/[0.06] px-2.5 py-2 transition-all duration-200 hover:border-[#f7a29c]/35 hover:bg-white/[0.1] hover:shadow-[0_0_20px_rgba(238,49,36,0.18)] focus-visible:border-[#f7a29c]/50 focus-visible:bg-white/[0.12] focus-visible:outline-none"
                   >
                     <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-white/12 to-white/[0.04] text-[#ffb0a9] shadow-inner ring-1 ring-white/10 transition-transform duration-200 group-hover:scale-105 group-hover:ring-[#ee3124]/30">
                       <Phone className="h-4 w-4" strokeWidth={2.2} aria-hidden />
