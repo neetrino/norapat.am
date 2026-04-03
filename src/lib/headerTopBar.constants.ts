@@ -9,7 +9,7 @@ export const TOP_CONTACT_BAR_TRANSITION_EASING =
   'cubic-bezier(0.4, 0, 0.2, 1)' as const
 
 /** Fallback when `settings.contactPhone` / `settings.address` are empty */
-export const DEFAULT_PUBLIC_CONTACT_PHONE = '+374 95-044-888'
+export const DEFAULT_PUBLIC_CONTACT_PHONE = '+374 41 440 003'
 
 export const DEFAULT_PUBLIC_ADDRESS =
   '5-րդ փողոց, Նորապատ գյուղ, Արմավիր, Հայաստան'

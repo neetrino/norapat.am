@@ -14,7 +14,7 @@ const PRODUCTS = [
   { name: 'Чесночный соус', description: 'Кремовый чесночный соус', price: 300, image: '/images/garlic-sauce.png', category: 'Соусы', ingredients: ['Чеснок', 'Майонез', 'Зелень'] },
   { name: 'Наггетсы', description: 'Куриные наггетсы 6 шт', price: 550, image: '/images/nuggets.png', category: 'Снэк', ingredients: ['Курица', 'Панировка', 'Масло'] },
 ]
-
+ 
 async function main() {
   const categories = await prisma.category.findMany()
   const categoryByName = new Map(categories.map((c) => [c.name, c.id]))

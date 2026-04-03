@@ -3,9 +3,9 @@ import Link from 'next/link'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Առաքման և մատակարարման պայմաններ | Pideh Armenia',
+  title: 'Առաքման և մատակարարման պայմաններ | Norapat Food Court',
   description:
-    'Pideh Armenia — առաքման ժամկետներ, տարբերակներ, վճարներ Նորապատում, Արմավիրի մարզում և հնարավոր ուշացումների մասին։',
+    'Norapat Food Court — առաքման ժամկետներ, տարբերակներ, վճարներ Նորապատում, Արմավիրի մարզում և հնարավոր ուշացումների մասին։',
 }
 
 export default function DeliveryPage() {
@@ -110,7 +110,7 @@ export default function DeliveryPage() {
                   <strong>Հեռ.</strong> +374 95-044-888
                 </p>
                 <p className="text-gray-700">
-                  <strong>Էլ. փոստ.</strong> info@pideh.am
+                  <strong>Էլ. փոստ.</strong> info@norapat.am
                 </p>
               </div>
             </section>

@@ -124,14 +124,17 @@ export default function Footer() {
                 <div className="space-y-2.5">
                   <div className="flex gap-2">
                     <Phone className={CONTACT_ICON_BOX} aria-hidden />
-                    <a href="tel:+37495044888" className={LINK_BASE}>
-                      +374 95-044-888
+                    <a
+                      href={`tel:${companyInfo.phone.replace(/[^\d+]/g, '')}`}
+                      className={LINK_BASE}
+                    >
+                      {companyInfo.phone}
                     </a>
                   </div>
                   <div className="flex gap-2">
                     <Mail className={CONTACT_ICON_BOX} aria-hidden />
-                    <a href="mailto:info@pideh.am" className={LINK_BASE}>
-                      info@pideh.am
+                    <a href={`mailto:${companyInfo.email}`} className={LINK_BASE}>
+                      {companyInfo.email}
                     </a>
                   </div>
                   <div className="border-t border-stone-200/60 pt-2.5">

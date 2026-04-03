@@ -2,9 +2,9 @@ import type { Metadata } from 'next'
 import type { ReactNode } from 'react'
 
 export const metadata: Metadata = {
-  title: 'Մեր մասին — Pideh Armenia',
+  title: 'Մեր մասին — Norapat Food Court',
   description:
-    'Pideh Armenia-ի պատմություն, արժեքները և թիմը։ Հայկական պիդե՝ թարմ բաղադրիչներով, Երևանում։',
+    'Norapat Food Court-ի պատմություն, արժեքները և թիմը։ Համեղ ուտեստներ՝ թարմ բաղադրիչներով, Նորապատում։',
 }
 
 export default function AboutLayout({ children }: { children: ReactNode }) {
