@@ -5,6 +5,7 @@ import { useState } from 'react'
 import Footer from '@/components/Footer'
 import { MapEmbed } from '@/components/MapEmbed'
 import { BRAND_RED_CTA_IDLE_HOVER_CLASS } from '@/components/home/promo-food-banner/promoFoodBanner.constants'
+import { companyInfo } from '@/constants/company'
 import { usePublicSiteSettings } from '@/hooks/usePublicSiteSettings'
 import { useI18n } from '@/i18n/I18nContext'
 import { ChevronDown, Clock, Mail, MapPin, Phone } from 'lucide-react'
@@ -15,7 +16,7 @@ export function ContactPageView() {
   const { contactPhone, contactEmail } = usePublicSiteSettings()
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null)
 
-  const phoneNumber = contactPhone?.trim() || '+374 95-044-888'
+  const phoneNumber = contactPhone?.trim() || companyInfo.phone
   const emailAddress = contactEmail?.trim() || 'info@pideh.am'
   const locationAddress = c.addressLine
   const locationMapQuery = '5-րդ փողոց, Նորապատ գյուղ, Արմավիր, Հայաստան'
