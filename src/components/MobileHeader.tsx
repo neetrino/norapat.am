@@ -1,7 +1,7 @@
 'use client'
 
 import { Search, Menu, X, Home, UtensilsCrossed, Info, Phone } from 'lucide-react'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useI18n } from '@/i18n/I18nContext'
@@ -28,6 +28,12 @@ export default function MobileHeader({ branding }: MobileHeaderProps) {
 
   const isActive = (href: string) =>
     href === '/' ? pathname === '/' : pathname?.startsWith(href)
+
+  const hideHeaderSearchOnMenuPage = pathname?.startsWith('/products') ?? false
+
+  useEffect(() => {
+    if (hideHeaderSearchOnMenuPage) setIsSearchOpen(false)
+  }, [hideHeaderSearchOnMenuPage])
 
   const navItems = [
     { href: '/', label: nav.home, icon: Home, num: '01' },
@@ -63,17 +69,19 @@ export default function MobileHeader({ branding }: MobileHeaderProps) {
             </div>
 
             <div className="flex min-w-0 flex-1 justify-end">
-              <button
-                onClick={() => setIsSearchOpen((prev) => !prev)}
-                className="rounded-xl p-3 text-gray-900 transition-all duration-300 hover:bg-orange-50 hover:text-orange-500 active:scale-95"
-                aria-label="Որոնել"
-              >
-                <Search className="h-5 w-5" />
-              </button>
+              {!hideHeaderSearchOnMenuPage && (
+                <button
+                  onClick={() => setIsSearchOpen((prev) => !prev)}
+                  className="rounded-xl p-3 text-gray-900 transition-all duration-300 hover:bg-orange-50 hover:text-orange-500 active:scale-95"
+                  aria-label="Որոնել"
+                >
+                  <Search className="h-5 w-5" />
+                </button>
+              )}
             </div>
           </div>
 
-          {isSearchOpen && (
+          {isSearchOpen && !hideHeaderSearchOnMenuPage && (
             <div className="absolute left-0 right-0 top-full z-[100] border-t border-gray-200 bg-white/95 shadow-2xl backdrop-blur-xl">
               <div className="p-4">
                 <HeaderSearch placeholder={search.menu} variant="mobile" autoFocus />

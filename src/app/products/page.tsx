@@ -88,7 +88,7 @@ function ProductsPageLoadingSkeleton() {
         <div className="min-w-0 flex-1 space-y-5">
           <div className="rounded-[2rem] border border-[#eadfd9] bg-white/90 p-5 shadow-[0_16px_40px_rgba(15,23,42,0.05)] backdrop-blur sm:p-6">
             <div className="h-6 w-40 animate-pulse rounded-full bg-gray-100" />
-            <div className="mt-4 h-12 w-full animate-pulse rounded-[1.4rem] bg-gray-100" />
+            <div className="mt-4 hidden h-12 w-full animate-pulse rounded-[1.4rem] bg-gray-100 lg:block" />
             <div className="mt-4 flex flex-wrap gap-3">
               <div className="h-11 w-32 animate-pulse rounded-2xl bg-gray-100" />
               <div className="h-11 w-52 animate-pulse rounded-2xl bg-gray-100" />
@@ -380,7 +380,7 @@ function ProductsPageContent() {
         <main className="min-w-0 flex-1 pb-20 pt-1 lg:pb-8">
           <section className="mb-5 overflow-hidden rounded-[2rem] border border-[#eadfd9] bg-white/90 shadow-[0_16px_40px_rgba(15,23,42,0.05)] backdrop-blur">
             <div className="space-y-4 px-5 py-5 sm:px-6">
-              <div className="relative">
+              <div className="relative hidden lg:block">
                 <Search
                   className={`absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 ${
                     searching ? 'animate-pulse text-[#E53225]' : 'text-slate-400'
