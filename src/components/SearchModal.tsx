@@ -23,7 +23,8 @@ interface SearchModalProps {
 
 export function SearchModal({ isOpen, onClose }: SearchModalProps) {
   const router = useRouter()
-  const { locale } = useI18n()
+  const { locale, t } = useI18n()
+  const searchPlaceholder = t.search.menu
   const [query, setQuery] = useState('')
   const [results, setResults] = useState<SearchProduct[]>([])
   const [isLoading, setIsLoading] = useState(false)
@@ -106,9 +107,11 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
 
   return (
     <div
-      className="fixed inset-0 z-[200] flex items-start justify-center pt-[10vh]"
+      className="fixed inset-0 z-[210] flex items-start justify-center pt-[10vh]"
       style={{ backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', background: 'rgba(15,23,42,0.45)' }}
-      onMouseDown={(e) => { if (e.target === e.currentTarget) onClose() }}
+      onPointerDown={(e) => {
+        if (e.target === e.currentTarget) onClose()
+      }}
     >
       <div
         className="w-full max-w-xl mx-4 rounded-2xl overflow-hidden shadow-[0_32px_64px_rgba(15,23,42,0.25)] animate-[modalIn_0.18s_ease-out]"
@@ -120,7 +123,7 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
           <input
             ref={inputRef}
             type="text"
-            placeholder="Որոնել ապրանք..."
+            placeholder={searchPlaceholder}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={(e) => {
