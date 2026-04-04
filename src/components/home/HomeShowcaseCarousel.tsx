@@ -7,15 +7,30 @@ import ProductCard from '@/components/ProductCard'
 import { Product, ProductWithCategory } from '@/types'
 import { useI18n } from '@/i18n/I18nContext'
 
-/** Մեկ սեղմումով ոլորման քայլ (մոտավորապես 1 քարտ) */
-const SCROLL_STEP_PX = 280
+/** Դեսքթոփ՝ մեկ սեղմումով ոլորման քայլ (մոտավորապես մեկ քարտի լայնություն) */
+const SCROLL_STEP_PX_NARROW = 176
+const SCROLL_STEP_PX_WIDE = 280
 
 /** Գլխավոր էջի հորիզոնական շարքում առավելագույն ապրանքների քանակ */
 const HOME_SHOWCASE_SCROLL_MAX_ITEMS = 12
 
-/** ~4 քարտ տեսանելի max-w-7xl կոնտեյներում, նվազագույն լայնություն՝ բարակ էկրաններ */
-const CARD_WIDTH_CLASS =
-  'min-w-[max(200px,min(280px,calc((min(100vw,80rem)-4rem)/4)))] max-w-[280px] flex-shrink-0'
+/**
+ * Mobile — ավելի compact, ամբողջ քարտը տեսանելի; sm+ — նախկին ռիթմ (~4 քարտ max-w-7xl-ում)։
+ */
+const CARD_SHELL_CLASS =
+  'max-sm:min-w-[138px] max-sm:w-[min(184px,calc(100vw-7rem))] max-sm:max-w-[184px] sm:min-w-[max(200px,min(280px,calc((min(100vw,80rem)-4rem)/4)))] sm:max-w-[280px] flex-shrink-0'
+
+/** Կենտրոնին մոտ քարտի սքեյլ — desktop-ում արտահայտիչ, mobile-ում գրեթե նույն չափի բոլոր քարտերը */
+const SHOWCASE_SCALE_MIN_NARROW = 0.92
+const SHOWCASE_SCALE_SPAN_NARROW = 0.08
+const SHOWCASE_OPACITY_MIN_NARROW = 0.82
+const SHOWCASE_OPACITY_SPAN_NARROW = 0.18
+const SHOWCASE_SCALE_MIN_WIDE = 0.88
+const SHOWCASE_SCALE_SPAN_WIDE = 0.2
+const SHOWCASE_OPACITY_MIN_WIDE = 0.65
+const SHOWCASE_OPACITY_SPAN_WIDE = 0.35
+
+const SHOWCASE_VIEWPORT_NARROW_MAX_PX = 639
 
 /** Բրենդի կարմիր (#EE3124) — երկու հատվածներում նույն CTA-ն */
 const stripToneClasses = {
@@ -38,7 +53,7 @@ const navArrowClass =
 const navArrowEnabledClass =
   'border-red-200/80 text-red-700 hover:border-red-400/80 hover:bg-red-50 hover:shadow-md active:scale-95'
 
-function useShowcaseCarouselScroll(listLength: number) {
+function useShowcaseCarouselScroll(listLength: number, scrollStepPx: number) {
   const scrollRef = useRef<HTMLDivElement>(null)
   const [canScrollLeft, setCanScrollLeft] = useState(false)
   const [canScrollRight, setCanScrollRight] = useState(true)
@@ -69,9 +84,12 @@ function useShowcaseCarouselScroll(listLength: number) {
     }
   }, [listLength, updateEdges])
 
-  const scrollByDirection = useCallback((direction: -1 | 1) => {
-    scrollRef.current?.scrollBy({ left: direction * SCROLL_STEP_PX, behavior: 'smooth' })
-  }, [])
+  const scrollByDirection = useCallback(
+    (direction: -1 | 1) => {
+      scrollRef.current?.scrollBy({ left: direction * scrollStepPx, behavior: 'smooth' })
+    },
+    [scrollStepPx]
+  )
 
   return { scrollRef, canScrollLeft, canScrollRight, scrollByDirection }
 }
@@ -91,14 +109,20 @@ function useCenteredCardScale(listLength: number, scrollRef: RefObject<HTMLDivEl
       const viewportCenter = outerRect.left + outerRect.width / 2
       const items = Array.from(inner.querySelectorAll<HTMLElement>('[data-showcase-item="true"]'))
 
+      const isNarrow = outerRect.width <= SHOWCASE_VIEWPORT_NARROW_MAX_PX
+      const scaleMin = isNarrow ? SHOWCASE_SCALE_MIN_NARROW : SHOWCASE_SCALE_MIN_WIDE
+      const scaleSpan = isNarrow ? SHOWCASE_SCALE_SPAN_NARROW : SHOWCASE_SCALE_SPAN_WIDE
+      const opacityMin = isNarrow ? SHOWCASE_OPACITY_MIN_NARROW : SHOWCASE_OPACITY_MIN_WIDE
+      const opacitySpan = isNarrow ? SHOWCASE_OPACITY_SPAN_NARROW : SHOWCASE_OPACITY_SPAN_WIDE
+
       items.forEach((item) => {
         const itemRect = item.getBoundingClientRect()
         const itemCenter = itemRect.left + itemRect.width / 2
         const distance = Math.abs(viewportCenter - itemCenter)
         const falloff = outerRect.width * 0.65
         const proximity = Math.max(0, 1 - distance / Math.max(falloff, 1))
-        const scale = 0.88 + proximity * 0.2
-        const opacity = 0.65 + proximity * 0.35
+        const scale = scaleMin + proximity * scaleSpan
+        const opacity = opacityMin + proximity * opacitySpan
 
         item.style.setProperty('--showcase-card-scale', scale.toFixed(3))
         item.style.setProperty('--showcase-card-opacity', opacity.toFixed(3))
@@ -170,20 +194,6 @@ function ViewEntireStripLink(props: {
           </span>
         ))}
       </span>
-      <span
-        className={`flex h-9 w-9 items-center justify-center rounded-full shadow-inner ring-1 transition-transform duration-300 group-hover:scale-105 ${props.stripIconClass}`}
-      >
-        <svg
-          className="h-4 w-4 shrink-0"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth={2.25}
-          viewBox="0 0 24 24"
-          aria-hidden
-        >
-          <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-        </svg>
-      </span>
     </Link>
   )
 }
@@ -195,6 +205,7 @@ function ShowcaseCarouselTrack(props: {
   stripIconClass: string
   viewEntireWords: string[]
   viewEntireLabel: string
+  compactLayout: 'standard' | 'showcaseNarrow'
   onAddToCart?: (product: Product) => void
   addedToCart?: Set<string>
   isInWishlist?: (productId: string) => boolean
@@ -202,23 +213,24 @@ function ShowcaseCarouselTrack(props: {
 }) {
   useCenteredCardScale(props.list.length, props.scrollRef)
 
+  const isNarrow = props.compactLayout === 'showcaseNarrow'
   const cardScaleStyle = {
-    '--showcase-card-scale': 0.88,
-    '--showcase-card-opacity': 0.65,
+    '--showcase-card-scale': isNarrow ? SHOWCASE_SCALE_MIN_NARROW : SHOWCASE_SCALE_MIN_WIDE,
+    '--showcase-card-opacity': isNarrow ? SHOWCASE_OPACITY_MIN_NARROW : SHOWCASE_OPACITY_MIN_WIDE,
   } as CSSProperties
 
   return (
     <div
       ref={props.scrollRef}
-      className="min-w-0 flex-1 overflow-x-auto overflow-y-visible scroll-smooth pb-3 pt-8 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+      className="min-w-0 flex-1 overflow-x-auto overflow-y-visible scroll-smooth pb-2 pt-4 sm:pb-3 sm:pt-8 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
     >
-      <div className="flex w-max snap-x snap-mandatory items-center gap-5 overflow-visible pr-2 md:gap-6">
+      <div className="flex w-max snap-x snap-mandatory items-center gap-3 overflow-visible pr-2 sm:gap-5 md:gap-6">
         {props.list.map((product) => (
           <div
             key={product.id}
             data-showcase-item="true"
             style={cardScaleStyle}
-            className={`snap-start snap-always overflow-visible ${CARD_WIDTH_CLASS} transform-gpu transition-[transform,opacity] duration-300 ease-out will-change-transform`}
+            className={`snap-start snap-always overflow-visible ${CARD_SHELL_CLASS} transform-gpu transition-[transform,opacity] duration-300 ease-out will-change-transform`}
           >
             <div
               className="transition-[transform,filter] duration-300 ease-out"
@@ -232,6 +244,7 @@ function ShowcaseCarouselTrack(props: {
                 product={product}
                 onAddToCart={props.onAddToCart}
                 variant="compact"
+                compactLayout={props.compactLayout}
                 addedToCart={props.addedToCart}
                 isInWishlist={props.isInWishlist?.(product.id)}
                 onToggleWishlist={props.onToggleWishlist}
@@ -275,8 +288,19 @@ export function HomeShowcaseCarousel({
   const { t } = useI18n()
   const h = t.home
   const list = products.slice(0, HOME_SHOWCASE_SCROLL_MAX_ITEMS)
+  const [isNarrowViewport, setIsNarrowViewport] = useState(false)
+
+  useEffect(() => {
+    const mq = window.matchMedia(`(max-width: ${SHOWCASE_VIEWPORT_NARROW_MAX_PX}px)`)
+    const sync = () => setIsNarrowViewport(mq.matches)
+    sync()
+    mq.addEventListener('change', sync)
+    return () => mq.removeEventListener('change', sync)
+  }, [])
+
+  const scrollStepPx = isNarrowViewport ? SCROLL_STEP_PX_NARROW : SCROLL_STEP_PX_WIDE
   const { scrollRef, canScrollLeft, canScrollRight, scrollByDirection } =
-    useShowcaseCarouselScroll(list.length)
+    useShowcaseCarouselScroll(list.length, scrollStepPx)
   const stripClass = stripToneClasses[tone]
   const stripIconClass = stripIconToneClasses[tone]
   const viewEntireWords = viewEntireLabel.trim().split(/\s+/).filter(Boolean)
@@ -297,6 +321,7 @@ export function HomeShowcaseCarousel({
           stripIconClass={stripIconClass}
           viewEntireWords={viewEntireWords}
           viewEntireLabel={viewEntireLabel}
+          compactLayout={isNarrowViewport ? 'showcaseNarrow' : 'standard'}
           onAddToCart={onAddToCart}
           addedToCart={addedToCart}
           isInWishlist={isInWishlist}

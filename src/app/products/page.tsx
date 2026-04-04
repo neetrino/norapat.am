@@ -88,7 +88,7 @@ function ProductsPageLoadingSkeleton() {
         <div className="min-w-0 flex-1 space-y-5">
           <div className="rounded-[2rem] border border-[#eadfd9] bg-white/90 p-5 shadow-[0_16px_40px_rgba(15,23,42,0.05)] backdrop-blur sm:p-6">
             <div className="h-6 w-40 animate-pulse rounded-full bg-gray-100" />
-            <div className="mt-4 h-12 w-full animate-pulse rounded-[1.4rem] bg-gray-100" />
+            <div className="mt-4 hidden h-12 w-full animate-pulse rounded-[1.4rem] bg-gray-100 lg:block" />
             <div className="mt-4 flex flex-wrap gap-3">
               <div className="h-11 w-32 animate-pulse rounded-2xl bg-gray-100" />
               <div className="h-11 w-52 animate-pulse rounded-2xl bg-gray-100" />
@@ -378,9 +378,13 @@ function ProductsPageContent() {
         </aside>
 
         <main className="min-w-0 flex-1 pb-20 pt-1 lg:pb-8">
+          <div className="mb-5 lg:hidden">
+            <CategoryPromoImage className="mx-auto max-w-sm" />
+          </div>
+
           <section className="mb-5 overflow-hidden rounded-[2rem] border border-[#eadfd9] bg-white/90 shadow-[0_16px_40px_rgba(15,23,42,0.05)] backdrop-blur">
             <div className="space-y-4 px-5 py-5 sm:px-6">
-              <div className="relative">
+              <div className="relative hidden lg:block">
                 <Search
                   className={`absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 ${
                     searching ? 'animate-pulse text-[#E53225]' : 'text-slate-400'
@@ -402,7 +406,7 @@ function ProductsPageContent() {
 
               <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
                 <div className="flex flex-wrap items-center gap-2.5">
-                  <div className="relative flex items-center">
+                  <div className="relative hidden sm:flex items-center">
                     <ArrowDownUp className="pointer-events-none absolute left-3 h-3.5 w-3.5 text-slate-400" />
                     <select
                       value={sortOrder}
@@ -433,7 +437,7 @@ function ProductsPageContent() {
                       }}
                       min={0}
                       step={100}
-                      className="w-24 rounded-xl border border-transparent bg-white px-3 py-2.5 text-xs font-medium text-slate-700 placeholder:text-slate-400 focus:border-[#E53225] focus:outline-none focus:ring-2 focus:ring-[#E53225]/10"
+                      className="w-[127px] md:w-24 rounded-xl border border-transparent bg-white px-3 py-2.5 text-xs font-medium text-slate-700 placeholder:text-slate-400 focus:border-[#E53225] focus:outline-none focus:ring-2 focus:ring-[#E53225]/10"
                     />
                     <span className="select-none text-sm text-slate-300">—</span>
                     <input
@@ -446,13 +450,13 @@ function ProductsPageContent() {
                       }}
                       min={0}
                       step={100}
-                      className="w-24 rounded-xl border border-transparent bg-white px-3 py-2.5 text-xs font-medium text-slate-700 placeholder:text-slate-400 focus:border-[#E53225] focus:outline-none focus:ring-2 focus:ring-[#E53225]/10"
+                      className="w-[120px] md:w-24 rounded-xl border border-transparent bg-white px-3 py-2.5 text-xs font-medium text-slate-700 placeholder:text-slate-400 focus:border-[#E53225] focus:outline-none focus:ring-2 focus:ring-[#E53225]/10"
                     />
                     <span className="pr-1 text-xs font-semibold text-slate-400">֏</span>
                   </div>
                 </div>
 
-                <div className="flex items-center justify-end gap-3 rounded-2xl border border-[#eadfd9] bg-[#fcfaf8] px-3 py-2 shadow-sm">
+                <div className="hidden items-center justify-end gap-3 rounded-2xl border border-[#eadfd9] bg-[#fcfaf8] px-3 py-2 shadow-sm lg:flex">
                   <div className="flex items-center gap-1 rounded-full bg-white p-1">
                     {([2, 3, 4] as const).map((cols) => (
                       <button
@@ -474,10 +478,6 @@ function ProductsPageContent() {
               </div>
             </div>
           </section>
-
-          <div className="mb-5 lg:hidden">
-            <CategoryPromoImage className="mx-auto max-w-sm" />
-          </div>
 
           <div className="mb-5 lg:hidden">
             <ProductsPageCategoryChips

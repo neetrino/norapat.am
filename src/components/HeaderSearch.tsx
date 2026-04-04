@@ -20,12 +20,15 @@ interface HeaderSearchProps {
   placeholder: string
   variant?: 'desktop' | 'mobile'
   autoFocus?: boolean
+  /** Smaller field when embedded in the mobile header row */
+  compact?: boolean
 }
 
 export function HeaderSearch({
   placeholder,
   variant = 'desktop',
   autoFocus = false,
+  compact = false,
 }: HeaderSearchProps) {
   const router = useRouter()
   const { locale } = useI18n()
@@ -37,6 +40,7 @@ export function HeaderSearch({
 
   const trimmedQuery = useMemo(() => query.trim(), [query])
   const isMobile = variant === 'mobile'
+  const isCompactMobile = isMobile && compact
 
   useEffect(() => {
     if (!trimmedQuery) {
@@ -108,7 +112,7 @@ export function HeaderSearch({
     <div ref={containerRef} className="relative">
       <Search
         className={`absolute top-1/2 z-10 -translate-y-1/2 text-gray-500 ${
-          isMobile ? 'left-4 h-5 w-5' : 'left-3 h-4 w-4'
+          isCompactMobile ? 'left-3 h-4 w-4' : isMobile ? 'left-4 h-5 w-5' : 'left-3 h-4 w-4'
         }`}
       />
       <input
@@ -133,9 +137,11 @@ export function HeaderSearch({
           }
         }}
         className={
-          isMobile
-            ? 'w-full rounded-2xl border-2 border-gray-200 bg-gray-50 py-4 pl-12 pr-4 text-base text-gray-900 placeholder-gray-500 shadow-sm transition-all duration-300 hover:shadow-md focus:border-orange-500 focus:bg-white focus:ring-2 focus:ring-orange-500'
-            : 'w-full rounded-lg border border-gray-200 bg-gray-50 py-2 pl-10 pr-3 text-sm text-gray-900 placeholder-gray-500 transition-all duration-300 hover:bg-white focus:border-orange-500 focus:bg-white focus:ring-1 focus:ring-orange-500'
+          isCompactMobile
+            ? 'w-full rounded-xl border-2 border-gray-200 bg-gray-50 py-2.5 pl-10 pr-3 text-sm text-gray-900 placeholder-gray-500 shadow-sm transition-all duration-300 hover:shadow-md focus:border-orange-500 focus:bg-white focus:ring-2 focus:ring-orange-500'
+            : isMobile
+              ? 'w-full rounded-2xl border-2 border-gray-200 bg-gray-50 py-4 pl-12 pr-4 text-base text-gray-900 placeholder-gray-500 shadow-sm transition-all duration-300 hover:shadow-md focus:border-orange-500 focus:bg-white focus:ring-2 focus:ring-orange-500'
+              : 'w-full rounded-lg border border-gray-200 bg-gray-50 py-2 pl-10 pr-3 text-sm text-gray-900 placeholder-gray-500 transition-all duration-300 hover:bg-white focus:border-orange-500 focus:bg-white focus:ring-1 focus:ring-orange-500'
         }
         autoFocus={autoFocus}
       />

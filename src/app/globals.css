@@ -80,6 +80,10 @@ body {
   background-image: none;
 }
 
+.brand-banner-bg-dark {
+  background-color: #991b1b;
+}
+
 .promo-food-banner-vignette::before {
   content: "";
   position: absolute;
@@ -254,6 +258,17 @@ html {
   }
 }
 
+@keyframes call-panel-in-mobile {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 @keyframes call-panel-in {
   from {
     opacity: 0;
@@ -266,13 +281,25 @@ html {
 }
 
 .animate-call-panel-in {
-  animation: call-panel-in 0.32s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: call-panel-in-mobile 0.32s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@media (min-width: 640px) {
+  .animate-call-panel-in {
+    animation: call-panel-in 0.32s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .animate-call-panel-in {
     animation: none;
     opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) and (min-width: 640px) {
+  .animate-call-panel-in {
     transform: translateY(-50%) translateX(0);
   }
 }
@@ -535,7 +562,7 @@ textarea::placeholder {
   .pt-header-breadcrumb {
     padding-top: calc(5rem + var(--top-bar-offset));
   }
-  @media (min-width: 768px) {
+  @media (min-width: 1024px) {
     .pt-header-breadcrumb {
       padding-top: calc(6rem + var(--top-bar-offset));
     }

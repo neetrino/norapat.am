@@ -104,7 +104,7 @@ export async function GET(request: NextRequest) {
   let arcaStatus: number
   let errorCode: number
   try {
-    let result = await arcaGetOrderStatusWithAcsRetry(statusParams)
+    const result = await arcaGetOrderStatusWithAcsRetry(statusParams)
     arcaStatus = result.orderStatus
     errorCode = result.errorCode
     arcaLogger.info('return_status', {

@@ -18,6 +18,10 @@ interface ProductCardProps {
   onToggleWishlist?: (productId: string) => void
   /** On wishlist page use `remove` so the control reads as dismiss (X), not favorite (heart). */
   wishlistButtonVariant?: 'heart' | 'remove'
+  /**
+   * Home showcase carousel on narrow screens: tighter padding/typography so the full card fits comfortably.
+   */
+  compactLayout?: 'standard' | 'showcaseNarrow'
 }
 
 const PRODUCT_CARD_ADD_IDLE_BUTTON_CLASS = `${BRAND_RED_CTA_IDLE_HOVER_CLASS} shadow-[0_14px_26px_rgba(229,50,37,0.18)]`
@@ -66,6 +70,7 @@ const ProductCard = memo(
     isInWishlist,
     onToggleWishlist,
     wishlistButtonVariant = 'heart',
+    compactLayout = 'standard',
   }: ProductCardProps) => {
     const { t, locale } = useI18n()
     const pc = t.productCard
@@ -232,19 +237,20 @@ const ProductCard = memo(
     }
 
     const isCompact = variant === 'compact'
+    const isShowcaseNarrow = isCompact && compactLayout === 'showcaseNarrow'
 
     return (
       <Link
         href={`/products/${product.id}`}
-        className={`group relative w-full overflow-hidden rounded-[2rem] border border-[#eadfd9] bg-[linear-gradient(160deg,#ffffff_0%,#fffaf6_52%,#fff3ec_100%)] shadow-[0_16px_38px_rgba(15,23,42,0.06)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_24px_48px_rgba(15,23,42,0.1)] ${
-          isCompact ? 'flex flex-col' : 'block'
-        }`}
+        className={`group relative w-full overflow-hidden border border-[#eadfd9] bg-[linear-gradient(160deg,#ffffff_0%,#fffaf6_52%,#fff3ec_100%)] shadow-[0_16px_38px_rgba(15,23,42,0.06)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_24px_48px_rgba(15,23,42,0.1)] ${
+          isShowcaseNarrow ? 'rounded-3xl' : 'rounded-[2rem]'
+        } ${isCompact ? 'flex flex-col' : 'block'}`}
       >
         <div
-          className={`relative overflow-hidden ${
-            isCompact ? 'rounded-t-[2rem]' : 'rounded-t-[2rem]'
-          }`}
-          style={{ aspectRatio: isCompact ? '1 / 1' : '1500 / 1125' }}
+          className={`relative overflow-hidden ${isShowcaseNarrow ? 'rounded-t-3xl' : 'rounded-t-[2rem]'}`}
+          style={{
+            aspectRatio: isCompact ? '1 / 1' : '1500 / 1125',
+          }}
         >
           <div aria-hidden className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,230,219,0.9)_0%,rgba(255,244,238,0.78)_48%,rgba(255,255,255,0.72)_100%)]" />
           <div aria-hidden className="absolute -left-8 bottom-0 h-28 w-28 rounded-full bg-[#ffd8c8]/45 blur-3xl" />
@@ -260,7 +266,7 @@ const ProductCard = memo(
                 onToggleWishlist?.(product.id)
               }}
               className={`absolute right-3 top-3 z-20 flex items-center justify-center rounded-full border shadow-sm backdrop-blur transition-all active:scale-90 ${
-                isCompact ? 'h-9 w-9' : 'h-10 w-10'
+                isShowcaseNarrow ? 'right-2 top-2 h-8 w-8' : isCompact ? 'h-9 w-9' : 'h-10 w-10'
               } ${wishlistBtnSurfaceClass}`}
             >
               {wishlistButtonVariant === 'remove' ? (
@@ -280,18 +286,28 @@ const ProductCard = memo(
             </button>
           )}
 
-          <div className="absolute left-2 top-1 z-20 flex flex-col gap-1.5 sm:left-2.5 sm:top-1.5">
+          <div
+            className={`absolute left-2 top-1 z-20 flex flex-col sm:left-2.5 sm:top-1.5 ${
+              isShowcaseNarrow ? 'gap-1' : 'gap-1.5'
+            }`}
+          >
             {hasDiscount && (
-              <div className="inline-flex w-fit items-center rounded-full bg-[#E53225] px-3 py-1.5 text-[10px] font-black leading-none tracking-[0.12em] text-white shadow-[0_12px_22px_rgba(229,50,37,0.28)]">
+              <div
+                className={`inline-flex w-fit items-center rounded-full bg-[#E53225] font-black leading-none tracking-[0.12em] text-white shadow-[0_12px_22px_rgba(229,50,37,0.28)] ${
+                  isShowcaseNarrow ? 'px-2 py-1 text-[9px]' : 'px-3 py-1.5 text-[10px]'
+                }`}
+              >
                 -{discountPercent}%
               </div>
             )}
             {statusBadge && (
-              <ProductBadge
-                tone={statusBadge.tone}
-                icon={statusBadge.icon}
-                label={statusBadge.label}
-              />
+              <div className={isShowcaseNarrow ? 'origin-top-left scale-[0.88]' : undefined}>
+                <ProductBadge
+                  tone={statusBadge.tone}
+                  icon={statusBadge.icon}
+                  label={statusBadge.label}
+                />
+              </div>
             )}
           </div>
 
@@ -299,7 +315,11 @@ const ProductCard = memo(
             <div className="relative z-10 h-full w-full overflow-hidden">
               <div
                 className={`absolute inset-0 ${
-                  isCompact ? 'px-4 pb-4 pt-10 sm:px-5 sm:pb-5 sm:pt-11' : 'px-4 pb-4 pt-10 sm:px-5 sm:pb-5 sm:pt-11'
+                  isShowcaseNarrow
+                    ? 'px-2 pb-2 pt-6'
+                    : isCompact
+                      ? 'px-4 pb-4 pt-10 sm:px-5 sm:pb-5 sm:pt-11'
+                      : 'px-4 pb-4 pt-10 sm:px-5 sm:pb-5 sm:pt-11'
                 }`}
                 style={{
                   transform: isCompact ? undefined : 'perspective(1000px) rotateX(6deg) rotateY(-2deg)',
@@ -329,28 +349,58 @@ const ProductCard = memo(
           )}
 
           <div
-            className={`absolute bottom-3 right-3 z-20 flex items-center gap-1.5 rounded-full border border-white/70 bg-white/92 shadow-[0_12px_24px_rgba(15,23,42,0.08)] backdrop-blur ${
-              isCompact ? 'px-4 py-2 text-sm' : 'px-5 py-2.5 text-base'
+              className={`absolute z-20 flex items-center gap-1 rounded-full border border-white/70 bg-white/92 shadow-[0_12px_24px_rgba(15,23,42,0.08)] backdrop-blur ${
+              isShowcaseNarrow
+                ? 'bottom-1.5 right-1.5 px-2 py-0.5 text-[11px]'
+                : isCompact
+                  ? 'bottom-3 right-3 px-4 py-2 text-sm'
+                  : 'bottom-3 right-3 px-5 py-2.5 text-base'
             }`}
           >
             {hasDiscount && product.originalPrice != null && (
-              <span className="text-xs font-medium text-slate-400 line-through">{product.originalPrice} ֏</span>
+              <span
+                className={`font-medium text-slate-400 line-through ${
+                  isShowcaseNarrow ? 'text-[10px]' : 'text-xs'
+                }`}
+              >
+                {product.originalPrice} ֏
+              </span>
             )}
-            <span className="font-black text-[#E53225]">{product.price} ֏</span>
+            <span className={`font-black text-[#E53225] ${isShowcaseNarrow ? 'text-xs' : ''}`}>
+              {product.price} ֏
+            </span>
           </div>
         </div>
 
-        <div className={`${isCompact ? 'flex flex-1 flex-col p-4 pb-2' : 'p-5 pb-3 sm:p-6 sm:pb-4'}`}>
+        <div
+          className={`${
+            isShowcaseNarrow
+              ? 'flex flex-1 flex-col p-2.5 pb-1'
+              : isCompact
+                ? 'flex flex-1 flex-col p-4 pb-2'
+                : 'p-5 pb-3 sm:p-6 sm:pb-4'
+          }`}
+        >
           <h3
             className={`font-black tracking-tight text-slate-900 ${
-              isCompact ? 'line-clamp-2 text-base leading-snug' : 'line-clamp-2 text-xl leading-tight'
+              isShowcaseNarrow
+                ? 'line-clamp-2 text-xs leading-snug'
+                : isCompact
+                  ? 'line-clamp-2 text-base leading-snug'
+                  : 'line-clamp-2 text-xl leading-tight'
             }`}
           >
             {displayName}
           </h3>
 
           {isCompact ? (
-            <p className="mt-2 truncate text-sm leading-6 text-slate-500">
+            <p
+              className={
+                isShowcaseNarrow
+                  ? 'mt-1 truncate text-[11px] leading-4 text-slate-500'
+                  : 'mt-2 truncate text-sm leading-6 text-slate-500'
+              }
+            >
               {description}
             </p>
           ) : (
@@ -362,7 +412,11 @@ const ProductCard = memo(
         </div>
 
         {onAddToCart && (
-          <div className={`${isCompact ? 'px-4 pb-4' : 'px-5 pb-5 sm:px-6 sm:pb-6'}`}>
+          <div
+            className={`${
+              isShowcaseNarrow ? 'px-2.5 pb-2.5' : isCompact ? 'px-4 pb-4' : 'px-5 pb-5 sm:px-6 sm:pb-6'
+            }`}
+          >
             <button
               onClick={(e) => {
                 e.preventDefault()
@@ -370,7 +424,7 @@ const ProductCard = memo(
                 onAddToCart(product)
               }}
               className={`flex w-full items-center justify-center gap-2 rounded-full font-semibold transition-all ${
-                isCompact ? 'h-11 text-sm' : 'h-12 text-base'
+                isShowcaseNarrow ? 'h-8 text-[11px]' : isCompact ? 'h-11 text-sm' : 'h-12 text-base'
               } ${
                 isAdded
                   ? 'bg-gradient-to-r from-emerald-500 to-green-600 text-white shadow-[0_14px_24px_rgba(34,197,94,0.22)]'
