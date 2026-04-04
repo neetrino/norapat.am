@@ -1,5 +1,7 @@
 import NextAuth from "next-auth"
+import type { NextRequest } from "next/server"
 import { authOptions } from "@/lib/auth"
+import { syncNextAuthUrlForDevelopment } from "@/lib/syncNextAuthUrlForDevelopment"
 
 const secret =
   process.env.NEXTAUTH_SECRET ??
@@ -10,4 +12,18 @@ const handler = NextAuth({
   secret: secret ?? authOptions.secret,
 })
 
-export { handler as GET, handler as POST }
+export async function GET(
+  req: NextRequest,
+  context: { params: Promise<{ nextauth: string[] }> }
+) {
+  syncNextAuthUrlForDevelopment(req)
+  return handler(req, context)
+}
+
+export async function POST(
+  req: NextRequest,
+  context: { params: Promise<{ nextauth: string[] }> }
+) {
+  syncNextAuthUrlForDevelopment(req)
+  return handler(req, context)
+}
