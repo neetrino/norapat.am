@@ -74,7 +74,7 @@ export default function FloatingCallWidget() {
         {isOpen && (
           <div
             id={panelId}
-            className="animate-call-panel-in absolute z-[1] flex w-[min(calc(100vw-1.5rem),20rem)] flex-col gap-0 overflow-hidden rounded-xl border border-[#f19b93]/20 bg-[linear-gradient(145deg,rgba(92,16,13,0.98),rgba(168,31,22,0.97),rgba(124,22,17,0.98))] py-0 shadow-[0_14px_32px_rgba(95,18,14,0.42),0_0_0_1px_rgba(255,255,255,0.06)_inset] ring-1 ring-[#ee3124]/25 backdrop-blur-md max-sm:bottom-full max-sm:right-0 max-sm:mb-1.5 max-sm:top-auto sm:bottom-auto sm:right-[calc(100%+0.5rem)] sm:top-1/2 sm:mb-0 sm:w-max sm:max-w-[min(100vw-2rem,20rem)]"
+            className="animate-call-panel-in absolute z-[1] flex w-[min(calc(100vw-1.5rem),11.5rem)] flex-col gap-0 overflow-hidden rounded-xl border border-[#f19b93]/20 bg-[linear-gradient(145deg,rgba(92,16,13,0.98),rgba(168,31,22,0.97),rgba(124,22,17,0.98))] py-0 shadow-[0_14px_32px_rgba(95,18,14,0.42),0_0_0_1px_rgba(255,255,255,0.06)_inset] ring-1 ring-[#ee3124]/25 backdrop-blur-md max-sm:bottom-full max-sm:right-0 max-sm:mb-1.5 max-sm:top-auto sm:bottom-auto sm:right-[calc(100%+0.5rem)] sm:top-1/2 sm:mb-0 sm:w-max sm:max-w-[min(100vw-2rem,20rem)]"
             role="region"
             aria-label="Phone numbers"
           >
