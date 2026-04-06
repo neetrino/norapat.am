@@ -397,7 +397,7 @@ export const hy: AppMessages = {
     addressPlaceholder: 'Նշեք առաքման ամբողջ հասցեն',
     namePlaceholder: 'Մուտքագրեք ձեր անունը',
     deliveryTime: 'Առաքման ժամ *',
-    asap: 'Ինչպես հնարավոր է շուտ (20-30 րոպե)',
+    asap: 'Որքան հնարավոր է շուտ (20-30 րոպե)',
     paymentMethod: 'Վճարման եղանակ',
     cash: 'Կանխիկ',
     cashDesc: 'Վճարում առաքիչին կանխիկ',

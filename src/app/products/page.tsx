@@ -382,7 +382,7 @@ function ProductsPageContent() {
             <CategoryPromoImage className="mx-auto max-w-sm" />
           </div>
 
-          <section className="mb-5 overflow-hidden rounded-[2rem] border border-[#eadfd9] bg-white/90 shadow-[0_16px_40px_rgba(15,23,42,0.05)] backdrop-blur">
+          <section className="mb-5 hidden sm:block overflow-hidden rounded-[2rem] border border-[#eadfd9] bg-white/90 shadow-[0_16px_40px_rgba(15,23,42,0.05)] backdrop-blur">
             <div className="space-y-4 px-5 py-5 sm:px-6">
               <div className="relative hidden lg:block">
                 <Search

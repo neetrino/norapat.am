@@ -16,20 +16,13 @@ export interface ProductsPageCategoryChipsProps {
   locale: AppLocale
 }
 
+/** Selected chip: neutral surface — no peach/red gradient (reads as “hover” on mobile). */
 const pillClass = (active: boolean) =>
   `cursor-pointer group inline-flex shrink-0 items-center gap-2 rounded-2xl border px-3.5 py-2.5 text-xs font-semibold whitespace-nowrap transition-all duration-300 ${
     active
-      ? 'border-[#ffd3c8] bg-[linear-gradient(135deg,#fff1ec_0%,#ffe6de_100%)] text-[#E53225] shadow-[0_14px_28px_rgba(229,50,37,0.14)]'
+      ? 'border-[#E53225] bg-white text-[#E53225] shadow-sm'
       : 'border-[#eadfd9] bg-white/90 text-slate-700 hover:border-[#f1d3c7] hover:bg-[#fff8f4] hover:text-slate-900'
   }`
-
-const pillStyle = (active: boolean) =>
-  active
-    ? {
-        boxShadow:
-          '0 8px 25px rgba(255, 107, 53, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1)',
-      }
-    : {}
 
 /**
  * Կատեգորիայի ֆիլտրի պիլեր — «Բոլորը» + բոլոր ակտիվ կատեգորիաները
@@ -60,7 +53,6 @@ export function ProductsPageCategoryChips({
         type="button"
         onClick={() => onSelectCategory(null)}
         className={pillClass(selectedCategoryName === null)}
-        style={pillStyle(selectedCategoryName === null)}
       >
         {allLabel}
       </button>
@@ -75,7 +67,6 @@ export function ProductsPageCategoryChips({
             type="button"
           onClick={() => onSelectCategory(cat.name)}
           className={pillClass(active)}
-          style={pillStyle(active)}
         >
           {cat.image && (
               <div
