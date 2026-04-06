@@ -6,7 +6,7 @@ const DEV_NEXTAUTH_URL_SYNC_DISABLED =
 /**
  * NextAuth uses `NEXTAUTH_URL` as the canonical origin when not on Vercel and
  * `AUTH_TRUST_HOST` is unset. Accessing the dev server via a LAN IP while
- * `.env` still points at `http://localhost:3000` breaks credentials sign-in;
+ * `.env` still points at the wrong origin (e.g. old `localhost:3000`) breaks credentials sign-in;
  * register still works because it does not go through NextAuth.
  *
  * In development only, align `NEXTAUTH_URL` with the incoming request host.
