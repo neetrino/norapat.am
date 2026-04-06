@@ -42,7 +42,7 @@ export function TopContactBar() {
 
   return (
     <div
-      className={`fixed left-0 right-0 z-[115] overflow-hidden border-b border-orange-900/20 bg-gradient-to-r from-orange-950 via-stone-950 to-stone-900 text-white ${
+      className={`fixed left-0 right-0 z-[115] overflow-hidden border-b border-white/10 bg-black text-white ${
         topBarVisible
           ? 'translate-y-0 opacity-100 shadow-[0_8px_32px_rgba(0,0,0,0.2)]'
           : 'pointer-events-none -translate-y-[calc(100%+2px)] opacity-0 shadow-none'
