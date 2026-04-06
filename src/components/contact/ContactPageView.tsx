@@ -8,6 +8,7 @@ import { BRAND_RED_CTA_IDLE_HOVER_CLASS } from '@/components/home/promo-food-ban
 import { companyInfo } from '@/constants/company'
 import { usePublicSiteSettings } from '@/hooks/usePublicSiteSettings'
 import { useI18n } from '@/i18n/I18nContext'
+import { buildContactPhoneLines, buildTelHref } from '@/lib/contactPhones'
 import { ChevronDown, Clock, Mail, MapPin, Phone } from 'lucide-react'
 
 export function ContactPageView() {
@@ -16,11 +17,14 @@ export function ContactPageView() {
   const { contactPhone, contactEmail } = usePublicSiteSettings()
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null)
 
-  const phoneNumber = contactPhone?.trim() || companyInfo.phone
+  const phoneLines = buildContactPhoneLines(
+    contactPhone,
+    companyInfo.callNowPhones
+  )
+  const primaryPhoneHref = buildTelHref(phoneLines[0] ?? companyInfo.phone)
   const emailAddress = contactEmail?.trim() || 'info@norapat.am'
   const locationAddress = c.addressLine
   const locationMapQuery = '5-րդ փողոց, Նորապատ գյուղ, Արմավիր, Հայաստան'
-  const phoneHref = `tel:${phoneNumber.replace(/[^\d+]/g, '')}`
   const emailHref = `mailto:${emailAddress}`
 
   const faqItems = [
@@ -36,9 +40,10 @@ export function ContactPageView() {
     {
       icon: Phone,
       title: c.phoneTitle,
-      value: phoneNumber,
+      value: null as string | null,
+      phoneLines,
       caption: null,
-      href: phoneHref,
+      href: primaryPhoneHref,
       actionLabel: c.callBtn,
     },
     {
@@ -104,6 +109,10 @@ export function ContactPageView() {
             <div className="grid gap-3 p-4 sm:p-5 md:grid-cols-2 xl:grid-cols-4">
               {contactCards.map((card) => {
                 const Icon = card.icon
+                const phoneLines =
+                  'phoneLines' in card && card.phoneLines
+                    ? card.phoneLines
+                    : null
 
                 return (
                   <div
@@ -114,9 +123,23 @@ export function ContactPageView() {
                       <Icon className="h-5 w-5" />
                     </div>
                     <h3 className="text-base font-bold text-gray-900">{card.title}</h3>
-                    <p className="mt-2 text-sm font-semibold text-gray-800 sm:text-base">
-                      {card.value}
-                    </p>
+                    {phoneLines ? (
+                      <div className="mt-2 flex w-full flex-col gap-2">
+                        {phoneLines.map((line) => (
+                          <a
+                            key={line}
+                            href={buildTelHref(line)}
+                            className="text-sm font-semibold text-gray-800 underline-offset-2 hover:underline sm:text-base"
+                          >
+                            {line}
+                          </a>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="mt-2 text-sm font-semibold text-gray-800 sm:text-base">
+                        {card.value}
+                      </p>
+                    )}
                     {card.caption ? (
                       <p className="mt-1.5 text-sm leading-6 text-gray-500">
                         {card.caption}

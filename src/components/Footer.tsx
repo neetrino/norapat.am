@@ -7,6 +7,7 @@ import { useI18n } from '@/i18n/I18nContext'
 import { usePublicSiteSettings } from '@/hooks/usePublicSiteSettings'
 import { SiteBrandMark } from '@/components/SiteBrandMark'
 import { companyInfo } from '@/constants/company'
+import { buildContactPhoneLines, buildTelHref } from '@/lib/contactPhones'
 
 const LINK_HOVER = 'transition-colors hover:text-red-800'
 const LINK_BASE = `text-sm text-stone-600 ${LINK_HOVER}`
@@ -29,6 +30,10 @@ export default function Footer() {
   const { t } = useI18n()
   const { nav, footer: f } = t
   const branding = usePublicSiteSettings()
+  const footerPhoneLines = buildContactPhoneLines(
+    branding.contactPhone,
+    companyInfo.callNowPhones
+  )
 
   return (
     <footer className="relative border-t border-stone-200/90 bg-gradient-to-b from-stone-50/90 to-white text-stone-900">
@@ -124,12 +129,17 @@ export default function Footer() {
                 <div className="space-y-2.5">
                   <div className="flex gap-2">
                     <Phone className={CONTACT_ICON_BOX} aria-hidden />
-                    <a
-                      href={`tel:${companyInfo.phone.replace(/[^\d+]/g, '')}`}
-                      className={LINK_BASE}
-                    >
-                      {companyInfo.phone}
-                    </a>
+                    <div className="flex min-w-0 flex-col gap-1">
+                      {footerPhoneLines.map((phone) => (
+                        <a
+                          key={phone}
+                          href={buildTelHref(phone)}
+                          className={LINK_BASE}
+                        >
+                          {phone}
+                        </a>
+                      ))}
+                    </div>
                   </div>
                   <div className="flex gap-2">
                     <Mail className={CONTACT_ICON_BOX} aria-hidden />
