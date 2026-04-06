@@ -177,7 +177,8 @@ const ProductCard = memo(
                     onAddToCart(product)
                   }}
                   title={pc.addToCartTitle}
-                  className={`inline-flex h-11 items-center justify-center gap-2 rounded-full px-4 text-sm font-semibold transition-all ${
+                  aria-label={isAdded ? pc.inCart : pc.addToCartTitle}
+                  className={`inline-flex h-11 min-w-11 items-center justify-center gap-2 rounded-full px-3 text-sm font-semibold transition-all lg:min-w-0 lg:px-4 ${
                     isAdded
                       ? 'bg-gradient-to-r from-emerald-500 to-green-600 text-white shadow-[0_14px_24px_rgba(34,197,94,0.22)]'
                       : PRODUCT_CARD_ADD_IDLE_BUTTON_CLASS
@@ -185,19 +186,19 @@ const ProductCard = memo(
                 >
                   {isAdded ? (
                     <>
-                      <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                      <svg className="h-4 w-4 shrink-0" fill="currentColor" viewBox="0 0 20 20">
                         <path
                           fillRule="evenodd"
                           d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
                           clipRule="evenodd"
                         />
                       </svg>
-                      {pc.inCart}
+                      <span className="hidden lg:inline">{pc.inCart}</span>
                     </>
                   ) : (
                     <>
-                      <ShoppingCart className="h-4 w-4" />
-                      {pc.add}
+                      <ShoppingCart className="h-4 w-4 shrink-0" />
+                      <span className="hidden lg:inline">{pc.add}</span>
                     </>
                   )}
                 </button>
@@ -431,22 +432,25 @@ const ProductCard = memo(
                   : PRODUCT_CARD_ADD_IDLE_BUTTON_CLASS
               }`}
               title={pc.addToCartTitle}
+              aria-label={isAdded ? pc.inCart : pc.addToCartTitle}
             >
               {isAdded ? (
-                <span className="flex items-center gap-2">
-                  <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                <span className="flex items-center justify-center gap-2">
+                  <svg className="h-4 w-4 shrink-0" fill="currentColor" viewBox="0 0 20 20">
                     <path
                       fillRule="evenodd"
                       d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
                       clipRule="evenodd"
                     />
                   </svg>
-                  {pc.inCart}
+                  <span className="hidden lg:inline">{pc.inCart}</span>
                 </span>
               ) : (
-                <span className="flex items-center gap-2">
-                  <ShoppingCart className={`${isCompact ? 'h-4 w-4' : 'h-5 w-5'}`} />
-                  {pc.add}
+                <span className="flex items-center justify-center gap-2">
+                  <ShoppingCart
+                    className={`shrink-0 ${isCompact ? 'h-4 w-4' : 'h-5 w-5'}`}
+                  />
+                  <span className="hidden lg:inline">{pc.add}</span>
                 </span>
               )}
             </button>
