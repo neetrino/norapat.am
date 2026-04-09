@@ -1,4 +1,5 @@
 // Company contact information used by shared info blocks.
+/** Primary line (E.164 +37441440003) — same number for WhatsApp Business chat links. */
 const primaryPhone = '+374 41 440 003'
 
 /**
@@ -21,7 +22,7 @@ export const companyInfo = {
     facebook: 'https://www.facebook.com/noorapatfoodcourt/?locale=hy_AM',
     instagram:
       'https://www.instagram.com/norapatfoodcourt?igsh=dDV4YnIxYmxwcXFs',
-    /** Chat link for the primary business line (digits only per wa.me). */
+    /** wa.me opens WhatsApp chat to +37441440003 (digits only, no +). */
     whatsapp: `https://wa.me/${primaryPhone.replace(/\D/g, '')}`,
     website: '/',
   },
