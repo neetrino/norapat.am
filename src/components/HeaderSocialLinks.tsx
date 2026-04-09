@@ -6,15 +6,8 @@ import type { ComponentType } from 'react'
 import { companyInfo } from '@/constants/company'
 import { cn } from '@/lib/utils'
 
-/** Official-adjacent brand colors for social icons. */
-const HEADER_SOCIAL_BRAND = {
-  facebook: '#1877F2',
-  instagram: '#E4405F',
-  whatsapp: '#25D366',
-} as const
-
 const TOPBAR_BTN_BASE =
-  'inline-flex shrink-0 items-center justify-center rounded-md p-1 transition-colors duration-200 sm:p-1.5'
+  'inline-flex shrink-0 items-center justify-center rounded-md p-1 text-red-500 transition-colors duration-200 sm:p-1.5'
 const TOPBAR_HOVER_SURFACE = 'hover:bg-white/10'
 
 function WhatsAppGlyph({ className }: { className?: string }) {
@@ -32,41 +25,36 @@ const TOPBAR_LINKS: ReadonlyArray<{
   href: string
   label: string
   Icon: LucideIcon | ComponentType<{ className?: string }>
-  color: string
 }> = [
   {
     href: companyInfo.socialMedia.facebook,
     label: 'Facebook',
     Icon: Facebook,
-    color: HEADER_SOCIAL_BRAND.facebook,
   },
   {
     href: companyInfo.socialMedia.instagram,
     label: 'Instagram',
     Icon: Instagram,
-    color: HEADER_SOCIAL_BRAND.instagram,
   },
   {
     href: companyInfo.socialMedia.whatsapp,
     label: 'WhatsApp',
     Icon: WhatsAppGlyph,
-    color: HEADER_SOCIAL_BRAND.whatsapp,
   },
 ]
 
 /**
- * Social links for the fixed top contact bar (dark strip): compact icons with brand colors.
+ * Social links for the fixed top contact bar (dark strip): compact red icons.
  */
 export function HeaderSocialLinks() {
   return (
     <div className="flex shrink-0 items-center gap-0.5 sm:gap-1">
-      {TOPBAR_LINKS.map(({ href, label, Icon, color }) => (
+      {TOPBAR_LINKS.map(({ href, label, Icon }) => (
         <a
           key={label}
           href={href}
           target="_blank"
           rel="noopener noreferrer"
-          style={{ color }}
           className={cn(TOPBAR_BTN_BASE, TOPBAR_HOVER_SURFACE)}
           aria-label={label}
         >

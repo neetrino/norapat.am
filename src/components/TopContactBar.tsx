@@ -58,7 +58,7 @@ export function TopContactBar() {
             className="flex min-w-0 flex-1 items-center gap-1.5 text-[11px] font-medium tracking-wide sm:text-xs"
           >
             <Phone
-              className="h-3 w-3 shrink-0 text-orange-300 sm:h-3.5 sm:w-3.5"
+              className="h-3 w-3 shrink-0 text-red-500 sm:h-3.5 sm:w-3.5"
               aria-hidden
             />
             <span className="truncate">{phoneDisplay}</span>
@@ -78,7 +78,7 @@ export function TopContactBar() {
           className="relative z-10 flex min-w-0 max-w-[65%] flex-1 items-center justify-end gap-1.5 text-[11px] text-orange-100/95 transition-colors hover:text-white sm:max-w-none sm:text-xs"
         >
           <MapPin
-            className="h-3 w-3 shrink-0 text-orange-300 sm:h-3.5 sm:w-3.5"
+            className="h-5 w-5 shrink-0 text-red-500 sm:h-3.5 sm:w-3.5"
             aria-hidden
           />
           <span className="hidden truncate text-right sm:inline">{addressDisplay}</span>
