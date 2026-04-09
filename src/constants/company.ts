@@ -6,7 +6,7 @@ export const companyInfo = {
   phone: '+374 41 440 003',
   callNowPhones: ['+374 41 440 003', '+374 77 777 174'],
   email: 'info@norapat.am',
-  workingHours: 'Mon-Sun: 10:00 - 22:00',
+  workingHours: 'Mon-Sun: 09:00 - 00:00',
   socialMedia: {
     facebook: 'https://www.facebook.com/noorapatfoodcourt/?locale=hy_AM',
     instagram:
