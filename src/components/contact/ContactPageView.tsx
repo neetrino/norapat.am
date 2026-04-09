@@ -24,7 +24,6 @@ export function ContactPageView() {
   const primaryPhoneHref = buildTelHref(phoneLines[0] ?? companyInfo.phone)
   const emailAddress = contactEmail?.trim() || 'info@norapat.am'
   const locationAddress = c.addressLine
-  const locationMapQuery = '5-րդ փողոց, Նորապատ գյուղ, Արմավիր, Հայաստան'
   const emailHref = `mailto:${emailAddress}`
 
   const faqItems = [
@@ -164,11 +163,7 @@ export function ContactPageView() {
           <h2 className="mb-8 text-center text-3xl font-bold text-gray-900">
             {c.mapTitle}
           </h2>
-          <div className="mb-4 flex items-center justify-center gap-2 rounded-2xl border border-red-100 bg-red-50 px-4 py-3 text-center text-sm font-semibold text-red-800 sm:text-base">
-            <MapPin className="h-4 w-4 shrink-0" />
-            <span>{locationAddress}</span>
-          </div>
-          <MapEmbed addressQuery={locationMapQuery} title={`${locationAddress} - map`} />
+          <MapEmbed embedQuery={companyInfo.mapEmbedQuery} title={c.mapTitle} />
         </div>
 
         <div className="mb-16">
