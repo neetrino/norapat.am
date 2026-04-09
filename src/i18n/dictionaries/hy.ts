@@ -448,6 +448,8 @@ export const hy: AppMessages = {
     openMapBtn: 'Բացել քարտեզում',
     onMap: 'Քարտեզում',
     mapTitle: 'Մենք ենք այստեղ',
+    paymentMethodsTitle: 'Վճարման եղանակներ',
+    paymentMethodsBody: 'Կանխիկ, անկանխիկ, քարտով, Idram',
     faqTitle: 'Հաճախ տրվող հարցեր',
     faqPrepQ: 'Որքա՞ն ժամանակ է պահանջվում պատվերը պատրաստելու համար։',
     faqPrepA: 'Սովորաբար 15–20 րոպե ։ Ծանրաբեռնված ժամերին կարող է մի քիչ ավելի երկար լինել։',
@@ -457,7 +459,8 @@ export const hy: AppMessages = {
     faqAdvanceQ: 'Կարո՞ղ ենք պատվիրել վաղը։',
     faqAdvanceA: 'Իհարկե։ Ընդունում ենք նախնական պատվերներ ցանկացած օր։',
     faqPaymentQ: 'Ի՞նչ վճարման եղանակներ են։',
-    faqPaymentA: 'Կանխիկ, քարտ, ArCa, Ameriabank — ընտրեք ձեզ հարմար եղանակը։',
+    faqPaymentA:
+      'Կանխիկ, անկանխիկ, քարտով և Idram — ընտրեք ձեզ հարմար եղանակը։',
     faqDiscountQ: 'Զեղչեր կա՞ն։',
     faqDiscountA: 'Այո։ 5000 ֏-ից պատվիրելիս — 10% զեղչ, 10000 ֏-ից — 15% զեղչ։',
     faqContactQ: 'Ինչպե՞ս կապ հաստատել մեզ հետ։',

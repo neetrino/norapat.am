@@ -437,6 +437,8 @@ export interface AppMessages {
     openMapBtn: string
     onMap: string
     mapTitle: string
+    paymentMethodsTitle: string
+    paymentMethodsBody: string
     faqTitle: string
     faqPrepQ: string
     faqPrepA: string
