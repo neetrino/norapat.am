@@ -448,8 +448,6 @@ export const hy: AppMessages = {
     openMapBtn: 'Բացել քարտեզում',
     onMap: 'Քարտեզում',
     mapTitle: 'Մենք ենք այստեղ',
-    paymentMethodsTitle: 'Վճարման եղանակներ',
-    paymentMethodsBody: 'Կանխիկ, անկանխիկ, քարտով, Idram',
     faqTitle: 'Հաճախ տրվող հարցեր',
     faqPrepQ: 'Որքա՞ն ժամանակ է պահանջվում պատվերը պատրաստելու համար։',
     faqPrepA: 'Սովորաբար 15–20 րոպե ։ Ընդմիջման ժամերին կարող է մի քիչ ավելի երկար լինել։',

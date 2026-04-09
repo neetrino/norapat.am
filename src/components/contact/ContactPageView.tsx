@@ -9,7 +9,7 @@ import { companyInfo } from '@/constants/company'
 import { usePublicSiteSettings } from '@/hooks/usePublicSiteSettings'
 import { useI18n } from '@/i18n/I18nContext'
 import { buildContactPhoneLines, buildTelHref } from '@/lib/contactPhones'
-import { ChevronDown, Clock, CreditCard, Mail, MapPin, Phone } from 'lucide-react'
+import { ChevronDown, Clock, Mail, MapPin, Phone } from 'lucide-react'
 
 export function ContactPageView() {
   const { t } = useI18n()
@@ -70,14 +70,6 @@ export function ContactPageView() {
       href: null,
       actionLabel: null,
     },
-    {
-      icon: CreditCard,
-      title: c.paymentMethodsTitle,
-      value: c.paymentMethodsBody,
-      caption: null,
-      href: null,
-      actionLabel: null,
-    },
   ]
 
   return (
@@ -114,7 +106,7 @@ export function ContactPageView() {
               </p>
             </div>
 
-            <div className="grid gap-3 p-4 sm:p-5 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-5">
+            <div className="grid gap-3 p-4 sm:p-5 md:grid-cols-2 xl:grid-cols-4">
               {contactCards.map((card) => {
                 const Icon = card.icon
                 const phoneLines =
