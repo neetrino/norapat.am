@@ -264,7 +264,7 @@ export const hy: AppMessages = {
     processStep1Title: 'Ընտրիր',
     processStep1Desc: 'Բացահայտիր տարբեր խոհանոցների ուտեստները մեր մենյուում',
     processStep2Title: 'Պատվիրիր',
-    processStep2Desc: 'Վայրէջք կամ առաքում՝ ինչպես քեզ հարմար է',
+    processStep2Desc: 'Սնվել տեղում կամ պատվիրել առաքում',
     processStep3Title: 'Պատրաստում',
     processStep3Desc: 'Յուրաքանչյուր ճաշ պատրաստվում է թարմ բաղադրիչներով և հոգատարությամբ',
     processStep4Title: 'Վայելիր',
