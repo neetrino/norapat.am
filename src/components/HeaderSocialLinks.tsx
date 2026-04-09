@@ -48,7 +48,7 @@ const TOPBAR_LINKS: ReadonlyArray<{
  */
 export function HeaderSocialLinks() {
   return (
-    <div className="flex shrink-0 items-center gap-0.5 sm:gap-1">
+    <div className="flex shrink-0 items-center gap-2 sm:gap-1">
       {TOPBAR_LINKS.map(({ href, label, Icon }) => (
         <a
           key={label}
@@ -58,7 +58,7 @@ export function HeaderSocialLinks() {
           className={cn(TOPBAR_BTN_BASE, TOPBAR_HOVER_SURFACE)}
           aria-label={label}
         >
-          <Icon className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+          <Icon className="h-4 w-4" />
         </a>
       ))}
     </div>

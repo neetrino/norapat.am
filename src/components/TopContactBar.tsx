@@ -9,7 +9,6 @@ import { HeaderSocialLinks } from '@/components/HeaderSocialLinks'
 import {
   DEFAULT_PUBLIC_ADDRESS,
   DEFAULT_PUBLIC_CONTACT_PHONE,
-  TOP_CONTACT_BAR_HEIGHT_PX,
   TOP_CONTACT_BAR_TRANSITION_EASING,
   TOP_CONTACT_BAR_TRANSITION_MS,
 } from '@/lib/headerTopBar.constants'
@@ -21,7 +20,7 @@ function normalizeTelHref(phone: string): string {
 
 export function TopContactBar() {
   const pathname = usePathname()
-  const { topBarVisible } = useHeaderStack()
+  const { topBarVisible, topBarStripHeightPx } = useHeaderStack()
   const { contactPhone, address } = usePublicSiteSettings()
 
   if (pathname?.startsWith('/admin')) {
@@ -35,7 +34,7 @@ export function TopContactBar() {
 
   const barTransitionStyle = {
     top: 0,
-    height: TOP_CONTACT_BAR_HEIGHT_PX,
+    height: topBarStripHeightPx,
     transitionProperty: 'transform, opacity, box-shadow',
     transitionDuration: `${TOP_CONTACT_BAR_TRANSITION_MS}ms`,
     transitionTimingFunction: TOP_CONTACT_BAR_TRANSITION_EASING,

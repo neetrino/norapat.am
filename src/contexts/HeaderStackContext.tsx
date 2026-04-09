@@ -10,19 +10,24 @@ import {
   type ReactNode,
 } from 'react'
 import { usePathname } from 'next/navigation'
-import { TOP_CONTACT_BAR_HEIGHT_PX } from '@/lib/headerTopBar.constants'
+import { TOP_CONTACT_BAR_HEIGHT_MOBILE_PX } from '@/lib/headerTopBar.constants'
+import { useTopContactBarStripHeightPx } from '@/hooks/useTopContactBarStripHeight'
 
 const SCROLL_DOWN_HIDE_DELTA_PX = 4
 const SCROLL_TOP_SHOW_THRESHOLD_PX = 8
 
 export type HeaderStackValue = {
   topBarVisible: boolean
+  /** Inset for fixed headers when the bar is visible (0 when hidden / admin). */
   topBarInsetPx: number
+  /** Strip height for current viewport; use for the bar element `height` even when hidden. */
+  topBarStripHeightPx: number
 }
 
 const defaultValue: HeaderStackValue = {
   topBarVisible: true,
-  topBarInsetPx: TOP_CONTACT_BAR_HEIGHT_PX,
+  topBarInsetPx: TOP_CONTACT_BAR_HEIGHT_MOBILE_PX,
+  topBarStripHeightPx: TOP_CONTACT_BAR_HEIGHT_MOBILE_PX,
 }
 
 const HeaderStackContext = createContext<HeaderStackValue>(defaultValue)
@@ -34,6 +39,7 @@ export function useHeaderStack(): HeaderStackValue {
 export function HeaderStackProvider({ children }: { children: ReactNode }) {
   const pathname = usePathname()
   const isAdmin = pathname?.startsWith('/admin') ?? false
+  const topBarStripHeightPx = useTopContactBarStripHeightPx()
   const [topBarVisible, setTopBarVisible] = useState(true)
   const lastScrollY = useRef(0)
 
@@ -73,16 +79,17 @@ export function HeaderStackProvider({ children }: { children: ReactNode }) {
     const offset =
       isAdmin || !topBarVisible
         ? '0px'
-        : `${TOP_CONTACT_BAR_HEIGHT_PX}px`
+        : `${topBarStripHeightPx}px`
     document.documentElement.style.setProperty('--top-bar-offset', offset)
-  }, [isAdmin, topBarVisible])
+  }, [isAdmin, topBarVisible, topBarStripHeightPx])
 
   const topBarInsetPx =
-    isAdmin || !topBarVisible ? 0 : TOP_CONTACT_BAR_HEIGHT_PX
+    isAdmin || !topBarVisible ? 0 : topBarStripHeightPx
 
   const value: HeaderStackValue = {
     topBarVisible,
     topBarInsetPx,
+    topBarStripHeightPx,
   }
 
   return (
