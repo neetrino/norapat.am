@@ -206,7 +206,7 @@ export function ContactPageView() {
 
                   {isOpen ? (
                     <div className="relative z-10 px-5 pb-4 sm:px-7 sm:pb-5">
-                      <p className="max-w-5xl text-sm leading-6 text-white/80 sm:text-base sm:leading-7">
+                      <p className="max-w-5xl whitespace-pre-line text-sm leading-6 text-white/80 sm:text-base sm:leading-7">
                         {item.answer}
                       </p>
                     </div>
