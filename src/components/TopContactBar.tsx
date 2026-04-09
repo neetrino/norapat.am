@@ -51,8 +51,8 @@ export function TopContactBar() {
       style={barTransitionStyle}
       aria-hidden={!topBarVisible}
     >
-      <div className="mx-auto flex h-full max-w-7xl items-center justify-between gap-3 pl-1.5 pr-3 sm:pl-3 sm:pr-6 lg:pl-4 lg:pr-8">
-        <div className="flex min-w-0 flex-1 items-center gap-2.5 sm:gap-3">
+      <div className="relative mx-auto flex h-full max-w-7xl items-center justify-between gap-3 pl-1.5 pr-3 sm:pl-3 sm:pr-6 lg:pl-4 lg:pr-8">
+        <div className="relative z-10 flex min-w-0 flex-1 items-center gap-2.5 sm:gap-3">
           <a
             href={telHref}
             className="flex min-w-0 flex-1 items-center gap-1.5 text-[11px] font-medium tracking-wide sm:text-xs"
@@ -63,17 +63,25 @@ export function TopContactBar() {
             />
             <span className="truncate">{phoneDisplay}</span>
           </a>
-          <HeaderSocialLinks />
+          <div className="hidden sm:block">
+            <HeaderSocialLinks />
+          </div>
+        </div>
+        <div className="pointer-events-none absolute inset-0 flex items-center justify-center sm:hidden">
+          <div className="pointer-events-auto translate-x-2">
+            <HeaderSocialLinks />
+          </div>
         </div>
         <Link
           href="/contact"
-          className="flex min-w-0 max-w-[65%] flex-1 items-center justify-end gap-1.5 text-[11px] text-orange-100/95 transition-colors hover:text-white sm:max-w-none sm:text-xs"
+          aria-label={addressDisplay}
+          className="relative z-10 flex min-w-0 max-w-[65%] flex-1 items-center justify-end gap-1.5 text-[11px] text-orange-100/95 transition-colors hover:text-white sm:max-w-none sm:text-xs"
         >
           <MapPin
-            className="hidden h-3 w-3 shrink-0 text-orange-300 sm:inline sm:h-3.5 sm:w-3.5"
+            className="h-3 w-3 shrink-0 text-orange-300 sm:h-3.5 sm:w-3.5"
             aria-hidden
           />
-          <span className="truncate text-right">{addressDisplay}</span>
+          <span className="hidden truncate text-right sm:inline">{addressDisplay}</span>
         </Link>
       </div>
     </div>
