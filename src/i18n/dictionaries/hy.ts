@@ -141,7 +141,7 @@ export const hy: AppMessages = {
     featureFastDesc: 'Պատրաստում ենք 15–20 րոպեում',
     featureFastBadge: '⚡ Կայծակնային',
     featureDeliveryTitle: 'Առաքում',
-    featureDeliveryDesc: 'Երևանի ողջ տարածքով',
+    featureDeliveryDesc: 'Արմավիրի ողջ տարածքով',
     featureDeliveryBadge: '🚚 30 րոպե',
     featureQualityTitle: 'Որակ',
     featureQualityDesc: 'Միայն թարմ բաղադրիչներ',
