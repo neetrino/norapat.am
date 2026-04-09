@@ -9,7 +9,7 @@ import { companyInfo } from '@/constants/company'
 import { usePublicSiteSettings } from '@/hooks/usePublicSiteSettings'
 import { useI18n } from '@/i18n/I18nContext'
 import { buildContactPhoneLines, buildTelHref } from '@/lib/contactPhones'
-import { ChevronDown, Clock, Mail, MapPin, Phone } from 'lucide-react'
+import { ChevronDown, Clock, CreditCard, Mail, MapPin, Phone } from 'lucide-react'
 
 export function ContactPageView() {
   const { t } = useI18n()
@@ -70,6 +70,14 @@ export function ContactPageView() {
       href: null,
       actionLabel: null,
     },
+    {
+      icon: CreditCard,
+      title: c.paymentMethodsTitle,
+      value: c.paymentMethodsBody,
+      caption: null,
+      href: null,
+      actionLabel: null,
+    },
   ]
 
   return (
@@ -106,7 +114,7 @@ export function ContactPageView() {
               </p>
             </div>
 
-            <div className="grid gap-3 p-4 sm:p-5 md:grid-cols-2 xl:grid-cols-4">
+            <div className="grid gap-3 p-4 sm:p-5 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-5">
               {contactCards.map((card) => {
                 const Icon = card.icon
                 const phoneLines =
@@ -206,7 +214,7 @@ export function ContactPageView() {
 
                   {isOpen ? (
                     <div className="relative z-10 px-5 pb-4 sm:px-7 sm:pb-5">
-                      <p className="max-w-5xl text-sm leading-6 text-white/80 sm:text-base sm:leading-7">
+                      <p className="max-w-5xl whitespace-pre-line text-sm leading-6 text-white/80 sm:text-base sm:leading-7">
                         {item.answer}
                       </p>
                     </div>

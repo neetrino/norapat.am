@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
-import { Search, RefreshCw, Users } from 'lucide-react'
+import { Search, RefreshCw, Trash2, Users, UserCheck, UserX } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
 interface AdminUser {
@@ -38,6 +38,7 @@ export default function AdminUsersPage() {
   const [pagination, setPagination] = useState({ page: 1, limit: 20, total: 0, pages: 0 })
   const [selected, setSelected] = useState<Set<string>>(new Set())
   const [togglingId, setTogglingId] = useState<string | null>(null)
+  const [bulkAction, setBulkAction] = useState<'activate' | 'deactivate' | 'delete' | null>(null)
 
   useEffect(() => {
     if (status === 'loading') return
@@ -101,6 +102,33 @@ export default function AdminUsersPage() {
       setSelected(new Set())
     } else {
       setSelected(new Set(users.map(u => u.id)))
+    }
+  }
+
+  const runBulkAction = async (action: 'activate' | 'deactivate' | 'delete') => {
+    if (selected.size === 0) return
+    if (action === 'delete') {
+      const ok = window.confirm(
+        'Վստա՞հ եք, որ ցանկանում եք ընդմիշտ ջնջել ընտրված customer օգտատերերին։ Admin հաշիվները bulk ջնջման ենթակա չեն։'
+      )
+      if (!ok) return
+    }
+    setBulkAction(action)
+    try {
+      const res = await fetch('/api/admin/users/bulk', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action, ids: [...selected] }),
+      })
+      const data = (await res.json().catch(() => ({}))) as { error?: string; count?: number }
+      if (!res.ok) {
+        window.alert(data.error || 'Գործողությունը ձախողվեց')
+        return
+      }
+      setSelected(new Set())
+      await fetchUsers()
+    } finally {
+      setBulkAction(null)
     }
   }
 
@@ -203,6 +231,52 @@ export default function AdminUsersPage() {
         </div>
       </div>
 
+      {selected.size > 0 && (
+        <div className="bg-orange-50 border border-orange-200 rounded-2xl px-4 py-3 mb-4 flex flex-wrap items-center gap-3">
+          <span className="text-sm font-medium text-gray-800">
+            Ընտրված՝ {selected.size}
+          </span>
+          <div className="flex flex-wrap gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              disabled={bulkAction !== null}
+              onClick={() => void runBulkAction('activate')}
+              className="border-green-500 text-green-700 hover:bg-green-50"
+            >
+              <UserCheck className="h-4 w-4 mr-1.5" />
+              Ակտիվացնել
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              disabled={bulkAction !== null}
+              onClick={() => void runBulkAction('deactivate')}
+              className="border-amber-500 text-amber-800 hover:bg-amber-50"
+            >
+              <UserX className="h-4 w-4 mr-1.5" />
+              Անակտիվացնել
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              disabled={bulkAction !== null}
+              onClick={() => void runBulkAction('delete')}
+              className="border-red-400 text-red-700 hover:bg-red-50"
+            >
+              <Trash2 className="h-4 w-4 mr-1.5" />
+              Ջնջել
+            </Button>
+          </div>
+          {bulkAction !== null && (
+            <RefreshCw className="h-4 w-4 animate-spin text-orange-500 ml-auto" aria-hidden />
+          )}
+        </div>
+      )}
+
       {/* Table */}
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
         <div className="overflow-x-auto">
@@ -214,7 +288,8 @@ export default function AdminUsersPage() {
                     type="checkbox"
                     checked={selected.size === users.length && users.length > 0}
                     onChange={toggleSelectAll}
-                    className="rounded border-gray-300"
+                    disabled={bulkAction !== null}
+                    className="rounded border-gray-300 disabled:opacity-50"
                   />
                 </th>
                 <th className="px-4 py-3 text-left">Օգտատեր</th>
@@ -243,7 +318,8 @@ export default function AdminUsersPage() {
                           type="checkbox"
                           checked={selected.has(user.id)}
                           onChange={() => toggleSelect(user.id)}
-                          className="rounded border-gray-300"
+                          disabled={bulkAction !== null}
+                          className="rounded border-gray-300 disabled:opacity-50"
                         />
                       </td>
                       {/* Name + ID */}
