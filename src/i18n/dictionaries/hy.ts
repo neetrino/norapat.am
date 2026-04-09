@@ -464,7 +464,7 @@ export const hy: AppMessages = {
     faqDiscountQ: 'Զեղչեր կա՞ն։',
     faqDiscountA: 'Այո։ 5000 ֏-ից պատվիրելիս — 10% զեղչ, 10000 ֏-ից — 15% զեղչ։',
     faqContactQ: 'Ինչպե՞ս կապ հաստատել մեզ հետ։',
-    faqContactA: 'Զանգահարեք, գրեք WhatsApp-ում կամ եկեք մեզ մոտ անձամբ։',
+    faqContactA: 'Զանգահարեք կամ գրեք WhatsApp / Instagram։',
     testimonialsTitle: 'Մեր հաճախորդների արձագանքները',
     testimonial1Quote:
       '«Անհավատալի համեղ։ Պատվիրում եմ արդեն երրորդ անգամ անընդմեջ։ Արագ առաքում և գերազանց որակ։»',
