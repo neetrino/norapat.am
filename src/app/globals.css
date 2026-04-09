@@ -6,7 +6,7 @@
 
 :root {
   /* Extra inset under fixed header when TopContactBar is visible (synced via HeaderStackProvider) */
-  --top-bar-offset: 36px;
+  --top-bar-offset: 40px;
   --background: #ffffff;
   --foreground: #000000;
   --foreground-muted: #333333;
@@ -19,6 +19,13 @@
   --brand-banner-bg-deep: #4a0a0a;
   --brand-banner-accent: #ffb703;
   --brand-banner-glow: #c43c3c;
+}
+
+/* Match `lg` top strip height before JS sets --top-bar-offset */
+@media (min-width: 1024px) {
+  :root {
+    --top-bar-offset: 36px;
+  }
 }
 
 @theme inline {

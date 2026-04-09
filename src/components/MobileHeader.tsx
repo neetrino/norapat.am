@@ -66,7 +66,7 @@ export default function MobileHeader({ branding }: MobileHeaderProps) {
               <SiteBrandMark variant="mobile" branding={branding} />
             </div>
 
-            <div className="flex min-w-0 flex-1 justify-end">
+            <div className="flex min-w-0 flex-1 items-center justify-end gap-0.5">
               <button
                 type="button"
                 onClick={() => {

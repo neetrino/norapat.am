@@ -9,7 +9,7 @@ import { companyInfo } from '@/constants/company'
 import { usePublicSiteSettings } from '@/hooks/usePublicSiteSettings'
 import { useI18n } from '@/i18n/I18nContext'
 import { buildContactPhoneLines, buildTelHref } from '@/lib/contactPhones'
-import { ChevronDown, Clock, CreditCard, Mail, MapPin, Phone } from 'lucide-react'
+import { ChevronDown, Clock, Mail, MapPin, Phone } from 'lucide-react'
 
 export function ContactPageView() {
   const { t } = useI18n()
@@ -24,7 +24,6 @@ export function ContactPageView() {
   const primaryPhoneHref = buildTelHref(phoneLines[0] ?? companyInfo.phone)
   const emailAddress = contactEmail?.trim() || 'info@norapat.am'
   const locationAddress = c.addressLine
-  const locationMapQuery = '5-րդ փողոց, Նորապատ գյուղ, Արմավիր, Հայաստան'
   const emailHref = `mailto:${emailAddress}`
 
   const faqItems = [
@@ -70,14 +69,6 @@ export function ContactPageView() {
       href: null,
       actionLabel: null,
     },
-    {
-      icon: CreditCard,
-      title: c.paymentMethodsTitle,
-      value: c.paymentMethodsBody,
-      caption: null,
-      href: null,
-      actionLabel: null,
-    },
   ]
 
   return (
@@ -114,7 +105,7 @@ export function ContactPageView() {
               </p>
             </div>
 
-            <div className="grid gap-3 p-4 sm:p-5 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-5">
+            <div className="grid gap-3 p-4 sm:p-5 md:grid-cols-2 xl:grid-cols-4">
               {contactCards.map((card) => {
                 const Icon = card.icon
                 const phoneLines =
@@ -172,11 +163,7 @@ export function ContactPageView() {
           <h2 className="mb-8 text-center text-3xl font-bold text-gray-900">
             {c.mapTitle}
           </h2>
-          <div className="mb-4 flex items-center justify-center gap-2 rounded-2xl border border-red-100 bg-red-50 px-4 py-3 text-center text-sm font-semibold text-red-800 sm:text-base">
-            <MapPin className="h-4 w-4 shrink-0" />
-            <span>{locationAddress}</span>
-          </div>
-          <MapEmbed addressQuery={locationMapQuery} title={`${locationAddress} - map`} />
+          <MapEmbed embedQuery={companyInfo.mapEmbedQuery} title={c.mapTitle} />
         </div>
 
         <div className="mb-16">
