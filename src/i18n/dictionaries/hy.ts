@@ -147,7 +147,7 @@ export const hy: AppMessages = {
     featureQualityDesc: 'Միայն թարմ բաղադրիչներ',
     featureQualityBadge: '🌟 Պրեմիում',
     featureSupportTitle: 'Աջակցություն',
-    featureSupportDesc: '+374 95-044-888',
+    featureSupportDesc: '+374 41 440 003\n+374 77 777 174',
     featureSupportBadge: '💬 24/7',
     testimonialsTitle: 'Ինչ են ասում հաճախորդները',
     testimonialsSubtitle:
@@ -441,7 +441,7 @@ export const hy: AppMessages = {
     deliveryHours: 'Առաքում՝ 09:00 – 00:00',
     quickOrderTitle: 'Արագ պատվեր',
     quickOrderSubtitle: 'Պարզապես զանգահարեք մեզ արագ պատվերի համար',
-    callPhoneBtn: 'Զանգահարել +374 95-044-888',
+    callPhoneBtn: 'Զանգահարել +374 41 440 003',
     locationTitle: 'Մեր հասցեն',
     locationLabel: 'Հասցե',
     addressLine: '5-րդ փողոց, Նորապատ գյուղ, Արմավիր, Հայաստան',

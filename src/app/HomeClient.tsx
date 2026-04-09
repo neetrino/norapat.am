@@ -265,7 +265,7 @@ export default function HomeClient() {
                 <Phone className="h-8 w-8 text-white" />
               </div>
               <h3 className="text-xl font-bold text-gray-900 mb-3 text-center">{h.featureSupportTitle}</h3>
-              <p className="text-gray-600 text-center mb-4">{h.featureSupportDesc}</p>
+              <p className="whitespace-pre-line text-center text-gray-600 mb-4">{h.featureSupportDesc}</p>
             <div className="text-center">
                 <span className="inline-block bg-blue-100 text-blue-600 px-3 py-1 rounded-full text-sm font-semibold">
                   {h.featureSupportBadge}
