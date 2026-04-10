@@ -6,10 +6,10 @@ import Link from 'next/link'
 import { useI18n } from '@/i18n/I18nContext'
 import type { PublicSiteSettingsState } from '@/hooks/usePublicSiteSettings'
 
-const LOGO_WIDTH_DESKTOP = 240
-const LOGO_HEIGHT_DESKTOP = 64
-const LOGO_WIDTH_MOBILE = 176
-const LOGO_HEIGHT_MOBILE = 48
+const LOGO_WIDTH_DESKTOP = 360
+const LOGO_HEIGHT_DESKTOP = 96
+const LOGO_WIDTH_MOBILE = 240
+const LOGO_HEIGHT_MOBILE = 64
 const LOGO_WIDTH_FOOTER = 720
 const LOGO_HEIGHT_FOOTER = 192
 
@@ -66,7 +66,7 @@ export function SiteBrandMark({ variant, branding }: SiteBrandMarkProps) {
   }
 
   const linkClassName = isDesktop
-    ? 'flex min-h-[4rem] items-center rounded-lg transition-opacity hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-500'
+    ? 'flex min-h-[5rem] items-center rounded-lg transition-opacity hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-500'
     : isFooter
       ? 'inline-flex max-w-full items-center rounded-lg transition-opacity hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-500'
       : 'block transition-opacity hover:opacity-90'
@@ -83,10 +83,10 @@ export function SiteBrandMark({ variant, branding }: SiteBrandMarkProps) {
       : LOGO_HEIGHT_DESKTOP
 
   const imageClassName = isDesktop
-    ? 'h-14 w-auto max-w-[240px] object-contain object-left sm:h-16 sm:max-w-[260px]'
+    ? 'h-20 w-auto max-w-[320px] object-contain object-left sm:h-24 sm:max-w-[360px]'
     : isFooter
       ? 'h-[132px] w-auto max-w-[600px] object-contain object-left sm:h-[144px] sm:max-w-[660px]'
-    : 'mx-auto h-11 w-auto max-w-[176px] object-contain sm:h-12 sm:max-w-[192px]'
+    : 'mx-auto h-14 w-auto max-w-[220px] object-contain sm:h-16 sm:max-w-[240px]'
 
   const textClassName = isDesktop
     ? 'text-2xl font-bold tracking-tight text-orange-500 sm:text-3xl'

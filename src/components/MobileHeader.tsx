@@ -46,7 +46,7 @@ export default function MobileHeader({ branding }: MobileHeaderProps) {
           transitionTimingFunction: TOP_CONTACT_BAR_TRANSITION_EASING,
         }}
       >
-        <div className="px-4 py-1.5">
+        <div className="px-4 py-1">
           <div className="flex items-center gap-2">
             <div className="flex min-w-0 flex-1 justify-start">
               <button
