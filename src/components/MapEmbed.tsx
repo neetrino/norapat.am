@@ -35,7 +35,7 @@ export function MapEmbed({
         src={src}
         className="h-[440px] w-full border-0 sm:h-[460px] md:h-[500px]"
         allowFullScreen
-        loading="eager"
+        loading="lazy"
         referrerPolicy="no-referrer-when-downgrade"
       />
     </div>

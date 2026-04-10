@@ -1,5 +1,6 @@
 'use client'
 
+import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { ShoppingCart, User, LogOut, Heart, Search } from 'lucide-react'
 import { usePathname } from 'next/navigation'
@@ -11,12 +12,16 @@ import { useHydration } from '@/hooks/useHydration'
 import { useI18n } from '@/i18n/I18nContext'
 import type { PublicSiteSettingsState } from '@/hooks/usePublicSiteSettings'
 import { SiteBrandMark } from '@/components/SiteBrandMark'
-import { SearchModal } from '@/components/SearchModal'
 import { useHeaderStack } from '@/contexts/HeaderStackContext'
 import {
   TOP_CONTACT_BAR_TRANSITION_EASING,
   TOP_CONTACT_BAR_TRANSITION_MS,
 } from '@/lib/headerTopBar.constants'
+
+const SearchModal = dynamic(
+  () => import('@/components/SearchModal').then((mod) => mod.SearchModal),
+  { ssr: false }
+)
 
 interface DesktopHeaderProps {
   branding: PublicSiteSettingsState
@@ -244,8 +249,9 @@ export default function DesktopHeader({ branding }: DesktopHeaderProps) {
         </div>
       </div>
     </header>
-
-    <SearchModal isOpen={searchOpen} onClose={() => setSearchOpen(false)} />
+    {searchOpen ? (
+      <SearchModal isOpen={searchOpen} onClose={() => setSearchOpen(false)} />
+    ) : null}
   </>
   )
 }

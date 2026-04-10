@@ -1,6 +1,17 @@
 import { PrismaPg } from '@prisma/adapter-pg'
 import { PrismaClient } from '@prisma/client'
 
+function normalizePostgresSslMode(connectionString: string): string {
+  const normalized = new URL(connectionString)
+  const sslMode = normalized.searchParams.get('sslmode')
+
+  if (sslMode === 'require') {
+    normalized.searchParams.set('sslmode', 'verify-full')
+  }
+
+  return normalized.toString()
+}
+
 /**
  * Creates a Prisma Client with the PostgreSQL driver adapter (Prisma ORM 7+).
  */
@@ -9,7 +20,9 @@ export function createPrismaClient(): PrismaClient {
   if (!connectionString) {
     throw new Error('DATABASE_URL is not set')
   }
-  const adapter = new PrismaPg({ connectionString })
+  const adapter = new PrismaPg({
+    connectionString: normalizePostgresSslMode(connectionString),
+  })
   return new PrismaClient({ adapter })
 }
 

@@ -27,6 +27,8 @@ export interface CategoriesSectionProps {
   activeCategory?: string
   /** Գլխավորում — ընտրել կատեգորիան (օր. ֆիլտրի համաձայնեցում) */
   onSelectCategory?: (categoryName: string) => void
+  /** Optional server-side data — skips client fetch when provided */
+  initialCategories?: CategoryWithCount[]
 }
 
 /**
@@ -35,12 +37,13 @@ export interface CategoriesSectionProps {
 export function CategoriesSection({
   activeCategory,
   onSelectCategory,
+  initialCategories,
 }: CategoriesSectionProps) {
   const { t, locale } = useI18n()
   const c = t.home.categories
   const ariaCategories = t.home.ariaCategories
-  const [categories, setCategories] = useState<CategoryWithCount[]>([])
-  const [loading, setLoading] = useState(true)
+  const [categories, setCategories] = useState<CategoryWithCount[]>(initialCategories ?? [])
+  const [loading, setLoading] = useState(initialCategories === undefined)
   const [error, setError] = useState<string | null>(null)
   const scrollRef = useRef<HTMLDivElement>(null)
   const [canScrollLeft, setCanScrollLeft] = useState(false)
@@ -49,8 +52,11 @@ export function CategoriesSection({
   const navCategories = useMemo(() => dedupeCategoriesForNav(categories), [categories])
 
   useEffect(() => {
+    // Skip client fetch when SSR data is provided
+    if (initialCategories !== undefined) return
+
     const controller = new AbortController()
-    fetch('/api/categories', { signal: controller.signal, cache: 'no-store' })
+    fetch('/api/categories', { signal: controller.signal })
       .then((res) => {
         if (!res.ok) throw new Error('Failed to fetch categories')
         return res.json()
@@ -65,6 +71,7 @@ export function CategoriesSection({
       })
       .finally(() => setLoading(false))
     return () => controller.abort()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {

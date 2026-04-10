@@ -11,6 +11,9 @@ import { ProductImageGallery } from '@/components/ProductImageGallery'
 import { prisma } from '@/lib/prisma'
 import { hy } from '@/i18n/dictionaries'
 
+// Cache individual product pages for 2 hours; products change infrequently
+export const revalidate = 7200
+
 const statusBadgeStyles = {
   HIT: {
     icon: Star,

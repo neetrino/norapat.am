@@ -3,6 +3,8 @@ import { companyInfo } from '@/constants/company'
 import Link from 'next/link'
 import type { Metadata } from 'next'
 
+export const dynamic = 'force-static'
+
 function buildTelHref(phone: string): string {
   const digits = phone.replace(/\D/g, '')
   return digits ? `tel:+${digits}` : '#'

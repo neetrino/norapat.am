@@ -9,16 +9,24 @@ import { useI18n } from '@/i18n/I18nContext'
 
 const AUTO_ADVANCE_MS = 5000
 
-export function ActionsSection() {
+interface ActionsSectionProps {
+  /** Optional server-side data — skips client fetch when provided */
+  initialCampaigns?: Campaign[]
+}
+
+export function ActionsSection({ initialCampaigns }: ActionsSectionProps) {
   const { t } = useI18n()
   const ac = t.home.actions
-  const [campaigns, setCampaigns] = useState<Campaign[]>([])
-  const [loading, setLoading] = useState(true)
+  const [campaigns, setCampaigns] = useState<Campaign[]>(initialCampaigns ?? [])
+  const [loading, setLoading] = useState(initialCampaigns === undefined)
   const [activeIndex, setActiveIndex] = useState(0)
 
   useEffect(() => {
+    // Skip client fetch when SSR data is provided
+    if (initialCampaigns !== undefined) return
+
     const controller = new AbortController()
-    fetch('/api/campaigns', { signal: controller.signal, cache: 'no-store' })
+    fetch('/api/campaigns', { signal: controller.signal })
       .then((res) => {
         if (!res.ok) throw new Error('Failed to fetch campaigns')
         return res.json()
@@ -31,6 +39,7 @@ export function ActionsSection() {
       .catch(() => setCampaigns([]))
       .finally(() => setLoading(false))
     return () => controller.abort()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const goTo = useCallback(
@@ -161,9 +170,8 @@ function CampaignBanner({ campaign }: { campaign: Campaign }) {
         src={campaign.image}
         alt={campaign.title}
         fill
-        unoptimized
         className="absolute inset-0 w-full h-full object-cover"
-        loading="lazy"
+        sizes="(max-width: 640px) 100vw, (max-width: 1280px) 90vw, 1280px"
         onError={(e) => {
           const el = e.currentTarget
           el.classList.add('hidden')

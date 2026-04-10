@@ -7,7 +7,7 @@ import { useState, useEffect } from "react";
 import { useI18n } from "@/i18n/I18nContext";
 import { useCart } from "@/hooks/useCart";
 import { useWishlist } from "@/hooks/useWishlist";
-import { Product, ProductWithCategory } from "@/types";
+import { Product, ProductWithCategory, CategoryWithCount, Campaign } from "@/types";
 import Footer from "@/components/Footer";
 import { BrandBannerSection } from "@/components/home/BrandBannerSection";
 import { CategoriesSection } from "@/components/home/CategoriesSection";
@@ -15,23 +15,40 @@ import { ActionsSection } from "@/components/home/ActionsSection";
 import { HomeShowcaseCarousel } from "@/components/home/HomeShowcaseCarousel";
 import { BRAND_RED_CTA_IDLE_HOVER_CLASS } from "@/components/home/promo-food-banner/promoFoodBanner.constants";
 import { HOME_BEST_STATUS_IN, HOME_PROMO_STATUS_IN } from "@/lib/homeShowcase";
+
 const ADDED_TO_CART_FEEDBACK_MS = 2000
+
+interface HomeClientProps {
+  initialBestProducts?: ProductWithCategory[]
+  initialPromoProducts?: ProductWithCategory[]
+  initialCategories?: CategoryWithCount[]
+  initialCampaigns?: Campaign[]
+}
 /** Next/Image ներքին չափեր — ցուցադրման ժամանակ պահպանվում է հարաբերակցությունը `object-contain`-ով */
 const HOME_CTA_CHARACTER_IMAGE_WIDTH_PX = 480
 const HOME_CTA_CHARACTER_IMAGE_HEIGHT_PX = 640
 
-export default function HomeClient() {
+export default function HomeClient({
+  initialBestProducts,
+  initialPromoProducts,
+  initialCategories,
+  initialCampaigns,
+}: HomeClientProps) {
   const { t } = useI18n()
   const h = t.home
-  const [bestProducts, setBestProducts] = useState<ProductWithCategory[]>([])
-  const [promoProducts, setPromoProducts] = useState<ProductWithCategory[]>([])
-  const [loadingBest, setLoadingBest] = useState(true)
-  const [loadingPromo, setLoadingPromo] = useState(true)
+  // Use SSR data when available; fall back to client-side fetch
+  const [bestProducts, setBestProducts] = useState<ProductWithCategory[]>(initialBestProducts ?? [])
+  const [promoProducts, setPromoProducts] = useState<ProductWithCategory[]>(initialPromoProducts ?? [])
+  const [loadingBest, setLoadingBest] = useState(initialBestProducts === undefined)
+  const [loadingPromo, setLoadingPromo] = useState(initialPromoProducts === undefined)
   const [addedToCart, setAddedToCart] = useState<Set<string>>(new Set())
   const { addItem } = useCart()
   const { isInWishlist, toggle: toggleWishlist, isAuthenticated } = useWishlist()
 
   useEffect(() => {
+    // Skip client-side fetch if server already provided data
+    if (initialBestProducts !== undefined && initialPromoProducts !== undefined) return
+
     const controller = new AbortController()
     const fetchOpts: RequestInit = {
       signal: controller.signal,
@@ -64,6 +81,7 @@ export default function HomeClient() {
     load(HOME_PROMO_STATUS_IN, setPromoProducts, () => setLoadingPromo(false))
 
     return () => controller.abort()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const handleAddToCart = (product: Product) => {
@@ -90,12 +108,12 @@ export default function HomeClient() {
       <BrandBannerSection />
 
       {/* 2. Կատեգորիաների ցուցադրման հատված (02-FUNCTIONAL 1.2) */}
-      <CategoriesSection />
+      <CategoriesSection initialCategories={initialCategories} />
 
       {/* 3–4. Լավագույն + հատուկ առաջարկներ — ցուցադրվում են «products-section»-ում կույտով */}
 
       {/* 3.1. Ակցիաներ — ժամանակավոր ակցիաներ, բաննեռներ (02-FUNCTIONAL 1.4) */}
-      <ActionsSection />
+      <ActionsSection initialCampaigns={initialCampaigns} />
 
       {/* 5. Products Showcase — նույն visual ռիթմը, ինչ BestSellersSection / PromoSection / ActionsSection */}
       <section

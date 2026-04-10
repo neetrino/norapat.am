@@ -2,12 +2,11 @@ import type { Metadata } from "next";
 import { Caveat, Inter, Permanent_Marker } from "next/font/google";
 import "./globals.css";
 import ClientProviders from "@/components/ClientProviders";
+import ClientDecorations from "@/components/ClientDecorations";
 import MobileBottomNav from "@/components/MobileBottomNav";
-import ServiceWorkerProvider from "@/components/ServiceWorkerProvider";
-import PullToRefresh from "@/components/PullToRefresh";
 import Header from "@/components/Header";
-import FloatingCallWidget from "@/components/FloatingCallWidget";
 import { HeaderStackProvider } from "@/contexts/HeaderStackContext";
+import PullToRefresh from "@/components/PullToRefresh";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -50,14 +49,13 @@ export default function RootLayout({
       <body
         className={`${inter.variable} ${promoCaveat.variable} ${promoMarker.variable} font-sans antialiased overflow-visible`}
       >
-        <ServiceWorkerProvider />
+        <ClientDecorations />
         <ClientProviders>
           <HeaderStackProvider>
             <Header />
             <PullToRefresh>
               {children}
             </PullToRefresh>
-            <FloatingCallWidget />
             <MobileBottomNav />
           </HeaderStackProvider>
         </ClientProviders>

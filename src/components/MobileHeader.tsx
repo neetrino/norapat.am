@@ -1,18 +1,23 @@
 'use client'
 
+import dynamic from 'next/dynamic'
 import { Menu, Search, X, Home, UtensilsCrossed, Info, Phone } from 'lucide-react'
 import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useI18n } from '@/i18n/I18nContext'
 import type { PublicSiteSettingsState } from '@/hooks/usePublicSiteSettings'
-import { SearchModal } from '@/components/SearchModal'
 import { SiteBrandMark } from '@/components/SiteBrandMark'
 import { useHeaderStack } from '@/contexts/HeaderStackContext'
 import {
   TOP_CONTACT_BAR_TRANSITION_EASING,
   TOP_CONTACT_BAR_TRANSITION_MS,
 } from '@/lib/headerTopBar.constants'
+
+const SearchModal = dynamic(
+  () => import('@/components/SearchModal').then((mod) => mod.SearchModal),
+  { ssr: false }
+)
 
 interface MobileHeaderProps {
   branding: PublicSiteSettingsState
@@ -82,8 +87,9 @@ export default function MobileHeader({ branding }: MobileHeaderProps) {
           </div>
         </div>
       </header>
-
-      <SearchModal isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
+      {isSearchOpen ? (
+        <SearchModal isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
+      ) : null}
 
       {/* Full-screen overlay menu */}
       <div
