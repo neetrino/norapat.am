@@ -2,9 +2,9 @@
 
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
-import { ArrowLeft, Plus, Edit, Trash2, Tag } from 'lucide-react'
+import { ArrowLeft, Plus, Edit, Trash2, Tag, X } from 'lucide-react'
 
 interface PromoCode {
   id: string
@@ -27,6 +27,8 @@ export default function AdminPromoPage() {
   const [loading, setLoading] = useState(true)
   const [creating, setCreating] = useState(false)
   const [editing, setEditing] = useState<PromoCode | null>(null)
+  const [formError, setFormError] = useState('')
+  const formErrorRef = useRef<HTMLDivElement>(null)
   const [form, setForm] = useState({
     code: '',
     discountPercent: '' as string | number,
@@ -45,6 +47,12 @@ export default function AdminPromoPage() {
     fetchList()
   }, [session, status, router])
 
+  useEffect(() => {
+    if (formError && formErrorRef.current) {
+      formErrorRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    }
+  }, [formError])
+
   const fetchList = async () => {
     try {
       const res = await fetch('/api/admin/promo')
@@ -58,6 +66,7 @@ export default function AdminPromoPage() {
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault()
+    setFormError('')
     try {
       const res = await fetch('/api/admin/promo', {
         method: 'POST',
@@ -77,17 +86,17 @@ export default function AdminPromoPage() {
         setForm({ code: '', discountPercent: '', discountAmount: '', minOrderAmount: '', maxUses: '', isActive: true })
       } else {
         const err = await res.json()
-        alert(err.error || 'Սխալ')
+        setFormError(err.error || 'Չհաջողվեց ստեղծել պրոմո կոդը: Ստուգե՛ք մուտքագրված տվյալները:')
       }
-    } catch (e) {
-      console.error(e)
-      alert('Սխալ')
+    } catch {
+      setFormError('Սխալ է տեղի ունեցել: Ստուգե՛ք ձեր կապը և փորձե՛ք կրկին:')
     }
   }
 
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!editing) return
+    setFormError('')
     try {
       const res = await fetch(`/api/admin/promo/${editing.id}`, {
         method: 'PATCH',
@@ -107,11 +116,10 @@ export default function AdminPromoPage() {
         setForm({ code: '', discountPercent: '', discountAmount: '', minOrderAmount: '', maxUses: '', isActive: true })
       } else {
         const err = await res.json()
-        alert(err.error || 'Սխալ')
+        setFormError(err.error || 'Չհաջողվեց թարմացնել պրոմո կոդը: Ստուգե՛ք մուտքագրված տվյալները:')
       }
-    } catch (e) {
-      console.error(e)
-      alert('Սխալ')
+    } catch {
+      setFormError('Սխալ է տեղի ունեցել: Ստուգե՛ք ձեր կապը և փորձե՛ք կրկին:')
     }
   }
 
@@ -119,10 +127,10 @@ export default function AdminPromoPage() {
     if (!confirm('Ջնջե՞լ պրոմո կոդը')) return
     try {
       const res = await fetch(`/api/admin/promo/${id}`, { method: 'DELETE' })
-      if (res.ok) await fetchList()
-      else alert('Ջնջումը ձախողվեց')
-    } catch (e) {
-      console.error(e)
+      if (!res.ok) alert('Չհաջողվեց ջնջել պրոմո կոդը: Փորձե՛ք կրկին:')
+      else await fetchList()
+    } catch {
+      alert('Ջնջելիս սխալ է տեղի ունեցել:')
     }
   }
 
@@ -173,6 +181,14 @@ export default function AdminPromoPage() {
           <div className="bg-white rounded-2xl shadow-lg p-6 mb-8">
             <h2 className="text-lg font-semibold mb-4">{editing ? 'Խմբագրել' : 'Նոր պրոմո կոդ'}</h2>
             <form onSubmit={editing ? handleUpdate : handleCreate} className="space-y-4">
+              {formError && (
+                <div ref={formErrorRef} className="bg-red-50 border border-red-200 rounded-xl p-4">
+                  <div className="flex items-center gap-2">
+                    <X className="h-5 w-5 text-red-500 flex-shrink-0" />
+                    <p className="text-red-700">{formError}</p>
+                  </div>
+                </div>
+              )}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Կոդ *</label>
                 <input
@@ -248,6 +264,7 @@ export default function AdminPromoPage() {
                   onClick={() => {
                     setCreating(false)
                     setEditing(null)
+                    setFormError('')
                     setForm({ code: '', discountPercent: '', discountAmount: '', minOrderAmount: '', maxUses: '', isActive: true })
                   }}
                   className="border border-gray-300 px-4 py-2 rounded-xl hover:bg-gray-50"

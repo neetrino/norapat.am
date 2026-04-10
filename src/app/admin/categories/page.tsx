@@ -2,7 +2,7 @@
 
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import {
@@ -14,7 +14,8 @@ import {
   Eye,
   EyeOff,
   CheckSquare,
-  Square
+  Square,
+  X
 } from 'lucide-react'
 import ImageSelector from '@/components/ImageSelector'
 
@@ -47,6 +48,14 @@ export default function CategoriesPage() {
     image: '',
     isActive: true
   })
+  const [formError, setFormError] = useState('')
+  const formErrorRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (formError && formErrorRef.current) {
+      formErrorRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    }
+  }, [formError])
 
   const fetchCategories = useCallback(async () => {
     try {
@@ -76,6 +85,7 @@ export default function CategoriesPage() {
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault()
+    setFormError('')
     try {
       const response = await fetch('/api/admin/categories', {
         method: 'POST',
@@ -88,18 +98,18 @@ export default function CategoriesPage() {
         setIsCreating(false)
         setFormData({ name: '', description: '', image: '', isActive: true })
       } else {
-        const error = await response.json()
-        alert(error.error || 'Սխալ կատեգորիա ստեղծելիս')
+        const data = await response.json()
+        setFormError(data.error || 'Չհաջողվեց ստեղծել կատեգորիան: Փորձե՛ք կրկին:')
       }
-    } catch (error) {
-      console.error('Error creating category:', error)
-      alert('Սխալ կատեգորիա ստեղծելիս')
+    } catch {
+      setFormError('Կատեգորիա ստեղծելիս սխալ է տեղի ունեցել: Ստուգե՛ք ձեր կապը և փորձե՛ք կրկին:')
     }
   }
 
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!editingCategory) return
+    setFormError('')
 
     try {
       const response = await fetch(`/api/admin/categories/${editingCategory.id}`, {
@@ -113,12 +123,11 @@ export default function CategoriesPage() {
         setEditingCategory(null)
         setFormData({ name: '', description: '', image: '', isActive: true })
       } else {
-        const error = await response.json()
-        alert(error.error || 'Սխալ կատեգորիա թարմացնելիս')
+        const data = await response.json()
+        setFormError(data.error || 'Չհաջողվեց թարմացնել կատեգորիան: Փորձե՛ք կրկին:')
       }
-    } catch (error) {
-      console.error('Error updating category:', error)
-      alert('Սխալ կատեգորիա թարմացնելիս')
+    } catch {
+      setFormError('Կատեգորիա թարմացնելիս սխալ է տեղի ունեցել: Ստուգե՛ք ձեր կապը և փորձե՛ք կրկին:')
     }
   }
 
@@ -133,12 +142,11 @@ export default function CategoriesPage() {
       if (response.ok) {
         await fetchCategories()
       } else {
-        const error = await response.json()
-        alert(error.error || 'Սխալ կատեգորիա ջնջելիս')
+        const data = await response.json()
+        alert(data.error || 'Չհաջողվեց ջնջել կատեգորիան: Հնարավոր է կատեգորիան ունի ապրանքներ:')
       }
-    } catch (error) {
-      console.error('Error deleting category:', error)
-      alert('Սխալ կատեգորիա ջնջելիս')
+    } catch {
+      alert('Կատեգորիա ջնջելիս սխալ է տեղի ունեցել: Ստուգե՛ք ձեր կապը և փորձե՛ք կրկին:')
     }
   }
 
@@ -156,6 +164,7 @@ export default function CategoriesPage() {
     setEditingCategory(null)
     setIsCreating(false)
     setFormData({ name: '', description: '', image: '', isActive: true })
+    setFormError('')
   }
 
   const toggleSelect = (id: string) => {
@@ -180,7 +189,7 @@ export default function CategoriesPage() {
     const nonDeletable = categories.filter(c => selectedIds.has(c.id) && c._count.products > 0)
 
     if (deletable.length === 0) {
-      alert('Ընտրված կատեգորիաները ջնջել հնարավոր չէ, քանի որ դրանք ունեն ապրանքներ:')
+      alert('Ընտրված կատեգորիաները ջնջել հնարավոր չէ, քանի որ բոլորն ունեն ապրանքներ: Նախ տեղափոխե՛ք կամ ջնջե՛ք ապրանքները:')
       return
     }
 
@@ -274,6 +283,15 @@ export default function CategoriesPage() {
             </h2>
             
             <form onSubmit={isCreating ? handleCreate : handleUpdate} className="space-y-4">
+              {formError && (
+                <div ref={formErrorRef} className="bg-red-50 border border-red-200 rounded-xl p-4">
+                  <div className="flex items-center gap-2">
+                    <X className="h-5 w-5 text-red-500 flex-shrink-0" />
+                    <p className="text-red-700">{formError}</p>
+                  </div>
+                </div>
+              )}
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Կատեգորիայի անվանում *

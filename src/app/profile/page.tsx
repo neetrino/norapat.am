@@ -2,7 +2,7 @@
 
 import { getSession, useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { CheckCircle, Clock, Lock, MapPin, Package, RotateCcw, Trash2, User, Wallet, XCircle } from 'lucide-react'
@@ -63,6 +63,27 @@ export default function ProfilePage() {
   const [personalFeedbackTone, setPersonalFeedbackTone] = useState<FeedbackTone>('success')
   const [addressFeedbackTone, setAddressFeedbackTone] = useState<FeedbackTone>('success')
   const [passwordFeedbackTone, setPasswordFeedbackTone] = useState<FeedbackTone>('success')
+  const personalFeedbackRef = useRef<HTMLDivElement>(null)
+  const addressFeedbackRef = useRef<HTMLDivElement>(null)
+  const passwordFeedbackRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (personalFeedback && personalFeedbackTone === 'error' && personalFeedbackRef.current) {
+      personalFeedbackRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    }
+  }, [personalFeedback, personalFeedbackTone])
+
+  useEffect(() => {
+    if (addressFeedback && addressFeedbackTone === 'error' && addressFeedbackRef.current) {
+      addressFeedbackRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    }
+  }, [addressFeedback, addressFeedbackTone])
+
+  useEffect(() => {
+    if (passwordFeedback && passwordFeedbackTone === 'error' && passwordFeedbackRef.current) {
+      passwordFeedbackRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    }
+  }, [passwordFeedback, passwordFeedbackTone])
   const [isSavingPersonal, setIsSavingPersonal] = useState(false)
   const [isSavingAddress, setIsSavingAddress] = useState(false)
   const [isSavingPassword, setIsSavingPassword] = useState(false)
@@ -466,7 +487,7 @@ export default function ProfilePage() {
                 </div>
                 <div className="mt-4"><label className="mb-2 block text-sm font-semibold text-slate-700">Էլ. հասցե</label><input className={`${inputClass} bg-slate-100 text-slate-500`} value={userProfile.email} disabled readOnly /></div>
                 {isPersonalDirty && !personalFeedback && <div className="mt-4 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700">Unsaved changes.</div>}
-                {personalFeedback && <div className={`mt-4 rounded-2xl border px-4 py-3 text-sm ${getFeedbackClass(personalFeedbackTone)}`}>{personalFeedback}</div>}
+                {personalFeedback && <div ref={personalFeedbackRef} className={`mt-4 rounded-2xl border px-4 py-3 text-sm ${getFeedbackClass(personalFeedbackTone)}`}>{personalFeedback}</div>}
                 <button type="button" onClick={handlePersonalSave} disabled={isSavingPersonal} className="mt-6 rounded-2xl bg-red-500 px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-red-600 disabled:cursor-not-allowed disabled:opacity-60">{isSavingPersonal ? profilePage.loading : 'Պահպանել'}</button>
               </section>
             )}
@@ -476,7 +497,7 @@ export default function ProfilePage() {
                 <h2 className="text-xl font-semibold text-slate-950">Հասցեներ</h2>
                 <div className="mt-6"><label className="mb-2 block text-sm font-semibold text-slate-700">Հիմնական հասցե</label><textarea rows={5} className={inputClass} value={addressForm.address} onChange={(event) => { setAddressFeedback(''); setAddressForm({ address: event.target.value }) }} placeholder="Մուտքագրիր հասցեն" /></div>
                 {isAddressDirty && !addressFeedback && <div className="mt-4 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700">Address has unsaved changes.</div>}
-                {addressFeedback && <div className={`mt-4 rounded-2xl border px-4 py-3 text-sm ${getFeedbackClass(addressFeedbackTone)}`}>{addressFeedback}</div>}
+                {addressFeedback && <div ref={addressFeedbackRef} className={`mt-4 rounded-2xl border px-4 py-3 text-sm ${getFeedbackClass(addressFeedbackTone)}`}>{addressFeedback}</div>}
                 <button type="button" onClick={handleAddressSave} disabled={isSavingAddress} className="mt-6 rounded-2xl bg-red-500 px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-red-600 disabled:cursor-not-allowed disabled:opacity-60">{isSavingAddress ? profilePage.loading : 'Պահպանել հասցեն'}</button>
               </section>
             )}
@@ -490,7 +511,7 @@ export default function ProfilePage() {
                   <div><label className="mb-2 block text-sm font-semibold text-slate-700">Կրկնել նոր գաղտնաբառը</label><input type="password" className={inputClass} value={passwordForm.confirmPassword} onChange={(event) => { setPasswordFeedback(''); setPasswordForm((prev) => ({ ...prev, confirmPassword: event.target.value })) }} /></div>
                 </div>
                 {isPasswordDirty && !passwordFeedback && <div className="mt-4 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700">Password is not saved yet.</div>}
-                {passwordFeedback && <div className={`mt-4 rounded-2xl border px-4 py-3 text-sm ${getFeedbackClass(passwordFeedbackTone)}`}>{passwordFeedback}</div>}
+                {passwordFeedback && <div ref={passwordFeedbackRef} className={`mt-4 rounded-2xl border px-4 py-3 text-sm ${getFeedbackClass(passwordFeedbackTone)}`}>{passwordFeedback}</div>}
                 <button type="button" onClick={handlePasswordSave} disabled={isSavingPassword} className="mt-6 rounded-2xl bg-red-500 px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-red-600 disabled:cursor-not-allowed disabled:opacity-60">{isSavingPassword ? profilePage.loading : 'Փոխել գաղտնաբառը'}</button>
               </section>
             )}
