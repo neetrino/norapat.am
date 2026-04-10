@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { normalizeCategoryWithCount } from '@/lib/normalizeCategoryWithCount'
 import { prisma } from '@/lib/prisma'
 
 // GET /api/categories - получить все активные категории с количеством товаров
@@ -29,7 +30,11 @@ export async function GET(request: NextRequest) {
     })
 
     // Добавляем кэширование на 5 минут
-    const response = NextResponse.json(categories)
+    const normalizedCategories = categories.map((category) =>
+      normalizeCategoryWithCount(category)
+    )
+
+    const response = NextResponse.json(normalizedCategories)
     response.headers.set('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=600')
     
     return response

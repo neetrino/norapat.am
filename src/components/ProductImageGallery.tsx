@@ -78,6 +78,7 @@ export function ProductImageGallery({
               src={currentImage}
               productName={productName}
               fill
+              priority={selectedIndex === 0}
               sizes="(max-width: 768px) 100vw, 50vw"
               className="cursor-zoom-in object-cover transition-transform duration-500 group-hover:scale-[1.03]"
               onClick={() => setIsZoomOpen(true)}

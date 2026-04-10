@@ -1,6 +1,7 @@
 import type { Prisma } from '@prisma/client'
 import { MENU_PRODUCTS_PAGE_SIZE } from '@/constants/menuPagination.constants'
 import ProductsPageClient from '@/components/ProductsPageClient'
+import { normalizeCategoryWithCount } from '@/lib/normalizeCategoryWithCount'
 import { prisma } from '@/lib/prisma'
 import type { CategoryWithCount, ProductWithCategory } from '@/types'
 
@@ -121,7 +122,9 @@ async function fetchProductsPageData(searchParams: ProductsSearchParams) {
   ])
 
   return {
-    categories: categories as CategoryWithCount[],
+    categories: categories.map((category) =>
+      normalizeCategoryWithCount(category as CategoryWithCount)
+    ),
     items: items as unknown as ProductWithCategory[],
     total,
     currentPage,

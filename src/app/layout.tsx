@@ -2,11 +2,12 @@ import type { Metadata } from "next";
 import { Caveat, Inter, Permanent_Marker } from "next/font/google";
 import "./globals.css";
 import ClientProviders from "@/components/ClientProviders";
-import ClientDecorations from "@/components/ClientDecorations";
+import DeferredClientDecorations from "@/components/DeferredClientDecorations";
+import DeferredPullToRefresh from "@/components/DeferredPullToRefresh";
 import MobileBottomNav from "@/components/MobileBottomNav";
 import Header from "@/components/Header";
 import { HeaderStackProvider } from "@/contexts/HeaderStackContext";
-import PullToRefresh from "@/components/PullToRefresh";
+import { fetchPublicSiteSettings } from "@/lib/publicSiteSettings";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -39,23 +40,25 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const publicSiteSettings = await fetchPublicSiteSettings();
+
   return (
     <html lang="hy" data-scroll-behavior="smooth" suppressHydrationWarning>
       <body
         className={`${inter.variable} ${promoCaveat.variable} ${promoMarker.variable} font-sans antialiased overflow-visible`}
       >
-        <ClientDecorations />
-        <ClientProviders>
+        <DeferredClientDecorations />
+        <ClientProviders initialPublicSiteSettings={publicSiteSettings}>
           <HeaderStackProvider>
             <Header />
-            <PullToRefresh>
+            <DeferredPullToRefresh>
               {children}
-            </PullToRefresh>
+            </DeferredPullToRefresh>
             <MobileBottomNav />
           </HeaderStackProvider>
         </ClientProviders>

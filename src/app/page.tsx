@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import type { ProductStatus } from "@prisma/client";
 import HomeClient from "./HomeClient";
 import { prisma } from "@/lib/prisma";
+import { normalizeCategoryWithCount } from "@/lib/normalizeCategoryWithCount";
 import type { ProductWithCategory, CategoryWithCount, Campaign } from "@/types";
 import { HOME_BEST_STATUS_IN, HOME_PROMO_STATUS_IN } from "@/lib/homeShowcase";
 
@@ -102,7 +103,9 @@ async function fetchHomePageData() {
   return {
     bestProducts: bestProducts as unknown as ProductWithCategory[],
     promoProducts: promoProducts as unknown as ProductWithCategory[],
-    categories: categories as unknown as CategoryWithCount[],
+    categories: categories.map((category) =>
+      normalizeCategoryWithCount(category as CategoryWithCount)
+    ),
     campaigns: campaigns as Campaign[],
   };
 }

@@ -1,6 +1,7 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { createContext, createElement, useContext, useEffect, useState } from 'react'
+import type { PublicSiteSettingsData } from '@/lib/publicSiteSettings'
 import { DEFAULT_PUBLIC_LOGO_URL } from '@/lib/siteSettings.constants'
 
 export interface PublicSiteSettingsState {
@@ -12,13 +13,12 @@ export interface PublicSiteSettingsState {
   isLoading: boolean
 }
 
-type BrandingData = Pick<
-  PublicSiteSettingsState,
-  'logo' | 'siteName' | 'contactPhone' | 'contactEmail' | 'address'
->
+type BrandingData = PublicSiteSettingsData
 
 let shared: BrandingData | null = null
 let inflight: Promise<BrandingData> | null = null
+
+const PublicSiteSettingsContext = createContext<BrandingData | null>(null)
 
 function fetchBrandingOnce(): Promise<BrandingData> {
   if (shared) {
@@ -78,22 +78,42 @@ function fetchBrandingOnce(): Promise<BrandingData> {
 }
 
 export function usePublicSiteSettings(): PublicSiteSettingsState {
+  const initialData = useContext(PublicSiteSettingsContext)
   const [state, setState] = useState<PublicSiteSettingsState>(() => ({
-    logo: shared?.logo ?? null,
-    siteName: shared?.siteName ?? null,
-    contactPhone: shared?.contactPhone ?? null,
-    contactEmail: shared?.contactEmail ?? null,
-    address: shared?.address ?? null,
-    isLoading: shared === null,
+    logo: initialData?.logo ?? shared?.logo ?? null,
+    siteName: initialData?.siteName ?? shared?.siteName ?? null,
+    contactPhone: initialData?.contactPhone ?? shared?.contactPhone ?? null,
+    contactEmail: initialData?.contactEmail ?? shared?.contactEmail ?? null,
+    address: initialData?.address ?? shared?.address ?? null,
+    isLoading: initialData == null && shared === null,
   }))
 
   useEffect(() => {
+    if (initialData) {
+      shared = initialData
+      setState({ ...initialData, isLoading: false })
+      return
+    }
     if (shared) {
       setState({ ...shared, isLoading: false })
       return
     }
     fetchBrandingOnce().then((data) => setState({ ...data, isLoading: false }))
-  }, [])
+  }, [initialData])
 
   return state
+}
+
+export function PublicSiteSettingsProvider({
+  children,
+  initialData,
+}: {
+  children: React.ReactNode
+  initialData: BrandingData
+}) {
+  return createElement(
+    PublicSiteSettingsContext.Provider,
+    { value: initialData },
+    children
+  )
 }

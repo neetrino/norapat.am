@@ -18,6 +18,7 @@ export const PUBLIC_SITE_SETTING_KEYS = [
   'logo',
   'siteName',
   'contactPhone',
+  'contactEmail',
   'address',
 ] as const
 

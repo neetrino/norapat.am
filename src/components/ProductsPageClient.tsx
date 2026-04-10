@@ -56,7 +56,6 @@ function CategoryPromoImage({ className = '' }: { className?: string }) {
             fill
             sizes="(max-width: 1024px) 196px, 196px"
             className="object-contain"
-            priority
           />
         </div>
       </div>
