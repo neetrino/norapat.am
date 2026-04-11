@@ -35,17 +35,18 @@ export function TopContactBar() {
   const barTransitionStyle = {
     top: 0,
     height: topBarStripHeightPx,
-    transitionProperty: 'transform, opacity, box-shadow',
+    transitionProperty: 'opacity, filter, box-shadow',
     transitionDuration: `${TOP_CONTACT_BAR_TRANSITION_MS}ms`,
     transitionTimingFunction: TOP_CONTACT_BAR_TRANSITION_EASING,
+    filter: topBarVisible ? 'blur(0px)' : 'blur(8px)',
   } as const
 
   return (
     <div
       className={`fixed left-0 right-0 z-[115] overflow-hidden border-b border-white/10 bg-black text-white ${
         topBarVisible
-          ? 'translate-y-0 opacity-100 shadow-[0_8px_32px_rgba(0,0,0,0.2)]'
-          : 'pointer-events-none -translate-y-[calc(100%+2px)] opacity-0 shadow-none'
+          ? 'opacity-100 shadow-[0_8px_32px_rgba(0,0,0,0.2)]'
+          : 'pointer-events-none opacity-0 shadow-none'
       }`}
       style={barTransitionStyle}
       aria-hidden={!topBarVisible}
