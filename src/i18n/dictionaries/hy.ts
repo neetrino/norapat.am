@@ -134,7 +134,7 @@ export const hy: AppMessages = {
     viewEntireShort: 'Դիտել',
     carouselScrollPrev: 'Ոլորել ձախ',
     carouselScrollNext: 'Ոլորել աջ',
-    whyUsTitle: 'Ինչու՞ ընտրում են մեզ',
+    whyUsTitle: 'Ինչու՞ են ընտրում մեզ',
     whyUsSubtitle:
       'Ստեղծել ենք ավանդույթների և նորարարության կատարյալ համադրություն ձեր հաճույքի համար',
     featureFastTitle: 'Արագ',
