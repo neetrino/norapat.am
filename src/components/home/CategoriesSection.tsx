@@ -21,7 +21,7 @@ const SCROLL_STEP_PX = 320
  * Uses orange-100 — project tokens map orange-50 to #fef2f2 (≈white), so orange-50 reads as “no bg”.
  */
 const CATEGORY_SECTION_SURFACE_CLASS =
-  'relative w-full border-t-[3px] border-t-[#a51d1d] border-b border-orange-200/70 bg-orange-100 shadow-[inset_0_-1px_0_0_rgba(238,49,36,0.08)]'
+  'relative w-full border-t border-b border-gray-200 bg-white shadow-[inset_0_-1px_0_0_rgba(17,24,39,0.04)]'
 
 export interface CategoriesSectionProps {
   activeCategory?: string

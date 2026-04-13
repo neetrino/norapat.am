@@ -100,7 +100,7 @@ export default function HomeClient() {
       {/* 5. Products Showcase — նույն visual ռիթմը, ինչ BestSellersSection / PromoSection / ActionsSection */}
       <section
         id="products-section"
-        className="scroll-mt-24 py-16 lg:py-20"
+        className="scroll-mt-24 bg-white py-16 lg:py-20"
         aria-label={`${h.bestSellers.title} · ${h.promo.title}`}
       >
         {/* Լավագույն — ինչպես BestSellersSection (`from-orange-50/60 to-white`) */}
@@ -120,7 +120,7 @@ export default function HomeClient() {
                 <div className="h-12 w-12 animate-spin rounded-full border-4 border-orange-500 border-t-transparent" />
               </div>
             ) : bestProducts.length === 0 ? (
-              <div className="mx-auto max-w-lg rounded-2xl border border-orange-100 bg-orange-50/50 px-6 py-10 text-center">
+              <div className="mx-auto max-w-lg rounded-2xl border border-gray-200 bg-white px-6 py-10 text-center shadow-sm">
                 <p className="text-base font-semibold text-gray-900 sm:text-lg">
                   {h.showcaseEmptyBest}
                 </p>
@@ -168,7 +168,7 @@ export default function HomeClient() {
                 <div className="h-12 w-12 animate-spin rounded-full border-4 border-amber-500 border-t-transparent" />
               </div>
             ) : promoProducts.length === 0 ? (
-              <div className="mx-auto max-w-lg rounded-2xl border border-amber-100 bg-amber-50/50 px-6 py-10 text-center">
+              <div className="mx-auto max-w-lg rounded-2xl border border-gray-200 bg-white px-6 py-10 text-center shadow-sm">
                 <p className="text-base font-semibold text-gray-900 sm:text-lg">
                   {h.showcaseEmptyPromo}
                 </p>
@@ -279,10 +279,11 @@ export default function HomeClient() {
 
       {/* CTA Section — նույն ֆոնը ինչ հերո բանները (`globals.css` → promo-food-banner-*) */}
       <section
-        className="promo-food-banner-bg promo-food-banner-vignette relative hidden overflow-hidden py-10 text-white lg:block lg:py-12"
+        className="hidden bg-white py-8 lg:block lg:py-10"
         aria-labelledby="home-cta-heading"
       >
-        <div className="relative z-10 mx-auto flex max-w-7xl flex-col items-center gap-6 px-4 sm:px-6 lg:flex-row lg:items-end lg:justify-between lg:gap-4 lg:px-8">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="promo-food-banner-bg promo-food-banner-vignette relative z-10 flex flex-col items-center gap-6 overflow-hidden rounded-[2rem] px-4 py-10 text-white shadow-[0_18px_48px_rgba(165,29,29,0.18)] sm:px-6 lg:flex-row lg:items-end lg:justify-between lg:gap-4 lg:px-8 lg:py-12">
           <div className="order-2 flex w-full flex-1 justify-center lg:order-1 lg:justify-end lg:pr-4">
             <Image
               src="/home-cta-girl.png"
@@ -326,6 +327,7 @@ export default function HomeClient() {
               className="h-auto max-h-[min(48vw,24rem)] w-auto max-w-[min(88vw,20rem)] object-contain object-bottom lg:max-h-[min(42vw,30rem)] lg:max-w-[24rem] xl:max-h-[34rem] xl:max-w-[26rem]"
               sizes="(min-width: 1280px) 26rem, (min-width: 1024px) 24rem, 100vw"
             />
+          </div>
           </div>
         </div>
       </section>

@@ -14,12 +14,11 @@ export function BrandBannerSection() {
   const p = t.home.brandBannerPromo
 
   return (
-    <section
-      className="promo-food-banner-bg brand-banner-bg-dark promo-food-banner-vignette relative overflow-hidden text-white"
-      aria-label={homeAria}
-    >
-      <div className="relative z-10 mx-auto max-w-7xl px-4 pb-10 pt-8 sm:px-6 sm:pb-12 sm:pt-10 lg:px-8 lg:pb-14 lg:pt-12">
-        <div className="grid grid-cols-1 items-center gap-8 lg:grid-cols-2 lg:gap-6 xl:gap-10">
+    <section className="bg-white py-4 sm:py-5 lg:py-6" aria-label={homeAria}>
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="promo-food-banner-bg brand-banner-bg-dark promo-food-banner-vignette relative overflow-hidden rounded-[2rem] text-white shadow-[0_18px_48px_rgba(165,29,29,0.18)]">
+          <div className="relative z-10 px-4 pb-10 pt-8 sm:px-6 sm:pb-12 sm:pt-10 lg:px-8 lg:pb-14 lg:pt-12">
+            <div className="grid grid-cols-1 items-center gap-8 lg:grid-cols-2 lg:gap-6 xl:gap-10">
           <div className="relative z-10 max-w-xl space-y-4 sm:space-y-5">
             <div className="relative pl-1">
               {p.super && (
@@ -79,6 +78,8 @@ export function BrandBannerSection() {
               <div className="animate-promo-plate-float relative z-[5] flex w-full items-center justify-center">
                 <HeroBannerRotatingImage />
               </div>
+            </div>
+          </div>
             </div>
           </div>
         </div>

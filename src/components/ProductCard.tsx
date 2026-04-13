@@ -282,7 +282,11 @@ const ProductCard = memo(
     return (
       <Link
         href={`/products/${product.id}`}
-        className={`group relative w-full overflow-hidden border border-[#eadfd9] bg-[linear-gradient(160deg,#ffffff_0%,#fffaf6_52%,#fff3ec_100%)] shadow-[0_16px_38px_rgba(15,23,42,0.06)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_24px_48px_rgba(15,23,42,0.1)] ${
+        className={`group relative w-full overflow-hidden transition-all duration-300 ${
+          isCompact
+            ? 'border-none bg-transparent shadow-none hover:-translate-y-1 hover:shadow-none'
+            : 'border border-[#eadfd9] bg-[linear-gradient(160deg,#ffffff_0%,#fffaf6_52%,#fff3ec_100%)] shadow-[0_16px_38px_rgba(15,23,42,0.06)] hover:-translate-y-1 hover:shadow-[0_24px_48px_rgba(15,23,42,0.1)]'
+        } ${
           isShowcaseNarrow ? 'rounded-3xl' : 'rounded-[2rem]'
         } ${isCompact ? 'flex flex-col' : 'block'}`}
       >

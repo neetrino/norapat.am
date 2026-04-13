@@ -35,9 +35,9 @@ const SHOWCASE_VIEWPORT_NARROW_MAX_PX = 639
 /** Բրենդի կարմիր (#EE3124) — երկու հատվածներում նույն CTA-ն */
 const stripToneClasses = {
   orange:
-    'border-red-300/80 bg-gradient-to-b from-red-50/98 to-white shadow-[0_8px_32px_rgba(238,49,36,0.12)] ring-1 ring-red-200/70 hover:border-red-400/90 hover:shadow-[0_12px_40px_rgba(238,49,36,0.16)] hover:ring-red-300/80',
+    'border-gray-200 bg-white shadow-[0_8px_24px_rgba(15,23,42,0.08)] ring-1 ring-gray-100 hover:border-red-300/80 hover:shadow-[0_12px_32px_rgba(238,49,36,0.10)] hover:ring-red-100/80',
   amber:
-    'border-red-300/80 bg-gradient-to-b from-red-50/98 to-white shadow-[0_8px_32px_rgba(238,49,36,0.12)] ring-1 ring-red-200/70 hover:border-red-400/90 hover:shadow-[0_12px_40px_rgba(238,49,36,0.16)] hover:ring-red-300/80',
+    'border-gray-200 bg-white shadow-[0_8px_24px_rgba(15,23,42,0.08)] ring-1 ring-gray-100 hover:border-red-300/80 hover:shadow-[0_12px_32px_rgba(238,49,36,0.10)] hover:ring-red-100/80',
 } as const
 
 const stripIconToneClasses = {
