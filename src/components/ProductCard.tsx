@@ -61,6 +61,53 @@ function ProductBadge({
   )
 }
 
+function ProductCardImageFrame({
+  image,
+  alt,
+  sizes,
+  imagePaddingClass,
+  imageClassName = 'object-contain',
+}: {
+  image: string | null | undefined
+  alt: string
+  sizes: string
+  imagePaddingClass: string
+  imageClassName?: string
+}) {
+  const hasImage = Boolean(image && image !== 'no-image')
+
+  return (
+    <div className="relative z-10 h-full w-full overflow-hidden">
+      <div
+        aria-hidden
+        className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.55)_0%,rgba(255,244,238,0.18)_42%,rgba(248,240,233,0)_72%)]"
+      />
+      <div aria-hidden className="absolute inset-x-6 bottom-4 h-7 rounded-full bg-black/5 blur-xl" />
+
+      {hasImage ? (
+        <div className={`relative h-full w-full ${imagePaddingClass}`}>
+          <Image
+            src={image!}
+            alt={alt}
+            fill
+            sizes={sizes}
+            className={`${imageClassName} object-center transition-transform duration-500 ease-out group-hover:scale-105`}
+            style={{ filter: 'drop-shadow(0 14px 24px rgba(15,23,42,0.14))' }}
+            loading="lazy"
+            quality={85}
+          />
+        </div>
+      ) : (
+        <div className="relative flex h-full w-full items-center justify-center">
+          <div className="rounded-full bg-white/85 px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400 shadow-[0_10px_24px_rgba(15,23,42,0.08)]">
+            No Image
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
 const ProductCard = memo(
   ({
     product,
@@ -109,24 +156,16 @@ const ProductCard = memo(
           href={`/products/${product.id}`}
           className="group relative flex overflow-hidden rounded-[2rem] border border-[#eadfd9] bg-[linear-gradient(140deg,#ffffff_0%,#fffaf6_55%,#fff3ec_100%)] shadow-[0_16px_38px_rgba(15,23,42,0.06)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_22px_46px_rgba(15,23,42,0.1)]"
         >
-          <div className="relative w-36 shrink-0 self-stretch overflow-hidden bg-[radial-gradient(circle_at_50%_45%,rgba(255,230,219,0.95)_0%,rgba(255,245,240,0.9)_52%,rgba(255,255,255,0.75)_100%)] sm:w-40">
+          <div className="relative flex w-40 shrink-0 items-center self-stretch overflow-hidden bg-[radial-gradient(circle_at_50%_45%,rgba(255,230,219,0.95)_0%,rgba(255,245,240,0.9)_52%,rgba(255,255,255,0.75)_100%)] sm:w-44">
             <div aria-hidden className="absolute -bottom-6 -left-6 h-24 w-24 rounded-full bg-[#ffd8c8]/50 blur-2xl" />
             <div aria-hidden className="absolute -right-5 top-4 h-16 w-16 rounded-full bg-white/70 blur-xl" />
-
-            {product.image && product.image !== 'no-image' ? (
-              <Image
-                src={product.image}
-                alt={displayName}
-                fill
-                sizes="160px"
-                className="object-contain p-3 transition-transform duration-300 ease-out group-hover:scale-[1.07]"
-                style={{ filter: 'drop-shadow(0 10px 18px rgba(15,23,42,0.18))' }}
-                loading="lazy"
-                quality={85}
-              />
-            ) : (
-              <div className="absolute inset-0 flex items-center justify-center text-4xl">🍽️</div>
-            )}
+            <ProductCardImageFrame
+              image={product.image}
+              alt={displayName}
+              sizes="(max-width: 640px) 138px, 148px"
+              imagePaddingClass=""
+              imageClassName="object-cover"
+            />
 
             <div className="absolute left-2 top-1 z-10 flex flex-col gap-1.5 sm:left-2.5 sm:top-1.5">
               {hasDiscount && (
