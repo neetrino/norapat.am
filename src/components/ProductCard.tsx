@@ -16,15 +16,16 @@ interface ProductCardProps {
   addedToCart?: Set<string>
   isInWishlist?: boolean
   onToggleWishlist?: (productId: string) => void
-  /** On wishlist page use `remove` so the control reads as dismiss (X), not favorite (heart). */
   wishlistButtonVariant?: 'heart' | 'remove'
-  /**
-   * Home showcase carousel on narrow screens: tighter padding/typography so the full card fits comfortably.
-   */
   compactLayout?: 'standard' | 'showcaseNarrow'
 }
 
 const PRODUCT_CARD_ADD_IDLE_BUTTON_CLASS = `${BRAND_RED_CTA_IDLE_HOVER_CLASS} shadow-[0_14px_26px_rgba(229,50,37,0.18)]`
+const CURRENCY = '֏'
+
+function formatPrice(value: number) {
+  return new Intl.NumberFormat('hy-AM').format(value)
+}
 
 function getDiscountPercent(originalPrice: number | null | undefined, currentPrice: number) {
   if (originalPrice == null || originalPrice <= currentPrice || originalPrice <= 0) {
@@ -126,6 +127,10 @@ const ProductCard = memo(
     const description = product.shortDescription ?? product.description
     const discountPercent = getDiscountPercent(product.originalPrice, product.price)
     const hasDiscount = discountPercent != null
+    const categoryName =
+      'category' in product && product.category && typeof product.category === 'object'
+        ? product.category?.name
+        : null
 
     const statusBadge =
       product.status === 'HIT'
@@ -198,11 +203,11 @@ const ProductCard = memo(
             <div className="mt-5 flex items-end justify-between gap-3">
               <div className="flex items-baseline gap-2">
                 <div className="text-xl font-black tracking-tight text-slate-900">
-                  {product.price} ֏
+                  {formatPrice(product.price)} {CURRENCY}
                 </div>
                 {hasDiscount && product.originalPrice != null && (
                   <div className="text-sm font-medium text-slate-400 line-through">
-                    {product.originalPrice} ֏
+                    {formatPrice(product.originalPrice)} {CURRENCY}
                   </div>
                 )}
               </div>
@@ -220,7 +225,7 @@ const ProductCard = memo(
                   className={`inline-flex h-11 min-w-11 items-center justify-center gap-2 rounded-full px-3 text-sm font-semibold transition-all lg:min-w-0 lg:px-4 ${
                     isAdded
                       ? 'bg-gradient-to-r from-emerald-500 to-green-600 text-white shadow-[0_14px_24px_rgba(34,197,94,0.22)]'
-                      : PRODUCT_CARD_ADD_IDLE_BUTTON_CLASS
+                      : `${PRODUCT_CARD_ADD_IDLE_BUTTON_CLASS} hover:shadow-[0_18px_30px_rgba(229,50,37,0.24)]`
                   }`}
                 >
                   {isAdded ? (
@@ -278,14 +283,15 @@ const ProductCard = memo(
 
     const isCompact = variant === 'compact'
     const isShowcaseNarrow = isCompact && compactLayout === 'showcaseNarrow'
+    const surfaceClass = isCompact
+      ? 'border border-[#f1dfd4] bg-transparent shadow-none hover:-translate-y-1.5 hover:border-[#e7c8b6] hover:shadow-none'
+      : 'border border-[#f1dfd4] bg-transparent shadow-none hover:-translate-y-1 hover:border-[#e7c8b6] hover:shadow-none'
 
     return (
       <Link
         href={`/products/${product.id}`}
         className={`group relative w-full overflow-hidden transition-all duration-300 ${
-          isCompact
-            ? 'border-none bg-transparent shadow-none hover:-translate-y-1 hover:shadow-none'
-            : 'border border-[#eadfd9] bg-[linear-gradient(160deg,#ffffff_0%,#fffaf6_52%,#fff3ec_100%)] shadow-[0_16px_38px_rgba(15,23,42,0.06)] hover:-translate-y-1 hover:shadow-[0_24px_48px_rgba(15,23,42,0.1)]'
+          surfaceClass
         } ${
           isShowcaseNarrow ? 'rounded-3xl' : 'rounded-[2rem]'
         } ${isCompact ? 'flex flex-col' : 'block'}`}
@@ -296,9 +302,7 @@ const ProductCard = memo(
             aspectRatio: isCompact ? '1 / 1' : '1500 / 1125',
           }}
         >
-          <div aria-hidden className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,230,219,0.9)_0%,rgba(255,244,238,0.78)_48%,rgba(255,255,255,0.72)_100%)]" />
-          <div aria-hidden className="absolute -left-8 bottom-0 h-28 w-28 rounded-full bg-[#ffd8c8]/45 blur-3xl" />
-          <div aria-hidden className="absolute -right-8 top-0 h-24 w-24 rounded-full bg-white/80 blur-2xl" />
+          <div aria-hidden className="absolute inset-0 bg-white" />
 
           {showHeartBtn && (
             <button
@@ -331,28 +335,41 @@ const ProductCard = memo(
           )}
 
           <div
-            className={`absolute left-2 top-1 z-20 flex flex-col sm:left-2.5 sm:top-1.5 ${
-              isShowcaseNarrow ? 'gap-1' : 'gap-1.5'
+            className={`absolute left-3 right-14 top-3 z-20 flex items-start justify-between gap-2 ${
+              isShowcaseNarrow ? 'left-2.5 right-11 top-2.5' : ''
             }`}
           >
-            {hasDiscount && (
-              <div
-                className={`inline-flex w-fit items-center rounded-full bg-[#E53225] font-black leading-none tracking-[0.12em] text-white shadow-[0_12px_22px_rgba(229,50,37,0.28)] ${
-                  isShowcaseNarrow ? 'px-2 py-1 text-[9px]' : 'px-3 py-1.5 text-[10px]'
-                }`}
-              >
-                -{discountPercent}%
-              </div>
-            )}
-            {statusBadge && (
-              <div className={isShowcaseNarrow ? 'origin-top-left scale-[0.88]' : undefined}>
-                <ProductBadge
-                  tone={statusBadge.tone}
-                  icon={statusBadge.icon}
-                  label={statusBadge.label}
-                />
-              </div>
-            )}
+            <div className="flex min-w-0 flex-col gap-1.5">
+              {(categoryName || statusBadge) && (
+                <div
+                  className={`inline-flex w-fit max-w-full items-center gap-1.5 rounded-full border border-white/70 bg-white/88 pr-3 shadow-[0_10px_24px_rgba(15,23,42,0.08)] backdrop-blur ${
+                    isShowcaseNarrow ? 'pl-2.5 py-1 text-[9px]' : 'pl-3 py-1.5 text-[10px]'
+                  }`}
+                >
+                  {statusBadge && (
+                    <span className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#fff2ea] text-[#c76b1a]">
+                      {statusBadge.icon === 'zap' ? (
+                        <Zap className="h-3 w-3 stroke-[2.25]" />
+                      ) : (
+                        <Star className="h-3 w-3 stroke-[2.25]" />
+                      )}
+                    </span>
+                  )}
+                  <span className="truncate font-bold uppercase tracking-[0.14em] text-[#a85b22]">
+                    {categoryName ?? statusBadge?.label}
+                  </span>
+                </div>
+              )}
+              {hasDiscount && (
+                <div
+                  className={`inline-flex w-fit items-center rounded-full bg-[#E53225] font-black leading-none tracking-[0.12em] text-white shadow-[0_12px_22px_rgba(229,50,37,0.28)] ${
+                    isShowcaseNarrow ? 'px-2 py-1 text-[9px]' : 'px-3 py-1.5 text-[10px]'
+                  }`}
+                >
+                  -{discountPercent}%
+                </div>
+              )}
+            </div>
           </div>
 
           {product.image && product.image !== 'no-image' ? (
@@ -383,17 +400,15 @@ const ProductCard = memo(
               </div>
             </div>
           ) : (
-            <div
-              className={`absolute inset-0 z-10 flex items-center justify-center ${
-                isCompact ? 'text-6xl' : 'text-7xl'
-              }`}
-            >
-              🍽️
+            <div className="absolute inset-0 z-10 flex items-center justify-center">
+              <span className="rounded-full bg-white/90 px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-slate-400 shadow-[0_10px_24px_rgba(15,23,42,0.08)]">
+                No Image
+              </span>
             </div>
           )}
 
           <div
-              className={`absolute z-20 flex items-center gap-1 rounded-full border border-white/70 bg-white/92 shadow-[0_12px_24px_rgba(15,23,42,0.08)] backdrop-blur ${
+            className={`absolute z-20 flex items-center gap-1 rounded-full border border-white/70 bg-white/92 shadow-[0_12px_24px_rgba(15,23,42,0.08)] backdrop-blur ${
               isShowcaseNarrow
                 ? 'bottom-1.5 right-1.5 px-2 py-0.5 text-[11px]'
                 : isCompact
@@ -407,11 +422,11 @@ const ProductCard = memo(
                   isShowcaseNarrow ? 'text-[10px]' : 'text-xs'
                 }`}
               >
-                {product.originalPrice} ֏
+                {formatPrice(product.originalPrice)} {CURRENCY}
               </span>
             )}
             <span className={`font-black text-[#E53225] ${isShowcaseNarrow ? 'text-xs' : ''}`}>
-              {product.price} ֏
+              {formatPrice(product.price)} {CURRENCY}
             </span>
           </div>
         </div>
@@ -419,18 +434,24 @@ const ProductCard = memo(
         <div
           className={`${
             isShowcaseNarrow
-              ? 'flex flex-1 flex-col p-2.5 pb-1'
+              ? 'flex flex-1 flex-col p-3 pb-1.5'
               : isCompact
-                ? 'flex flex-1 flex-col p-4 pb-2'
-                : 'p-5 pb-3 sm:p-6 sm:pb-4'
+                ? 'flex flex-1 flex-col p-5 pb-3'
+                : 'p-6 pb-4 sm:p-7 sm:pb-5'
           }`}
         >
+          {statusBadge && categoryName && !isShowcaseNarrow && (
+            <div className="mb-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#b37a52]">
+              {statusBadge.label}
+            </div>
+          )}
+
           <h3
             className={`font-black tracking-tight text-slate-900 ${
               isShowcaseNarrow
                 ? 'line-clamp-2 text-xs leading-snug'
                 : isCompact
-                  ? 'line-clamp-2 text-base leading-snug'
+                  ? 'line-clamp-2 text-[1.05rem] leading-snug'
                   : 'line-clamp-2 text-xl leading-tight'
             }`}
           >
@@ -441,27 +462,27 @@ const ProductCard = memo(
             <p
               className={
                 isShowcaseNarrow
-                  ? 'mt-1 truncate text-[11px] leading-4 text-slate-500'
-                  : 'mt-2 truncate text-sm leading-6 text-slate-500'
+                  ? 'mt-1 line-clamp-2 text-[11px] leading-4 text-slate-500'
+                  : 'mt-2.5 line-clamp-2 text-sm leading-6 text-slate-500'
               }
             >
               {description}
             </p>
           ) : (
-            <p className="mt-3 line-clamp-1 text-sm leading-6 text-slate-500 sm:text-[15px]">
+            <p className="mt-3.5 line-clamp-1 text-sm leading-6 text-slate-500 sm:text-[15px]">
               {description}
             </p>
           )}
-
         </div>
 
         {onAddToCart && (
           <div
             className={`${
-              isShowcaseNarrow ? 'px-2.5 pb-2.5' : isCompact ? 'px-4 pb-4' : 'px-5 pb-5 sm:px-6 sm:pb-6'
+              isShowcaseNarrow ? 'px-3 pb-3' : isCompact ? 'px-5 pb-5' : 'px-6 pb-6 sm:px-7 sm:pb-7'
             }`}
           >
             <button
+              type="button"
               onClick={(e) => {
                 e.preventDefault()
                 e.stopPropagation()
@@ -472,7 +493,7 @@ const ProductCard = memo(
               } ${
                 isAdded
                   ? 'bg-gradient-to-r from-emerald-500 to-green-600 text-white shadow-[0_14px_24px_rgba(34,197,94,0.22)]'
-                  : PRODUCT_CARD_ADD_IDLE_BUTTON_CLASS
+                  : `${PRODUCT_CARD_ADD_IDLE_BUTTON_CLASS} hover:shadow-[0_18px_30px_rgba(229,50,37,0.24)]`
               }`}
               title={pc.addToCartTitle}
               aria-label={isAdded ? pc.inCart : pc.addToCartTitle}
@@ -490,10 +511,8 @@ const ProductCard = memo(
                 </span>
               ) : (
                 <span className="flex items-center justify-center gap-2">
-                  <ShoppingCart
-                    className={`shrink-0 ${isCompact ? 'h-4 w-4' : 'h-5 w-5'}`}
-                  />
-                  <span className="hidden lg:inline">{pc.add}</span>
+                  <ShoppingCart className={`shrink-0 ${isCompact ? 'h-4 w-4' : 'h-5 w-5'}`} />
+                  <span>{pc.add}</span>
                 </span>
               )}
             </button>
