@@ -372,7 +372,7 @@ export const hy: AppMessages = {
     prepTimeShort: 'Պատրաստման ժամանակ',
     delivery: 'Առաքում',
     support: 'Աջակցություն',
-    similarProducts: 'Կապված ապրանքներ',
+    similarProducts: 'Նմանատիպ ապրանքներ',
     all: 'Բոլորը',
     shortDescription: 'Կարճ նկարագրություն',
     fullDescription: 'Լիարժեք նկարագրություն',
