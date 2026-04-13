@@ -302,7 +302,7 @@ export const hy: AppMessages = {
   productCard: {
     uncategorized: 'Առանց կատեգորիայի',
     badgeHit: 'ԼԱՎԱԳՈՒՅՆ ՎԱՃԱՌՔ',
-    badgeNew: 'ՆՈՐՈՒԹ',
+    badgeNew: 'ՆՈՐՈՒՅԹ',
     badgeClassic: 'ԴԱՍԱԿԱՆ',
     addToCartTitle: 'Զամբյուղում',
     inCart: 'Զամբյուղում',
@@ -357,7 +357,7 @@ export const hy: AppMessages = {
     breadcrumbMenu: 'Մենյու',
     backToCatalog: 'Հետ մենյու',
     badgeHit: 'ԼԱՎԱԳՈՒՅՆ ՎԱՃԱՌՔ',
-    badgeNew: 'ՆՈՐՈՒԹ',
+    badgeNew: 'ՆՈՐՈՒՅԹ',
     badgeClassic: 'ԴԱՍԱԿԱՆ',
     productInfo: 'Ապրանքի մասին տեղեկություն.',
     prepTime: 'Պատրաստման ժամանակ՝ 15-20 րոպե',
