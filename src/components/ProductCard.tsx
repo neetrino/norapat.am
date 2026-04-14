@@ -35,31 +35,12 @@ function getDiscountPercent(originalPrice: number | null | undefined, currentPri
   return Math.round(((originalPrice - currentPrice) / originalPrice) * 100)
 }
 
-function ProductBadge({
-  tone,
-  icon,
-  label,
-}: {
-  tone: 'amber' | 'green' | 'blue'
-  icon: 'star' | 'zap'
-  label: string
-}) {
-  const toneClass =
-    tone === 'amber'
-      ? 'text-[#b86114]'
-      : tone === 'green'
-        ? 'text-[#6c8a2b]'
-        : 'text-[#6f633d]'
-  const Icon = icon === 'zap' ? Zap : Star
-
-  return (
-    <div
-      className={`inline-flex max-w-[9.5rem] items-center gap-1.5 ${toneClass} px-3 py-1.5 text-[10px] font-semibold leading-none tracking-[0.12em] drop-shadow-[0_1px_0_rgba(255,255,255,0.85)]`}
-    >
-      <Icon className="h-3 w-3 shrink-0 stroke-[2.2]" />
-      {label}
-    </div>
-  )
+function getStatusToneTextClass(tone: 'amber' | 'green' | 'blue') {
+  return tone === 'amber'
+    ? 'text-[#b86114]'
+    : tone === 'green'
+      ? 'text-[#6c8a2b]'
+      : 'text-[#6f633d]'
 }
 
 function ProductCardImageFrame({
@@ -159,54 +140,59 @@ const ProductCard = memo(
       return (
         <Link
           href={`/products/${product.id}`}
-          className="group relative flex overflow-hidden rounded-[2rem] border border-[#eadfd9] bg-[linear-gradient(140deg,#ffffff_0%,#fffaf6_55%,#fff3ec_100%)] shadow-[0_16px_38px_rgba(15,23,42,0.06)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_22px_46px_rgba(15,23,42,0.1)]"
+          className="group relative flex overflow-hidden rounded-2xl border border-[#eadfd9] bg-[linear-gradient(140deg,#ffffff_0%,#fffaf6_55%,#fff3ec_100%)] shadow-[0_10px_26px_rgba(15,23,42,0.05)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_14px_32px_rgba(15,23,42,0.08)]"
         >
-          <div className="relative flex w-40 shrink-0 items-center self-stretch overflow-hidden bg-[radial-gradient(circle_at_50%_45%,rgba(255,230,219,0.95)_0%,rgba(255,245,240,0.9)_52%,rgba(255,255,255,0.75)_100%)] sm:w-44">
-            <div aria-hidden className="absolute -bottom-6 -left-6 h-24 w-24 rounded-full bg-[#ffd8c8]/50 blur-2xl" />
-            <div aria-hidden className="absolute -right-5 top-4 h-16 w-16 rounded-full bg-white/70 blur-xl" />
+          <div className="relative flex w-[7.25rem] shrink-0 items-center self-stretch overflow-hidden bg-[radial-gradient(circle_at_50%_45%,rgba(255,230,219,0.95)_0%,rgba(255,245,240,0.9)_52%,rgba(255,255,255,0.75)_100%)] sm:w-36">
+            <div aria-hidden className="absolute -bottom-6 -left-6 h-20 w-20 rounded-full bg-[#ffd8c8]/50 blur-2xl" />
+            <div aria-hidden className="absolute -right-5 top-4 h-14 w-14 rounded-full bg-white/70 blur-xl" />
             <ProductCardImageFrame
               image={product.image}
               alt={displayName}
-              sizes="(max-width: 640px) 138px, 148px"
+              sizes="(max-width: 640px) 116px, 144px"
               imagePaddingClass=""
               imageClassName="object-cover"
             />
 
-            <div className="absolute left-2 top-1 z-10 flex flex-col gap-1.5 sm:left-2.5 sm:top-1.5">
+            <div className="absolute left-1.5 top-1 z-10 flex flex-col gap-1 sm:left-2 sm:top-1.5">
               {hasDiscount && (
-                <div className="inline-flex w-fit items-center rounded-full bg-[#E53225] px-3 py-1.5 text-[10px] font-black leading-none tracking-[0.12em] text-white shadow-[0_12px_22px_rgba(229,50,37,0.28)]">
+                <div className="inline-flex w-fit items-center rounded-full bg-[#E53225] px-2 py-1 text-[9px] font-black leading-none tracking-[0.12em] text-white shadow-[0_8px_16px_rgba(229,50,37,0.22)]">
                   -{discountPercent}%
                 </div>
-              )}
-              {statusBadge && (
-                <ProductBadge
-                  tone={statusBadge.tone}
-                  icon={statusBadge.icon}
-                  label={statusBadge.label}
-                />
               )}
             </div>
           </div>
 
-          <div className="flex min-w-0 flex-1 flex-col justify-between p-4 sm:p-5">
+          <div className="flex min-w-0 flex-1 flex-col justify-between p-3 sm:p-3.5">
             <div>
-              <h3 className="line-clamp-2 text-base font-black leading-tight tracking-tight text-slate-900 sm:text-lg">
+              <h3 className="line-clamp-2 text-sm font-black leading-snug tracking-tight text-slate-900 sm:text-[0.95rem]">
                 {displayName}
               </h3>
               {description && (
-                <p className="mt-2 line-clamp-1 text-sm leading-6 text-slate-500">
+                <p className="mt-1.5 line-clamp-1 text-xs leading-5 text-slate-500 sm:text-[13px]">
                   {description}
                 </p>
               )}
+              {statusBadge && (
+                <div
+                  className={`mt-1.5 inline-flex max-w-full items-center gap-1 text-[9px] font-semibold uppercase leading-none tracking-[0.12em] sm:text-[10px] ${getStatusToneTextClass(statusBadge.tone)}`}
+                >
+                  {statusBadge.icon === 'zap' ? (
+                    <Zap className="h-2.5 w-2.5 shrink-0 stroke-[2.2] sm:h-3 sm:w-3" />
+                  ) : (
+                    <Star className="h-2.5 w-2.5 shrink-0 stroke-[2.2] sm:h-3 sm:w-3" />
+                  )}
+                  {statusBadge.label}
+                </div>
+              )}
             </div>
 
-            <div className="mt-5 flex items-end justify-between gap-3">
-              <div className="flex items-baseline gap-2">
-                <div className="text-xl font-black tracking-tight text-slate-900">
+            <div className="mt-3 flex items-end justify-between gap-2">
+              <div className="flex min-w-0 items-baseline gap-1.5">
+                <div className="truncate text-base font-black tracking-tight text-slate-900 sm:text-[1.05rem]">
                   {formatPrice(product.price)} {CURRENCY}
                 </div>
                 {hasDiscount && product.originalPrice != null && (
-                  <div className="text-sm font-medium text-slate-400 line-through">
+                  <div className="shrink-0 text-xs font-medium text-slate-400 line-through">
                     {formatPrice(product.originalPrice)} {CURRENCY}
                   </div>
                 )}
@@ -222,15 +208,15 @@ const ProductCard = memo(
                   }}
                   title={pc.addToCartTitle}
                   aria-label={isAdded ? pc.inCart : pc.addToCartTitle}
-                  className={`inline-flex h-11 min-w-11 items-center justify-center gap-2 rounded-full px-3 text-sm font-semibold transition-all lg:min-w-0 lg:px-4 ${
+                  className={`inline-flex h-9 min-w-9 shrink-0 items-center justify-center gap-1.5 rounded-full px-2.5 text-xs font-semibold transition-all sm:gap-2 sm:px-3 lg:min-w-0 ${
                     isAdded
-                      ? 'bg-gradient-to-r from-emerald-500 to-green-600 text-white shadow-[0_14px_24px_rgba(34,197,94,0.22)]'
-                      : `${PRODUCT_CARD_ADD_IDLE_BUTTON_CLASS} hover:shadow-[0_18px_30px_rgba(229,50,37,0.24)]`
+                      ? 'bg-gradient-to-r from-emerald-500 to-green-600 text-white shadow-[0_10px_20px_rgba(34,197,94,0.2)]'
+                      : `${PRODUCT_CARD_ADD_IDLE_BUTTON_CLASS} hover:shadow-[0_14px_26px_rgba(229,50,37,0.2)]`
                   }`}
                 >
                   {isAdded ? (
                     <>
-                      <svg className="h-4 w-4 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                      <svg className="h-3.5 w-3.5 shrink-0 sm:h-4 sm:w-4" fill="currentColor" viewBox="0 0 20 20">
                         <path
                           fillRule="evenodd"
                           d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
@@ -241,7 +227,7 @@ const ProductCard = memo(
                     </>
                   ) : (
                     <>
-                      <ShoppingCart className="h-4 w-4 shrink-0" />
+                      <ShoppingCart className="h-3.5 w-3.5 shrink-0 sm:h-4 sm:w-4" />
                       <span className="hidden lg:inline">{pc.add}</span>
                     </>
                   )}
@@ -259,16 +245,16 @@ const ProductCard = memo(
                 e.stopPropagation()
                 onToggleWishlist?.(product.id)
               }}
-              className={`absolute right-3 top-3 z-20 flex h-9 w-9 items-center justify-center rounded-full border shadow-sm backdrop-blur transition-all duration-200 active:scale-90 ${wishlistBtnSurfaceClass}`}
+              className={`absolute right-2 top-2 z-20 flex h-8 w-8 items-center justify-center rounded-full border shadow-sm backdrop-blur transition-all duration-200 active:scale-90 sm:right-2.5 sm:top-2.5 ${wishlistBtnSurfaceClass}`}
             >
               {wishlistButtonVariant === 'remove' ? (
                 <X
-                  className="h-4 w-4 text-slate-600 transition-colors duration-200 hover:text-red-600"
+                  className="h-3.5 w-3.5 text-slate-600 transition-colors duration-200 hover:text-red-600 sm:h-4 sm:w-4"
                   strokeWidth={2.25}
                 />
               ) : (
                 <Heart
-                  className={`h-4 w-4 transition-colors duration-200 ${
+                  className={`h-3.5 w-3.5 transition-colors duration-200 sm:h-4 sm:w-4 ${
                     isInWishlist
                       ? 'fill-red-500 text-red-500'
                       : 'text-slate-400 hover:text-red-400'
