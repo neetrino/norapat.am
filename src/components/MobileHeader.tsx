@@ -2,6 +2,7 @@
 
 import { Menu, Search, X, Home, UtensilsCrossed, Info, Phone } from 'lucide-react'
 import { useState } from 'react'
+import { useBodyScrollLock } from '@/hooks/useBodyScrollLock'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useI18n } from '@/i18n/I18nContext'
@@ -26,6 +27,8 @@ export default function MobileHeader({ branding }: MobileHeaderProps) {
   const pathname = usePathname()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isSearchOpen, setIsSearchOpen] = useState(false)
+
+  useBodyScrollLock(isMenuOpen)
 
   const isActive = (href: string) =>
     href === '/' ? pathname === '/' : pathname?.startsWith(href)
@@ -88,7 +91,7 @@ export default function MobileHeader({ branding }: MobileHeaderProps) {
 
       {/* Full-screen overlay menu */}
       <div
-        className={`fixed inset-0 z-[200] flex flex-col transition-all duration-500 ease-in-out ${
+        className={`fixed inset-0 z-[200] flex max-h-[100dvh] flex-col overflow-hidden overscroll-none transition-all duration-500 ease-in-out ${
           isMenuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
         }`}
         style={{ background: 'var(--mobile-menu-bg)' }}
