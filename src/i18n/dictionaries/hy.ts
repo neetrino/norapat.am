@@ -378,11 +378,16 @@ export const hy: AppMessages = {
     fullDescription: 'Լիարժեք նկարագրություն',
     stockAvailable: 'Առկա է',
     stockUnavailable: 'Առկա չէ',
+    badgeHotPill: 'HOT',
+    customerReviewsLabel: '({count} հաճախորդի գնահատական)',
+    pricePerKg: '/ 1կգ',
   },
   productQuantity: {
     quantity: 'Քանակ.',
     addToCart: 'Ավելացնել զամբյուղում',
     addedToCart: '✓ Ավելացվել է զամբյուղում.',
+    decreaseQuantity: 'Պակասել քանակը',
+    increaseQuantity: 'Ավելացնել քանակը',
   },
   checkoutPage: {
     backToCart: 'Հետ զամբյուղ',

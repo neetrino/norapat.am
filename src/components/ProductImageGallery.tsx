@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useCallback, useEffect, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import Image from 'next/image'
 import { X, ZoomIn, ChevronLeft, ChevronRight } from 'lucide-react'
@@ -12,12 +12,18 @@ interface ProductImageGalleryProps {
   images: string[]
   productName: string
   mainImageClassName?: string
+  /** Renders above the image (e.g. mobile “HOT” pill), top-right. */
+  overlayTopRight?: ReactNode
+  /** When true, thumbnail strip is hidden on small screens (shown from `lg` up). */
+  hideThumbnailsOnMobile?: boolean
 }
 
 export function ProductImageGallery({
   images,
   productName,
-  mainImageClassName = ''
+  mainImageClassName = '',
+  overlayTopRight,
+  hideThumbnailsOnMobile = false,
 }: ProductImageGalleryProps) {
   void mainImageClassName
   const { locale } = useI18n()
@@ -83,6 +89,12 @@ export function ProductImageGallery({
               onClick={() => setIsZoomOpen(true)}
             />
 
+            {overlayTopRight != null && (
+              <div className="pointer-events-none absolute right-3 top-3 z-20 lg:right-4 lg:top-4">
+                {overlayTopRight}
+              </div>
+            )}
+
             <button
               type="button"
               onClick={() => setIsZoomOpen(true)}
@@ -95,7 +107,11 @@ export function ProductImageGallery({
       </div>
 
       {displayImages.length > 1 && (
-        <div className="flex gap-2 overflow-x-auto pb-1">
+        <div
+          className={`flex gap-2 overflow-x-auto pb-1 ${
+            hideThumbnailsOnMobile ? 'hidden lg:flex' : ''
+          }`}
+        >
           {displayImages.map((src, index) => (
             <button
               key={`${src}-${index}`}

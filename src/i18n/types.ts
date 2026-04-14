@@ -367,11 +367,16 @@ export interface AppMessages {
     fullDescription: string
     stockAvailable: string
     stockUnavailable: string
+    badgeHotPill: string
+    customerReviewsLabel: string
+    pricePerKg: string
   }
   productQuantity: {
     quantity: string
     addToCart: string
     addedToCart: string
+    decreaseQuantity: string
+    increaseQuantity: string
   }
   checkoutPage: {
     backToCart: string
