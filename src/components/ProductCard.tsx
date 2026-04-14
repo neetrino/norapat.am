@@ -43,6 +43,14 @@ function getStatusToneTextClass(tone: 'amber' | 'green' | 'blue') {
       : 'text-[#6f633d]'
 }
 
+function getStatusToneSurfaceClass(tone: 'amber' | 'green' | 'blue') {
+  return tone === 'amber'
+    ? 'border-amber-300 bg-amber-50 shadow-sm'
+    : tone === 'green'
+      ? 'border-emerald-300 bg-emerald-50 shadow-sm'
+      : 'border-slate-300 bg-slate-50 shadow-sm'
+}
+
 /** Category relation is optional on some Product payloads; read name when present. */
 function getProductCategoryName(product: Product): string | null {
   if (!('category' in product) || product.category == null) return null
@@ -147,7 +155,7 @@ const ProductCard = memo(
       return (
         <Link
           href={`/products/${product.id}`}
-          className="group relative flex overflow-hidden rounded-2xl border border-[#eadfd9] bg-[linear-gradient(140deg,#ffffff_0%,#fffaf6_55%,#fff3ec_100%)] shadow-[0_10px_26px_rgba(15,23,42,0.05)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_14px_32px_rgba(15,23,42,0.08)]"
+          className="group relative flex h-full min-h-0 w-full overflow-hidden rounded-2xl border border-[#eadfd9] bg-[linear-gradient(140deg,#ffffff_0%,#fffaf6_55%,#fff3ec_100%)] shadow-[0_10px_26px_rgba(15,23,42,0.05)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_14px_32px_rgba(15,23,42,0.08)]"
         >
           <div className="relative flex w-[8.25rem] shrink-0 items-center self-stretch overflow-hidden bg-[radial-gradient(circle_at_50%_45%,rgba(255,230,219,0.95)_0%,rgba(255,245,240,0.9)_52%,rgba(255,255,255,0.75)_100%)] sm:w-40">
             <div aria-hidden className="absolute -bottom-6 -left-6 h-20 w-20 rounded-full bg-[#ffd8c8]/50 blur-2xl" />
@@ -160,18 +168,37 @@ const ProductCard = memo(
               imageClassName="object-cover"
             />
 
-            <div className="absolute left-1.5 top-1 z-10 flex flex-col gap-1 sm:left-2 sm:top-1.5">
-              {hasDiscount && (
-                <div className="inline-flex w-fit items-center rounded-full bg-[#E53225] px-2 py-1 text-[9px] font-black leading-none tracking-[0.12em] text-white shadow-[0_8px_16px_rgba(229,50,37,0.22)]">
-                  -{discountPercent}%
-                </div>
-              )}
-            </div>
           </div>
 
-          <div className="flex min-w-0 flex-1 flex-col justify-between p-3 sm:p-3.5">
+          <div className="flex min-h-0 min-w-0 flex-1 flex-col justify-between p-3 sm:p-3.5">
             <div>
-              <h3 className="line-clamp-2 text-sm font-black leading-snug tracking-tight text-slate-900 sm:text-[0.95rem]">
+              {(categoryName || statusBadge || hasDiscount) && (
+                <div className="mb-1.5 flex w-full min-w-0 flex-col items-start gap-1.5 sm:mb-2 sm:gap-2">
+                  {categoryName && (
+                    <span className="inline-flex max-w-full items-center rounded-full border border-[#dcc8bc] bg-[#fff6f0] px-2 py-0.5 text-[8px] font-bold uppercase tracking-[0.12em] text-[#8a4a1f] sm:px-2.5 sm:text-[9px]">
+                      <span className="min-w-0 max-w-full truncate">{categoryName}</span>
+                    </span>
+                  )}
+                  {statusBadge && (
+                    <span
+                      className={`inline-flex w-fit max-w-full items-center gap-0.5 rounded-full border px-2 py-0.5 text-[8px] font-semibold uppercase leading-none tracking-[0.12em] sm:gap-1 sm:px-2.5 sm:text-[9px] ${getStatusToneTextClass(statusBadge.tone)} ${getStatusToneSurfaceClass(statusBadge.tone)}`}
+                    >
+                      {statusBadge.icon === 'zap' ? (
+                        <Zap className="h-2.5 w-2.5 shrink-0 stroke-[2.2] sm:h-3 sm:w-3" />
+                      ) : (
+                        <Star className="h-2.5 w-2.5 shrink-0 stroke-[2.2] sm:h-3 sm:w-3" />
+                      )}
+                      {statusBadge.label}
+                    </span>
+                  )}
+                  {hasDiscount && (
+                    <span className="inline-flex w-fit max-w-full items-center rounded-full bg-[#E53225] px-2 py-0.5 text-[8px] font-black leading-none tracking-[0.12em] text-white shadow-[0_6px_12px_rgba(229,50,37,0.2)] sm:text-[9px]">
+                      -{discountPercent}%
+                    </span>
+                  )}
+                </div>
+              )}
+              <h3 className="min-w-0 truncate text-[13px] font-black leading-snug tracking-tight text-slate-900 sm:text-[0.875rem]">
                 {displayName}
               </h3>
               {description && (
@@ -179,21 +206,6 @@ const ProductCard = memo(
                   {description}
                 </p>
               )}
-              {/* Reserve one line so cards without HIT/NEW/CLASSIC match height with labeled cards */}
-              <div className="mt-1.5 flex min-h-[14px] items-center sm:min-h-[16px]">
-                {statusBadge && (
-                  <div
-                    className={`inline-flex max-w-full items-center gap-1 text-[9px] font-semibold uppercase leading-none tracking-[0.12em] sm:text-[10px] ${getStatusToneTextClass(statusBadge.tone)}`}
-                  >
-                    {statusBadge.icon === 'zap' ? (
-                      <Zap className="h-2.5 w-2.5 shrink-0 stroke-[2.2] sm:h-3 sm:w-3" />
-                    ) : (
-                      <Star className="h-2.5 w-2.5 shrink-0 stroke-[2.2] sm:h-3 sm:w-3" />
-                    )}
-                    {statusBadge.label}
-                  </div>
-                )}
-              </div>
             </div>
 
             <div className="mt-3 flex items-end justify-between gap-2">
@@ -286,14 +298,12 @@ const ProductCard = memo(
     return (
       <Link
         href={`/products/${product.id}`}
-        className={`group relative w-full overflow-hidden transition-all duration-300 ${
+        className={`group relative flex h-full min-h-0 w-full flex-col overflow-hidden transition-all duration-300 ${
           surfaceClass
-        } ${
-          isShowcaseNarrow ? 'rounded-3xl' : 'rounded-[2rem]'
-        } ${isCompact ? 'flex flex-col' : 'block'}`}
+        } ${isShowcaseNarrow ? 'rounded-3xl' : 'rounded-[2rem]'}`}
       >
         <div
-          className={`relative overflow-hidden ${isShowcaseNarrow ? 'rounded-t-3xl' : 'rounded-t-[2rem]'}`}
+          className={`relative shrink-0 overflow-hidden ${isShowcaseNarrow ? 'rounded-t-3xl' : 'rounded-t-[2rem]'}`}
           style={{
             aspectRatio: isCompact ? '1 / 1' : '1500 / 1125',
           }}
@@ -330,53 +340,15 @@ const ProductCard = memo(
             </button>
           )}
 
-          <div
-            className={`absolute left-3 right-14 top-3 z-20 flex items-start justify-between gap-2 ${
-              isShowcaseNarrow ? 'left-2.5 right-11 top-2.5' : ''
-            }`}
-          >
-            <div className="flex min-w-0 flex-col gap-1.5">
-              {(categoryName || statusBadge) && (
-                <div
-                  className={`inline-flex w-fit max-w-full items-center gap-1.5 rounded-full border border-white/70 bg-white/88 pr-3 shadow-[0_10px_24px_rgba(15,23,42,0.08)] backdrop-blur ${
-                    isShowcaseNarrow ? 'pl-2.5 py-1 text-[9px]' : 'pl-3 py-1.5 text-[10px]'
-                  }`}
-                >
-                  {statusBadge && (
-                    <span className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#fff2ea] text-[#c76b1a]">
-                      {statusBadge.icon === 'zap' ? (
-                        <Zap className="h-3 w-3 stroke-[2.25]" />
-                      ) : (
-                        <Star className="h-3 w-3 stroke-[2.25]" />
-                      )}
-                    </span>
-                  )}
-                  <span className="truncate font-bold uppercase tracking-[0.14em] text-[#a85b22]">
-                    {categoryName ?? statusBadge?.label}
-                  </span>
-                </div>
-              )}
-              {hasDiscount && (
-                <div
-                  className={`inline-flex w-fit items-center rounded-full bg-[#E53225] font-black leading-none tracking-[0.12em] text-white shadow-[0_12px_22px_rgba(229,50,37,0.28)] ${
-                    isShowcaseNarrow ? 'px-2 py-1 text-[9px]' : 'px-3 py-1.5 text-[10px]'
-                  }`}
-                >
-                  -{discountPercent}%
-                </div>
-              )}
-            </div>
-          </div>
-
           {product.image && product.image !== 'no-image' ? (
             <div className="relative z-10 h-full w-full overflow-hidden">
               <div
                 className={`absolute inset-0 ${
                   isShowcaseNarrow
-                    ? 'px-2 pb-2 pt-6'
+                    ? 'px-2 pb-2 pt-5'
                     : isCompact
-                      ? 'px-4 pb-4 pt-10 sm:px-5 sm:pb-5 sm:pt-11'
-                      : 'px-4 pb-4 pt-10 sm:px-5 sm:pb-5 sm:pt-11'
+                      ? 'px-4 pb-4 pt-6 sm:px-5 sm:pb-5 sm:pt-7'
+                      : 'px-4 pb-4 pt-6 sm:px-5 sm:pb-5 sm:pt-7'
                 }`}
                 style={{
                   transform: isCompact ? undefined : 'perspective(1000px) rotateX(6deg) rotateY(-2deg)',
@@ -428,92 +400,137 @@ const ProductCard = memo(
         </div>
 
         <div
-          className={`${
+          className={`flex min-h-0 flex-1 flex-col ${
             isShowcaseNarrow
-              ? 'flex flex-1 flex-col p-3 pb-1.5'
+              ? 'gap-2 px-3 pb-3 pt-3'
               : isCompact
-                ? 'flex flex-1 flex-col p-5 pb-3'
-                : 'p-6 pb-4 sm:p-7 sm:pb-5'
+                ? 'gap-2.5 px-5 pb-5 pt-5'
+                : 'gap-3 px-6 pb-6 pt-6 sm:px-7 sm:pb-7 sm:pt-7'
           }`}
         >
-          {statusBadge && categoryName && !isShowcaseNarrow && (
-            <div className="mb-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#b37a52]">
-              {statusBadge.label}
+          {(categoryName || statusBadge || hasDiscount) && (
+            <div
+              className={`flex w-full min-w-0 flex-col items-start shrink-0 ${
+                isShowcaseNarrow ? 'gap-1' : 'gap-1.5 sm:gap-2'
+              }`}
+            >
+              {categoryName && (
+                <span
+                  className={`inline-flex max-w-full items-center rounded-full border border-[#dcc8bc] bg-[#fff6f0] font-bold uppercase tracking-[0.12em] text-[#8a4a1f] ${
+                    isShowcaseNarrow
+                      ? 'px-2 py-0.5 text-[8px]'
+                      : 'px-2.5 py-1 text-[9px] sm:px-3 sm:text-[10px]'
+                  }`}
+                >
+                  <span className="min-w-0 max-w-full truncate">{categoryName}</span>
+                </span>
+              )}
+              {statusBadge && (
+                <span
+                  className={`inline-flex w-fit max-w-full items-center gap-1 rounded-full border font-semibold uppercase leading-none tracking-[0.12em] ${
+                    isShowcaseNarrow
+                      ? 'px-2 py-0.5 text-[8px]'
+                      : 'px-2.5 py-1 text-[9px] sm:px-3 sm:text-[10px]'
+                  } ${getStatusToneTextClass(statusBadge.tone)} ${getStatusToneSurfaceClass(statusBadge.tone)}`}
+                >
+                  {statusBadge.icon === 'zap' ? (
+                    <Zap
+                      className={`shrink-0 stroke-[2.2] ${isShowcaseNarrow ? 'h-2.5 w-2.5' : 'h-3 w-3'}`}
+                    />
+                  ) : (
+                    <Star
+                      className={`shrink-0 stroke-[2.2] ${isShowcaseNarrow ? 'h-2.5 w-2.5' : 'h-3 w-3'}`}
+                    />
+                  )}
+                  {statusBadge.label}
+                </span>
+              )}
+              {hasDiscount && (
+                <span
+                  className={`inline-flex w-fit max-w-full items-center rounded-full bg-[#E53225] font-black leading-none tracking-[0.12em] text-white shadow-[0_8px_16px_rgba(229,50,37,0.18)] ${
+                    isShowcaseNarrow ? 'px-2 py-0.5 text-[8px]' : 'px-2.5 py-1 text-[9px] sm:px-3 sm:py-1.5 sm:text-[10px]'
+                  }`}
+                >
+                  -{discountPercent}%
+                </span>
+              )}
             </div>
           )}
 
-          <h3
-            className={`font-black tracking-tight text-slate-900 ${
-              isShowcaseNarrow
-                ? 'line-clamp-2 text-xs leading-snug'
-                : isCompact
-                  ? 'line-clamp-2 text-[1.05rem] leading-snug'
-                  : 'line-clamp-2 text-xl leading-tight'
-            }`}
-          >
-            {displayName}
-          </h3>
-
-          {isCompact ? (
-            <p
-              className={
+          <div className="flex min-h-0 min-w-0 flex-1 flex-col">
+            <h3
+              className={`min-w-0 shrink-0 truncate font-black tracking-tight text-slate-900 ${
                 isShowcaseNarrow
-                  ? 'mt-1 line-clamp-2 text-[11px] leading-4 text-slate-500'
-                  : 'mt-2.5 line-clamp-2 text-sm leading-6 text-slate-500'
-              }
-            >
-              {description}
-            </p>
-          ) : (
-            <p className="mt-3.5 line-clamp-1 text-sm leading-6 text-slate-500 sm:text-[15px]">
-              {description}
-            </p>
-          )}
-        </div>
-
-        {onAddToCart && (
-          <div
-            className={`${
-              isShowcaseNarrow ? 'px-3 pb-3' : isCompact ? 'px-5 pb-5' : 'px-6 pb-6 sm:px-7 sm:pb-7'
-            }`}
-          >
-            <button
-              type="button"
-              onClick={(e) => {
-                e.preventDefault()
-                e.stopPropagation()
-                onAddToCart(product)
-              }}
-              className={`flex w-full items-center justify-center gap-2 rounded-full font-semibold transition-all ${
-                isShowcaseNarrow ? 'h-8 text-[11px]' : isCompact ? 'h-11 text-sm' : 'h-12 text-base'
-              } ${
-                isAdded
-                  ? 'bg-gradient-to-r from-emerald-500 to-green-600 text-white shadow-[0_14px_24px_rgba(34,197,94,0.22)]'
-                  : `${PRODUCT_CARD_ADD_IDLE_BUTTON_CLASS} hover:shadow-[0_18px_30px_rgba(229,50,37,0.24)]`
+                  ? 'text-[11px] leading-snug'
+                  : isCompact
+                    ? 'text-[0.9375rem] leading-snug'
+                    : 'text-lg leading-tight'
               }`}
-              title={pc.addToCartTitle}
-              aria-label={isAdded ? pc.inCart : pc.addToCartTitle}
             >
-              {isAdded ? (
-                <span className="flex items-center justify-center gap-2">
-                  <svg className="h-4 w-4 shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                    <path
-                      fillRule="evenodd"
-                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                  <span className="hidden lg:inline">{pc.inCart}</span>
-                </span>
-              ) : (
-                <span className="flex items-center justify-center gap-2">
-                  <ShoppingCart className={`shrink-0 ${isCompact ? 'h-4 w-4' : 'h-5 w-5'}`} />
-                  <span>{pc.add}</span>
-                </span>
-              )}
-            </button>
+              {displayName}
+            </h3>
+
+            {isCompact ? (
+              description?.trim() ? (
+                <p
+                  className={`min-w-0 overflow-hidden break-words text-slate-500 ${
+                    isShowcaseNarrow
+                      ? 'mt-1 line-clamp-2 text-[11px] leading-4'
+                      : 'mt-2 line-clamp-2 text-sm leading-6'
+                  }`}
+                >
+                  {description}
+                </p>
+              ) : null
+            ) : description?.trim() ? (
+              <p className="mt-3 min-w-0 overflow-hidden break-words line-clamp-2 text-sm leading-6 text-slate-500 sm:text-[15px]">
+                {description}
+              </p>
+            ) : null}
+
+            {onAddToCart && (
+              <div
+                className={`mt-auto w-full shrink-0 ${isShowcaseNarrow ? 'pt-1' : isCompact ? 'pt-2' : 'pt-2.5'}`}
+              >
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault()
+                    e.stopPropagation()
+                    onAddToCart(product)
+                  }}
+                  className={`flex w-full items-center justify-center gap-2 rounded-full font-semibold transition-all ${
+                    isShowcaseNarrow ? 'h-8 text-[11px]' : isCompact ? 'h-11 text-sm' : 'h-12 text-base'
+                  } ${
+                    isAdded
+                      ? 'bg-gradient-to-r from-emerald-500 to-green-600 text-white shadow-[0_14px_24px_rgba(34,197,94,0.22)]'
+                      : `${PRODUCT_CARD_ADD_IDLE_BUTTON_CLASS} hover:shadow-[0_18px_30px_rgba(229,50,37,0.24)]`
+                  }`}
+                  title={pc.addToCartTitle}
+                  aria-label={isAdded ? pc.inCart : pc.addToCartTitle}
+                >
+                  {isAdded ? (
+                    <span className="flex items-center justify-center gap-2">
+                      <svg className="h-4 w-4 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path
+                          fillRule="evenodd"
+                          d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                      <span className="hidden lg:inline">{pc.inCart}</span>
+                    </span>
+                  ) : (
+                    <span className="flex items-center justify-center gap-2">
+                      <ShoppingCart className={`shrink-0 ${isCompact ? 'h-4 w-4' : 'h-5 w-5'}`} />
+                      <span>{pc.add}</span>
+                    </span>
+                  )}
+                </button>
+              </div>
+            )}
           </div>
-        )}
+        </div>
       </Link>
     )
   }

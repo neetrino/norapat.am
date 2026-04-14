@@ -77,7 +77,7 @@ export function PromoSection({ onAddToCart, addedToCart, isInWishlist, onToggleW
             {products.map((product) => (
               <div
                 key={product.id}
-                className="w-[280px] sm:w-auto flex-shrink-0 sm:flex-shrink overflow-visible"
+                className="w-[280px] sm:h-full sm:w-auto flex-shrink-0 sm:flex-shrink overflow-visible"
               >
                 <ProductCard
                   product={product}
