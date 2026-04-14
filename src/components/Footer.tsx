@@ -25,10 +25,6 @@ const FOOTER_NAV_TOP = 'pt-4 sm:pt-5 lg:pt-6'
 const FOOTER_MOBILE_RULE_BELOW =
   'max-lg:border-b max-lg:border-stone-200/70 max-lg:pb-4 lg:border-b-0 lg:pb-0'
 
-/** Next/Image intrinsic size (PNG aspect); display height via Tailwind — same footprint for Idram and Ardshinbank */
-const FOOTER_PARTNER_LOGO = { width: 240, height: 80 } as const
-const FOOTER_PARTNER_LOGO_MAX_WIDTH_PX = 200
-
 /** Split artwork — mobile/tablet footer only; desktop keeps `SiteBrandMark` */
 const FOOTER_MOBILE_BRAND_SRC = {
   left: '/footer-mobile-brand-1.png',
@@ -242,45 +238,17 @@ export default function Footer() {
 
       <div className="promo-food-banner-bg promo-food-banner-vignette relative border-t border-white/10 text-white">
         <div className="relative z-10 mx-auto max-w-7xl px-4 py-3 sm:px-6 sm:py-4 lg:px-8">
-          <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
-            <div className="min-w-0">
-              <p className="text-left text-[10px] font-normal leading-snug tracking-wide text-white/85 sm:text-[11px] sm:leading-relaxed lg:whitespace-nowrap xl:text-xs">
-                {f.copyright} {f.createdBy}{' '}
-                <a
-                  href="https://neetrino.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="font-semibold text-[#FACC15] transition-colors hover:text-[#fde047]"
-                >
-                  Neetrino IT Company
-                </a>
-              </p>
-            </div>
-            <div className="flex w-full shrink-0 flex-wrap items-center justify-center gap-3 sm:w-auto sm:justify-end sm:gap-4">
-              <Image
-                src="/ardshinbank-logo.png"
-                alt={f.ardshinbankLogoAlt}
-                width={FOOTER_PARTNER_LOGO.width}
-                height={FOOTER_PARTNER_LOGO.height}
-                className="h-6 w-auto select-none object-contain sm:h-7"
-                style={{
-                  maxWidth: `min(100%, ${FOOTER_PARTNER_LOGO_MAX_WIDTH_PX}px)`,
-                }}
-                sizes="(max-width: 640px) 160px, 200px"
-              />
-              <Image
-                src="/idram-logo.png"
-                alt={f.idramLogoAlt}
-                width={FOOTER_PARTNER_LOGO.width}
-                height={FOOTER_PARTNER_LOGO.height}
-                className="h-6 w-auto select-none object-contain sm:h-7"
-                style={{
-                  maxWidth: `min(100%, ${FOOTER_PARTNER_LOGO_MAX_WIDTH_PX}px)`,
-                }}
-                sizes="(max-width: 640px) 160px, 200px"
-              />
-            </div>
-          </div>
+          <p className="text-left text-[10px] font-normal leading-snug tracking-wide text-white/85 sm:text-[11px] sm:leading-relaxed lg:whitespace-nowrap xl:text-xs">
+            {f.copyright} {f.createdBy}{' '}
+            <a
+              href="https://neetrino.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-semibold text-[#FACC15] transition-colors hover:text-[#fde047]"
+            >
+              Neetrino IT Company
+            </a>
+          </p>
         </div>
       </div>
     </footer>
