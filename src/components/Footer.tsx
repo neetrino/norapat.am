@@ -3,6 +3,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { Phone, Mail, MapPin, Clock, Facebook, Instagram } from 'lucide-react'
+import { WhatsAppGlyph } from '@/components/WhatsAppGlyph'
 import { useI18n } from '@/i18n/I18nContext'
 import { usePublicSiteSettings } from '@/hooks/usePublicSiteSettings'
 import { SiteBrandMark } from '@/components/SiteBrandMark'
@@ -108,6 +109,15 @@ export default function Footer() {
                     aria-label="Instagram"
                   >
                     <Instagram className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                  </a>
+                  <a
+                    href={companyInfo.socialMedia.whatsapp}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={SOCIAL_BTN}
+                    aria-label="WhatsApp"
+                  >
+                    <WhatsAppGlyph className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                   </a>
                 </div>
               </div>
