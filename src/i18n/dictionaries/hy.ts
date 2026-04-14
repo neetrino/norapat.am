@@ -384,7 +384,7 @@ export const hy: AppMessages = {
   },
   productQuantity: {
     quantity: 'Քանակ.',
-    addToCart: 'Ավելացնել զամբյուղում',
+    addToCart: 'Ավելացնել զամբյուղ',
     addedToCart: '✓ Ավելացվել է զամբյուղում.',
     decreaseQuantity: 'Պակասել քանակը',
     increaseQuantity: 'Ավելացնել քանակը',

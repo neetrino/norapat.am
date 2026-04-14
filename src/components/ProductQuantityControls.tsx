@@ -71,7 +71,7 @@ export default function ProductQuantityControls({
             !product.isAvailable
               ? 'cursor-not-allowed bg-slate-300 opacity-75'
               : addedToCart
-                ? 'bg-emerald-500 shadow-[0_10px_24px_rgba(34,197,94,0.3)]'
+                ? 'bg-emerald-500'
                 : PRODUCT_PAGE_MOBILE_CTA_BUTTON_CLASSES
           }`}
         >
@@ -130,8 +130,8 @@ export default function ProductQuantityControls({
           !product.isAvailable
             ? 'cursor-not-allowed bg-slate-300 text-white opacity-75'
             : addedToCart
-              ? 'bg-emerald-500 text-white shadow-[0_14px_28px_rgba(34,197,94,0.22)]'
-              : 'bg-orange-500 text-white shadow-[0_14px_28px_rgba(238,49,36,0.22)] hover:bg-orange-600'
+              ? 'bg-emerald-500 text-white'
+              : 'bg-orange-500 text-white hover:bg-orange-600'
         }`}
       >
         <ShoppingCart className="h-5 w-5" />

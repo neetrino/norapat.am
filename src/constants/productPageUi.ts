@@ -5,7 +5,7 @@
 
 /** Tailwind classes for mobile PDP primary button (must stay literal for JIT). */
 export const PRODUCT_PAGE_MOBILE_CTA_BUTTON_CLASSES =
-  'bg-[#E53225] hover:bg-[#c41f1a] shadow-[0_10px_24px_rgba(229,50,37,0.35)]'
+  'bg-[#E53225] hover:bg-[#c41f1a]'
 
 /** Mobile PDP price text + link hovers (matches CTA). */
 export const PRODUCT_PAGE_MOBILE_ACCENT_TEXT_CLASS = 'text-[#E53225]'
