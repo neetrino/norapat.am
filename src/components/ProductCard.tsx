@@ -142,13 +142,13 @@ const ProductCard = memo(
           href={`/products/${product.id}`}
           className="group relative flex overflow-hidden rounded-2xl border border-[#eadfd9] bg-[linear-gradient(140deg,#ffffff_0%,#fffaf6_55%,#fff3ec_100%)] shadow-[0_10px_26px_rgba(15,23,42,0.05)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_14px_32px_rgba(15,23,42,0.08)]"
         >
-          <div className="relative flex w-[7.25rem] shrink-0 items-center self-stretch overflow-hidden bg-[radial-gradient(circle_at_50%_45%,rgba(255,230,219,0.95)_0%,rgba(255,245,240,0.9)_52%,rgba(255,255,255,0.75)_100%)] sm:w-36">
+          <div className="relative flex w-[8.25rem] shrink-0 items-center self-stretch overflow-hidden bg-[radial-gradient(circle_at_50%_45%,rgba(255,230,219,0.95)_0%,rgba(255,245,240,0.9)_52%,rgba(255,255,255,0.75)_100%)] sm:w-40">
             <div aria-hidden className="absolute -bottom-6 -left-6 h-20 w-20 rounded-full bg-[#ffd8c8]/50 blur-2xl" />
             <div aria-hidden className="absolute -right-5 top-4 h-14 w-14 rounded-full bg-white/70 blur-xl" />
             <ProductCardImageFrame
               image={product.image}
               alt={displayName}
-              sizes="(max-width: 640px) 116px, 144px"
+              sizes="(max-width: 640px) 132px, 160px"
               imagePaddingClass=""
               imageClassName="object-cover"
             />
