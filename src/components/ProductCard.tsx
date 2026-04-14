@@ -16,15 +16,23 @@ interface ProductCardProps {
   addedToCart?: Set<string>
   isInWishlist?: boolean
   onToggleWishlist?: (productId: string) => void
-  /** On wishlist page use `remove` so the control reads as dismiss (X), not favorite (heart). */
   wishlistButtonVariant?: 'heart' | 'remove'
-  /**
-   * Home showcase carousel on narrow screens: tighter padding/typography so the full card fits comfortably.
-   */
   compactLayout?: 'standard' | 'showcaseNarrow'
 }
 
 const PRODUCT_CARD_ADD_IDLE_BUTTON_CLASS = `${BRAND_RED_CTA_IDLE_HOVER_CLASS} shadow-[0_14px_26px_rgba(229,50,37,0.18)]`
+const CURRENCY = '֏'
+
+/** Home showcase carousel: reserve space for two badge rows (category + status) so card height matches the reference layout. */
+const COMPACT_SHOWCASE_BADGE_STACK_MIN_CLASS = 'min-h-[3.25rem] sm:min-h-[3.5rem]'
+const SHOWCASE_NARROW_BADGE_STACK_MIN_CLASS = 'min-h-[2.5rem] sm:min-h-[2.75rem]'
+/** Two line-clamped description lines — keeps CTA baseline aligned when shortDescription is missing. */
+const COMPACT_SHOWCASE_DESCRIPTION_BLOCK_MIN_CLASS = 'min-h-[3rem] sm:min-h-[3.25rem]'
+const SHOWCASE_NARROW_DESCRIPTION_BLOCK_MIN_CLASS = 'min-h-[2rem] sm:min-h-[2.25rem]'
+
+function formatPrice(value: number) {
+  return new Intl.NumberFormat('hy-AM').format(value)
+}
 
 function getDiscountPercent(originalPrice: number | null | undefined, currentPrice: number) {
   if (originalPrice == null || originalPrice <= currentPrice || originalPrice <= 0) {
@@ -34,29 +42,75 @@ function getDiscountPercent(originalPrice: number | null | undefined, currentPri
   return Math.round(((originalPrice - currentPrice) / originalPrice) * 100)
 }
 
-function ProductBadge({
-  tone,
-  icon,
-  label,
+function getStatusToneTextClass(tone: 'amber' | 'green' | 'blue') {
+  return tone === 'amber'
+    ? 'text-[#b86114]'
+    : tone === 'green'
+      ? 'text-[#6c8a2b]'
+      : 'text-[#6f633d]'
+}
+
+function getStatusToneSurfaceClass(tone: 'amber' | 'green' | 'blue') {
+  return tone === 'amber'
+    ? 'border-amber-300 bg-amber-50 shadow-sm'
+    : tone === 'green'
+      ? 'border-emerald-300 bg-emerald-50 shadow-sm'
+      : 'border-slate-300 bg-slate-50 shadow-sm'
+}
+
+/** Category relation is optional on some Product payloads; read name when present. */
+function getProductCategoryName(product: Product): string | null {
+  if (!('category' in product) || product.category == null) return null
+  const cat = product.category
+  if (typeof cat !== 'object') return null
+  if (!('name' in cat)) return null
+  const name = (cat as { name: unknown }).name
+  return typeof name === 'string' ? name : null
+}
+
+function ProductCardImageFrame({
+  image,
+  alt,
+  sizes,
+  imagePaddingClass,
+  imageClassName = 'object-contain',
 }: {
-  tone: 'amber' | 'green' | 'blue'
-  icon: 'star' | 'zap'
-  label: string
+  image: string | null | undefined
+  alt: string
+  sizes: string
+  imagePaddingClass: string
+  imageClassName?: string
 }) {
-  const toneClass =
-    tone === 'amber'
-      ? 'text-[#b86114]'
-      : tone === 'green'
-        ? 'text-[#6c8a2b]'
-        : 'text-[#6f633d]'
-  const Icon = icon === 'zap' ? Zap : Star
+  const hasImage = Boolean(image && image !== 'no-image')
 
   return (
-    <div
-      className={`inline-flex max-w-[9.5rem] items-center gap-1.5 ${toneClass} px-3 py-1.5 text-[10px] font-semibold leading-none tracking-[0.12em] drop-shadow-[0_1px_0_rgba(255,255,255,0.85)]`}
-    >
-      <Icon className="h-3 w-3 shrink-0 stroke-[2.2]" />
-      {label}
+    <div className="relative z-10 h-full w-full overflow-hidden">
+      <div
+        aria-hidden
+        className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.55)_0%,rgba(255,244,238,0.18)_42%,rgba(248,240,233,0)_72%)]"
+      />
+      <div aria-hidden className="absolute inset-x-6 bottom-4 h-7 rounded-full bg-black/5 blur-xl" />
+
+      {hasImage ? (
+        <div className={`relative h-full w-full ${imagePaddingClass}`}>
+          <Image
+            src={image!}
+            alt={alt}
+            fill
+            sizes={sizes}
+            className={`${imageClassName} object-center transition-transform duration-500 ease-out group-hover:scale-105`}
+            style={{ filter: 'drop-shadow(0 14px 24px rgba(15,23,42,0.14))' }}
+            loading="lazy"
+            quality={85}
+          />
+        </div>
+      ) : (
+        <div className="relative flex h-full w-full items-center justify-center">
+          <div className="rounded-full bg-white/85 px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400 shadow-[0_10px_24px_rgba(15,23,42,0.08)]">
+            No Image
+          </div>
+        </div>
+      )}
     </div>
   )
 }
@@ -79,6 +133,7 @@ const ProductCard = memo(
     const description = product.shortDescription ?? product.description
     const discountPercent = getDiscountPercent(product.originalPrice, product.price)
     const hasDiscount = discountPercent != null
+    const categoryName = getProductCategoryName(product)
 
     const statusBadge =
       product.status === 'HIT'
@@ -107,63 +162,67 @@ const ProductCard = memo(
       return (
         <Link
           href={`/products/${product.id}`}
-          className="group relative flex overflow-hidden rounded-[2rem] border border-[#eadfd9] bg-[linear-gradient(140deg,#ffffff_0%,#fffaf6_55%,#fff3ec_100%)] shadow-[0_16px_38px_rgba(15,23,42,0.06)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_22px_46px_rgba(15,23,42,0.1)]"
+          className="group relative flex h-full min-h-0 w-full overflow-hidden rounded-2xl border border-[#eadfd9] bg-[linear-gradient(140deg,#ffffff_0%,#fffaf6_55%,#fff3ec_100%)] shadow-[0_10px_26px_rgba(15,23,42,0.05)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_14px_32px_rgba(15,23,42,0.08)]"
         >
-          <div className="relative w-36 shrink-0 self-stretch overflow-hidden bg-[radial-gradient(circle_at_50%_45%,rgba(255,230,219,0.95)_0%,rgba(255,245,240,0.9)_52%,rgba(255,255,255,0.75)_100%)] sm:w-40">
-            <div aria-hidden className="absolute -bottom-6 -left-6 h-24 w-24 rounded-full bg-[#ffd8c8]/50 blur-2xl" />
-            <div aria-hidden className="absolute -right-5 top-4 h-16 w-16 rounded-full bg-white/70 blur-xl" />
+          <div className="relative flex w-[8.25rem] shrink-0 items-center self-stretch overflow-hidden bg-[radial-gradient(circle_at_50%_45%,rgba(255,230,219,0.95)_0%,rgba(255,245,240,0.9)_52%,rgba(255,255,255,0.75)_100%)] sm:w-40">
+            <div aria-hidden className="absolute -bottom-6 -left-6 h-20 w-20 rounded-full bg-[#ffd8c8]/50 blur-2xl" />
+            <div aria-hidden className="absolute -right-5 top-4 h-14 w-14 rounded-full bg-white/70 blur-xl" />
+            <ProductCardImageFrame
+              image={product.image}
+              alt={displayName}
+              sizes="(max-width: 640px) 132px, 160px"
+              imagePaddingClass=""
+              imageClassName="object-cover"
+            />
 
-            {product.image && product.image !== 'no-image' ? (
-              <Image
-                src={product.image}
-                alt={displayName}
-                fill
-                sizes="160px"
-                className="object-contain p-3 transition-transform duration-300 ease-out group-hover:scale-[1.07]"
-                style={{ filter: 'drop-shadow(0 10px 18px rgba(15,23,42,0.18))' }}
-                loading="lazy"
-                quality={85}
-              />
-            ) : (
-              <div className="absolute inset-0 flex items-center justify-center text-4xl">🍽️</div>
-            )}
-
-            <div className="absolute left-2 top-1 z-10 flex flex-col gap-1.5 sm:left-2.5 sm:top-1.5">
-              {hasDiscount && (
-                <div className="inline-flex w-fit items-center rounded-full bg-[#E53225] px-3 py-1.5 text-[10px] font-black leading-none tracking-[0.12em] text-white shadow-[0_12px_22px_rgba(229,50,37,0.28)]">
-                  -{discountPercent}%
-                </div>
-              )}
-              {statusBadge && (
-                <ProductBadge
-                  tone={statusBadge.tone}
-                  icon={statusBadge.icon}
-                  label={statusBadge.label}
-                />
-              )}
-            </div>
           </div>
 
-          <div className="flex min-w-0 flex-1 flex-col justify-between p-4 sm:p-5">
+          <div className="flex min-h-0 min-w-0 flex-1 flex-col justify-between p-3 sm:p-3.5">
             <div>
-              <h3 className="line-clamp-2 text-base font-black leading-tight tracking-tight text-slate-900 sm:text-lg">
+              {(categoryName || statusBadge || hasDiscount) && (
+                <div className="mb-1.5 flex w-full min-w-0 flex-col items-start gap-1.5 sm:mb-2 sm:gap-2">
+                  {categoryName && (
+                    <span className="inline-flex max-w-full items-center rounded-full border border-[#dcc8bc] bg-[#fff6f0] px-2 py-0.5 text-[8px] font-bold uppercase tracking-[0.12em] text-[#8a4a1f] sm:px-2.5 sm:text-[9px]">
+                      <span className="min-w-0 max-w-full truncate">{categoryName}</span>
+                    </span>
+                  )}
+                  {statusBadge && (
+                    <span
+                      className={`inline-flex w-fit max-w-full items-center gap-0.5 rounded-full border px-2 py-0.5 text-[8px] font-semibold uppercase leading-none tracking-[0.12em] sm:gap-1 sm:px-2.5 sm:text-[9px] ${getStatusToneTextClass(statusBadge.tone)} ${getStatusToneSurfaceClass(statusBadge.tone)}`}
+                    >
+                      {statusBadge.icon === 'zap' ? (
+                        <Zap className="h-2.5 w-2.5 shrink-0 stroke-[2.2] sm:h-3 sm:w-3" />
+                      ) : (
+                        <Star className="h-2.5 w-2.5 shrink-0 stroke-[2.2] sm:h-3 sm:w-3" />
+                      )}
+                      {statusBadge.label}
+                    </span>
+                  )}
+                  {hasDiscount && (
+                    <span className="inline-flex w-fit max-w-full items-center rounded-full bg-[#E53225] px-2 py-0.5 text-[8px] font-black leading-none tracking-[0.12em] text-white shadow-[0_6px_12px_rgba(229,50,37,0.2)] sm:text-[9px]">
+                      -{discountPercent}%
+                    </span>
+                  )}
+                </div>
+              )}
+              <h3 className="min-w-0 truncate text-[13px] font-black leading-snug tracking-tight text-slate-900 sm:text-[0.875rem]">
                 {displayName}
               </h3>
               {description && (
-                <p className="mt-2 line-clamp-1 text-sm leading-6 text-slate-500">
+                <p className="mt-1.5 line-clamp-1 text-xs leading-5 text-slate-500 sm:text-[13px]">
                   {description}
                 </p>
               )}
             </div>
 
-            <div className="mt-5 flex items-end justify-between gap-3">
-              <div className="flex items-baseline gap-2">
-                <div className="text-xl font-black tracking-tight text-slate-900">
-                  {product.price} ֏
+            <div className="mt-3 flex items-end justify-between gap-2">
+              <div className="flex min-w-0 items-baseline gap-1.5">
+                <div className="truncate text-base font-black tracking-tight text-slate-900 sm:text-[1.05rem]">
+                  {formatPrice(product.price)} {CURRENCY}
                 </div>
                 {hasDiscount && product.originalPrice != null && (
-                  <div className="text-sm font-medium text-slate-400 line-through">
-                    {product.originalPrice} ֏
+                  <div className="shrink-0 text-xs font-medium text-slate-400 line-through">
+                    {formatPrice(product.originalPrice)} {CURRENCY}
                   </div>
                 )}
               </div>
@@ -178,15 +237,15 @@ const ProductCard = memo(
                   }}
                   title={pc.addToCartTitle}
                   aria-label={isAdded ? pc.inCart : pc.addToCartTitle}
-                  className={`inline-flex h-11 min-w-11 items-center justify-center gap-2 rounded-full px-3 text-sm font-semibold transition-all lg:min-w-0 lg:px-4 ${
+                  className={`inline-flex h-9 min-w-9 shrink-0 items-center justify-center gap-1.5 rounded-full px-2.5 text-xs font-semibold transition-all sm:gap-2 sm:px-3 lg:min-w-0 ${
                     isAdded
-                      ? 'bg-gradient-to-r from-emerald-500 to-green-600 text-white shadow-[0_14px_24px_rgba(34,197,94,0.22)]'
-                      : PRODUCT_CARD_ADD_IDLE_BUTTON_CLASS
+                      ? 'bg-gradient-to-r from-emerald-500 to-green-600 text-white shadow-[0_10px_20px_rgba(34,197,94,0.2)]'
+                      : `${PRODUCT_CARD_ADD_IDLE_BUTTON_CLASS} hover:shadow-[0_14px_26px_rgba(229,50,37,0.2)]`
                   }`}
                 >
                   {isAdded ? (
                     <>
-                      <svg className="h-4 w-4 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                      <svg className="h-3.5 w-3.5 shrink-0 sm:h-4 sm:w-4" fill="currentColor" viewBox="0 0 20 20">
                         <path
                           fillRule="evenodd"
                           d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
@@ -197,7 +256,7 @@ const ProductCard = memo(
                     </>
                   ) : (
                     <>
-                      <ShoppingCart className="h-4 w-4 shrink-0" />
+                      <ShoppingCart className="h-3.5 w-3.5 shrink-0 sm:h-4 sm:w-4" />
                       <span className="hidden lg:inline">{pc.add}</span>
                     </>
                   )}
@@ -215,16 +274,16 @@ const ProductCard = memo(
                 e.stopPropagation()
                 onToggleWishlist?.(product.id)
               }}
-              className={`absolute right-3 top-3 z-20 flex h-9 w-9 items-center justify-center rounded-full border shadow-sm backdrop-blur transition-all duration-200 active:scale-90 ${wishlistBtnSurfaceClass}`}
+              className={`absolute right-2 top-2 z-20 flex h-8 w-8 items-center justify-center rounded-full border shadow-sm backdrop-blur transition-all duration-200 active:scale-90 sm:right-2.5 sm:top-2.5 ${wishlistBtnSurfaceClass}`}
             >
               {wishlistButtonVariant === 'remove' ? (
                 <X
-                  className="h-4 w-4 text-slate-600 transition-colors duration-200 hover:text-red-600"
+                  className="h-3.5 w-3.5 text-slate-600 transition-colors duration-200 hover:text-red-600 sm:h-4 sm:w-4"
                   strokeWidth={2.25}
                 />
               ) : (
                 <Heart
-                  className={`h-4 w-4 transition-colors duration-200 ${
+                  className={`h-3.5 w-3.5 transition-colors duration-200 sm:h-4 sm:w-4 ${
                     isInWishlist
                       ? 'fill-red-500 text-red-500'
                       : 'text-slate-400 hover:text-red-400'
@@ -239,23 +298,24 @@ const ProductCard = memo(
 
     const isCompact = variant === 'compact'
     const isShowcaseNarrow = isCompact && compactLayout === 'showcaseNarrow'
+    const surfaceClass = isCompact
+      ? 'border border-[#f1dfd4] bg-transparent shadow-none hover:-translate-y-1.5 hover:border-[#e7c8b6] hover:shadow-none'
+      : 'border border-[#f1dfd4] bg-transparent shadow-none hover:-translate-y-1 hover:border-[#e7c8b6] hover:shadow-none'
 
     return (
       <Link
         href={`/products/${product.id}`}
-        className={`group relative w-full overflow-hidden border border-[#eadfd9] bg-[linear-gradient(160deg,#ffffff_0%,#fffaf6_52%,#fff3ec_100%)] shadow-[0_16px_38px_rgba(15,23,42,0.06)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_24px_48px_rgba(15,23,42,0.1)] ${
-          isShowcaseNarrow ? 'rounded-3xl' : 'rounded-[2rem]'
-        } ${isCompact ? 'flex flex-col' : 'block'}`}
+        className={`group relative flex h-full min-h-0 w-full flex-col overflow-hidden transition-all duration-300 ${
+          surfaceClass
+        } ${isShowcaseNarrow ? 'rounded-3xl' : 'rounded-[2rem]'}`}
       >
         <div
-          className={`relative overflow-hidden ${isShowcaseNarrow ? 'rounded-t-3xl' : 'rounded-t-[2rem]'}`}
+          className={`relative shrink-0 overflow-hidden ${isShowcaseNarrow ? 'rounded-t-3xl' : 'rounded-t-[2rem]'}`}
           style={{
             aspectRatio: isCompact ? '1 / 1' : '1500 / 1125',
           }}
         >
-          <div aria-hidden className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,230,219,0.9)_0%,rgba(255,244,238,0.78)_48%,rgba(255,255,255,0.72)_100%)]" />
-          <div aria-hidden className="absolute -left-8 bottom-0 h-28 w-28 rounded-full bg-[#ffd8c8]/45 blur-3xl" />
-          <div aria-hidden className="absolute -right-8 top-0 h-24 w-24 rounded-full bg-white/80 blur-2xl" />
+          <div aria-hidden className="absolute inset-0 bg-white" />
 
           {showHeartBtn && (
             <button
@@ -266,18 +326,18 @@ const ProductCard = memo(
                 e.stopPropagation()
                 onToggleWishlist?.(product.id)
               }}
-              className={`absolute right-3 top-3 z-20 flex items-center justify-center rounded-full border shadow-sm backdrop-blur transition-all active:scale-90 ${
-                isShowcaseNarrow ? 'right-2 top-2 h-8 w-8' : isCompact ? 'h-9 w-9' : 'h-10 w-10'
+              className={`absolute right-2 top-2 z-20 flex items-center justify-center rounded-full border shadow-sm backdrop-blur transition-all active:scale-90 ${
+                isShowcaseNarrow ? 'h-7 w-7' : 'h-8 w-8'
               } ${wishlistBtnSurfaceClass}`}
             >
               {wishlistButtonVariant === 'remove' ? (
                 <X
-                  className={`${isCompact ? 'h-4 w-4' : 'h-5 w-5'} text-slate-600 transition-colors duration-200 hover:text-red-600`}
+                  className="h-3.5 w-3.5 text-slate-600 transition-colors duration-200 hover:text-red-600 sm:h-4 sm:w-4"
                   strokeWidth={2.25}
                 />
               ) : (
                 <Heart
-                  className={`${isCompact ? 'h-4 w-4' : 'h-5 w-5'} transition-colors duration-200 ${
+                  className={`h-3.5 w-3.5 transition-colors duration-200 sm:h-4 sm:w-4 ${
                     isInWishlist
                       ? 'fill-red-500 text-red-500'
                       : 'text-slate-400 hover:text-red-400'
@@ -287,40 +347,15 @@ const ProductCard = memo(
             </button>
           )}
 
-          <div
-            className={`absolute left-2 top-1 z-20 flex flex-col sm:left-2.5 sm:top-1.5 ${
-              isShowcaseNarrow ? 'gap-1' : 'gap-1.5'
-            }`}
-          >
-            {hasDiscount && (
-              <div
-                className={`inline-flex w-fit items-center rounded-full bg-[#E53225] font-black leading-none tracking-[0.12em] text-white shadow-[0_12px_22px_rgba(229,50,37,0.28)] ${
-                  isShowcaseNarrow ? 'px-2 py-1 text-[9px]' : 'px-3 py-1.5 text-[10px]'
-                }`}
-              >
-                -{discountPercent}%
-              </div>
-            )}
-            {statusBadge && (
-              <div className={isShowcaseNarrow ? 'origin-top-left scale-[0.88]' : undefined}>
-                <ProductBadge
-                  tone={statusBadge.tone}
-                  icon={statusBadge.icon}
-                  label={statusBadge.label}
-                />
-              </div>
-            )}
-          </div>
-
           {product.image && product.image !== 'no-image' ? (
             <div className="relative z-10 h-full w-full overflow-hidden">
               <div
                 className={`absolute inset-0 ${
                   isShowcaseNarrow
-                    ? 'px-2 pb-2 pt-6'
+                    ? 'px-1.5 pb-1.5 pt-4'
                     : isCompact
-                      ? 'px-4 pb-4 pt-10 sm:px-5 sm:pb-5 sm:pt-11'
-                      : 'px-4 pb-4 pt-10 sm:px-5 sm:pb-5 sm:pt-11'
+                      ? 'px-3 pb-3 pt-4 sm:px-4 sm:pb-4 sm:pt-5'
+                      : 'px-3 pb-3 pt-4 sm:px-4 sm:pb-4 sm:pt-5'
                 }`}
                 style={{
                   transform: isCompact ? undefined : 'perspective(1000px) rotateX(6deg) rotateY(-2deg)',
@@ -340,122 +375,228 @@ const ProductCard = memo(
               </div>
             </div>
           ) : (
-            <div
-              className={`absolute inset-0 z-10 flex items-center justify-center ${
-                isCompact ? 'text-6xl' : 'text-7xl'
-              }`}
-            >
-              🍽️
+            <div className="absolute inset-0 z-10 flex items-center justify-center">
+              <span className="rounded-full bg-white/90 px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-slate-400 shadow-[0_10px_24px_rgba(15,23,42,0.08)]">
+                No Image
+              </span>
             </div>
           )}
 
           <div
-              className={`absolute z-20 flex items-center gap-1 rounded-full border border-white/70 bg-white/92 shadow-[0_12px_24px_rgba(15,23,42,0.08)] backdrop-blur ${
+            className={`absolute z-20 flex max-w-[calc(100%-0.75rem)] items-center gap-0.5 rounded-full border border-white/80 bg-white/88 shadow-[0_6px_14px_rgba(15,23,42,0.06)] backdrop-blur ${
               isShowcaseNarrow
-                ? 'bottom-1.5 right-1.5 px-2 py-0.5 text-[11px]'
+                ? 'bottom-1 right-1 px-1.5 py-0.5 text-[10px] leading-tight'
                 : isCompact
-                  ? 'bottom-3 right-3 px-4 py-2 text-sm'
-                  : 'bottom-3 right-3 px-5 py-2.5 text-base'
+                  ? 'bottom-2 right-2 px-2.5 py-1 text-xs leading-none'
+                  : 'bottom-2 right-2 px-3 py-1.5 text-sm leading-none'
             }`}
           >
             {hasDiscount && product.originalPrice != null && (
               <span
-                className={`font-medium text-slate-400 line-through ${
-                  isShowcaseNarrow ? 'text-[10px]' : 'text-xs'
+                className={`shrink-0 font-medium text-slate-400 line-through ${
+                  isShowcaseNarrow ? 'text-[9px]' : 'text-[10px] sm:text-xs'
                 }`}
               >
-                {product.originalPrice} ֏
+                {formatPrice(product.originalPrice)} {CURRENCY}
               </span>
             )}
-            <span className={`font-black text-[#E53225] ${isShowcaseNarrow ? 'text-xs' : ''}`}>
-              {product.price} ֏
+            <span
+              className={`shrink-0 font-black leading-none text-[#E53225] ${
+                isShowcaseNarrow ? 'text-[10px]' : 'text-xs sm:text-sm'
+              }`}
+            >
+              {formatPrice(product.price)} {CURRENCY}
             </span>
           </div>
         </div>
 
         <div
-          className={`${
+          className={`flex min-h-0 flex-1 flex-col ${
             isShowcaseNarrow
-              ? 'flex flex-1 flex-col p-2.5 pb-1'
+              ? 'gap-2 px-3 pb-3 pt-3'
               : isCompact
-                ? 'flex flex-1 flex-col p-4 pb-2'
-                : 'p-5 pb-3 sm:p-6 sm:pb-4'
+                ? 'gap-2.5 px-5 pb-5 pt-5'
+                : 'gap-3 px-6 pb-6 pt-6 sm:px-7 sm:pb-7 sm:pt-7'
           }`}
         >
-          <h3
-            className={`font-black tracking-tight text-slate-900 ${
-              isShowcaseNarrow
-                ? 'line-clamp-2 text-xs leading-snug'
-                : isCompact
-                  ? 'line-clamp-2 text-base leading-snug'
-                  : 'line-clamp-2 text-xl leading-tight'
-            }`}
-          >
-            {displayName}
-          </h3>
-
           {isCompact ? (
-            <p
-              className={
-                isShowcaseNarrow
-                  ? 'mt-1 truncate text-[11px] leading-4 text-slate-500'
-                  : 'mt-2 truncate text-sm leading-6 text-slate-500'
-              }
-            >
-              {description}
-            </p>
-          ) : (
-            <p className="mt-3 line-clamp-1 text-sm leading-6 text-slate-500 sm:text-[15px]">
-              {description}
-            </p>
-          )}
-
-        </div>
-
-        {onAddToCart && (
-          <div
-            className={`${
-              isShowcaseNarrow ? 'px-2.5 pb-2.5' : isCompact ? 'px-4 pb-4' : 'px-5 pb-5 sm:px-6 sm:pb-6'
-            }`}
-          >
-            <button
-              onClick={(e) => {
-                e.preventDefault()
-                e.stopPropagation()
-                onAddToCart(product)
-              }}
-              className={`flex w-full items-center justify-center gap-2 rounded-full font-semibold transition-all ${
-                isShowcaseNarrow ? 'h-8 text-[11px]' : isCompact ? 'h-11 text-sm' : 'h-12 text-base'
-              } ${
-                isAdded
-                  ? 'bg-gradient-to-r from-emerald-500 to-green-600 text-white shadow-[0_14px_24px_rgba(34,197,94,0.22)]'
-                  : PRODUCT_CARD_ADD_IDLE_BUTTON_CLASS
+            <div
+              className={`flex w-full min-w-0 shrink-0 flex-col items-start justify-start ${
+                isShowcaseNarrow ? `gap-1 ${SHOWCASE_NARROW_BADGE_STACK_MIN_CLASS}` : `gap-1.5 sm:gap-2 ${COMPACT_SHOWCASE_BADGE_STACK_MIN_CLASS}`
               }`}
-              title={pc.addToCartTitle}
-              aria-label={isAdded ? pc.inCart : pc.addToCartTitle}
             >
-              {isAdded ? (
-                <span className="flex items-center justify-center gap-2">
-                  <svg className="h-4 w-4 shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                    <path
-                      fillRule="evenodd"
-                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                  <span className="hidden lg:inline">{pc.inCart}</span>
-                </span>
-              ) : (
-                <span className="flex items-center justify-center gap-2">
-                  <ShoppingCart
-                    className={`shrink-0 ${isCompact ? 'h-4 w-4' : 'h-5 w-5'}`}
-                  />
-                  <span className="hidden lg:inline">{pc.add}</span>
+              {categoryName && (
+                <span
+                  className={`inline-flex max-w-full items-center rounded-full border border-[#dcc8bc] bg-[#fff6f0] font-bold uppercase tracking-[0.12em] text-[#8a4a1f] ${
+                    isShowcaseNarrow
+                      ? 'px-2 py-0.5 text-[8px]'
+                      : 'px-2.5 py-1 text-[9px] sm:px-3 sm:text-[10px]'
+                  }`}
+                >
+                  <span className="min-w-0 max-w-full truncate">{categoryName}</span>
                 </span>
               )}
-            </button>
+              {statusBadge && (
+                <span
+                  className={`inline-flex w-fit max-w-full items-center gap-1 rounded-full border font-semibold uppercase leading-none tracking-[0.12em] ${
+                    isShowcaseNarrow
+                      ? 'px-2 py-0.5 text-[8px]'
+                      : 'px-2.5 py-1 text-[9px] sm:px-3 sm:text-[10px]'
+                  } ${getStatusToneTextClass(statusBadge.tone)} ${getStatusToneSurfaceClass(statusBadge.tone)}`}
+                >
+                  {statusBadge.icon === 'zap' ? (
+                    <Zap
+                      className={`shrink-0 stroke-[2.2] ${isShowcaseNarrow ? 'h-2.5 w-2.5' : 'h-3 w-3'}`}
+                    />
+                  ) : (
+                    <Star
+                      className={`shrink-0 stroke-[2.2] ${isShowcaseNarrow ? 'h-2.5 w-2.5' : 'h-3 w-3'}`}
+                    />
+                  )}
+                  {statusBadge.label}
+                </span>
+              )}
+              {hasDiscount && (
+                <span
+                  className={`inline-flex w-fit max-w-full items-center rounded-full bg-[#E53225] font-black leading-none tracking-[0.12em] text-white shadow-[0_8px_16px_rgba(229,50,37,0.18)] ${
+                    isShowcaseNarrow ? 'px-2 py-0.5 text-[8px]' : 'px-2.5 py-1 text-[9px] sm:px-3 sm:py-1.5 sm:text-[10px]'
+                  }`}
+                >
+                  -{discountPercent}%
+                </span>
+              )}
+            </div>
+          ) : (
+            (categoryName || statusBadge || hasDiscount) && (
+              <div
+                className={`flex w-full min-w-0 flex-col items-start shrink-0 ${
+                  isShowcaseNarrow ? 'gap-1' : 'gap-1.5 sm:gap-2'
+                }`}
+              >
+                {categoryName && (
+                  <span
+                    className={`inline-flex max-w-full items-center rounded-full border border-[#dcc8bc] bg-[#fff6f0] font-bold uppercase tracking-[0.12em] text-[#8a4a1f] ${
+                      isShowcaseNarrow
+                        ? 'px-2 py-0.5 text-[8px]'
+                        : 'px-2.5 py-1 text-[9px] sm:px-3 sm:text-[10px]'
+                    }`}
+                  >
+                    <span className="min-w-0 max-w-full truncate">{categoryName}</span>
+                  </span>
+                )}
+                {statusBadge && (
+                  <span
+                    className={`inline-flex w-fit max-w-full items-center gap-1 rounded-full border font-semibold uppercase leading-none tracking-[0.12em] ${
+                      isShowcaseNarrow
+                        ? 'px-2 py-0.5 text-[8px]'
+                        : 'px-2.5 py-1 text-[9px] sm:px-3 sm:text-[10px]'
+                    } ${getStatusToneTextClass(statusBadge.tone)} ${getStatusToneSurfaceClass(statusBadge.tone)}`}
+                  >
+                    {statusBadge.icon === 'zap' ? (
+                      <Zap
+                        className={`shrink-0 stroke-[2.2] ${isShowcaseNarrow ? 'h-2.5 w-2.5' : 'h-3 w-3'}`}
+                      />
+                    ) : (
+                      <Star
+                        className={`shrink-0 stroke-[2.2] ${isShowcaseNarrow ? 'h-2.5 w-2.5' : 'h-3 w-3'}`}
+                      />
+                    )}
+                    {statusBadge.label}
+                  </span>
+                )}
+                {hasDiscount && (
+                  <span
+                    className={`inline-flex w-fit max-w-full items-center rounded-full bg-[#E53225] font-black leading-none tracking-[0.12em] text-white shadow-[0_8px_16px_rgba(229,50,37,0.18)] ${
+                      isShowcaseNarrow ? 'px-2 py-0.5 text-[8px]' : 'px-2.5 py-1 text-[9px] sm:px-3 sm:py-1.5 sm:text-[10px]'
+                    }`}
+                  >
+                    -{discountPercent}%
+                  </span>
+                )}
+              </div>
+            )
+          )}
+
+          <div className="flex min-h-0 min-w-0 flex-1 flex-col">
+            <h3
+              className={`min-w-0 shrink-0 truncate font-black tracking-tight text-slate-900 ${
+                isShowcaseNarrow
+                  ? 'text-[11px] leading-snug'
+                  : isCompact
+                    ? 'text-[0.9375rem] leading-snug'
+                    : 'text-lg leading-tight'
+              }`}
+            >
+              {displayName}
+            </h3>
+
+            {isCompact ? (
+              <div
+                className={
+                  isShowcaseNarrow
+                    ? `mt-1 ${SHOWCASE_NARROW_DESCRIPTION_BLOCK_MIN_CLASS}`
+                    : `mt-2 ${COMPACT_SHOWCASE_DESCRIPTION_BLOCK_MIN_CLASS}`
+                }
+              >
+                {description?.trim() ? (
+                  <p
+                    className={`min-w-0 overflow-hidden break-words text-slate-500 ${
+                      isShowcaseNarrow ? 'line-clamp-2 text-[11px] leading-4' : 'line-clamp-2 text-sm leading-6'
+                    }`}
+                  >
+                    {description}
+                  </p>
+                ) : null}
+              </div>
+            ) : description?.trim() ? (
+              <p className="mt-3 min-w-0 overflow-hidden break-words line-clamp-2 text-sm leading-6 text-slate-500 sm:text-[15px]">
+                {description}
+              </p>
+            ) : null}
+
+            {onAddToCart && (
+              <div
+                className={`mt-auto w-full shrink-0 ${isShowcaseNarrow ? 'pt-1' : isCompact ? 'pt-2' : 'pt-2.5'}`}
+              >
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault()
+                    e.stopPropagation()
+                    onAddToCart(product)
+                  }}
+                  className={`flex w-full items-center justify-center gap-2 rounded-full font-semibold transition-all ${
+                    isShowcaseNarrow ? 'h-8 text-[11px]' : isCompact ? 'h-11 text-sm' : 'h-12 text-base'
+                  } ${
+                    isAdded
+                      ? 'bg-gradient-to-r from-emerald-500 to-green-600 text-white shadow-[0_14px_24px_rgba(34,197,94,0.22)]'
+                      : `${PRODUCT_CARD_ADD_IDLE_BUTTON_CLASS} hover:shadow-[0_18px_30px_rgba(229,50,37,0.24)]`
+                  }`}
+                  title={pc.addToCartTitle}
+                  aria-label={isAdded ? pc.inCart : pc.addToCartTitle}
+                >
+                  {isAdded ? (
+                    <span className="flex items-center justify-center gap-2">
+                      <svg className="h-4 w-4 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path
+                          fillRule="evenodd"
+                          d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                      <span className="hidden lg:inline">{pc.inCart}</span>
+                    </span>
+                  ) : (
+                    <span className="flex items-center justify-center gap-2">
+                      <ShoppingCart className={`shrink-0 ${isCompact ? 'h-4 w-4' : 'h-5 w-5'}`} />
+                      <span>{pc.add}</span>
+                    </span>
+                  )}
+                </button>
+              </div>
+            )}
           </div>
-        )}
+        </div>
       </Link>
     )
   }

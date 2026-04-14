@@ -197,9 +197,7 @@ export default function RefundPage() {
           </div>
         </div>
       </div>
-      <div className="hidden lg:block">
-        <Footer />
-      </div>
+      <Footer />
     </div>
   )
 }

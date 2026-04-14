@@ -1,14 +1,31 @@
 'use client'
 
-import { Menu, Search, X, Home, UtensilsCrossed, Info, Phone } from 'lucide-react'
+import {
+  Menu,
+  Search,
+  X,
+  Home,
+  UtensilsCrossed,
+  Info,
+  Phone,
+  LayoutDashboard,
+  LogOut,
+  User,
+  LogIn,
+  UserPlus,
+} from 'lucide-react'
 import { useState } from 'react'
+import { useSession, signOut } from 'next-auth/react'
+import { useBodyScrollLock } from '@/hooks/useBodyScrollLock'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useI18n } from '@/i18n/I18nContext'
 import type { PublicSiteSettingsState } from '@/hooks/usePublicSiteSettings'
 import { SearchModal } from '@/components/SearchModal'
+import { MobileMenuBackgroundIcons } from '@/components/MobileMenuBackgroundIcons'
 import { SiteBrandMark } from '@/components/SiteBrandMark'
 import { useHeaderStack } from '@/contexts/HeaderStackContext'
+import { useHydration } from '@/hooks/useHydration'
 import {
   TOP_CONTACT_BAR_TRANSITION_EASING,
   TOP_CONTACT_BAR_TRANSITION_MS,
@@ -21,10 +38,14 @@ interface MobileHeaderProps {
 export default function MobileHeader({ branding }: MobileHeaderProps) {
   const { topBarInsetPx } = useHeaderStack()
   const { t } = useI18n()
-  const { search, nav } = t
+  const { search, nav, auth, profile } = t
+  const isHydrated = useHydration()
+  const { data: session, status } = useSession()
   const pathname = usePathname()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isSearchOpen, setIsSearchOpen] = useState(false)
+
+  useBodyScrollLock(isMenuOpen)
 
   const isActive = (href: string) =>
     href === '/' ? pathname === '/' : pathname?.startsWith(href)
@@ -46,7 +67,7 @@ export default function MobileHeader({ branding }: MobileHeaderProps) {
           transitionTimingFunction: TOP_CONTACT_BAR_TRANSITION_EASING,
         }}
       >
-        <div className="px-4 py-1.5">
+        <div className="px-4 py-1">
           <div className="flex items-center gap-2">
             <div className="flex min-w-0 flex-1 justify-start">
               <button
@@ -87,26 +108,18 @@ export default function MobileHeader({ branding }: MobileHeaderProps) {
 
       {/* Full-screen overlay menu */}
       <div
-        className={`fixed inset-0 z-[200] flex flex-col transition-all duration-500 ease-in-out ${
+        className={`fixed inset-0 z-[200] flex max-h-[100dvh] flex-col overflow-hidden overscroll-none transition-all duration-500 ease-in-out ${
           isMenuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
         }`}
-        style={{ background: 'linear-gradient(150deg, #1a0404 0%, #4a0a0a 45%, #8b1414 100%)' }}
+        style={{ background: 'var(--mobile-menu-bg)' }}
       >
-        {/* Decorative circles */}
-        <div className="pointer-events-none absolute inset-0 overflow-hidden">
-          <div className="absolute -right-24 -top-24 h-72 w-72 rounded-full bg-red-500/10" />
-          <div className="absolute -bottom-16 -left-16 h-56 w-56 rounded-full bg-red-700/15" />
-          <div className="absolute right-8 bottom-32 h-32 w-32 rounded-full bg-red-400/10" />
-        </div>
+        <MobileMenuBackgroundIcons />
 
-        {/* Top bar — logo + close */}
-        <div className="relative flex items-center justify-between px-6 pt-6 pb-4">
-          <div className="opacity-80">
-            <SiteBrandMark variant="mobile" branding={branding} />
-          </div>
+        {/* Top bar — միայն փակել (լոգո չկա) */}
+        <div className="relative z-10 flex items-center justify-end px-6 pb-4 pt-[max(1.625rem,env(safe-area-inset-top,0px)+0.5rem)]">
           <button
             onClick={() => setIsMenuOpen(false)}
-            className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/10 text-white backdrop-blur-sm transition-all duration-300 hover:bg-white/20 active:scale-95"
+            className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/10 text-white transition-all duration-300 hover:bg-white/20 active:scale-95"
             aria-label="Փակել"
           >
             <X className="h-5 w-5" />
@@ -114,10 +127,10 @@ export default function MobileHeader({ branding }: MobileHeaderProps) {
         </div>
 
         {/* Divider */}
-        <div className="mx-6 h-px bg-white/10" />
+        <div className="relative z-10 mx-6 h-px bg-white/15" />
 
         {/* Nav items */}
-        <nav className="relative flex flex-1 flex-col justify-center px-6 gap-1">
+        <nav className="relative z-10 flex min-h-0 flex-1 flex-col justify-center overflow-y-auto px-6 gap-1">
           {navItems.map((item, i) => {
             const Icon = item.icon
             const active = isActive(item.href)
@@ -128,8 +141,8 @@ export default function MobileHeader({ branding }: MobileHeaderProps) {
                 onClick={() => setIsMenuOpen(false)}
                 className={`group flex items-center gap-5 rounded-3xl px-5 py-5 transition-all duration-300 active:scale-[0.97] ${
                   active
-                    ? 'bg-red-500/20 text-red-300'
-                    : 'text-white/80 hover:bg-white/8 hover:text-white'
+                    ? 'bg-white/12 text-white'
+                    : 'text-white/75 hover:bg-white/8 hover:text-white'
                 }`}
                 style={{
                   transitionDelay: isMenuOpen ? `${i * 60}ms` : '0ms',
@@ -138,29 +151,140 @@ export default function MobileHeader({ branding }: MobileHeaderProps) {
                   transition: `transform 400ms ease ${i * 60}ms, opacity 400ms ease ${i * 60}ms, background-color 200ms, color 200ms`,
                 }}
               >
-                <span className="text-xs font-bold tracking-widest text-white/30 w-6">
+                <span className="text-xs font-bold tracking-widest text-white/40 w-6">
                   {item.num}
                 </span>
                 <div className={`flex h-12 w-12 items-center justify-center rounded-2xl transition-all duration-300 ${
-                  active ? 'bg-red-500 shadow-lg shadow-red-500/30' : 'bg-white/10 group-hover:bg-white/15'
+                  active
+                    ? 'bg-white shadow-md shadow-black/40'
+                    : 'bg-white/10 group-hover:bg-white/15'
                 }`}>
-                  <Icon className="h-5 w-5" />
+                  <Icon
+                    className={`h-5 w-5 ${active ? 'text-zinc-900' : 'text-white'}`}
+                  />
                 </div>
                 <span className="text-2xl font-bold tracking-tight">{item.label}</span>
                 {active && (
-                  <div className="ml-auto h-2 w-2 rounded-full bg-red-400" />
+                  <div className="ml-auto h-2 w-2 rounded-full bg-white" />
                 )}
               </Link>
             )
           })}
         </nav>
 
-        {/* Bottom divider */}
-        <div className="mx-6 h-px bg-white/10" />
+        {/* Account: admin / profile / login — մոբայլում մուտք ադմին և ելք */}
+        <div className="relative z-10 shrink-0 px-6 pb-2 pt-2 space-y-2 border-t border-white/10">
+          {!isHydrated || status === 'loading' ? (
+            <div
+              className="h-14 rounded-2xl bg-white/10 animate-pulse"
+              aria-hidden
+            />
+          ) : session ? (
+            session.user?.role === 'ADMIN' ? (
+              <>
+                <Link
+                  href="/admin"
+                  onClick={() => setIsMenuOpen(false)}
+                  className={`group flex items-center gap-4 rounded-2xl px-4 py-3 transition-colors ${
+                    isActive('/admin')
+                      ? 'bg-white/15 text-white'
+                      : 'text-white/85 hover:bg-white/10'
+                  }`}
+                >
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/10">
+                    <LayoutDashboard className="h-5 w-5 text-white" />
+                  </div>
+                  <span className="text-lg font-semibold">{auth.admin}</span>
+                  {isActive('/admin') && (
+                    <span className="ml-auto h-2 w-2 rounded-full bg-white" />
+                  )}
+                </Link>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsMenuOpen(false)
+                    void signOut({ callbackUrl: '/' })
+                  }}
+                  className="flex w-full items-center gap-4 rounded-2xl px-4 py-3 text-left text-white/85 transition-colors hover:bg-white/10"
+                >
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/10">
+                    <LogOut className="h-5 w-5 text-white" />
+                  </div>
+                  <span className="text-lg font-semibold">{auth.logoutTitle}</span>
+                </button>
+              </>
+            ) : (
+              <>
+                <Link
+                  href="/profile"
+                  onClick={() => setIsMenuOpen(false)}
+                  className={`group flex items-center gap-4 rounded-2xl px-4 py-3 transition-colors ${
+                    isActive('/profile')
+                      ? 'bg-white/15 text-white'
+                      : 'text-white/85 hover:bg-white/10'
+                  }`}
+                >
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/10">
+                    <User className="h-5 w-5 text-white" />
+                  </div>
+                  <span className="text-lg font-semibold">{profile.label}</span>
+                  {isActive('/profile') && (
+                    <span className="ml-auto h-2 w-2 rounded-full bg-white" />
+                  )}
+                </Link>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsMenuOpen(false)
+                    void signOut({ callbackUrl: '/' })
+                  }}
+                  className="flex w-full items-center gap-4 rounded-2xl px-4 py-3 text-left text-white/85 transition-colors hover:bg-white/10"
+                >
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/10">
+                    <LogOut className="h-5 w-5 text-white" />
+                  </div>
+                  <span className="text-lg font-semibold">{auth.logoutTitle}</span>
+                </button>
+              </>
+            )
+          ) : (
+            <div className="flex flex-col gap-2 sm:flex-row sm:gap-3">
+              <Link
+                href="/login"
+                onClick={() => setIsMenuOpen(false)}
+                className={`flex flex-1 items-center justify-center gap-2 rounded-2xl px-4 py-3 font-semibold transition-colors ${
+                  isActive('/login')
+                    ? 'bg-white text-zinc-900'
+                    : 'bg-white/10 text-white hover:bg-white/15'
+                }`}
+              >
+                <LogIn className="h-5 w-5 shrink-0" />
+                {auth.login}
+              </Link>
+              <Link
+                href="/register"
+                onClick={() => setIsMenuOpen(false)}
+                className={`flex flex-1 items-center justify-center gap-2 rounded-2xl px-4 py-3 font-semibold transition-colors ${
+                  isActive('/register')
+                    ? 'bg-orange-400 text-white'
+                    : 'bg-orange-500 text-white hover:bg-orange-600'
+                }`}
+              >
+                <UserPlus className="h-5 w-5 shrink-0" />
+                {auth.register}
+              </Link>
+            </div>
+          )}
+        </div>
 
-        {/* Footer text */}
-        <div className="relative px-6 py-6 text-center">
-          <p className="text-xs text-white/30 tracking-widest uppercase">Norapat Food Court</p>
+        {/* Bottom divider */}
+        <div className="relative z-10 mx-6 h-px bg-white/15" />
+
+        {/* Footer — Food Court */}
+        <div className="relative z-10 px-6 py-6 text-center">
+          <p className="text-xs text-white/50 tracking-widest uppercase">
+            Norapat Food Court
+          </p>
         </div>
       </div>
     </>

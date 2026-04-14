@@ -207,9 +207,7 @@ export default function WishlistPage() {
         )}
       </div>
 
-      <div className="hidden lg:block">
-        <Footer />
-      </div>
+      <Footer />
     </div>
   )
 }

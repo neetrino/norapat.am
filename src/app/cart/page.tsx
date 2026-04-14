@@ -59,10 +59,7 @@ export default function CartPage() {
           </div>
         </div>
         
-        {/* Hide Footer on Mobile and Tablet */}
-        <div className="hidden lg:block">
-          <Footer />
-        </div>
+        <Footer />
       </div>
     )
   }
@@ -405,10 +402,7 @@ export default function CartPage() {
         </div>
       </div>
       
-      {/* Hide Footer on Mobile and Tablet */}
-      <div className="hidden lg:block">
-        <Footer />
-      </div>
+      <Footer />
     </div>
   )
 }

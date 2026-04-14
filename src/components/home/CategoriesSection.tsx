@@ -12,16 +12,21 @@ import {
 } from '@/lib/categoryNav.utils'
 import { useI18n } from '@/i18n/I18nContext'
 import { getCategoryDisplayName } from '@/i18n/getCategoryDisplayName'
+import {
+  CATEGORY_CHIPS_H_SCROLL_CLASS,
+  CATEGORY_CHIPS_H_SCROLL_LOADING_CLASS,
+  categoryFilterPillClass,
+} from '@/components/ProductsPageCategoryChips'
 
 const SCROLL_STEP_PX = 320
 
 /**
- * Full-bleed surface for the category strip (home): one block behind arrows + pills.
- * Top border: same solid as BrandBannerSection `.promo-food-banner-bg` in globals.css (#a51d1d).
- * Uses orange-100 — project tokens map orange-50 to #fef2f2 (≈white), so orange-50 reads as “no bg”.
+ * Full-bleed surface for the category strip (home, lg+): one block behind arrows + pills.
+ * Light red wash so the strip reads as its own band vs. surrounding white.
+ * Mobile (below `lg`) matches products menu chips — no red band.
  */
 const CATEGORY_SECTION_SURFACE_CLASS =
-  'relative w-full border-t-[3px] border-t-[#a51d1d] border-b border-orange-200/70 bg-orange-100 shadow-[inset_0_-1px_0_0_rgba(238,49,36,0.08)]'
+  'relative w-full lg:border-t lg:border-b lg:border-red-100 lg:bg-red-50 lg:shadow-[inset_0_-1px_0_0_rgba(185,28,28,0.06)]'
 
 export interface CategoriesSectionProps {
   activeCategory?: string
@@ -38,6 +43,7 @@ export function CategoriesSection({
 }: CategoriesSectionProps) {
   const { t, locale } = useI18n()
   const c = t.home.categories
+  const productsCopy = t.products
   const ariaCategories = t.home.ariaCategories
   const [categories, setCategories] = useState<CategoryWithCount[]>([])
   const [loading, setLoading] = useState(true)
@@ -106,7 +112,14 @@ export function CategoriesSection({
         className={CATEGORY_SECTION_SURFACE_CLASS}
         aria-label={ariaCategories}
       >
-        <div className="flex w-full justify-center px-4 py-8 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl px-4 pb-4 pt-3 sm:px-6 sm:pb-5 lg:hidden">
+          <div className={CATEGORY_CHIPS_H_SCROLL_LOADING_CLASS} aria-hidden>
+            {[1, 2, 3, 4, 5, 6].map((i) => (
+              <div key={i} className="h-11 w-24 shrink-0 animate-pulse rounded-2xl bg-gray-200" />
+            ))}
+          </div>
+        </div>
+        <div className="hidden w-full justify-center px-4 py-8 sm:px-6 lg:flex lg:px-8">
           <div
             className="h-10 w-10 animate-spin rounded-full border-[3px] border-orange-200 border-t-orange-500"
             aria-hidden
@@ -140,7 +153,55 @@ export function CategoriesSection({
       className={CATEGORY_SECTION_SURFACE_CLASS}
       aria-label={ariaCategories}
     >
-      <div className="flex min-w-0 items-center gap-2 px-3 py-5 sm:gap-2.5 sm:px-5 lg:px-8">
+      <div className="mx-auto max-w-7xl px-4 pb-4 pt-3 sm:px-6 sm:pb-5 lg:hidden">
+        <div className={CATEGORY_CHIPS_H_SCROLL_CLASS}>
+          <Link
+            href="/products"
+            className={categoryFilterPillClass(activeCategory == null)}
+          >
+            {productsCopy.allCategories}
+          </Link>
+          {navCategories.map((cat) => {
+            const isActive = isSameCategoryNavSelection(activeCategory, cat.name)
+            const label = getCategoryDisplayName(cat.name, locale)
+            const menuHref = `/products#${getMenuCategorySectionId(cat.name)}`
+            return (
+              <Link
+                key={cat.id}
+                href={menuHref}
+                onClick={() => onSelectCategory?.(cat.name)}
+                className={categoryFilterPillClass(isActive)}
+              >
+                {cat.image && (
+                  <div
+                    className={`relative h-6 w-6 flex-shrink-0 overflow-hidden rounded-full ring-1 ring-inset ${
+                      isActive ? 'ring-[#ffcaba]' : 'ring-[#efe4dd]'
+                    }`}
+                  >
+                    <Image
+                      src={cat.image}
+                      alt=""
+                      fill
+                      sizes="24px"
+                      className="object-cover"
+                    />
+                  </div>
+                )}
+                <span className="max-w-[8.5rem] truncate">{label}</span>
+                <span
+                  className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${
+                    isActive ? 'bg-white text-[#E53225]' : 'bg-[#f6f2ef] text-slate-400'
+                  }`}
+                >
+                  {cat._count.products}
+                </span>
+              </Link>
+            )
+          })}
+        </div>
+      </div>
+
+      <div className="hidden min-w-0 items-center gap-2 px-3 py-5 sm:gap-2.5 sm:px-5 lg:flex lg:px-8">
         <button
           type="button"
           disabled={!canScrollLeft}

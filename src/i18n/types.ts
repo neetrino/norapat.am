@@ -120,10 +120,8 @@ export interface AppMessages {
     ariaEmail: string
     /** Դեկորատիվ պատկեր ֆուտերում (մասկոտ) */
     mascotAlt: string
-    /** Idram վճարային համակարգի լոգո (կոպիրայթի գոտի) */
-    idramLogoAlt: string
-    /** Ardshinbank բանկի լոգո (կոպիրայթի տողի աջ կողմում) */
-    ardshinbankLogoAlt: string
+    /** Վճարային համակարգերի պատկերակների խմբի համար screen readers */
+    paymentMethodsAria: string
   }
   home: {
     ariaBrandBanner: string
@@ -138,8 +136,6 @@ export interface AppMessages {
     showFirstCategory: (name: string) => string
     showCategories: string
     viewFullMenu: string
-    /** Հորիզոնական շարքի վերջի նեղ CTA («Դիտել ամբողջը») */
-    viewEntireShort: string
     carouselScrollPrev: string
     carouselScrollNext: string
     whyUsTitle: string
@@ -367,11 +363,16 @@ export interface AppMessages {
     fullDescription: string
     stockAvailable: string
     stockUnavailable: string
+    badgeHotPill: string
+    customerReviewsLabel: string
+    pricePerKg: string
   }
   productQuantity: {
     quantity: string
     addToCart: string
     addedToCart: string
+    decreaseQuantity: string
+    increaseQuantity: string
   }
   checkoutPage: {
     backToCart: string

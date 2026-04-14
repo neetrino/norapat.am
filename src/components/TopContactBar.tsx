@@ -35,22 +35,31 @@ export function TopContactBar() {
   const barTransitionStyle = {
     top: 0,
     height: topBarStripHeightPx,
-    transitionProperty: 'transform, opacity, box-shadow',
+    transitionProperty:
+      'transform, opacity, box-shadow, filter, -webkit-mask-image, mask-image',
     transitionDuration: `${TOP_CONTACT_BAR_TRANSITION_MS}ms`,
     transitionTimingFunction: TOP_CONTACT_BAR_TRANSITION_EASING,
+    filter: topBarVisible ? 'blur(0px)' : 'blur(5px)',
+    WebkitMaskImage: topBarVisible
+      ? 'linear-gradient(to bottom, black 0%, black 100%)'
+      : 'linear-gradient(to bottom, rgba(0,0,0,0.96) 0%, rgba(0,0,0,0.72) 42%, transparent 100%)',
+    maskImage: topBarVisible
+      ? 'linear-gradient(to bottom, black 0%, black 100%)'
+      : 'linear-gradient(to bottom, rgba(0,0,0,0.96) 0%, rgba(0,0,0,0.72) 42%, transparent 100%)',
   } as const
 
   return (
     <div
-      className={`fixed left-0 right-0 z-[115] overflow-hidden border-b border-white/10 bg-black text-white ${
+      className={`fixed left-0 right-0 z-[115] overflow-hidden border-b text-white ${
         topBarVisible
-          ? 'translate-y-0 opacity-100 shadow-[0_8px_32px_rgba(0,0,0,0.2)]'
-          : 'pointer-events-none -translate-y-[calc(100%+2px)] opacity-0 shadow-none'
+          ? 'translate-y-0 border-white/10 bg-black opacity-100 shadow-[0_8px_32px_rgba(0,0,0,0.2)]'
+          : 'pointer-events-none -translate-y-[55%] border-white/0 bg-black/70 opacity-0 shadow-none'
       }`}
       style={barTransitionStyle}
       aria-hidden={!topBarVisible}
     >
       <div className="relative mx-auto flex h-full max-w-7xl items-center justify-between gap-3 pl-1.5 pr-3 sm:pl-3 sm:pr-6 lg:pl-4 lg:pr-8">
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-white/[0.03] via-transparent to-red-500/10" />
         <div className="relative z-10 flex min-w-0 flex-1 items-center gap-2.5 sm:gap-3">
           <a
             href={telHref}

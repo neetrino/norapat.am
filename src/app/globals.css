@@ -19,6 +19,8 @@
   --brand-banner-bg-deep: #4a0a0a;
   --brand-banner-accent: #ffb703;
   --brand-banner-glow: #c43c3c;
+  /* Mobile full-screen menu — սև ֆոն */
+  --mobile-menu-bg: #000000;
 }
 
 /* Match `lg` top strip height before JS sets --top-bar-offset */
@@ -89,6 +91,16 @@ body {
 
 .brand-banner-bg-dark {
   background-color: #991b1b;
+}
+
+.brand-banner-fullscreen {
+  min-height: calc(88svh - (4rem + var(--top-bar-offset)));
+}
+
+@media (min-width: 1024px) {
+  .brand-banner-fullscreen {
+    min-height: calc(88svh - (6rem + var(--top-bar-offset)));
+  }
 }
 
 .promo-food-banner-vignette::before {

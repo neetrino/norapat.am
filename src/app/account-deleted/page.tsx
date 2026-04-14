@@ -26,10 +26,10 @@ export default function AccountDeletedPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      
-      <div className="min-h-screen bg-gradient-to-br from-red-50 to-orange-50 flex items-center justify-center p-4">
-        <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 text-center">
+    <div className="min-h-screen bg-white">
+
+      <div className="flex items-center justify-center pt-56 pb-16 px-4">
+        <div className="max-w-md w-full bg-white rounded-2xl shadow-xl border border-gray-200 p-8 text-center">
         {/* Հաջողության պատկեր */}
         <div className="mb-6">
           <div className="mx-auto w-20 h-20 bg-green-100 rounded-full flex items-center justify-center">
@@ -83,11 +83,8 @@ export default function AccountDeletedPage() {
         </div>
         </div>
       </div>
-      
-      {/* Hide Footer on Mobile and Tablet */}
-      <div className="hidden lg:block">
-        <Footer />
-      </div>
+
+      <Footer />
     </div>
   )
 }

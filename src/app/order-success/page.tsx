@@ -102,11 +102,8 @@ export default function OrderSuccessPage() {
           </div>
         </div>
       </div>
-      
-      {/* Hide Footer on Mobile and Tablet */}
-      <div className="hidden lg:block">
-        <Footer />
-      </div>
+
+      <Footer />
     </div>
   )
 }

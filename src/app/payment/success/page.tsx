@@ -58,9 +58,7 @@ export default function PaymentSuccessPage() {
         </div>
       </div>
 
-      <div className="hidden lg:block">
-        <Footer />
-      </div>
+      <Footer />
     </div>
   )
 }

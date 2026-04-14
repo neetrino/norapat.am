@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
@@ -39,6 +39,13 @@ export default function NewProductPage() {
   
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const errorRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (error && errorRef.current) {
+      errorRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    }
+  }, [error])
 
   // Բեռնում ենք կատեգորիաները
   useEffect(() => {
@@ -161,7 +168,7 @@ export default function NewProductPage() {
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
               {error && (
-                <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                <div ref={errorRef} className="bg-red-50 border border-red-200 rounded-lg p-4">
                   <div className="flex items-center gap-2">
                     <X className="h-5 w-5 text-red-500" />
                     <p className="text-red-700">{error}</p>

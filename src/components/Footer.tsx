@@ -3,6 +3,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { Phone, Mail, MapPin, Clock, Facebook, Instagram } from 'lucide-react'
+import { WhatsAppGlyph } from '@/components/WhatsAppGlyph'
 import { useI18n } from '@/i18n/I18nContext'
 import { usePublicSiteSettings } from '@/hooks/usePublicSiteSettings'
 import { SiteBrandMark } from '@/components/SiteBrandMark'
@@ -10,21 +11,44 @@ import { companyInfo } from '@/constants/company'
 import { buildContactPhoneLines, buildTelHref } from '@/lib/contactPhones'
 
 const LINK_HOVER = 'transition-colors hover:text-red-800'
-const LINK_BASE = `text-sm text-stone-600 ${LINK_HOVER}`
-const LINK_POLICY = `text-[13px] leading-5 text-stone-600 ${LINK_HOVER} sm:text-sm`
+const LINK_BASE = `text-[13px] leading-snug text-stone-600 sm:text-sm sm:leading-normal ${LINK_HOVER}`
+const LINK_POLICY = `text-xs leading-snug text-stone-600 sm:text-[13px] sm:leading-5 ${LINK_HOVER}`
 const ICON_ACCENT = 'text-red-800'
 const SECTION_LABEL =
-  'mb-2.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-stone-500'
-const CONTACT_ICON_BOX = `mt-0.5 h-3.5 w-3.5 shrink-0 ${ICON_ACCENT}`
+  'mb-1.5 text-[10px] font-semibold uppercase tracking-[0.08em] text-stone-500 sm:mb-2 sm:text-[11px]'
+const CONTACT_ICON_BOX = `mt-0.5 h-3 w-3 shrink-0 sm:h-3.5 sm:w-3.5 ${ICON_ACCENT}`
 const SOCIAL_BTN =
-  'inline-flex h-9 w-9 items-center justify-center rounded-lg border border-stone-200/80 bg-white/60 text-stone-600 shadow-sm transition-colors hover:border-stone-300 hover:text-red-800'
+  'inline-flex h-8 w-8 items-center justify-center rounded-md border border-stone-200/80 bg-white/60 text-stone-600 shadow-sm transition-colors hover:border-stone-300 hover:text-red-800 sm:h-9 sm:w-9 sm:rounded-lg'
 /** Extra top offset: mobile — once after brand; lg — all three columns aligned below footer top */
-const FOOTER_NAV_TOP = 'pt-6 sm:pt-7 lg:pt-8'
-const FOOTER_POLICIES_CONTACT_TOP = 'max-lg:pt-0 lg:pt-8'
+const FOOTER_NAV_TOP = 'pt-4 sm:pt-5 lg:pt-6'
+/** Horizontal rule below nav & policies — mobile & tablet only (sits flush between stacked rows) */
+const FOOTER_MOBILE_RULE_BELOW =
+  'max-lg:border-b max-lg:border-stone-200/70 max-lg:pb-4 lg:border-b-0 lg:pb-0'
 
-/** Next/Image intrinsic size (PNG aspect); display height via Tailwind — same footprint for Idram and Ardshinbank */
-const FOOTER_PARTNER_LOGO = { width: 240, height: 80 } as const
-const FOOTER_PARTNER_LOGO_MAX_WIDTH_PX = 200
+/** Split artwork — mobile/tablet footer only; desktop keeps `SiteBrandMark` */
+const FOOTER_MOBILE_BRAND_SRC = {
+  left: '/footer-mobile-brand-1.png',
+  right: '/footer-mobile-brand-2.png',
+} as const
+const FOOTER_MOBILE_BRAND_INTRINSIC = { width: 360, height: 480 } as const
+/** Display height — mobile footer split artwork */
+const FOOTER_MOBILE_BRAND_HEIGHT_CLASS =
+  'h-[6.5rem] w-auto max-w-[48%] shrink-0 object-contain object-top sm:h-[7.5rem]'
+
+/** Footer promo bar — payment badge row (uniform visual height; tighter on narrow screens) */
+const FOOTER_PAYMENT_ICON_CLASS =
+  'h-4 w-auto max-w-[3.25rem] object-contain object-left opacity-95 sm:h-6 sm:max-w-[4.5rem]'
+
+/** Mobile: stick promo strip above fixed tab bar — offset stepped down from `bottom-16` to sit closer to nav. */
+const FOOTER_PROMO_MOBILE_DOCK =
+  'max-lg:sticky max-lg:bottom-12 max-lg:z-30 max-lg:shadow-[0_-4px_24px_rgba(0,0,0,0.14)] lg:static lg:shadow-none'
+
+const FOOTER_PAYMENT_LOGOS = [
+  { src: '/payment-visa.png', alt: 'Visa', width: 48, height: 16 },
+  { src: '/payment-mastercard.png', alt: 'Mastercard', width: 56, height: 36 },
+  { src: '/idram-logo.png', alt: 'Idram', width: 56, height: 24 },
+  { src: '/arca-logo.png', alt: 'ArCa', width: 48, height: 20 },
+] as const
 
 export default function Footer() {
   const { t } = useI18n()
@@ -34,21 +58,51 @@ export default function Footer() {
     branding.contactPhone,
     companyInfo.callNowPhones
   )
+  const homeAriaLabel = branding.siteName?.trim() || nav.siteBrand
 
   return (
+    <>
     <footer className="relative border-t border-stone-200/90 bg-gradient-to-b from-stone-50/90 to-white text-stone-900">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col gap-6 py-7 md:gap-7 md:py-8 lg:flex-row lg:items-end lg:gap-8 xl:gap-10">
+        <div className="flex flex-col gap-3 py-4 sm:gap-4 sm:py-5 md:py-6 lg:flex-row lg:items-end lg:gap-6 xl:gap-8">
           <div className="min-w-0 flex-1">
-            <div className="grid grid-cols-1 gap-7 lg:grid-cols-12 lg:gap-14 xl:gap-16">
+            <div className="grid grid-cols-1 max-lg:gap-y-0 lg:grid-cols-12 lg:gap-x-10 xl:gap-12">
               <div className="lg:col-span-4">
                 <div className="mb-0.5">
-                  <SiteBrandMark variant="footer" branding={branding} />
+                  <div className="lg:hidden">
+                    <Link
+                      href="/"
+                      className="flex w-full max-w-full items-start justify-center gap-1.5 rounded-lg transition-opacity hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-500"
+                      aria-label={homeAriaLabel}
+                    >
+                      <Image
+                        src={FOOTER_MOBILE_BRAND_SRC.right}
+                        alt=""
+                        width={FOOTER_MOBILE_BRAND_INTRINSIC.width}
+                        height={FOOTER_MOBILE_BRAND_INTRINSIC.height}
+                        className={FOOTER_MOBILE_BRAND_HEIGHT_CLASS}
+                        sizes="(max-width: 1024px) 48vw, 1px"
+                        priority={false}
+                      />
+                      <Image
+                        src={FOOTER_MOBILE_BRAND_SRC.left}
+                        alt=""
+                        width={FOOTER_MOBILE_BRAND_INTRINSIC.width}
+                        height={FOOTER_MOBILE_BRAND_INTRINSIC.height}
+                        className={FOOTER_MOBILE_BRAND_HEIGHT_CLASS}
+                        sizes="(max-width: 1024px) 48vw, 1px"
+                        priority={false}
+                      />
+                    </Link>
+                  </div>
+                  <div className="hidden lg:block">
+                    <SiteBrandMark variant="footer" branding={branding} />
+                  </div>
                 </div>
-                <p className="-mt-2 mb-3 max-w-md text-sm leading-relaxed text-stone-600">
+                <p className="-mt-1.5 mb-2 max-w-md text-xs leading-snug text-stone-600 sm:-mt-2 sm:mb-2.5 sm:text-sm sm:leading-relaxed">
                   {f.tagline}
                 </p>
-                <div className="flex flex-wrap items-center gap-2">
+                <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
                   <a
                     href={companyInfo.socialMedia.facebook}
                     target="_blank"
@@ -56,7 +110,7 @@ export default function Footer() {
                     className={SOCIAL_BTN}
                     aria-label="Facebook"
                   >
-                    <Facebook className="h-4 w-4" />
+                    <Facebook className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                   </a>
                   <a
                     href={companyInfo.socialMedia.instagram}
@@ -65,19 +119,28 @@ export default function Footer() {
                     className={SOCIAL_BTN}
                     aria-label="Instagram"
                   >
-                    <Instagram className="h-4 w-4" />
+                    <Instagram className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                  </a>
+                  <a
+                    href={companyInfo.socialMedia.whatsapp}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={SOCIAL_BTN}
+                    aria-label="WhatsApp"
+                  >
+                    <WhatsAppGlyph className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                   </a>
                 </div>
               </div>
 
               <nav
-                className={`${FOOTER_NAV_TOP} lg:col-span-2`}
+                className={`${FOOTER_NAV_TOP} lg:col-span-2 ${FOOTER_MOBILE_RULE_BELOW}`}
                 aria-labelledby="footer-nav-heading"
               >
                 <h2 id="footer-nav-heading" className={SECTION_LABEL}>
                   {f.navHeading}
                 </h2>
-                <ul className="space-y-2">
+                <ul className="space-y-1 sm:space-y-1.5">
                   <li>
                     <Link href="/products" className={LINK_BASE}>
                       {nav.menu}
@@ -97,13 +160,13 @@ export default function Footer() {
               </nav>
 
               <div
-                className={`${FOOTER_POLICIES_CONTACT_TOP} lg:col-span-3`}
+                className={`max-lg:pt-4 lg:col-span-3 ${FOOTER_MOBILE_RULE_BELOW} lg:pt-6`}
                 aria-labelledby="footer-policies-heading"
               >
                 <h2 id="footer-policies-heading" className={SECTION_LABEL}>
                   {f.policiesHeading}
                 </h2>
-                <div className="grid grid-cols-1 gap-x-4 gap-y-2 sm:grid-cols-2 lg:grid-cols-1">
+                <div className="grid grid-cols-1 gap-x-3 gap-y-1 sm:grid-cols-2 sm:gap-y-1.5 lg:grid-cols-1">
                   <Link href="/privacy" className={LINK_POLICY}>
                     {f.privacy}
                   </Link>
@@ -120,16 +183,16 @@ export default function Footer() {
               </div>
 
               <div
-                className={`${FOOTER_POLICIES_CONTACT_TOP} lg:col-span-3`}
+                className="max-lg:pt-4 lg:col-span-3 lg:pt-6"
                 aria-labelledby="footer-contact-heading"
               >
                 <h2 id="footer-contact-heading" className={SECTION_LABEL}>
                   {f.contactsHeading}
                 </h2>
-                <div className="space-y-2.5">
-                  <div className="flex gap-2">
+                <div className="space-y-2 sm:space-y-2.5">
+                  <div className="flex gap-1.5 sm:gap-2">
                     <Phone className={CONTACT_ICON_BOX} aria-hidden />
-                    <div className="flex min-w-0 flex-col gap-1">
+                    <div className="flex min-w-0 flex-col gap-0.5 sm:gap-1">
                       {footerPhoneLines.map((phone) => (
                         <a
                           key={phone}
@@ -141,14 +204,14 @@ export default function Footer() {
                       ))}
                     </div>
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex gap-1.5 sm:gap-2">
                     <Mail className={CONTACT_ICON_BOX} aria-hidden />
                     <a href={`mailto:${companyInfo.email}`} className={LINK_BASE}>
                       {companyInfo.email}
                     </a>
                   </div>
-                  <div className="border-t border-stone-200/60 pt-2.5">
-                    <div className="flex gap-2">
+                  <div className="border-t border-stone-200/60 pt-2 sm:pt-2.5">
+                    <div className="flex gap-1.5 sm:gap-2">
                       <MapPin className={CONTACT_ICON_BOX} aria-hidden />
                       <a
                         href="https://maps.google.com/?q=5-%D6%80%D5%A4+%D6%83%D5%B8%D5%B2%D5%B8%D6%81,+%D5%86%D5%B8%D6%80%D5%A1%D5%BA%D5%A1%D5%BF+%D5%A3%D5%B5%D5%B8%D6%82%D5%B2,+%D4%B1%D6%80%D5%B4%D5%A1%D5%BE%D5%AB%D6%80,+%D5%80%D5%A1%D5%B5%D5%A1%D5%BD%D5%BF%D5%A1%D5%B6"
@@ -160,11 +223,11 @@ export default function Footer() {
                       </a>
                     </div>
                   </div>
-                  <div className="flex gap-2 border-t border-stone-200/60 pt-2.5">
+                  <div className="flex gap-1.5 border-t border-stone-200/60 pt-2 sm:gap-2 sm:pt-2.5">
                     <Clock className={CONTACT_ICON_BOX} aria-hidden />
-                    <div className="text-sm leading-snug text-stone-600">
+                    <div className="text-[13px] leading-snug text-stone-600 sm:text-sm">
                       <div>{f.hoursWeek}</div>
-                      <div className="mt-0.5 text-xs text-stone-500">
+                      <div className="mt-0.5 text-[11px] text-stone-500 sm:text-xs">
                         {f.hoursDelivery}
                       </div>
                     </div>
@@ -174,63 +237,56 @@ export default function Footer() {
             </div>
           </div>
 
-          <div className="flex shrink-0 justify-center lg:justify-end lg:translate-x-12">
+          <div className="hidden shrink-0 justify-center lg:flex lg:justify-end lg:translate-x-12">
             <Image
               src="/footer-taraz-mascot.png"
               alt={f.mascotAlt}
               width={280}
               height={560}
-              className="h-[180px] w-auto select-none object-contain object-bottom sm:h-[220px] lg:h-[min(280px,36vh)] xl:h-[min(320px,40vh)]"
-              sizes="(max-width: 640px) 180px, (max-width: 1024px) 220px, 320px"
+              className="h-[min(240px,32vh)] w-auto select-none object-contain object-bottom xl:h-[min(280px,36vh)]"
+              sizes="(max-width: 1280px) 240px, 280px"
               priority={false}
             />
           </div>
         </div>
       </div>
 
-      <div className="promo-food-banner-bg promo-food-banner-vignette relative border-t border-white/10 text-white">
-        <div className="relative z-10 mx-auto max-w-7xl px-4 py-5 sm:px-6 sm:py-6 lg:px-8">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
-            <div className="min-w-0">
-              <p className="text-left text-[11px] font-normal leading-relaxed tracking-wide text-white/85 sm:text-xs lg:whitespace-nowrap">
-                {f.copyright} {f.createdBy}{' '}
-                <a
-                  href="https://neetrino.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="font-semibold text-[#FACC15] transition-colors hover:text-[#fde047]"
-                >
-                  Neetrino IT Company
-                </a>
-              </p>
-            </div>
-            <div className="flex w-full shrink-0 flex-wrap items-center justify-end gap-4 sm:w-auto sm:gap-5">
-              <Image
-                src="/ardshinbank-logo.png"
-                alt={f.ardshinbankLogoAlt}
-                width={FOOTER_PARTNER_LOGO.width}
-                height={FOOTER_PARTNER_LOGO.height}
-                className="h-7 w-auto select-none object-contain sm:h-8"
-                style={{
-                  maxWidth: `min(100%, ${FOOTER_PARTNER_LOGO_MAX_WIDTH_PX}px)`,
-                }}
-                sizes="(max-width: 640px) 180px, 200px"
-              />
-              <Image
-                src="/idram-logo.png"
-                alt={f.idramLogoAlt}
-                width={FOOTER_PARTNER_LOGO.width}
-                height={FOOTER_PARTNER_LOGO.height}
-                className="h-7 w-auto select-none object-contain sm:h-8"
-                style={{
-                  maxWidth: `min(100%, ${FOOTER_PARTNER_LOGO_MAX_WIDTH_PX}px)`,
-                }}
-                sizes="(max-width: 640px) 180px, 200px"
-              />
+      <div
+        className={`promo-food-banner-bg promo-food-banner-vignette relative border-t border-white/10 text-white ${FOOTER_PROMO_MOBILE_DOCK}`}
+      >
+        <div className="relative z-10 mx-auto max-w-7xl px-3 py-2.5 sm:px-6 sm:py-4 lg:px-8">
+          <div className="flex flex-col gap-2.5 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:gap-x-4 sm:gap-y-2 sm:gap-3">
+            <p className="min-w-0 max-w-full text-center text-[11px] font-normal leading-snug tracking-wide text-white/90 sm:text-left sm:leading-relaxed lg:whitespace-nowrap xl:text-xs">
+              {f.copyright} {f.createdBy}{' '}
+              <a
+                href="https://neetrino.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-semibold text-[#FACC15] transition-colors hover:text-[#fde047]"
+              >
+                Neetrino IT Company
+              </a>
+            </p>
+            <div
+              className="flex flex-wrap items-center justify-center gap-2.5 sm:justify-end sm:gap-6"
+              aria-label={f.paymentMethodsAria}
+            >
+              {FOOTER_PAYMENT_LOGOS.map((logo) => (
+                <Image
+                  key={logo.src}
+                  src={logo.src}
+                  alt={logo.alt}
+                  width={logo.width}
+                  height={logo.height}
+                  className={FOOTER_PAYMENT_ICON_CLASS}
+                  sizes="(max-width: 640px) 25vw, 96px"
+                />
+              ))}
             </div>
           </div>
         </div>
       </div>
     </footer>
+    </>
   )
 }

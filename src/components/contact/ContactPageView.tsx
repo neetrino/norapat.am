@@ -31,7 +31,6 @@ export function ContactPageView() {
     { question: c.faqDeliveryQ, answer: c.faqDeliveryA },
     { question: c.faqAdvanceQ, answer: c.faqAdvanceA },
     { question: c.faqPaymentQ, answer: c.faqPaymentA },
-    { question: c.faqDiscountQ, answer: c.faqDiscountA },
     { question: c.faqContactQ, answer: c.faqContactA },
   ]
 
@@ -213,9 +212,7 @@ export function ContactPageView() {
         </div>
       </div>
 
-      <div className="hidden lg:block">
-        <Footer />
-      </div>
+      <Footer />
     </div>
   )
 }
