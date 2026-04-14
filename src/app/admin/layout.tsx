@@ -84,7 +84,7 @@ export default function AdminLayout({
               className="flex items-center gap-1.5 px-3 py-2 text-sm text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
             >
               <LogOut className="h-4 w-4" />
-              <span className="hidden sm:inline">Դուրս գալ</span>
+              <span>Դուրս գալ</span>
             </button>
           </div>
         </div>

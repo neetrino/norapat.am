@@ -1,7 +1,21 @@
 'use client'
 
-import { Menu, Search, X, Home, UtensilsCrossed, Info, Phone } from 'lucide-react'
+import {
+  Menu,
+  Search,
+  X,
+  Home,
+  UtensilsCrossed,
+  Info,
+  Phone,
+  LayoutDashboard,
+  LogOut,
+  User,
+  LogIn,
+  UserPlus,
+} from 'lucide-react'
 import { useState } from 'react'
+import { useSession, signOut } from 'next-auth/react'
 import { useBodyScrollLock } from '@/hooks/useBodyScrollLock'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
@@ -11,6 +25,7 @@ import { SearchModal } from '@/components/SearchModal'
 import { MobileMenuBackgroundIcons } from '@/components/MobileMenuBackgroundIcons'
 import { SiteBrandMark } from '@/components/SiteBrandMark'
 import { useHeaderStack } from '@/contexts/HeaderStackContext'
+import { useHydration } from '@/hooks/useHydration'
 import {
   TOP_CONTACT_BAR_TRANSITION_EASING,
   TOP_CONTACT_BAR_TRANSITION_MS,
@@ -23,7 +38,9 @@ interface MobileHeaderProps {
 export default function MobileHeader({ branding }: MobileHeaderProps) {
   const { topBarInsetPx } = useHeaderStack()
   const { t } = useI18n()
-  const { search, nav } = t
+  const { search, nav, auth, profile } = t
+  const isHydrated = useHydration()
+  const { data: session, status } = useSession()
   const pathname = usePathname()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isSearchOpen, setIsSearchOpen] = useState(false)
@@ -113,7 +130,7 @@ export default function MobileHeader({ branding }: MobileHeaderProps) {
         <div className="relative z-10 mx-6 h-px bg-white/15" />
 
         {/* Nav items */}
-        <nav className="relative z-10 flex flex-1 flex-col justify-center px-6 gap-1">
+        <nav className="relative z-10 flex min-h-0 flex-1 flex-col justify-center overflow-y-auto px-6 gap-1">
           {navItems.map((item, i) => {
             const Icon = item.icon
             const active = isActive(item.href)
@@ -154,6 +171,111 @@ export default function MobileHeader({ branding }: MobileHeaderProps) {
             )
           })}
         </nav>
+
+        {/* Account: admin / profile / login — մոբայլում մուտք ադմին և ելք */}
+        <div className="relative z-10 shrink-0 px-6 pb-2 pt-2 space-y-2 border-t border-white/10">
+          {!isHydrated || status === 'loading' ? (
+            <div
+              className="h-14 rounded-2xl bg-white/10 animate-pulse"
+              aria-hidden
+            />
+          ) : session ? (
+            session.user?.role === 'ADMIN' ? (
+              <>
+                <Link
+                  href="/admin"
+                  onClick={() => setIsMenuOpen(false)}
+                  className={`group flex items-center gap-4 rounded-2xl px-4 py-3 transition-colors ${
+                    isActive('/admin')
+                      ? 'bg-white/15 text-white'
+                      : 'text-white/85 hover:bg-white/10'
+                  }`}
+                >
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/10">
+                    <LayoutDashboard className="h-5 w-5 text-white" />
+                  </div>
+                  <span className="text-lg font-semibold">{auth.admin}</span>
+                  {isActive('/admin') && (
+                    <span className="ml-auto h-2 w-2 rounded-full bg-white" />
+                  )}
+                </Link>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsMenuOpen(false)
+                    void signOut({ callbackUrl: '/' })
+                  }}
+                  className="flex w-full items-center gap-4 rounded-2xl px-4 py-3 text-left text-white/85 transition-colors hover:bg-white/10"
+                >
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/10">
+                    <LogOut className="h-5 w-5 text-white" />
+                  </div>
+                  <span className="text-lg font-semibold">{auth.logoutTitle}</span>
+                </button>
+              </>
+            ) : (
+              <>
+                <Link
+                  href="/profile"
+                  onClick={() => setIsMenuOpen(false)}
+                  className={`group flex items-center gap-4 rounded-2xl px-4 py-3 transition-colors ${
+                    isActive('/profile')
+                      ? 'bg-white/15 text-white'
+                      : 'text-white/85 hover:bg-white/10'
+                  }`}
+                >
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/10">
+                    <User className="h-5 w-5 text-white" />
+                  </div>
+                  <span className="text-lg font-semibold">{profile.label}</span>
+                  {isActive('/profile') && (
+                    <span className="ml-auto h-2 w-2 rounded-full bg-white" />
+                  )}
+                </Link>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsMenuOpen(false)
+                    void signOut({ callbackUrl: '/' })
+                  }}
+                  className="flex w-full items-center gap-4 rounded-2xl px-4 py-3 text-left text-white/85 transition-colors hover:bg-white/10"
+                >
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/10">
+                    <LogOut className="h-5 w-5 text-white" />
+                  </div>
+                  <span className="text-lg font-semibold">{auth.logoutTitle}</span>
+                </button>
+              </>
+            )
+          ) : (
+            <div className="flex flex-col gap-2 sm:flex-row sm:gap-3">
+              <Link
+                href="/login"
+                onClick={() => setIsMenuOpen(false)}
+                className={`flex flex-1 items-center justify-center gap-2 rounded-2xl px-4 py-3 font-semibold transition-colors ${
+                  isActive('/login')
+                    ? 'bg-white text-zinc-900'
+                    : 'bg-white/10 text-white hover:bg-white/15'
+                }`}
+              >
+                <LogIn className="h-5 w-5 shrink-0" />
+                {auth.login}
+              </Link>
+              <Link
+                href="/register"
+                onClick={() => setIsMenuOpen(false)}
+                className={`flex flex-1 items-center justify-center gap-2 rounded-2xl px-4 py-3 font-semibold transition-colors ${
+                  isActive('/register')
+                    ? 'bg-orange-400 text-white'
+                    : 'bg-orange-500 text-white hover:bg-orange-600'
+                }`}
+              >
+                <UserPlus className="h-5 w-5 shrink-0" />
+                {auth.register}
+              </Link>
+            </div>
+          )}
+        </div>
 
         {/* Bottom divider */}
         <div className="relative z-10 mx-6 h-px bg-white/15" />
