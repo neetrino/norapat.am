@@ -17,11 +17,10 @@ const SCROLL_STEP_PX = 320
 
 /**
  * Full-bleed surface for the category strip (home): one block behind arrows + pills.
- * Top border: same solid as BrandBannerSection `.promo-food-banner-bg` in globals.css (#a51d1d).
- * Uses orange-100 — project tokens map orange-50 to #fef2f2 (≈white), so orange-50 reads as “no bg”.
+ * Light red wash so the strip reads as its own band vs. surrounding white.
  */
 const CATEGORY_SECTION_SURFACE_CLASS =
-  'relative w-full border-t border-b border-gray-200 bg-white shadow-[inset_0_-1px_0_0_rgba(17,24,39,0.04)]'
+  'relative w-full border-t border-b border-red-100 bg-red-50 shadow-[inset_0_-1px_0_0_rgba(185,28,28,0.06)]'
 
 export interface CategoriesSectionProps {
   activeCategory?: string
