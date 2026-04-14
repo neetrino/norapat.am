@@ -43,6 +43,16 @@ function getStatusToneTextClass(tone: 'amber' | 'green' | 'blue') {
       : 'text-[#6f633d]'
 }
 
+/** Category relation is optional on some Product payloads; read name when present. */
+function getProductCategoryName(product: Product): string | null {
+  if (!('category' in product) || product.category == null) return null
+  const cat = product.category
+  if (typeof cat !== 'object') return null
+  if (!('name' in cat)) return null
+  const name = (cat as { name: unknown }).name
+  return typeof name === 'string' ? name : null
+}
+
 function ProductCardImageFrame({
   image,
   alt,
@@ -108,10 +118,7 @@ const ProductCard = memo(
     const description = product.shortDescription ?? product.description
     const discountPercent = getDiscountPercent(product.originalPrice, product.price)
     const hasDiscount = discountPercent != null
-    const categoryName =
-      'category' in product && product.category && typeof product.category === 'object'
-        ? product.category?.name
-        : null
+    const categoryName = getProductCategoryName(product)
 
     const statusBadge =
       product.status === 'HIT'
