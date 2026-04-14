@@ -532,7 +532,9 @@ export default function ProfilePage() {
           </div>
         </div>
       </section>
-      <div className="mt-4 hidden lg:block lg:mt-6"><Footer /></div>
+      <div className="mt-4 lg:mt-6">
+        <Footer />
+      </div>
       <DeleteAccountModal isOpen={isDeleteModalOpen} onClose={() => setIsDeleteModalOpen(false)} onConfirm={handleDeleteAccount} isLoading={isDeletingAccount} />
     </div>
   )

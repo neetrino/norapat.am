@@ -26,11 +26,7 @@ export function AboutPageView() {
 <AboutProcess a={a} />
       </div>
 
-      <div className="hidden lg:block">
-        <Footer />
-      </div>
-
-      <div className="lg:hidden h-16" aria-hidden />
+      <Footer />
     </div>
   )
 }

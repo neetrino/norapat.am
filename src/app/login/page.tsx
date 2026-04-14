@@ -132,10 +132,7 @@ export default function LoginPage() {
         </div>
       </div>
       
-      {/* Hide Footer on Mobile and Tablet */}
-      <div className="hidden lg:block">
-        <Footer />
-      </div>
+      <Footer />
     </div>
   )
 }

@@ -265,9 +265,7 @@ export default function TermsPage() {
         </div>
       </div>
 
-      <div className="hidden lg:block">
-        <Footer />
-      </div>
+      <Footer />
     </div>
   )
 }

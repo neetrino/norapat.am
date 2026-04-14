@@ -384,9 +384,7 @@ export default async function ProductPage({
           )}
         </div>
 
-        <div className="hidden lg:block">
-          <Footer />
-        </div>
+        <Footer />
       </div>
     )
   } catch (error) {

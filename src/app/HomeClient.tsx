@@ -354,13 +354,7 @@ export default function HomeClient() {
         </div>
       </section>
 
-      {/* Footer - Hidden on mobile and tablet */}
-      <div className="hidden lg:block">
-        <Footer />
-      </div>
-
-      {/* Add bottom padding for mobile and tablet nav */}
-      <div className="lg:hidden h-16"></div>
+      <Footer />
     </div>
   );
 }

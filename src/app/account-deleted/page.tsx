@@ -83,11 +83,8 @@ export default function AccountDeletedPage() {
         </div>
         </div>
       </div>
-      
-      {/* Hide Footer on Mobile and Tablet */}
-      <div className="hidden lg:block">
-        <Footer />
-      </div>
+
+      <Footer />
     </div>
   )
 }

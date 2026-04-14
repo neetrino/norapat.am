@@ -129,9 +129,7 @@ export default function DeliveryPage() {
           </div>
         </div>
       </div>
-      <div className="hidden lg:block">
-        <Footer />
-      </div>
+      <Footer />
     </div>
   )
 }

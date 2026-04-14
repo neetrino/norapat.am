@@ -596,10 +596,7 @@ function ProductsPageContent() {
         </main>
       </div>
 
-      <div className="hidden lg:block">
-        <Footer />
-      </div>
-      <div className="h-16 lg:hidden" />
+      <Footer />
     </div>
   )
 }
