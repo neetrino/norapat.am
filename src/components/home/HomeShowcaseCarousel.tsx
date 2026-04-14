@@ -9,7 +9,6 @@ import {
   type CSSProperties,
   type RefObject,
 } from 'react'
-import Link from 'next/link'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import ProductCard from '@/components/ProductCard'
 import { Product, ProductWithCategory } from '@/types'
@@ -38,21 +37,6 @@ const SHOWCASE_OPACITY_MIN_WIDE = 0.65
 const SHOWCASE_OPACITY_SPAN_WIDE = 0.35
 
 const SHOWCASE_VIEWPORT_NARROW_MAX_PX = 639
-
-/** Բրենդի կարմիր (#EE3124) — երկու հատվածներում նույն CTA-ն */
-const stripToneClasses = {
-  orange:
-    'border-gray-200 bg-white shadow-[0_8px_24px_rgba(15,23,42,0.08)] ring-1 ring-gray-100 hover:border-red-300/80 hover:shadow-[0_12px_32px_rgba(238,49,36,0.10)] hover:ring-red-100/80',
-  amber:
-    'border-gray-200 bg-white shadow-[0_8px_24px_rgba(15,23,42,0.08)] ring-1 ring-gray-100 hover:border-red-300/80 hover:shadow-[0_12px_32px_rgba(238,49,36,0.10)] hover:ring-red-100/80',
-} as const
-
-const stripIconToneClasses = {
-  orange:
-    'bg-gradient-to-br from-red-100/90 to-red-50 text-red-700 ring-red-300/60 group-hover:from-red-200/80 group-hover:to-red-100',
-  amber:
-    'bg-gradient-to-br from-red-100/90 to-red-50 text-red-700 ring-red-300/60 group-hover:from-red-200/80 group-hover:to-red-100',
-} as const
 
 const navArrowBaseClass =
   'flex shrink-0 items-center justify-center rounded-full border bg-white shadow-sm transition-all duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-500 disabled:pointer-events-none disabled:opacity-30'
@@ -260,41 +244,9 @@ function CarouselArrowButton(props: {
   )
 }
 
-function ViewEntireStripLink(props: {
-  stripClass: string
-  stripIconClass: string
-  viewEntireWords: string[]
-  viewEntireLabel: string
-  snapEnd: boolean
-}) {
-  const words = props.viewEntireWords.length > 0 ? props.viewEntireWords : [props.viewEntireLabel]
-  const snapClass = props.snapEnd ? 'snap-end' : 'sm:snap-end'
-  return (
-    <Link
-      href="/products"
-      className={`group flex h-fit min-h-0 w-[5.75rem] flex-shrink-0 self-center ${snapClass} flex-col items-center justify-center gap-3 rounded-2xl border-2 px-2.5 py-5 text-center transition-all duration-300 sm:w-[6.5rem] sm:px-3 sm:py-6 ${props.stripClass} hover:-translate-y-0.5`}
-    >
-      <span className="flex flex-col gap-0.5 text-center">
-        {words.map((word, wordIndex) => (
-          <span
-            key={`${wordIndex}-${word}`}
-            className="text-[11px] font-semibold leading-snug tracking-tight text-red-950 sm:text-xs"
-          >
-            {word}
-          </span>
-        ))}
-      </span>
-    </Link>
-  )
-}
-
 function ShowcaseCarouselTrack(props: {
   scrollRef: RefObject<HTMLDivElement | null>
   list: ProductWithCategory[]
-  stripClass: string
-  stripIconClass: string
-  viewEntireWords: string[]
-  viewEntireLabel: string
   compactLayout: 'standard' | 'showcaseNarrow'
   /** Mobile — հորիզոնական սքրոլ + կենտրոնացված scale, առանց snap/սլաքեր */
   isMobileScrollOnly: boolean
@@ -356,13 +308,6 @@ function ShowcaseCarouselTrack(props: {
             </div>
           </div>
         ))}
-        <ViewEntireStripLink
-          stripClass={props.stripClass}
-          stripIconClass={props.stripIconClass}
-          viewEntireWords={props.viewEntireWords}
-          viewEntireLabel={props.viewEntireLabel}
-          snapEnd={!props.isMobileScrollOnly}
-        />
       </div>
     </div>
   )
@@ -370,8 +315,6 @@ function ShowcaseCarouselTrack(props: {
 
 export interface HomeShowcaseCarouselProps {
   products: ProductWithCategory[]
-  tone: keyof typeof stripToneClasses
-  viewEntireLabel: string
   onAddToCart?: (product: Product) => void
   addedToCart?: Set<string>
   isInWishlist?: (productId: string) => boolean
@@ -379,12 +322,10 @@ export interface HomeShowcaseCarouselProps {
 }
 
 /**
- * Գլխավոր էջ — մինչև 12 ապրանք, աջ վերևի փոքր սլաքեր (առանց սքրոլբարի), վերջում «Դիտել ամբողջը»։
+ * Գլխավոր էջ — մինչև 12 ապրանք, աջ վերևի փոքր սլաքեր (առանց սքրոլբարի)։
  */
 export function HomeShowcaseCarousel({
   products,
-  tone,
-  viewEntireLabel,
   onAddToCart,
   addedToCart,
   isInWishlist,
@@ -405,9 +346,6 @@ export function HomeShowcaseCarousel({
 
   const { scrollRef, canScrollLeft, canScrollRight, scrollByDirection } =
     useShowcaseCarouselScroll(list.length)
-  const stripClass = stripToneClasses[tone]
-  const stripIconClass = stripIconToneClasses[tone]
-  const viewEntireWords = viewEntireLabel.trim().split(/\s+/).filter(Boolean)
 
   return (
     <div className="relative -mx-4 px-1 sm:mx-0 sm:px-0">
@@ -430,10 +368,6 @@ export function HomeShowcaseCarousel({
       <ShowcaseCarouselTrack
         scrollRef={scrollRef}
         list={list}
-        stripClass={stripClass}
-        stripIconClass={stripIconClass}
-        viewEntireWords={viewEntireWords}
-        viewEntireLabel={viewEntireLabel}
         compactLayout={isNarrowViewport ? 'showcaseNarrow' : 'standard'}
         isMobileScrollOnly={isNarrowViewport}
         onAddToCart={onAddToCart}

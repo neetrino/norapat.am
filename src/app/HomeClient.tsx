@@ -136,17 +136,28 @@ export default function HomeClient() {
                 </Link>
               </div>
             ) : (
-              <HomeShowcaseCarousel
-                products={bestProducts}
-                tone="orange"
-                viewEntireLabel={h.viewEntireShort}
-                onAddToCart={handleAddToCart}
-                addedToCart={addedToCart}
-                isInWishlist={isAuthenticated ? isInWishlist : undefined}
-                onToggleWishlist={
-                  isAuthenticated ? (id) => { void toggleWishlist(id) } : undefined
-                }
-              />
+              <>
+                <HomeShowcaseCarousel
+                  products={bestProducts}
+                  onAddToCart={handleAddToCart}
+                  addedToCart={addedToCart}
+                  isInWishlist={isAuthenticated ? isInWishlist : undefined}
+                  onToggleWishlist={
+                    isAuthenticated ? (id) => { void toggleWishlist(id) } : undefined
+                  }
+                />
+                <div className="mt-8 text-center">
+                  <Link
+                    href="/products"
+                    className={`inline-flex items-center gap-2 rounded-xl px-6 py-3 font-semibold ${BRAND_RED_CTA_IDLE_HOVER_CLASS}`}
+                  >
+                    <span>{h.ctaLearnMore}</span>
+                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </Link>
+                </div>
+              </>
             )}
           </div>
         </div>
@@ -184,17 +195,28 @@ export default function HomeClient() {
                 </Link>
               </div>
             ) : (
-              <HomeShowcaseCarousel
-                products={promoProducts}
-                tone="amber"
-                viewEntireLabel={h.viewEntireShort}
-                onAddToCart={handleAddToCart}
-                addedToCart={addedToCart}
-                isInWishlist={isAuthenticated ? isInWishlist : undefined}
-                onToggleWishlist={
-                  isAuthenticated ? (id) => { void toggleWishlist(id) } : undefined
-                }
-              />
+              <>
+                <HomeShowcaseCarousel
+                  products={promoProducts}
+                  onAddToCart={handleAddToCart}
+                  addedToCart={addedToCart}
+                  isInWishlist={isAuthenticated ? isInWishlist : undefined}
+                  onToggleWishlist={
+                    isAuthenticated ? (id) => { void toggleWishlist(id) } : undefined
+                  }
+                />
+                <div className="mt-8 text-center">
+                  <Link
+                    href="/products"
+                    className={`inline-flex items-center gap-2 rounded-xl px-6 py-3 font-semibold ${BRAND_RED_CTA_IDLE_HOVER_CLASS}`}
+                  >
+                    <span>{h.ctaLearnMore}</span>
+                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </Link>
+                </div>
+              </>
             )}
           </div>
         </div>
