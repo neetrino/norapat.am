@@ -47,8 +47,13 @@ const stripIconToneClasses = {
     'bg-gradient-to-br from-red-100/90 to-red-50 text-red-700 ring-red-300/60 group-hover:from-red-200/80 group-hover:to-red-100',
 } as const
 
-const navArrowClass =
-  'flex h-10 w-10 shrink-0 items-center justify-center rounded-full border bg-white shadow-sm transition-all duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-500 disabled:pointer-events-none disabled:opacity-30 sm:h-11 sm:w-11'
+const navArrowBaseClass =
+  'flex shrink-0 items-center justify-center rounded-full border bg-white shadow-sm transition-all duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-500 disabled:pointer-events-none disabled:opacity-30'
+
+const navArrowSizeClasses = {
+  md: 'h-10 w-10 sm:h-11 sm:w-11',
+  sm: 'h-8 w-8',
+} as const
 
 const navArrowEnabledClass =
   'border-red-200/80 text-red-700 hover:border-red-400/80 hover:bg-red-50 hover:shadow-md active:scale-95'
@@ -157,17 +162,20 @@ function CarouselArrowButton(props: {
   disabled: boolean
   onClick: () => void
   ariaLabel: string
+  size?: keyof typeof navArrowSizeClasses
 }) {
+  const size = props.size ?? 'md'
   const Icon = props.direction === 'prev' ? ChevronLeft : ChevronRight
+  const iconClass = size === 'sm' ? 'h-4 w-4' : 'h-5 w-5'
   return (
     <button
       type="button"
       disabled={props.disabled}
       onClick={props.onClick}
-      className={`${navArrowClass} ${navArrowEnabledClass}`}
+      className={`${navArrowBaseClass} ${navArrowSizeClasses[size]} ${navArrowEnabledClass}`}
       aria-label={props.ariaLabel}
     >
-      <Icon className="h-5 w-5" aria-hidden />
+      <Icon className={iconClass} aria-hidden />
     </button>
   )
 }
@@ -177,12 +185,14 @@ function ViewEntireStripLink(props: {
   stripIconClass: string
   viewEntireWords: string[]
   viewEntireLabel: string
+  snapEnd: boolean
 }) {
   const words = props.viewEntireWords.length > 0 ? props.viewEntireWords : [props.viewEntireLabel]
+  const snapClass = props.snapEnd ? 'snap-end' : 'sm:snap-end'
   return (
     <Link
       href="/products"
-      className={`group flex h-fit min-h-0 w-[5.75rem] flex-shrink-0 snap-end flex-col items-center justify-center gap-3 rounded-2xl border-2 px-2.5 py-5 text-center transition-all duration-300 sm:w-[6.5rem] sm:px-3 sm:py-6 ${props.stripClass} hover:-translate-y-0.5`}
+      className={`group flex h-fit min-h-0 w-[5.75rem] flex-shrink-0 ${snapClass} flex-col items-center justify-center gap-3 rounded-2xl border-2 px-2.5 py-5 text-center transition-all duration-300 sm:w-[6.5rem] sm:px-3 sm:py-6 ${props.stripClass} hover:-translate-y-0.5`}
     >
       <span className="flex flex-col gap-0.5 text-center">
         {words.map((word, wordIndex) => (
@@ -206,6 +216,8 @@ function ShowcaseCarouselTrack(props: {
   viewEntireWords: string[]
   viewEntireLabel: string
   compactLayout: 'standard' | 'showcaseNarrow'
+  /** Mobile — հորիզոնական սքրոլ + կենտրոնացված scale, առանց snap/սլաքեր */
+  isMobileScrollOnly: boolean
   onAddToCart?: (product: Product) => void
   addedToCart?: Set<string>
   isInWishlist?: (productId: string) => boolean
@@ -219,27 +231,35 @@ function ShowcaseCarouselTrack(props: {
     '--showcase-card-opacity': isNarrow ? SHOWCASE_OPACITY_MIN_NARROW : SHOWCASE_OPACITY_MIN_WIDE,
   } as CSSProperties
 
+  /** Աջ վերևի փոքր սլաքերի տարածություն + սքրոլբար թաքնված */
+  const scrollRegionClass =
+    'min-w-0 w-full overflow-x-auto overflow-y-visible scroll-smooth pb-2 pt-10 sm:pb-3 sm:pt-11 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden'
+
+  const trackSnapClass = props.isMobileScrollOnly
+    ? 'flex w-max items-center gap-4 overflow-visible pr-2 sm:gap-5 sm:snap-x sm:snap-mandatory md:gap-6'
+    : 'flex w-max snap-x snap-mandatory items-center gap-3 overflow-visible pr-2 sm:gap-5 md:gap-6'
+
+  const cardShellClass = props.isMobileScrollOnly
+    ? `${CARD_SHELL_CLASS} overflow-visible transform-gpu transition-[transform,opacity] duration-300 ease-out will-change-transform sm:snap-start sm:snap-always`
+    : `${CARD_SHELL_CLASS} snap-start snap-always overflow-visible transform-gpu transition-[transform,opacity] duration-300 ease-out will-change-transform`
+
+  const innerTransformStyle = {
+    opacity: 'var(--showcase-card-opacity)',
+    transform: 'scale(var(--showcase-card-scale))',
+    transformOrigin: 'center center',
+  } as CSSProperties
+
   return (
-    <div
-      ref={props.scrollRef}
-      className="min-w-0 flex-1 overflow-x-auto overflow-y-visible scroll-smooth pb-2 pt-4 sm:pb-3 sm:pt-8 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-    >
-      <div className="flex w-max snap-x snap-mandatory items-center gap-3 overflow-visible pr-2 sm:gap-5 md:gap-6">
+    <div ref={props.scrollRef} className={scrollRegionClass}>
+      <div className={trackSnapClass}>
         {props.list.map((product) => (
           <div
             key={product.id}
             data-showcase-item="true"
             style={cardScaleStyle}
-            className={`snap-start snap-always overflow-visible ${CARD_SHELL_CLASS} transform-gpu transition-[transform,opacity] duration-300 ease-out will-change-transform`}
+            className={cardShellClass}
           >
-            <div
-              className="transition-[transform,filter] duration-300 ease-out"
-              style={{
-                opacity: 'var(--showcase-card-opacity)',
-                transform: 'scale(var(--showcase-card-scale))',
-                transformOrigin: 'center center',
-              }}
-            >
+            <div className="transition-[transform,filter] duration-300 ease-out" style={innerTransformStyle}>
               <ProductCard
                 product={product}
                 onAddToCart={props.onAddToCart}
@@ -257,6 +277,7 @@ function ShowcaseCarouselTrack(props: {
           stripIconClass={props.stripIconClass}
           viewEntireWords={props.viewEntireWords}
           viewEntireLabel={props.viewEntireLabel}
+          snapEnd={!props.isMobileScrollOnly}
         />
       </div>
     </div>
@@ -274,7 +295,7 @@ export interface HomeShowcaseCarouselProps {
 }
 
 /**
- * Գլխավոր էջ — մինչև 12 ապրանք, ոլորում սլաքերով (առանց սքրոլբարի), վերջում «Դիտել ամբողջը»։
+ * Գլխավոր էջ — մինչև 12 ապրանք, աջ վերևի փոքր սլաքեր (առանց սքրոլբարի), վերջում «Դիտել ամբողջը»։
  */
 export function HomeShowcaseCarousel({
   products,
@@ -306,34 +327,37 @@ export function HomeShowcaseCarousel({
   const viewEntireWords = viewEntireLabel.trim().split(/\s+/).filter(Boolean)
 
   return (
-    <div className="-mx-4 px-1 sm:mx-0 sm:px-0">
-      <div className="flex min-w-0 items-center gap-1.5 sm:gap-2">
+    <div className="relative -mx-4 px-1 sm:mx-0 sm:px-0">
+      <div className="absolute right-1 top-0 z-20 flex gap-1 sm:right-0">
         <CarouselArrowButton
+          size="sm"
           direction="prev"
           disabled={!canScrollLeft}
           onClick={() => scrollByDirection(-1)}
           ariaLabel={h.carouselScrollPrev}
         />
-        <ShowcaseCarouselTrack
-          scrollRef={scrollRef}
-          list={list}
-          stripClass={stripClass}
-          stripIconClass={stripIconClass}
-          viewEntireWords={viewEntireWords}
-          viewEntireLabel={viewEntireLabel}
-          compactLayout={isNarrowViewport ? 'showcaseNarrow' : 'standard'}
-          onAddToCart={onAddToCart}
-          addedToCart={addedToCart}
-          isInWishlist={isInWishlist}
-          onToggleWishlist={onToggleWishlist}
-        />
         <CarouselArrowButton
+          size="sm"
           direction="next"
           disabled={!canScrollRight}
           onClick={() => scrollByDirection(1)}
           ariaLabel={h.carouselScrollNext}
         />
       </div>
+      <ShowcaseCarouselTrack
+        scrollRef={scrollRef}
+        list={list}
+        stripClass={stripClass}
+        stripIconClass={stripIconClass}
+        viewEntireWords={viewEntireWords}
+        viewEntireLabel={viewEntireLabel}
+        compactLayout={isNarrowViewport ? 'showcaseNarrow' : 'standard'}
+        isMobileScrollOnly={isNarrowViewport}
+        onAddToCart={onAddToCart}
+        addedToCart={addedToCart}
+        isInWishlist={isInWishlist}
+        onToggleWishlist={onToggleWishlist}
+      />
     </div>
   )
 }
