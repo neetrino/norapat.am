@@ -1,7 +1,14 @@
 'use client'
 
 import Link from 'next/link'
-import { Home, ShoppingCart, User, UtensilsCrossed, LogIn } from 'lucide-react'
+import {
+  Home,
+  ShoppingCart,
+  User,
+  UtensilsCrossed,
+  LogIn,
+  LayoutDashboard,
+} from 'lucide-react'
 import { usePathname } from 'next/navigation'
 import { useSession } from 'next-auth/react'
 import { useCart } from '@/hooks/useCart'
@@ -28,12 +35,19 @@ export default function MobileBottomNav() {
   }
   const hideProfileActiveIndicator = pathname?.startsWith('/profile')
 
-  const navItems = session ? [
-    { href: '/', label: nav.home, icon: Home },
-    { href: '/products', label: nav.menu, icon: UtensilsCrossed },
-    { href: '/cart', label: cart.label, icon: ShoppingCart, showBadge: true },
-    { href: '/profile', label: profile.label, icon: User },
-  ] : [
+  const isAdmin = session?.user?.role === 'ADMIN'
+  const accountItem = isAdmin
+    ? { href: '/admin', label: auth.admin, icon: LayoutDashboard }
+    : { href: '/profile', label: profile.label, icon: User }
+
+  const navItems = session
+    ? [
+        { href: '/', label: nav.home, icon: Home },
+        { href: '/products', label: nav.menu, icon: UtensilsCrossed },
+        { href: '/cart', label: cart.label, icon: ShoppingCart, showBadge: true },
+        accountItem,
+      ]
+    : [
     { href: '/', label: nav.home, icon: Home },
     { href: '/products', label: nav.menu, icon: UtensilsCrossed },
     { href: '/cart', label: cart.label, icon: ShoppingCart, showBadge: true },
