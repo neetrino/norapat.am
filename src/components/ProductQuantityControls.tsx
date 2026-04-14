@@ -67,7 +67,7 @@ export default function ProductQuantityControls({
           type="button"
           onClick={handleAddToCart}
           disabled={!product.isAvailable}
-          className={`flex min-h-[2.75rem] flex-1 items-center justify-center rounded-xl px-4 py-2.5 text-base font-bold text-white transition-all duration-200 ${
+          className={`flex min-h-[2.75rem] flex-1 items-center justify-center rounded-full px-4 py-2.5 text-base font-bold text-white transition-all duration-200 ${
             !product.isAvailable
               ? 'cursor-not-allowed bg-slate-300 opacity-75'
               : addedToCart
@@ -126,7 +126,7 @@ export default function ProductQuantityControls({
         type="button"
         onClick={handleAddToCart}
         disabled={!product.isAvailable}
-        className={`flex w-full items-center justify-center gap-2 rounded-2xl px-6 py-3.5 text-base font-bold transition-all duration-200 ${
+        className={`flex w-full items-center justify-center gap-2 rounded-full px-6 py-3.5 text-base font-bold transition-all duration-200 ${
           !product.isAvailable
             ? 'cursor-not-allowed bg-slate-300 text-white opacity-75'
             : addedToCart

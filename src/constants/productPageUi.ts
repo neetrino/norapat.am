@@ -9,6 +9,3 @@ export const PRODUCT_PAGE_MOBILE_CTA_BUTTON_CLASSES =
 
 /** Mobile PDP price text + link hovers (matches CTA). */
 export const PRODUCT_PAGE_MOBILE_ACCENT_TEXT_CLASS = 'text-[#E53225]'
-
-/** Shown until product reviews are stored and loaded from the database. */
-export const PRODUCT_PAGE_DISPLAY_REVIEW_COUNT = 0

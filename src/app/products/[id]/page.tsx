@@ -10,8 +10,7 @@ import { ProductDisplayName } from '@/components/ProductDisplayName'
 import { ProductImageGallery } from '@/components/ProductImageGallery'
 import { prisma } from '@/lib/prisma'
 import { hy } from '@/i18n/dictionaries'
-import { PRODUCT_PAGE_DISPLAY_REVIEW_COUNT, PRODUCT_PAGE_MOBILE_ACCENT_TEXT_CLASS } from '@/constants/productPageUi'
-import { ProductRatingStars } from '@/components/product-page/ProductRatingStars'
+import { PRODUCT_PAGE_MOBILE_ACCENT_TEXT_CLASS } from '@/constants/productPageUi'
 
 const statusBadgeStyles = {
   HIT: {
@@ -127,11 +126,6 @@ export default async function ProductPage({
       product.originalPrice != null && product.originalPrice > product.price
         ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
         : null
-
-    const reviewLabel = t.customerReviewsLabel.replace(
-      '{count}',
-      String(PRODUCT_PAGE_DISPLAY_REVIEW_COUNT)
-    )
 
     const hotOverlay =
       product.status === 'HIT' ? (
@@ -294,8 +288,7 @@ export default async function ProductPage({
                         <ProductDisplayName name={product.name} />
                       </h1>
 
-                      <div className="space-y-3 lg:hidden">
-                        <ProductRatingStars reviewLabel={reviewLabel} />
+                      <div className="lg:hidden">
                         <div className="flex flex-wrap items-baseline gap-2">
                           <span className={`text-3xl font-bold tracking-tight ${PRODUCT_PAGE_MOBILE_ACCENT_TEXT_CLASS}`}>
                             {product.price} ֏
