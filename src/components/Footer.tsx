@@ -35,9 +35,13 @@ const FOOTER_MOBILE_BRAND_INTRINSIC = { width: 360, height: 480 } as const
 const FOOTER_MOBILE_BRAND_HEIGHT_CLASS =
   'h-[6.5rem] w-auto max-w-[48%] shrink-0 object-contain object-top sm:h-[7.5rem]'
 
-/** Footer promo bar — payment badge row (uniform visual height) */
+/** Footer promo bar — payment badge row (uniform visual height; tighter on narrow screens) */
 const FOOTER_PAYMENT_ICON_CLASS =
-  'h-5 w-auto max-w-[4rem] object-contain object-left opacity-95 sm:h-6 sm:max-w-[4.5rem]'
+  'h-4 w-auto max-w-[3.25rem] object-contain object-left opacity-95 sm:h-6 sm:max-w-[4.5rem]'
+
+/** Mobile: stick promo strip above fixed tab bar (`MobileBottomNav` uses `bottom-16` clearance). */
+const FOOTER_PROMO_MOBILE_DOCK =
+  'max-lg:sticky max-lg:bottom-16 max-lg:z-30 max-lg:shadow-[0_-4px_24px_rgba(0,0,0,0.14)] lg:static lg:shadow-none'
 
 const FOOTER_PAYMENT_LOGOS = [
   { src: '/payment-visa.png', alt: 'Visa', width: 48, height: 16 },
@@ -247,10 +251,12 @@ export default function Footer() {
         </div>
       </div>
 
-      <div className="promo-food-banner-bg promo-food-banner-vignette relative border-t border-white/10 text-white">
-        <div className="relative z-10 mx-auto max-w-7xl px-4 py-3 sm:px-6 sm:py-4 lg:px-8">
-          <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:gap-x-4 sm:gap-y-2">
-            <p className="min-w-0 text-left text-[10px] font-normal leading-snug tracking-wide text-white/85 sm:text-[11px] sm:leading-relaxed lg:whitespace-nowrap xl:text-xs">
+      <div
+        className={`promo-food-banner-bg promo-food-banner-vignette relative border-t border-white/10 text-white ${FOOTER_PROMO_MOBILE_DOCK}`}
+      >
+        <div className="relative z-10 mx-auto max-w-7xl px-3 py-2.5 sm:px-6 sm:py-4 lg:px-8">
+          <div className="flex flex-col gap-2.5 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:gap-x-4 sm:gap-y-2 sm:gap-3">
+            <p className="min-w-0 max-w-full text-center text-[11px] font-normal leading-snug tracking-wide text-white/90 sm:text-left sm:leading-relaxed lg:whitespace-nowrap xl:text-xs">
               {f.copyright} {f.createdBy}{' '}
               <a
                 href="https://neetrino.com"
@@ -262,7 +268,7 @@ export default function Footer() {
               </a>
             </p>
             <div
-              className="flex flex-wrap items-center gap-5 sm:gap-6 sm:justify-end"
+              className="flex flex-wrap items-center justify-center gap-2.5 sm:justify-end sm:gap-6"
               aria-label={f.paymentMethodsAria}
             >
               {FOOTER_PAYMENT_LOGOS.map((logo) => (
