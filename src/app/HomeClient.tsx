@@ -279,39 +279,39 @@ export default function HomeClient() {
 
       {/* CTA Section — նույն ֆոնը ինչ հերո բանները (`globals.css` → promo-food-banner-*) */}
       <section
-        className="hidden bg-white py-8 lg:block lg:py-10"
+        className="mt-6 hidden w-full bg-white pt-8 pb-0 lg:mt-10 lg:block lg:pt-10 lg:pb-0"
         aria-labelledby="home-cta-heading"
       >
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="promo-food-banner-bg promo-food-banner-vignette relative z-10 flex flex-col items-center gap-6 overflow-hidden rounded-[2rem] px-4 py-10 text-white shadow-[0_18px_48px_rgba(165,29,29,0.18)] sm:px-6 lg:flex-row lg:items-end lg:justify-between lg:gap-4 lg:px-8 lg:py-12">
+        <div className="w-full">
+          <div className="promo-food-banner-bg promo-food-banner-vignette relative z-10 flex w-full flex-col items-center gap-4 overflow-hidden rounded-none px-4 py-7 text-white sm:px-6 lg:flex-row lg:items-end lg:justify-between lg:gap-3 lg:px-8 lg:py-9">
           <div className="order-2 flex w-full flex-1 justify-center lg:order-1 lg:justify-end lg:pr-4">
             <Image
               src="/home-cta-girl.png"
               alt={h.ctaGirlIllustrationAlt}
               width={HOME_CTA_CHARACTER_IMAGE_WIDTH_PX}
               height={HOME_CTA_CHARACTER_IMAGE_HEIGHT_PX}
-              className="h-auto max-h-[min(48vw,24rem)] w-auto max-w-[min(88vw,20rem)] object-contain object-bottom lg:max-h-[min(42vw,30rem)] lg:max-w-[24rem] xl:max-h-[34rem] xl:max-w-[26rem]"
+              className="h-auto max-h-[min(44vw,22rem)] w-auto max-w-[min(88vw,20rem)] object-contain object-bottom lg:max-h-[min(38vw,26rem)] lg:max-w-[22rem] xl:max-h-[30rem] xl:max-w-[24rem]"
               sizes="(min-width: 1280px) 26rem, (min-width: 1024px) 24rem, 100vw"
             />
           </div>
 
           <div className="order-1 w-full max-w-xl shrink-0 text-center lg:order-2 lg:self-center">
-            <h2 id="home-cta-heading" className="mb-4 text-4xl font-bold md:text-5xl">
+            <h2 id="home-cta-heading" className="mb-2 text-3xl font-bold md:text-4xl">
               {h.ctaTitle}
             </h2>
-            <p className="mx-auto mb-5 text-xl text-white/90">
+            <p className="mx-auto mb-4 text-lg text-white/90">
               {h.ctaSubtitle}
             </p>
-            <div className="flex flex-col justify-center gap-3 sm:flex-row sm:flex-wrap">
+            <div className="flex flex-col justify-center gap-2.5 sm:flex-row sm:flex-wrap">
               <Link
                 href="/products"
-                className="rounded-xl bg-white px-7 py-3 text-lg font-bold text-[#A51D1D] shadow-lg transition-all duration-300 hover:scale-105 hover:bg-gray-100"
+                className="rounded-xl bg-white px-6 py-2.5 text-base font-bold text-[#A51D1D] shadow-lg transition-all duration-300 hover:scale-105 hover:bg-gray-100 sm:text-lg"
               >
                 {h.ctaOrderNow}
               </Link>
               <Link
                 href="/contact"
-                className="rounded-xl border-2 border-white px-7 py-3 text-lg font-bold text-white transition-all duration-300 hover:scale-105 hover:bg-white hover:text-[#A51D1D]"
+                className="rounded-xl border-2 border-white px-6 py-2.5 text-base font-bold text-white transition-all duration-300 hover:scale-105 hover:bg-white hover:text-[#A51D1D] sm:text-lg"
               >
                 {h.ctaLearnMore}
               </Link>
@@ -324,7 +324,7 @@ export default function HomeClient() {
               alt={h.ctaBoyIllustrationAlt}
               width={HOME_CTA_CHARACTER_IMAGE_WIDTH_PX}
               height={HOME_CTA_CHARACTER_IMAGE_HEIGHT_PX}
-              className="h-auto max-h-[min(48vw,24rem)] w-auto max-w-[min(88vw,20rem)] object-contain object-bottom lg:max-h-[min(42vw,30rem)] lg:max-w-[24rem] xl:max-h-[34rem] xl:max-w-[26rem]"
+              className="h-auto max-h-[min(44vw,22rem)] w-auto max-w-[min(88vw,20rem)] object-contain object-bottom lg:max-h-[min(38vw,26rem)] lg:max-w-[22rem] xl:max-h-[30rem] xl:max-w-[24rem]"
               sizes="(min-width: 1280px) 26rem, (min-width: 1024px) 24rem, 100vw"
             />
           </div>
