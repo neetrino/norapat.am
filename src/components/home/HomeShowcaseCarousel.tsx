@@ -15,10 +15,6 @@ import ProductCard from '@/components/ProductCard'
 import { Product, ProductWithCategory } from '@/types'
 import { useI18n } from '@/i18n/I18nContext'
 
-/** Դեսքթոփ՝ մեկ սեղմումով ոլորման քայլ (մոտավորապես մեկ քարտի լայնություն) */
-const SCROLL_STEP_PX_NARROW = 176
-const SCROLL_STEP_PX_WIDE = 280
-
 /** Գլխավոր էջի հորիզոնական շարքում առավելագույն ապրանքների քանակ */
 const HOME_SHOWCASE_SCROLL_MAX_ITEMS = 12
 
@@ -81,7 +77,55 @@ function centerInitialShowcaseScroll(outer: HTMLDivElement): void {
   outer.scrollLeft = Math.max(0, Math.min(targetScroll, maxScroll))
 }
 
-function useShowcaseCarouselScroll(listLength: number, scrollStepPx: number) {
+function getShowcaseProductItems(outer: HTMLDivElement): HTMLElement[] {
+  return Array.from(outer.querySelectorAll<HTMLElement>('[data-showcase-item="true"]'))
+}
+
+/**
+ * Finds the product index whose center is closest to the viewport center, then scrolls so the
+ * adjacent card (or track end) is centered — avoids fixed px steps that never match card+gap width.
+ */
+function scrollShowcaseByOneCard(outer: HTMLDivElement, direction: -1 | 1): void {
+  const items = getShowcaseProductItems(outer)
+  if (items.length === 0) return
+
+  const viewportCenterX = outer.scrollLeft + outer.clientWidth / 2
+  let bestIdx = 0
+  let bestDist = Infinity
+  items.forEach((el, i) => {
+    const c = el.offsetLeft + el.offsetWidth / 2
+    const d = Math.abs(c - viewportCenterX)
+    if (d < bestDist) {
+      bestDist = d
+      bestIdx = i
+    }
+  })
+
+  const maxScroll = Math.max(0, outer.scrollWidth - outer.clientWidth)
+
+  const scrollToCenterItem = (el: HTMLElement) => {
+    const itemCenter = el.offsetLeft + el.offsetWidth / 2
+    const targetScroll = itemCenter - outer.clientWidth / 2
+    outer.scrollTo({ left: Math.max(0, Math.min(targetScroll, maxScroll)), behavior: 'auto' })
+  }
+
+  if (direction === 1) {
+    if (bestIdx < items.length - 1) {
+      scrollToCenterItem(items[bestIdx + 1]!)
+    } else {
+      outer.scrollTo({ left: maxScroll, behavior: 'auto' })
+    }
+    return
+  }
+
+  if (bestIdx > 0) {
+    scrollToCenterItem(items[bestIdx - 1]!)
+  } else {
+    outer.scrollTo({ left: 0, behavior: 'auto' })
+  }
+}
+
+function useShowcaseCarouselScroll(listLength: number) {
   const scrollRef = useRef<HTMLDivElement>(null)
   const [canScrollLeft, setCanScrollLeft] = useState(false)
   const [canScrollRight, setCanScrollRight] = useState(true)
@@ -126,12 +170,11 @@ function useShowcaseCarouselScroll(listLength: number, scrollStepPx: number) {
     }
   }, [listLength, updateEdges])
 
-  const scrollByDirection = useCallback(
-    (direction: -1 | 1) => {
-      scrollRef.current?.scrollBy({ left: direction * scrollStepPx, behavior: 'smooth' })
-    },
-    [scrollStepPx]
-  )
+  const scrollByDirection = useCallback((direction: -1 | 1) => {
+    const outer = scrollRef.current
+    if (!outer) return
+    scrollShowcaseByOneCard(outer, direction)
+  }, [])
 
   return { scrollRef, canScrollLeft, canScrollRight, scrollByDirection }
 }
@@ -229,7 +272,7 @@ function ViewEntireStripLink(props: {
   return (
     <Link
       href="/products"
-      className={`group flex h-fit min-h-0 w-[5.75rem] flex-shrink-0 ${snapClass} flex-col items-center justify-center gap-3 rounded-2xl border-2 px-2.5 py-5 text-center transition-all duration-300 sm:w-[6.5rem] sm:px-3 sm:py-6 ${props.stripClass} hover:-translate-y-0.5`}
+      className={`group flex h-fit min-h-0 w-[5.75rem] flex-shrink-0 self-center ${snapClass} flex-col items-center justify-center gap-3 rounded-2xl border-2 px-2.5 py-5 text-center transition-all duration-300 sm:w-[6.5rem] sm:px-3 sm:py-6 ${props.stripClass} hover:-translate-y-0.5`}
     >
       <span className="flex flex-col gap-0.5 text-center">
         {words.map((word, wordIndex) => (
@@ -272,9 +315,10 @@ function ShowcaseCarouselTrack(props: {
   const scrollRegionClass =
     'min-w-0 w-full overflow-x-auto overflow-y-visible scroll-smooth pb-2 pt-10 sm:pb-3 sm:pt-11 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden'
 
+  /** Stretch row height so every shell matches the tallest card; avoids shorter cards looking “wrong” next to scale. */
   const trackSnapClass = props.isMobileScrollOnly
-    ? 'flex w-max items-center gap-4 overflow-visible pr-2 sm:gap-5 sm:snap-x sm:snap-mandatory md:gap-6'
-    : 'flex w-max snap-x snap-mandatory items-center gap-3 overflow-visible pr-2 sm:gap-5 md:gap-6'
+    ? 'flex w-max items-stretch gap-4 overflow-visible pr-2 sm:gap-5 sm:snap-x sm:snap-mandatory md:gap-6'
+    : 'flex w-max snap-x snap-mandatory items-stretch gap-3 overflow-visible pr-2 sm:gap-5 md:gap-6'
 
   const cardShellClass = props.isMobileScrollOnly
     ? `${CARD_SHELL_CLASS} overflow-visible transform-gpu transition-[transform,opacity] duration-300 ease-out will-change-transform sm:snap-start sm:snap-always`
@@ -294,9 +338,12 @@ function ShowcaseCarouselTrack(props: {
             key={product.id}
             data-showcase-item="true"
             style={cardScaleStyle}
-            className={cardShellClass}
+            className={`${cardShellClass} flex flex-col`}
           >
-            <div className="transition-[transform,filter] duration-300 ease-out" style={innerTransformStyle}>
+            <div
+              className="h-full min-h-0 min-w-0 flex-1 transition-[transform,filter] duration-300 ease-out"
+              style={innerTransformStyle}
+            >
               <ProductCard
                 product={product}
                 onAddToCart={props.onAddToCart}
@@ -356,9 +403,8 @@ export function HomeShowcaseCarousel({
     return () => mq.removeEventListener('change', sync)
   }, [])
 
-  const scrollStepPx = isNarrowViewport ? SCROLL_STEP_PX_NARROW : SCROLL_STEP_PX_WIDE
   const { scrollRef, canScrollLeft, canScrollRight, scrollByDirection } =
-    useShowcaseCarouselScroll(list.length, scrollStepPx)
+    useShowcaseCarouselScroll(list.length)
   const stripClass = stripToneClasses[tone]
   const stripIconClass = stripIconToneClasses[tone]
   const viewEntireWords = viewEntireLabel.trim().split(/\s+/).filter(Boolean)

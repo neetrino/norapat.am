@@ -23,6 +23,13 @@ interface ProductCardProps {
 const PRODUCT_CARD_ADD_IDLE_BUTTON_CLASS = `${BRAND_RED_CTA_IDLE_HOVER_CLASS} shadow-[0_14px_26px_rgba(229,50,37,0.18)]`
 const CURRENCY = '֏'
 
+/** Home showcase carousel: reserve space for two badge rows (category + status) so card height matches the reference layout. */
+const COMPACT_SHOWCASE_BADGE_STACK_MIN_CLASS = 'min-h-[3.25rem] sm:min-h-[3.5rem]'
+const SHOWCASE_NARROW_BADGE_STACK_MIN_CLASS = 'min-h-[2.5rem] sm:min-h-[2.75rem]'
+/** Two line-clamped description lines — keeps CTA baseline aligned when shortDescription is missing. */
+const COMPACT_SHOWCASE_DESCRIPTION_BLOCK_MIN_CLASS = 'min-h-[3rem] sm:min-h-[3.25rem]'
+const SHOWCASE_NARROW_DESCRIPTION_BLOCK_MIN_CLASS = 'min-h-[2rem] sm:min-h-[2.25rem]'
+
 function formatPrice(value: number) {
   return new Intl.NumberFormat('hy-AM').format(value)
 }
@@ -412,10 +419,10 @@ const ProductCard = memo(
                 : 'gap-3 px-6 pb-6 pt-6 sm:px-7 sm:pb-7 sm:pt-7'
           }`}
         >
-          {(categoryName || statusBadge || hasDiscount) && (
+          {isCompact ? (
             <div
-              className={`flex w-full min-w-0 flex-col items-start shrink-0 ${
-                isShowcaseNarrow ? 'gap-1' : 'gap-1.5 sm:gap-2'
+              className={`flex w-full min-w-0 shrink-0 flex-col items-start justify-start ${
+                isShowcaseNarrow ? `gap-1 ${SHOWCASE_NARROW_BADGE_STACK_MIN_CLASS}` : `gap-1.5 sm:gap-2 ${COMPACT_SHOWCASE_BADGE_STACK_MIN_CLASS}`
               }`}
             >
               {categoryName && (
@@ -459,6 +466,55 @@ const ProductCard = memo(
                 </span>
               )}
             </div>
+          ) : (
+            (categoryName || statusBadge || hasDiscount) && (
+              <div
+                className={`flex w-full min-w-0 flex-col items-start shrink-0 ${
+                  isShowcaseNarrow ? 'gap-1' : 'gap-1.5 sm:gap-2'
+                }`}
+              >
+                {categoryName && (
+                  <span
+                    className={`inline-flex max-w-full items-center rounded-full border border-[#dcc8bc] bg-[#fff6f0] font-bold uppercase tracking-[0.12em] text-[#8a4a1f] ${
+                      isShowcaseNarrow
+                        ? 'px-2 py-0.5 text-[8px]'
+                        : 'px-2.5 py-1 text-[9px] sm:px-3 sm:text-[10px]'
+                    }`}
+                  >
+                    <span className="min-w-0 max-w-full truncate">{categoryName}</span>
+                  </span>
+                )}
+                {statusBadge && (
+                  <span
+                    className={`inline-flex w-fit max-w-full items-center gap-1 rounded-full border font-semibold uppercase leading-none tracking-[0.12em] ${
+                      isShowcaseNarrow
+                        ? 'px-2 py-0.5 text-[8px]'
+                        : 'px-2.5 py-1 text-[9px] sm:px-3 sm:text-[10px]'
+                    } ${getStatusToneTextClass(statusBadge.tone)} ${getStatusToneSurfaceClass(statusBadge.tone)}`}
+                  >
+                    {statusBadge.icon === 'zap' ? (
+                      <Zap
+                        className={`shrink-0 stroke-[2.2] ${isShowcaseNarrow ? 'h-2.5 w-2.5' : 'h-3 w-3'}`}
+                      />
+                    ) : (
+                      <Star
+                        className={`shrink-0 stroke-[2.2] ${isShowcaseNarrow ? 'h-2.5 w-2.5' : 'h-3 w-3'}`}
+                      />
+                    )}
+                    {statusBadge.label}
+                  </span>
+                )}
+                {hasDiscount && (
+                  <span
+                    className={`inline-flex w-fit max-w-full items-center rounded-full bg-[#E53225] font-black leading-none tracking-[0.12em] text-white shadow-[0_8px_16px_rgba(229,50,37,0.18)] ${
+                      isShowcaseNarrow ? 'px-2 py-0.5 text-[8px]' : 'px-2.5 py-1 text-[9px] sm:px-3 sm:py-1.5 sm:text-[10px]'
+                    }`}
+                  >
+                    -{discountPercent}%
+                  </span>
+                )}
+              </div>
+            )
           )}
 
           <div className="flex min-h-0 min-w-0 flex-1 flex-col">
@@ -475,17 +531,23 @@ const ProductCard = memo(
             </h3>
 
             {isCompact ? (
-              description?.trim() ? (
-                <p
-                  className={`min-w-0 overflow-hidden break-words text-slate-500 ${
-                    isShowcaseNarrow
-                      ? 'mt-1 line-clamp-2 text-[11px] leading-4'
-                      : 'mt-2 line-clamp-2 text-sm leading-6'
-                  }`}
-                >
-                  {description}
-                </p>
-              ) : null
+              <div
+                className={
+                  isShowcaseNarrow
+                    ? `mt-1 ${SHOWCASE_NARROW_DESCRIPTION_BLOCK_MIN_CLASS}`
+                    : `mt-2 ${COMPACT_SHOWCASE_DESCRIPTION_BLOCK_MIN_CLASS}`
+                }
+              >
+                {description?.trim() ? (
+                  <p
+                    className={`min-w-0 overflow-hidden break-words text-slate-500 ${
+                      isShowcaseNarrow ? 'line-clamp-2 text-[11px] leading-4' : 'line-clamp-2 text-sm leading-6'
+                    }`}
+                  >
+                    {description}
+                  </p>
+                ) : null}
+              </div>
             ) : description?.trim() ? (
               <p className="mt-3 min-w-0 overflow-hidden break-words line-clamp-2 text-sm leading-6 text-slate-500 sm:text-[15px]">
                 {description}
