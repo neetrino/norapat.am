@@ -16,8 +16,16 @@ export interface ProductsPageCategoryChipsProps {
   locale: AppLocale
 }
 
+/** Horizontal scroll row for category chips — same on products (mobile) and home (mobile). */
+export const CATEGORY_CHIPS_H_SCROLL_CLASS =
+  '-mx-1 flex gap-2.5 overflow-x-auto px-1 pb-2 pr-2'
+
+/** Loading skeleton row (no negative margin — matches chip row scroll behavior). */
+export const CATEGORY_CHIPS_H_SCROLL_LOADING_CLASS =
+  'flex gap-2.5 overflow-x-auto pb-2 pr-1'
+
 /** Selected chip: neutral surface — no peach/red gradient (reads as “hover” on mobile). */
-const pillClass = (active: boolean) =>
+export const categoryFilterPillClass = (active: boolean) =>
   `cursor-pointer group inline-flex shrink-0 items-center gap-2 rounded-2xl border px-3.5 py-2.5 text-xs font-semibold whitespace-nowrap transition-all duration-300 ${
     active
       ? 'border-[#E53225] bg-white text-[#E53225] shadow-sm'
@@ -39,7 +47,7 @@ export function ProductsPageCategoryChips({
 
   if (loading) {
     return (
-      <div className="flex gap-2.5 overflow-x-auto pb-2 pr-1" aria-hidden>
+      <div className={CATEGORY_CHIPS_H_SCROLL_LOADING_CLASS} aria-hidden>
         {[1, 2, 3, 4, 5, 6].map((i) => (
           <div key={i} className="h-11 w-24 shrink-0 animate-pulse rounded-2xl bg-gray-200" />
         ))}
@@ -48,11 +56,13 @@ export function ProductsPageCategoryChips({
   }
 
   return (
-    <div className="-mx-1 flex gap-2.5 overflow-x-auto px-1 pb-2 pr-2 lg:mx-0 lg:flex-wrap lg:overflow-visible lg:pr-1">
+    <div
+      className={`${CATEGORY_CHIPS_H_SCROLL_CLASS} lg:mx-0 lg:flex-wrap lg:overflow-visible lg:pr-1`}
+    >
       <button
         type="button"
         onClick={() => onSelectCategory(null)}
-        className={pillClass(selectedCategoryName === null)}
+        className={categoryFilterPillClass(selectedCategoryName === null)}
       >
         {allLabel}
       </button>
@@ -66,7 +76,7 @@ export function ProductsPageCategoryChips({
             key={cat.id}
             type="button"
           onClick={() => onSelectCategory(cat.name)}
-          className={pillClass(active)}
+          className={categoryFilterPillClass(active)}
         >
           {cat.image && (
               <div
