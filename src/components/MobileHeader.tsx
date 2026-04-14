@@ -8,7 +8,6 @@ import {
   UtensilsCrossed,
   Info,
   Phone,
-  LayoutDashboard,
   LogOut,
   User,
   LogIn,
@@ -172,7 +171,7 @@ export default function MobileHeader({ branding }: MobileHeaderProps) {
           })}
         </nav>
 
-        {/* Account: admin / profile / login — մոբայլում մուտք ադմին և ելք */}
+        {/* Account: profile / login — ադմինը /admin-ը ներքևի նավբարից է */}
         <div className="relative z-10 shrink-0 px-6 pb-2 pt-2 space-y-2 border-t border-white/10">
           {!isHydrated || status === 'loading' ? (
             <div
@@ -181,38 +180,19 @@ export default function MobileHeader({ branding }: MobileHeaderProps) {
             />
           ) : session ? (
             session.user?.role === 'ADMIN' ? (
-              <>
-                <Link
-                  href="/admin"
-                  onClick={() => setIsMenuOpen(false)}
-                  className={`group flex items-center gap-4 rounded-2xl px-4 py-3 transition-colors ${
-                    isActive('/admin')
-                      ? 'bg-white/15 text-white'
-                      : 'text-white/85 hover:bg-white/10'
-                  }`}
-                >
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/10">
-                    <LayoutDashboard className="h-5 w-5 text-white" />
-                  </div>
-                  <span className="text-lg font-semibold">{auth.admin}</span>
-                  {isActive('/admin') && (
-                    <span className="ml-auto h-2 w-2 rounded-full bg-white" />
-                  )}
-                </Link>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setIsMenuOpen(false)
-                    void signOut({ callbackUrl: '/' })
-                  }}
-                  className="flex w-full items-center gap-4 rounded-2xl px-4 py-3 text-left text-white/85 transition-colors hover:bg-white/10"
-                >
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/10">
-                    <LogOut className="h-5 w-5 text-white" />
-                  </div>
-                  <span className="text-lg font-semibold">{auth.logoutTitle}</span>
-                </button>
-              </>
+              <button
+                type="button"
+                onClick={() => {
+                  setIsMenuOpen(false)
+                  void signOut({ callbackUrl: '/' })
+                }}
+                className="flex w-full items-center gap-4 rounded-2xl px-4 py-3 text-left text-white/85 transition-colors hover:bg-white/10"
+              >
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/10">
+                  <LogOut className="h-5 w-5 text-white" />
+                </div>
+                <span className="text-lg font-semibold">{auth.logoutTitle}</span>
+              </button>
             ) : (
               <>
                 <Link
