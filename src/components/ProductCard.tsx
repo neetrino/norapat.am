@@ -179,18 +179,21 @@ const ProductCard = memo(
                   {description}
                 </p>
               )}
-              {statusBadge && (
-                <div
-                  className={`mt-1.5 inline-flex max-w-full items-center gap-1 text-[9px] font-semibold uppercase leading-none tracking-[0.12em] sm:text-[10px] ${getStatusToneTextClass(statusBadge.tone)}`}
-                >
-                  {statusBadge.icon === 'zap' ? (
-                    <Zap className="h-2.5 w-2.5 shrink-0 stroke-[2.2] sm:h-3 sm:w-3" />
-                  ) : (
-                    <Star className="h-2.5 w-2.5 shrink-0 stroke-[2.2] sm:h-3 sm:w-3" />
-                  )}
-                  {statusBadge.label}
-                </div>
-              )}
+              {/* Reserve one line so cards without HIT/NEW/CLASSIC match height with labeled cards */}
+              <div className="mt-1.5 flex min-h-[14px] items-center sm:min-h-[16px]">
+                {statusBadge && (
+                  <div
+                    className={`inline-flex max-w-full items-center gap-1 text-[9px] font-semibold uppercase leading-none tracking-[0.12em] sm:text-[10px] ${getStatusToneTextClass(statusBadge.tone)}`}
+                  >
+                    {statusBadge.icon === 'zap' ? (
+                      <Zap className="h-2.5 w-2.5 shrink-0 stroke-[2.2] sm:h-3 sm:w-3" />
+                    ) : (
+                      <Star className="h-2.5 w-2.5 shrink-0 stroke-[2.2] sm:h-3 sm:w-3" />
+                    )}
+                    {statusBadge.label}
+                  </div>
+                )}
+              </div>
             </div>
 
             <div className="mt-3 flex items-end justify-between gap-2">
