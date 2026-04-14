@@ -1,6 +1,14 @@
 'use client'
 
-import { useRef, useState, useEffect, useCallback, type CSSProperties, type RefObject } from 'react'
+import {
+  useRef,
+  useState,
+  useEffect,
+  useLayoutEffect,
+  useCallback,
+  type CSSProperties,
+  type RefObject,
+} from 'react'
 import Link from 'next/link'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import ProductCard from '@/components/ProductCard'
@@ -13,6 +21,9 @@ const SCROLL_STEP_PX_WIDE = 280
 
 /** Գլխավոր էջի հորիզոնական շարքում առավելագույն ապրանքների քանակ */
 const HOME_SHOWCASE_SCROLL_MAX_ITEMS = 12
+
+/** Քիչ քարտերով կենտրոնացնելը իմաստ չունի; սքրոլը երկկողմանի է միայն 2+ ապրանքի դեպքում */
+const MIN_PRODUCT_COUNT_TO_CENTER_INITIAL_SCROLL = 2
 
 /**
  * Mobile — ավելի compact, ամբողջ քարտը տեսանելի; sm+ — նախկին ռիթմ (~4 քարտ max-w-7xl-ում)։
@@ -58,6 +69,18 @@ const navArrowSizeClasses = {
 const navArrowEnabledClass =
   'border-red-200/80 text-red-700 hover:border-red-400/80 hover:bg-red-50 hover:shadow-md active:scale-95'
 
+function centerInitialShowcaseScroll(outer: HTMLDivElement): void {
+  const items = outer.querySelectorAll<HTMLElement>('[data-showcase-item="true"]')
+  if (items.length < MIN_PRODUCT_COUNT_TO_CENTER_INITIAL_SCROLL) return
+
+  const mid = Math.floor((items.length - 1) / 2)
+  const item = items[mid]
+  const itemCenter = item.offsetLeft + item.offsetWidth / 2
+  const targetScroll = itemCenter - outer.clientWidth / 2
+  const maxScroll = Math.max(0, outer.scrollWidth - outer.clientWidth)
+  outer.scrollLeft = Math.max(0, Math.min(targetScroll, maxScroll))
+}
+
 function useShowcaseCarouselScroll(listLength: number, scrollStepPx: number) {
   const scrollRef = useRef<HTMLDivElement>(null)
   const [canScrollLeft, setCanScrollLeft] = useState(false)
@@ -71,6 +94,20 @@ function useShowcaseCarouselScroll(listLength: number, scrollStepPx: number) {
     setCanScrollLeft(scrollLeft > 1)
     setCanScrollRight(maxScroll > 1 && scrollLeft < maxScroll - 1)
   }, [])
+
+  /** Սկզբից միջին քարտը կենտրոնում՝ թե առաջ, թե ետ սքրոլի հնարավորությամբ */
+  useLayoutEffect(() => {
+    const outer = scrollRef.current
+    if (!outer) return
+
+    const applyCenter = () => {
+      centerInitialShowcaseScroll(outer)
+      updateEdges()
+    }
+
+    applyCenter()
+    requestAnimationFrame(applyCenter)
+  }, [listLength, updateEdges])
 
   useEffect(() => {
     const outer = scrollRef.current
