@@ -39,9 +39,9 @@ const FOOTER_MOBILE_BRAND_HEIGHT_CLASS =
 const FOOTER_PAYMENT_ICON_CLASS =
   'h-4 w-auto max-w-[3.25rem] object-contain object-left opacity-95 sm:h-6 sm:max-w-[4.5rem]'
 
-/** Mobile: stick promo strip above fixed tab bar (`MobileBottomNav` uses `bottom-16` clearance). */
+/** Mobile: stick promo strip above fixed tab bar — offset stepped down from `bottom-16` to sit closer to nav. */
 const FOOTER_PROMO_MOBILE_DOCK =
-  'max-lg:sticky max-lg:bottom-16 max-lg:z-30 max-lg:shadow-[0_-4px_24px_rgba(0,0,0,0.14)] lg:static lg:shadow-none'
+  'max-lg:sticky max-lg:bottom-12 max-lg:z-30 max-lg:shadow-[0_-4px_24px_rgba(0,0,0,0.14)] lg:static lg:shadow-none'
 
 const FOOTER_PAYMENT_LOGOS = [
   { src: '/payment-visa.png', alt: 'Visa', width: 48, height: 16 },
@@ -287,8 +287,6 @@ export default function Footer() {
         </div>
       </div>
     </footer>
-    {/* Scroll clearance above fixed MobileBottomNav (root layout) */}
-    <div className="h-16 lg:hidden" aria-hidden />
     </>
   )
 }
