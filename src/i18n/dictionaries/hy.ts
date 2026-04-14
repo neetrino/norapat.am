@@ -114,6 +114,8 @@ export const hy: AppMessages = {
     ariaEmail: 'Էլ․ փոստ',
     mascotAlt:
       'Ստիլիզացված պատկեր՝ հայկական տարազի տարրերով, բրենդի դեկորատիվ տարր',
+    paymentMethodsAria:
+      'Ընդունվող վճարային համակարգեր՝ Visa, Mastercard, Idram, ArCa',
   },
   home: {
     ariaBrandBanner: 'Բրենդային բաններ',

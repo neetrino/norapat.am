@@ -120,6 +120,8 @@ export interface AppMessages {
     ariaEmail: string
     /** Դեկորատիվ պատկեր ֆուտերում (մասկոտ) */
     mascotAlt: string
+    /** Վճարային համակարգերի պատկերակների խմբի համար screen readers */
+    paymentMethodsAria: string
   }
   home: {
     ariaBrandBanner: string

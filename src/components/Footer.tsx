@@ -35,6 +35,17 @@ const FOOTER_MOBILE_BRAND_INTRINSIC = { width: 360, height: 480 } as const
 const FOOTER_MOBILE_BRAND_HEIGHT_CLASS =
   'h-[6.5rem] w-auto max-w-[48%] shrink-0 object-contain object-top sm:h-[7.5rem]'
 
+/** Footer promo bar — payment badge row (uniform visual height) */
+const FOOTER_PAYMENT_ICON_CLASS =
+  'h-5 w-auto max-w-[4rem] object-contain object-left opacity-95 sm:h-6 sm:max-w-[4.5rem]'
+
+const FOOTER_PAYMENT_LOGOS = [
+  { src: '/payment-visa.png', alt: 'Visa', width: 48, height: 16 },
+  { src: '/payment-mastercard.png', alt: 'Mastercard', width: 56, height: 36 },
+  { src: '/idram-logo.png', alt: 'Idram', width: 56, height: 24 },
+  { src: '/arca-logo.png', alt: 'ArCa', width: 48, height: 20 },
+] as const
+
 export default function Footer() {
   const { t } = useI18n()
   const { nav, footer: f } = t
@@ -238,17 +249,35 @@ export default function Footer() {
 
       <div className="promo-food-banner-bg promo-food-banner-vignette relative border-t border-white/10 text-white">
         <div className="relative z-10 mx-auto max-w-7xl px-4 py-3 sm:px-6 sm:py-4 lg:px-8">
-          <p className="text-left text-[10px] font-normal leading-snug tracking-wide text-white/85 sm:text-[11px] sm:leading-relaxed lg:whitespace-nowrap xl:text-xs">
-            {f.copyright} {f.createdBy}{' '}
-            <a
-              href="https://neetrino.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="font-semibold text-[#FACC15] transition-colors hover:text-[#fde047]"
+          <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:gap-x-4 sm:gap-y-2">
+            <p className="min-w-0 text-left text-[10px] font-normal leading-snug tracking-wide text-white/85 sm:text-[11px] sm:leading-relaxed lg:whitespace-nowrap xl:text-xs">
+              {f.copyright} {f.createdBy}{' '}
+              <a
+                href="https://neetrino.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-semibold text-[#FACC15] transition-colors hover:text-[#fde047]"
+              >
+                Neetrino IT Company
+              </a>
+            </p>
+            <div
+              className="flex flex-wrap items-center gap-5 sm:gap-6 sm:justify-end"
+              aria-label={f.paymentMethodsAria}
             >
-              Neetrino IT Company
-            </a>
-          </p>
+              {FOOTER_PAYMENT_LOGOS.map((logo) => (
+                <Image
+                  key={logo.src}
+                  src={logo.src}
+                  alt={logo.alt}
+                  width={logo.width}
+                  height={logo.height}
+                  className={FOOTER_PAYMENT_ICON_CLASS}
+                  sizes="(max-width: 640px) 25vw, 96px"
+                />
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     </footer>
