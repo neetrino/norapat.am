@@ -319,18 +319,18 @@ const ProductCard = memo(
                 e.stopPropagation()
                 onToggleWishlist?.(product.id)
               }}
-              className={`absolute right-3 top-3 z-20 flex items-center justify-center rounded-full border shadow-sm backdrop-blur transition-all active:scale-90 ${
-                isShowcaseNarrow ? 'right-2 top-2 h-8 w-8' : isCompact ? 'h-9 w-9' : 'h-10 w-10'
+              className={`absolute right-2 top-2 z-20 flex items-center justify-center rounded-full border shadow-sm backdrop-blur transition-all active:scale-90 ${
+                isShowcaseNarrow ? 'h-7 w-7' : 'h-8 w-8'
               } ${wishlistBtnSurfaceClass}`}
             >
               {wishlistButtonVariant === 'remove' ? (
                 <X
-                  className={`${isCompact ? 'h-4 w-4' : 'h-5 w-5'} text-slate-600 transition-colors duration-200 hover:text-red-600`}
+                  className="h-3.5 w-3.5 text-slate-600 transition-colors duration-200 hover:text-red-600 sm:h-4 sm:w-4"
                   strokeWidth={2.25}
                 />
               ) : (
                 <Heart
-                  className={`${isCompact ? 'h-4 w-4' : 'h-5 w-5'} transition-colors duration-200 ${
+                  className={`h-3.5 w-3.5 transition-colors duration-200 sm:h-4 sm:w-4 ${
                     isInWishlist
                       ? 'fill-red-500 text-red-500'
                       : 'text-slate-400 hover:text-red-400'
@@ -345,10 +345,10 @@ const ProductCard = memo(
               <div
                 className={`absolute inset-0 ${
                   isShowcaseNarrow
-                    ? 'px-2 pb-2 pt-5'
+                    ? 'px-1.5 pb-1.5 pt-4'
                     : isCompact
-                      ? 'px-4 pb-4 pt-6 sm:px-5 sm:pb-5 sm:pt-7'
-                      : 'px-4 pb-4 pt-6 sm:px-5 sm:pb-5 sm:pt-7'
+                      ? 'px-3 pb-3 pt-4 sm:px-4 sm:pb-4 sm:pt-5'
+                      : 'px-3 pb-3 pt-4 sm:px-4 sm:pb-4 sm:pt-5'
                 }`}
                 style={{
                   transform: isCompact ? undefined : 'perspective(1000px) rotateX(6deg) rotateY(-2deg)',
@@ -376,24 +376,28 @@ const ProductCard = memo(
           )}
 
           <div
-            className={`absolute z-20 flex items-center gap-1 rounded-full border border-white/70 bg-white/92 shadow-[0_12px_24px_rgba(15,23,42,0.08)] backdrop-blur ${
+            className={`absolute z-20 flex max-w-[calc(100%-0.75rem)] items-center gap-0.5 rounded-full border border-white/80 bg-white/88 shadow-[0_6px_14px_rgba(15,23,42,0.06)] backdrop-blur ${
               isShowcaseNarrow
-                ? 'bottom-1.5 right-1.5 px-2 py-0.5 text-[11px]'
+                ? 'bottom-1 right-1 px-1.5 py-0.5 text-[10px] leading-tight'
                 : isCompact
-                  ? 'bottom-3 right-3 px-4 py-2 text-sm'
-                  : 'bottom-3 right-3 px-5 py-2.5 text-base'
+                  ? 'bottom-2 right-2 px-2.5 py-1 text-xs leading-none'
+                  : 'bottom-2 right-2 px-3 py-1.5 text-sm leading-none'
             }`}
           >
             {hasDiscount && product.originalPrice != null && (
               <span
-                className={`font-medium text-slate-400 line-through ${
-                  isShowcaseNarrow ? 'text-[10px]' : 'text-xs'
+                className={`shrink-0 font-medium text-slate-400 line-through ${
+                  isShowcaseNarrow ? 'text-[9px]' : 'text-[10px] sm:text-xs'
                 }`}
               >
                 {formatPrice(product.originalPrice)} {CURRENCY}
               </span>
             )}
-            <span className={`font-black text-[#E53225] ${isShowcaseNarrow ? 'text-xs' : ''}`}>
+            <span
+              className={`shrink-0 font-black leading-none text-[#E53225] ${
+                isShowcaseNarrow ? 'text-[10px]' : 'text-xs sm:text-sm'
+              }`}
+            >
               {formatPrice(product.price)} {CURRENCY}
             </span>
           </div>
