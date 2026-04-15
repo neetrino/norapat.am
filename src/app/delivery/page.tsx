@@ -112,9 +112,6 @@ export default function DeliveryPage() {
                 <p className="text-gray-700 mb-2">
                   <strong>Հեռ.</strong> +374 77 777 174
                 </p>
-                <p className="text-gray-700">
-                  <strong>Էլ. փոստ.</strong> info@norapat.am
-                </p>
               </div>
             </section>
           </div>
