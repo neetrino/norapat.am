@@ -22,9 +22,8 @@ export function ContactPageView() {
     companyInfo.callNowPhones
   )
   const primaryPhoneHref = buildTelHref(phoneLines[0] ?? companyInfo.phone)
-  const emailAddress = contactEmail?.trim() || 'info@norapat.am'
+
   const locationAddress = c.addressLine
-  const emailHref = `mailto:${emailAddress}`
 
   const faqItems = [
     { question: c.faqPrepQ, answer: c.faqPrepA },
@@ -44,14 +43,17 @@ export function ContactPageView() {
       href: primaryPhoneHref,
       actionLabel: c.callBtn,
     },
-    {
-      icon: Mail,
-      title: c.emailTitle,
-      value: emailAddress,
-      caption: c.emailResponse,
-      href: emailHref,
-      actionLabel: c.writeBtn,
-    },
+    ...(contactEmail
+      ? [
+          {
+            icon: Mail,
+            title: c.emailTitle,
+            caption: c.emailResponse,
+            href: `mailto:${contactEmail}`,
+            actionLabel: c.writeBtn,
+          },
+        ]
+      : []),
     {
       icon: Clock,
       title: c.hoursTitle,

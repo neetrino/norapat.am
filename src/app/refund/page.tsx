@@ -174,15 +174,6 @@ export default function RefundPage() {
                     </a>
                   </p>
                 ))}
-                <p className="mb-0 text-gray-700">
-                  <strong>Էլ. փոստ.</strong>{' '}
-                  <a
-                    href={`mailto:${companyInfo.email}`}
-                    className="text-orange-600 underline-offset-2 hover:text-orange-700 hover:underline"
-                  >
-                    {companyInfo.email}
-                  </a>
-                </p>
               </div>
             </section>
           </div>

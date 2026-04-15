@@ -16,7 +16,7 @@ export const companyInfo = {
   mapEmbedQuery: MAP_EMBED_QUERY,
   phone: primaryPhone,
   callNowPhones: [primaryPhone, '+374 77 777 174'],
-  email: 'info@norapat.am',
+
   workingHours: 'Mon-Sun: 09:00 - 00:00',
   socialMedia: {
     facebook: 'https://www.facebook.com/noorapatfoodcourt/?locale=hy_AM',
