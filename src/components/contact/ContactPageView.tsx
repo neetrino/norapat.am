@@ -106,7 +106,11 @@ export function ContactPageView() {
               </p>
             </div>
 
-            <div className="grid gap-3 p-4 sm:p-5 md:grid-cols-2 xl:grid-cols-4">
+            <div
+              className={`grid gap-3 p-4 sm:p-5 md:grid-cols-2 ${
+                contactCards.length >= 4 ? 'xl:grid-cols-4' : 'xl:grid-cols-3'
+              }`}
+            >
               {contactCards.map((card) => {
                 const Icon = card.icon
                 const phoneLines =
