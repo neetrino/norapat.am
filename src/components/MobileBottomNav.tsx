@@ -23,7 +23,7 @@ export default function MobileBottomNav() {
   const { getTotalItems } = useCart()
   const { data: session, status } = useSession()
 
-  if (pathname?.startsWith('/admin')) {
+  if (pathname?.startsWith('/supersudo') || pathname?.startsWith('/admin')) {
     return null
   }
 
@@ -37,7 +37,7 @@ export default function MobileBottomNav() {
 
   const isAdmin = session?.user?.role === 'ADMIN'
   const accountItem = isAdmin
-    ? { href: '/admin', label: auth.admin, icon: LayoutDashboard }
+    ? { href: '/supersudo', label: auth.admin, icon: LayoutDashboard }
     : { href: '/profile', label: profile.label, icon: User }
 
   const navItems = session

@@ -38,7 +38,8 @@ export function useHeaderStack(): HeaderStackValue {
 
 export function HeaderStackProvider({ children }: { children: ReactNode }) {
   const pathname = usePathname()
-  const isAdmin = pathname?.startsWith('/admin') ?? false
+  const isAdmin =
+    pathname?.startsWith('/supersudo') || pathname?.startsWith('/admin') || false
   const topBarStripHeightPx = useTopContactBarStripHeightPx()
   const [topBarVisible, setTopBarVisible] = useState(true)
   const lastScrollY = useRef(0)

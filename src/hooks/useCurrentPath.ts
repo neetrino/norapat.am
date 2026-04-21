@@ -13,7 +13,7 @@ export function useCurrentPath() {
     if (path.startsWith('/contact')) return 'contact'
     if (path.startsWith('/cart')) return 'cart'
     if (path.startsWith('/profile')) return 'profile'
-    if (path.startsWith('/admin')) return 'admin'
+    if (path.startsWith('/supersudo') || path.startsWith('/admin')) return 'admin'
     if (path.startsWith('/login')) return 'login'
     if (path.startsWith('/register')) return 'register'
     return 'home'

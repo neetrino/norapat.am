@@ -189,6 +189,17 @@ export default function AdminOrdersPage() {
   }
 
   useEffect(() => {
+    if (!showModal) return
+
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+
+    return () => {
+      document.body.style.overflow = previousOverflow
+    }
+  }, [showModal])
+
+  useEffect(() => {
     fetchOrders()
   }, [fetchOrders])
 
@@ -678,8 +689,15 @@ export default function AdminOrdersPage() {
 
         {/* Պատվերի մանրամասնությամբ մոդալ պատուհան */}
         {showModal && selectedOrder && (
-          <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-            <div className="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-gray-200">
+          <div
+            className="fixed inset-0 z-50 bg-black/30 backdrop-blur-sm overflow-y-auto"
+            onClick={closeModal}
+          >
+            <div className="min-h-full flex items-start justify-center p-3 pt-6 sm:pt-8">
+              <div
+                className="bg-white rounded-2xl max-w-4xl w-full max-h-[calc(100vh-1.5rem)] overflow-y-auto shadow-2xl border border-gray-200"
+                onClick={event => event.stopPropagation()}
+              >
               <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between rounded-t-2xl">
                 <h2 className="text-xl font-semibold text-gray-900">
                   Պատվեր #{selectedOrder.id.slice(-8)}
@@ -761,28 +779,30 @@ export default function AdminOrdersPage() {
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     <div>
                       <p className="text-sm text-gray-600 mb-1">Անուն</p>
-                      <p className="font-medium text-gray-900">{selectedOrder.user.name}</p>
+                      <p className="font-medium text-gray-900">
+                        {selectedOrder.user?.name || selectedOrder.name || 'Հյուր'}
+                      </p>
                     </div>
                     <div>
                       <p className="text-sm text-gray-600 mb-1">Էլ. փոստ</p>
-                      <p className="font-medium text-gray-900">{selectedOrder.user.email}</p>
+                      <p className="font-medium text-gray-900">{selectedOrder.user?.email || '—'}</p>
                     </div>
-                    {selectedOrder.user.phone && (
+                    {(selectedOrder.user?.phone || selectedOrder.phone) && (
                       <div>
                         <p className="text-sm text-gray-600 mb-1">Հեռախոս</p>
                         <p className="font-medium text-gray-900 flex items-center gap-1">
                           <Phone className="h-4 w-4" />
-                          {selectedOrder.user.phone}
+                          {selectedOrder.user?.phone || selectedOrder.phone}
                         </p>
                       </div>
                     )}
                     <div>
                       <p className="text-sm text-gray-600 mb-1">Առաքման հասցե</p>
-                      <p className="font-medium text-gray-900">{selectedOrder.deliveryAddress}</p>
+                      <p className="font-medium text-gray-900">{selectedOrder.deliveryAddress || '—'}</p>
                     </div>
                     <div>
                       <p className="text-sm text-gray-600 mb-1">Առաքման ժամանակ</p>
-                      <p className="font-medium text-gray-900">{selectedOrder.deliveryTime}</p>
+                      <p className="font-medium text-gray-900">{selectedOrder.deliveryTime || '—'}</p>
                     </div>
                   </div>
                 </div>
@@ -839,6 +859,7 @@ export default function AdminOrdersPage() {
               </div>
             </div>
           </div>
+        </div>
         )}
     </div>
   )

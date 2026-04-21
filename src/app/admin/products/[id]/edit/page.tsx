@@ -196,7 +196,7 @@ export default function EditProductPage({ params }: EditProductPageProps) {
       }
 
       // Վերաուղղում ենք ապրանքների էջ
-      router.push('/admin/products')
+      router.push('/supersudo/products')
     } catch (error) {
       console.error('Error updating product:', error)
       setError(error instanceof Error ? error.message : 'Սխալ ապրանքը թարմացնելիս')
@@ -222,7 +222,7 @@ export default function EditProductPage({ params }: EditProductPageProps) {
       }
 
       // Վերաուղղում ենք ապրանքների էջ
-      router.push('/admin/products')
+      router.push('/supersudo/products')
     } catch (error) {
       console.error('Error deleting product:', error)
       setError(error instanceof Error ? error.message : 'Սխալ ապրանքը ջնջելիս')
@@ -249,7 +249,7 @@ export default function EditProductPage({ params }: EditProductPageProps) {
           <X className="h-12 w-12 text-red-500 mx-auto mb-4" />
           <h2 className="text-xl font-semibold text-gray-900 mb-2">Ապրանքը չի գտնվել</h2>
           <p className="text-gray-600 mb-4">Հարցված ապրանքը գոյություն չունի</p>
-          <Link href="/admin/products">
+          <Link href="/supersudo/products">
             <Button>Վերադառնալ ապրանքներին</Button>
           </Link>
         </div>
@@ -458,7 +458,7 @@ export default function EditProductPage({ params }: EditProductPageProps) {
                 </Button>
 
                 <div className="flex items-center gap-4">
-                  <Link href="/admin/products">
+                  <Link href="/supersudo/products">
                     <Button type="button" variant="outline">
                       Չեղարկել
                     </Button>

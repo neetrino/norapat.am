@@ -47,7 +47,7 @@ export default function FloatingCallWidget() {
     return () => document.removeEventListener('pointerdown', onDocPointerDown)
   }, [isOpen])
 
-  if (pathname?.startsWith('/admin')) {
+  if (pathname?.startsWith('/supersudo') || pathname?.startsWith('/admin')) {
     return null
   }
 

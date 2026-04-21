@@ -23,7 +23,7 @@ export function TopContactBar() {
   const { topBarVisible, topBarStripHeightPx } = useHeaderStack()
   const { contactPhone, address } = usePublicSiteSettings()
 
-  if (pathname?.startsWith('/admin')) {
+  if (pathname?.startsWith('/supersudo') || pathname?.startsWith('/admin')) {
     return null
   }
 

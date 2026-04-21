@@ -127,7 +127,7 @@ export default function NewProductPage() {
       }
 
       // Վերաուղղում ենք ապրանքների էջ
-      router.push('/admin/products')
+      router.push('/supersudo/products')
     } catch (error) {
       console.error('Error creating product:', error)
       setError(error instanceof Error ? error.message : 'Սխալ ապրանք ստեղծելիս')
@@ -147,7 +147,7 @@ export default function NewProductPage() {
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center gap-4 mb-4">
-            <Link href="/admin/products">
+            <Link href="/supersudo/products">
               <Button variant="outline" size="sm" className="flex items-center gap-2">
                 <ArrowLeft className="h-4 w-4" />
                 Վերադարձ
@@ -337,7 +337,7 @@ export default function NewProductPage() {
 
               {/* Կոճակներ */}
               <div className="flex items-center justify-end gap-4 pt-6 border-t border-gray-300">
-                <Link href="/admin/products">
+                <Link href="/supersudo/products">
                   <Button type="button" variant="outline">
                     Չեղարկել
                   </Button>

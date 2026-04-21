@@ -178,7 +178,7 @@ export default function AdminDiscountsPage() {
 
         {/* Header */}
         <div className="flex items-center gap-4 mb-8">
-          <Link href="/admin" className="flex items-center text-gray-500 hover:text-orange-500 transition-colors">
+          <Link href="/supersudo" className="flex items-center text-gray-500 hover:text-orange-500 transition-colors">
             <ArrowLeft className="h-5 w-5 mr-1" />
             Վահանակ
           </Link>

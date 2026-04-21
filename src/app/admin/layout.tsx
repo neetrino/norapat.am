@@ -21,14 +21,14 @@ import { useState, useEffect } from 'react'
 
 const SIDEBAR_NAV_ITEMS = [
   { href: '/', label: 'Գլխավոր էջ', icon: Home, external: false },
-  { href: '/admin', label: 'Վահանակ', icon: LayoutDashboard },
-  { href: '/admin/products', label: 'Ապրանքներ', icon: Package },
-  { href: '/admin/orders', label: 'Պատվերներ', icon: ShoppingCart },
-  { href: '/admin/categories', label: 'Կատեգորիաներ', icon: Tag },
-  { href: '/admin/discounts', label: 'Զեղչեր', icon: BadgePercent },
-  { href: '/admin/promo', label: 'Պրոմո կոդեր', icon: Percent },
-  { href: '/admin/users', label: 'Օգտատերեր', icon: Users },
-  { href: '/admin/analytics', label: 'Վերլուծություն', icon: BarChart2 },
+  { href: '/supersudo', label: 'Վահանակ', icon: LayoutDashboard },
+  { href: '/supersudo/products', label: 'Ապրանքներ', icon: Package },
+  { href: '/supersudo/orders', label: 'Պատվերներ', icon: ShoppingCart },
+  { href: '/supersudo/categories', label: 'Կատեգորիաներ', icon: Tag },
+  { href: '/supersudo/discounts', label: 'Զեղչեր', icon: BadgePercent },
+  { href: '/supersudo/promo', label: 'Պրոմո կոդեր', icon: Percent },
+  { href: '/supersudo/users', label: 'Օգտատերեր', icon: Users },
+  { href: '/supersudo/analytics', label: 'Վերլուծություն', icon: BarChart2 },
 ]
 
 export default function AdminLayout({
@@ -73,7 +73,7 @@ export default function AdminLayout({
             >
               {sidebarOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
             </button>
-            <Link href="/admin" className="font-bold text-gray-900 text-lg">
+            <Link href="/supersudo" className="font-bold text-gray-900 text-lg">
               Ադմին վահանակ
             </Link>
           </div>
@@ -108,9 +108,9 @@ export default function AdminLayout({
       >
         <nav className="p-3 space-y-0.5">
           {SIDEBAR_NAV_ITEMS.map(({ href, label, icon: Icon, external }) => {
-            const isAdminLink = href.startsWith('/admin')
+            const isAdminLink = href.startsWith('/supersudo')
             const isActive =
-              isAdminLink && (pathname === href || (href !== '/admin' && pathname.startsWith(href)))
+              isAdminLink && (pathname === href || (href !== '/supersudo' && pathname.startsWith(href)))
 
             return (
               <Link
