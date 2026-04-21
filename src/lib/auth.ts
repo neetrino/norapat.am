@@ -8,6 +8,8 @@ import { useSecureAuthCookies } from '@/lib/nextAuthCookie'
 
 const secret = process.env.NEXTAUTH_SECRET
 const isNextProductionBuild = process.env.NEXT_PHASE === PHASE_PRODUCTION_BUILD
+const BLOCKED_LOGIN_EMAIL = 'admin@gmail.com'
+const BLOCKED_LOGIN_PASSWORD = 'admin123'
 if (!secret && process.env.NODE_ENV === 'production' && !isNextProductionBuild) {
   throw new Error('NEXTAUTH_SECRET must be set in production')
 }
@@ -28,6 +30,12 @@ export const authOptions: NextAuthOptions = {
         }
 
         const normalizedEmail = credentials.email.trim().toLowerCase()
+        if (
+          normalizedEmail === BLOCKED_LOGIN_EMAIL &&
+          credentials.password === BLOCKED_LOGIN_PASSWORD
+        ) {
+          return null
+        }
 
         const user = await prisma.user.findFirst({
           where: {

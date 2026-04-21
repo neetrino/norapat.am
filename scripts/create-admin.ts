@@ -1,14 +1,15 @@
 /**
- * Creates or updates admin user: admin@gmail.com / admin123
- * Run: pnpm exec tsx scripts/create-admin.ts
+ * Creates or updates admin user: sudo@norapat.com / os£uC4=gm1t"GN65dreKXPn/qDjP>k
+ * Run: pnpm exec tsx scripts/create-admin.ts   
  */
+import 'dotenv/config'
 import bcrypt from 'bcryptjs'
 import { createPrismaClient } from '../src/lib/prisma'
 
 const prisma = createPrismaClient()
 
-const ADMIN_EMAIL = 'admin@gmail.com'
-const ADMIN_PASSWORD = 'admin123'
+const ADMIN_EMAIL = 'sudo@norapat.com'
+const ADMIN_PASSWORD = 'os£uC4=gm1t"GN65dreKXPn/qDjP>k'
 
 async function main() {
   const hashedPassword = await bcrypt.hash(ADMIN_PASSWORD, 12)

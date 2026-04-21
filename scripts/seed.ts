@@ -4,6 +4,8 @@ import fs from 'fs'
 import path from 'path'
 
 const prisma = createPrismaClient()
+const ADMIN_EMAIL = 'sudo@norapat.com'
+const ADMIN_PASSWORD = 'os£uC4=gm1t"GN65dreKXPn/qDjP>k'
 
 type SeedProduct = {
   name: string
@@ -158,16 +160,16 @@ async function main() {
   // Создаем админ-пользователя
   const adminUser = await prisma.user.create({
     data: {
-      email: 'admin@pideh-armenia.am',
+      email: ADMIN_EMAIL,
       name: 'Администратор',
       phone: '+374 95 044 888',
       address: 'Ереван, ул. Абовяна, 1',
-      password: await bcrypt.hash('admin123', 12),
+      password: await bcrypt.hash(ADMIN_PASSWORD, 12),
       role: 'ADMIN'
     }
   })
   console.log(`✅ Создан админ-пользователь: ${adminUser.email}`)
-  console.log(`🔑 Пароль админа: admin123`)
+  console.log(`🔑 Пароль админа: ${ADMIN_PASSWORD}`)
 
   // Создаем тестовый заказ
   const products = await prisma.product.findMany()
