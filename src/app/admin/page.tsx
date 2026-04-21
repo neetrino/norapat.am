@@ -259,7 +259,7 @@ export default function AdminDashboard() {
             <h2 className="text-xl font-semibold text-gray-900 mb-6">Արագ գործողություններ</h2>
             <div className="space-y-4">
               <Link 
-                href="/admin/products" 
+                href="/supersudo/products" 
                 className="flex items-center p-4 bg-orange-50 rounded-xl hover:bg-orange-100 transition-colors"
               >
                 <Package className="h-6 w-6 text-orange-500 mr-4" />
@@ -270,7 +270,7 @@ export default function AdminDashboard() {
               </Link>
               
               <Link 
-                href="/admin/orders" 
+                href="/supersudo/orders" 
                 className="flex items-center p-4 bg-blue-50 rounded-xl hover:bg-blue-100 transition-colors"
               >
                 <ShoppingCart className="h-6 w-6 text-blue-500 mr-4" />
@@ -281,7 +281,7 @@ export default function AdminDashboard() {
               </Link>
               
               <Link 
-                href="/admin/categories" 
+                href="/supersudo/categories" 
                 className="flex items-center p-4 bg-green-50 rounded-xl hover:bg-green-100 transition-colors"
               >
                 <Tag className="h-6 w-6 text-green-500 mr-4" />
@@ -292,7 +292,7 @@ export default function AdminDashboard() {
               </Link>
 
               <Link 
-                href="/admin/promo" 
+                href="/supersudo/promo" 
                 className="flex items-center p-4 bg-amber-50 rounded-xl hover:bg-amber-100 transition-colors"
               >
                 <Tag className="h-6 w-6 text-amber-500 mr-4" />

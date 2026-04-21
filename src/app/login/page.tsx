@@ -40,7 +40,7 @@ export default function LoginPage() {
       } else {
         const session = await getSession()
         if (session?.user?.role === 'ADMIN') {
-          window.location.href = '/admin'
+          window.location.href = '/supersudo'
         } else {
           window.location.href = '/'
         }

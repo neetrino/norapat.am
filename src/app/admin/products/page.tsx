@@ -503,7 +503,7 @@ export default function AdminProducts() {
             <p className="text-sm text-gray-500 mt-0.5">Ապրանքների կառավարում</p>
           </div>
           <Link
-            href="/admin/products/new"
+            href="/supersudo/products/new"
             className="inline-flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white text-sm font-medium px-4 py-2.5 rounded-xl transition-colors shadow-sm shadow-orange-200"
           >
             <Plus className="h-4 w-4" />
@@ -826,7 +826,7 @@ export default function AdminProducts() {
                           />
                         </button>
                         <Link
-                          href={`/admin/products/${product.id}/edit`}
+                          href={`/supersudo/products/${product.id}/edit`}
                           title="Խմբագրել"
                           className="p-2 rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 hover:text-gray-800 transition-all"
                         >

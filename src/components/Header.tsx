@@ -10,7 +10,7 @@ export default function Header() {
   const pathname = usePathname()
   const branding = usePublicSiteSettings()
 
-  if (pathname?.startsWith('/admin')) {
+  if (pathname?.startsWith('/supersudo') || pathname?.startsWith('/admin')) {
     return null
   }
 

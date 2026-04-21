@@ -160,17 +160,17 @@ export default function DesktopHeader({ branding }: DesktopHeaderProps) {
                 {/* Admin: один элемент — кнопка Админ; обычный пользователь — профиль */}
                 {session.user?.role === 'ADMIN' ? (
                   <Link
-                    href="/admin"
+                    href="/supersudo"
                     className={`
                       relative px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-300
-                      ${isActive('/admin')
+                      ${isActive('/supersudo')
                         ? 'text-orange-600 bg-orange-100 shadow-md'
                         : 'bg-orange-100 text-orange-600 hover:bg-orange-200'
                       }
                     `}
                   >
                     {auth.admin}
-                    {isActive('/admin') && (
+                    {isActive('/supersudo') && (
                       <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-6 h-1 bg-orange-500 rounded-full" />
                     )}
                   </Link>
