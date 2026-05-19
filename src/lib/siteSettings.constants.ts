@@ -1,6 +1,9 @@
 /** Default branding asset when `settings.logo` is empty */
 export const DEFAULT_PUBLIC_LOGO_URL = '/logo.png'
 
+/** Fallback when `settings.contactEmail` is empty */
+export const DEFAULT_PUBLIC_CONTACT_EMAIL = 'norapatfoodcourt@gmail.com'
+
 /** Keys stored in `settings` table for the public site / admin form */
 export const SITE_SETTING_KEYS = [
   'logo',
@@ -18,6 +21,7 @@ export const PUBLIC_SITE_SETTING_KEYS = [
   'logo',
   'siteName',
   'contactPhone',
+  'contactEmail',
   'address',
 ] as const
 

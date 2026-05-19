@@ -58,7 +58,8 @@ export default function Footer() {
     branding.contactPhone,
     companyInfo.callNowPhones
   )
-  const footerEmail = branding.contactEmail?.trim() || null
+  const footerEmail =
+    branding.contactEmail?.trim() || companyInfo.email
   const homeAriaLabel = branding.siteName?.trim() || nav.siteBrand
 
   return (
@@ -205,14 +206,12 @@ export default function Footer() {
                       ))}
                     </div>
                   </div>
-                  {footerEmail ? (
-                    <div className="flex gap-1.5 sm:gap-2">
-                      <Mail className={CONTACT_ICON_BOX} aria-hidden />
-                      <a href={`mailto:${footerEmail}`} className={LINK_BASE}>
-                        {footerEmail}
-                      </a>
-                    </div>
-                  ) : null}
+                  <div className="flex gap-1.5 sm:gap-2">
+                    <Mail className={CONTACT_ICON_BOX} aria-hidden />
+                    <a href={`mailto:${footerEmail}`} className={LINK_BASE}>
+                      {footerEmail}
+                    </a>
+                  </div>
                   <div className="border-t border-stone-200/60 pt-2 sm:pt-2.5">
                     <div className="flex gap-1.5 sm:gap-2">
                       <MapPin className={CONTACT_ICON_BOX} aria-hidden />

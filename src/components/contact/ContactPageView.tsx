@@ -14,7 +14,8 @@ import { ChevronDown, Clock, Mail, MapPin, Phone } from 'lucide-react'
 export function ContactPageView() {
   const { t } = useI18n()
   const c = t.contactPage
-  const { contactPhone, contactEmail } = usePublicSiteSettings()
+  const { contactPhone } = usePublicSiteSettings()
+  const contactEmail = companyInfo.email
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null)
 
   const phoneLines = buildContactPhoneLines(
@@ -43,17 +44,14 @@ export function ContactPageView() {
       href: primaryPhoneHref,
       actionLabel: c.callBtn,
     },
-    ...(contactEmail
-      ? [
-          {
-            icon: Mail,
-            title: c.emailTitle,
-            caption: c.emailResponse,
-            href: `mailto:${contactEmail}`,
-            actionLabel: c.writeBtn,
-          },
-        ]
-      : []),
+    {
+      icon: Mail,
+      title: c.emailTitle,
+      value: contactEmail,
+      caption: c.emailResponse,
+      href: `mailto:${contactEmail}`,
+      actionLabel: c.writeBtn,
+    },
     {
       icon: Clock,
       title: c.hoursTitle,

@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { companyInfo } from '@/constants/company'
 import {
   DEFAULT_PUBLIC_LOGO_URL,
   PUBLIC_SITE_SETTING_KEYS,
@@ -34,7 +35,7 @@ export async function GET() {
         logo,
         siteName: map.siteName ?? '',
         contactPhone: map.contactPhone ?? '',
-        contactEmail: map.contactEmail ?? '',
+        contactEmail: map.contactEmail?.trim() || companyInfo.email,
         address: map.address ?? '',
       },
       { headers: { 'Cache-Control': CACHE_CONTROL } }
@@ -45,7 +46,7 @@ export async function GET() {
         logo: DEFAULT_PUBLIC_LOGO_URL,
         siteName: '',
         contactPhone: '',
-        contactEmail: '',
+        contactEmail: companyInfo.email,
         address: '',
       },
       { headers: { 'Cache-Control': CACHE_CONTROL } }

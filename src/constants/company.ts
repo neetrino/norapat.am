@@ -2,6 +2,9 @@
 /** Primary line (E.164 +37441440003) — same number for WhatsApp Business chat links. */
 const primaryPhone = '+374 41 440 003'
 
+/** Public contact inbox — shown on Contact page and site footer. */
+const contactEmail = 'norapatfoodcourt@gmail.com'
+
 /**
  * Google Maps embed `q` — business name + address so the iframe targets the same
  * POI as the Maps listing (avoids a street-level geocode pin offset from the venue).
@@ -15,6 +18,7 @@ export const companyInfo = {
   address: '5-րդ փողոց, Նորապատ գյուղ, Արմավիր, Հայաստան',
   mapEmbedQuery: MAP_EMBED_QUERY,
   phone: primaryPhone,
+  email: contactEmail,
   callNowPhones: [primaryPhone, '+374 77 777 174'],
 
   workingHours: 'Mon-Sun: 09:00 - 00:00',
