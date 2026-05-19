@@ -12,7 +12,7 @@ async function initSettings() {
       { key: 'siteName', value: 'Pideh Armenia' },
       { key: 'siteDescription', value: 'Мини-пиццы в виде аджарских хачапури. Свежие ингредиенты, быстрая доставка!' },
       { key: 'contactPhone', value: '+374 XX XXX XXX' },
-      { key: 'contactEmail', value: 'info@pideh.am' },
+      { key: 'contactEmail', value: 'norapatfoodcourt@gmail.com' },
       { key: 'address', value: 'Ереван, Армения' }
     ]
 

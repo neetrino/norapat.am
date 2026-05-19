@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { companyInfo } from '@/constants/company'
 import { DEFAULT_PUBLIC_LOGO_URL } from '@/lib/siteSettings.constants'
 
 export interface PublicSiteSettingsState {
@@ -45,7 +46,7 @@ function fetchBrandingOnce(): Promise<BrandingData> {
       const contactEmail =
         typeof data.contactEmail === 'string' && data.contactEmail.trim()
           ? data.contactEmail.trim()
-          : null
+          : companyInfo.email
       const address =
         typeof data.address === 'string' && data.address.trim()
           ? data.address.trim()
@@ -65,7 +66,7 @@ function fetchBrandingOnce(): Promise<BrandingData> {
         logo: DEFAULT_PUBLIC_LOGO_URL,
         siteName: null,
         contactPhone: null,
-        contactEmail: null,
+        contactEmail: companyInfo.email,
         address: null,
       }
       shared = result
@@ -82,7 +83,7 @@ export function usePublicSiteSettings(): PublicSiteSettingsState {
     logo: shared?.logo ?? null,
     siteName: shared?.siteName ?? null,
     contactPhone: shared?.contactPhone ?? null,
-    contactEmail: shared?.contactEmail ?? null,
+    contactEmail: shared?.contactEmail?.trim() || companyInfo.email,
     address: shared?.address ?? null,
     isLoading: shared === null,
   }))
