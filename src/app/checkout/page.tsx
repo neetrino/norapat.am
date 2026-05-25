@@ -492,9 +492,7 @@ export default function CheckoutPage() {
                 }`}>
                   <input type="radio" name="paymentMethod" value="cash" checked={formData.paymentMethod === 'cash'} onChange={handleInputChange} className="sr-only" />
                   <div className="w-12 h-12 bg-white border border-gray-100 rounded-xl flex items-center justify-center mr-4 shrink-0 shadow-sm">
-                    <svg className="h-6 w-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
-                    </svg>
+                    <Image src="/payment-cash.png" alt={cp.cash} width={40} height={40} className="h-8 w-8 object-contain" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <h3 className="text-sm font-semibold text-gray-900">{cp.cash}</h3>
@@ -738,9 +736,7 @@ export default function CheckoutPage() {
                       }`}>
                         <input type="radio" name="paymentMethod" value="cash" checked={formData.paymentMethod === 'cash'} onChange={handleInputChange} className="sr-only" />
                         <div className="w-14 h-14 bg-white border border-gray-100 rounded-xl flex items-center justify-center mr-5 shrink-0 shadow-sm">
-                          <svg className="h-7 w-7 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
-                          </svg>
+                          <Image src="/payment-cash.png" alt={cp.cash} width={48} height={48} className="h-9 w-9 object-contain" />
                         </div>
                         <div className="flex-1">
                           <h3 className="text-sm font-semibold text-gray-900">{cp.cash}</h3>
