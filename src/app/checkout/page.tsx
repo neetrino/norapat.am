@@ -27,6 +27,51 @@ function getArcaPageView(): 'MOBILE' | 'DESKTOP' {
   return window.innerWidth < 768 ? 'MOBILE' : 'DESKTOP'
 }
 
+const ARCA_CHECKOUT_LOGO_SLOT = {
+  compact: 'h-8 w-10',
+  default: 'h-9 w-11',
+} as const
+
+const ARCA_CHECKOUT_LOGO_IMAGE = { width: 40, height: 24 } as const
+
+const ARCA_CHECKOUT_LOGOS = [
+  { src: '/arca-logo.png', alt: 'ArCa' },
+  { src: '/payment-visa.png', alt: 'Visa' },
+  { src: '/payment-mastercard.png', alt: 'Mastercard' },
+] as const
+
+type ArcaCheckoutLogosProps = {
+  size: 'compact' | 'default'
+  className?: string
+}
+
+function ArcaCheckoutLogos({ size, className = '' }: ArcaCheckoutLogosProps) {
+  const slotClass = ARCA_CHECKOUT_LOGO_SLOT[size]
+  const gap = size === 'compact' ? 'gap-1.5' : 'gap-2'
+  return (
+    <div
+      className={`flex items-center ${gap} shrink-0 ${className}`.trim()}
+      role="img"
+      aria-label="ArCa, Visa, Mastercard"
+    >
+      {ARCA_CHECKOUT_LOGOS.map((logo) => (
+        <span
+          key={logo.src}
+          className={`flex shrink-0 items-center justify-center ${slotClass}`}
+        >
+          <Image
+            src={logo.src}
+            alt={logo.alt}
+            width={ARCA_CHECKOUT_LOGO_IMAGE.width}
+            height={ARCA_CHECKOUT_LOGO_IMAGE.height}
+            className="max-h-full max-w-full object-contain"
+          />
+        </span>
+      ))}
+    </div>
+  )
+}
+
 function postFormToIdram(
   formAction: string,
   formFields: Record<string, string>
@@ -480,9 +525,7 @@ export default function CheckoutPage() {
                     : 'border-gray-100 bg-white hover:border-gray-200'
                 }`}>
                   <input type="radio" name="paymentMethod" value="arca" checked={formData.paymentMethod === 'arca'} onChange={handleInputChange} className="sr-only" />
-                  <div className="w-12 h-12 bg-white border border-gray-100 rounded-xl flex items-center justify-center mr-4 shrink-0 shadow-sm">
-                    <Image src="/arca-logo.png" alt="Arca" width={44} height={20} className="object-contain" />
-                  </div>
+                  <ArcaCheckoutLogos size="compact" className="mr-4" />
                   <div className="flex-1 min-w-0">
                     <h3 className="text-sm font-semibold text-gray-900">{cp.arca}</h3>
                     <p className="text-xs text-gray-500 mt-0.5">{cp.arcaDesc}</p>
@@ -728,9 +771,7 @@ export default function CheckoutPage() {
                           : 'border-gray-100 bg-white hover:border-gray-200'
                       }`}>
                         <input type="radio" name="paymentMethod" value="arca" checked={formData.paymentMethod === 'arca'} onChange={handleInputChange} className="sr-only" />
-                        <div className="w-14 h-14 bg-white border border-gray-100 rounded-xl flex items-center justify-center mr-5 shrink-0 shadow-sm">
-                          <Image src="/arca-logo.png" alt="Arca" width={52} height={22} className="object-contain" />
-                        </div>
+                        <ArcaCheckoutLogos size="default" className="mr-5" />
                         <div className="flex-1">
                           <h3 className="text-sm font-semibold text-gray-900">{cp.arca}</h3>
                           <p className="text-sm text-gray-500 mt-0.5">{cp.arcaDesc}</p>
