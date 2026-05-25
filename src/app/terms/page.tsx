@@ -263,48 +263,58 @@ export default function TermsPage() {
             </section>
 
             <section className="mb-8">
-              <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-4">
-                10. 3D Secure և գործարքների անվտանգություն
+              <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-6 text-center">
+                Պայմանագիր-օֆերտա
               </h2>
-              <p className="text-gray-700 mb-4">
-                Բոլոր գործարքներն իրականացվում են բացառապես 3D Secure համակարգի
-                միջոցով։ Գործարք կատարող քարտապանի քարտի տվյալները պաշտպանված են։
-              </p>
-            </section>
 
-            <section className="mb-8">
-              <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-4">
-                11. Արժույթի փոխարկում
-              </h2>
-              <p className="text-gray-700 mb-4">
-                Եթե Քարտապանի Քարտի արժույթը չի համապատասխանում գործարքի արժույթի
-                հետ, փոխարկումը իրականացվում է համաձայն համապատասխան
-                վճարահաշվարկային համակարգի և Քարտը թողարկող Բանկի կողմից
-                սահմանված կանոնների։
-              </p>
-            </section>
+              <div className="space-y-8">
+                <div>
+                  <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4">
+                    1. 3D Secure և գործարքների անվտանգություն
+                  </h3>
+                  <p className="text-gray-700 mb-4">
+                    Բոլոր գործարքներն իրականացվում են բացառապես 3D Secure
+                    համակարգի միջոցով։ Գործարք կատարող քարտապանի քարտի
+                    տվյալները պաշտպանված են։
+                  </p>
+                </div>
 
-            <section className="mb-8">
-              <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-4">
-                12. Քարտային տվյալների պաշտպանություն
-              </h2>
-              <p className="text-gray-700 mb-4">
-                Հաճախորդի քարտային տվյալները պաշտպանված են։ Կայքը չի պահպանում
-                բանկային քարտի համարը, CVV կոդը կամ այլ գաղտնի տվյալներ։
-                Վճարումը կատարվում է անվտանգ բանկային/վճարային համակարգի
-                միջոցով։
-              </p>
-            </section>
+                <div>
+                  <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4">
+                    2. Արժույթի փոխարկում
+                  </h3>
+                  <p className="text-gray-700 mb-4">
+                    Եթե Քարտապանի Քարտի արժույթը չի համապատասխանում գործարքի
+                    արժույթի հետ, փոխարկումը իրականացվում է համաձայն
+                    համապատասխան վճարահաշվարկային համակարգի և Քարտը թողարկող
+                    Բանկի կողմից սահմանված կանոնների։
+                  </p>
+                </div>
 
-            <section className="mb-8">
-              <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-4">
-                13. Վճարումների մշակում
-              </h2>
-              <p className="text-gray-700 mb-4">
-                Վճարումները կատարվում են անվտանգ վճարային համակարգի միջոցով։
-                Քարտային տվյալները չեն պահպանվում կայքում և մշակվում են միայն
-                բանկի կամ վճարային համակարգի անվտանգ էջում։
-              </p>
+                <div>
+                  <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4">
+                    3. Քարտային տվյալների պաշտպանություն
+                  </h3>
+                  <p className="text-gray-700 mb-4">
+                    Հաճախորդի քարտային տվյալները պաշտպանված են։ Կայքը չի
+                    պահպանում բանկային քարտի համարը, CVV կոդը կամ այլ գաղտնի
+                    տվյալներ։ Վճարումը կատարվում է անվտանգ
+                    բանկային/վճարային համակարգի միջոցով։
+                  </p>
+                </div>
+
+                <div>
+                  <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4">
+                    4. Վճարումների մշակում
+                  </h3>
+                  <p className="text-gray-700 mb-4">
+                    Վճարումները կատարվում են անվտանգ վճարային համակարգի
+                    միջոցով։ Քարտային տվյալները չեն պահպանվում կայքում և
+                    մշակվում են միայն բանկի կամ վճարային համակարգի անվտանգ
+                    էջում։
+                  </p>
+                </div>
+              </div>
             </section>
           </div>
         </div>
