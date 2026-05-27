@@ -3,9 +3,9 @@ import Link from 'next/link'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Օգտագործման պայմաններ | norapat.am',
+  title: 'Պայմանագիր-օֆերտա | norapat.am',
   description:
-    'norapat.am կայքի օգտագործման պայմանները — ընդհանուր դրույթներ, պատասխանատվություն, մտավոր սեփականություն և վեճերի կարգավորում։',
+    'norapat.am կայքի պայմանագիր-օֆերտա — ընդհանուր դրույթներ, պատասխանատվություն, մտավոր սեփականություն և վեճերի կարգավորում։',
 }
 
 export default function TermsPage() {
@@ -16,9 +16,8 @@ export default function TermsPage() {
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-16">
         <div className="px-4 pb-4 pt-6 sm:px-8 sm:pb-8 sm:pt-10 mb-20 lg:mb-16">
           <header className="mb-6 text-center">
-            <h1 className="inline-block text-xl sm:text-2xl font-semibold tracking-tight text-slate-900 pb-2.5 border-b-2 border-orange-500 max-w-full">
-              <span className="block leading-snug">Օգտագործման</span>
-              <span className="block leading-snug">Պայմաններ</span>
+            <h1 className="inline-block text-xl sm:text-2xl font-semibold tracking-tight text-slate-900 pb-2.5 border-b-2 border-orange-500 max-w-full leading-snug">
+              Պայմանագիր-օֆերտա
             </h1>
           </header>
 
@@ -263,10 +262,6 @@ export default function TermsPage() {
             </section>
 
             <section className="mb-8">
-              <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-6 text-center">
-                Պայմանագիր-օֆերտա
-              </h2>
-
               <div className="space-y-8">
                 <div>
                   <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4">
