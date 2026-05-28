@@ -4,13 +4,18 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
-import { ArrowLeft, MapPin, Clock, CreditCard, Phone, User } from 'lucide-react'
+import { ArrowLeft, MapPin, CreditCard, Phone, User } from 'lucide-react'
 import { useCart } from '@/hooks/useCart'
 import { useSession } from 'next-auth/react'
 import Footer from '@/components/Footer'
 import { useI18n } from '@/i18n/I18nContext'
 import type { AppLocale } from '@/i18n/types'
 import { getProductDisplayName } from '@/i18n/getProductDisplayName'
+
+interface DeliveryRate {
+  city: string
+  fee: number
+}
  
 function mapLocaleToIdramLanguage(locale: AppLocale): 'EN' | 'AM' | 'RU' {
   if (locale === 'hy') return 'AM'
@@ -102,8 +107,8 @@ export default function CheckoutPage() {
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
+    city: '',
     address: '',
-    deliveryTime: 'asap',
     paymentMethod: 'cash',
     notes: ''
   })
@@ -113,6 +118,7 @@ export default function CheckoutPage() {
   const [promoDiscount, setPromoDiscount] = useState(0)
   const [promoMessage, setPromoMessage] = useState('')
   const [promoApplying, setPromoApplying] = useState(false)
+  const [deliveryRates, setDeliveryRates] = useState<DeliveryRate[]>([])
 
   // Redirect if cart is empty and validate cart
   useEffect(() => {
@@ -150,6 +156,35 @@ export default function CheckoutPage() {
 
     loadUserProfile()
   }, [session, status])
+
+  useEffect(() => {
+    const fetchDeliveryRates = async () => {
+      try {
+        const response = await fetch('/api/delivery')
+        if (!response.ok) {
+          return
+        }
+
+        const data = (await response.json()) as { rates?: DeliveryRate[] }
+        const rates = data.rates ?? []
+        setDeliveryRates(rates)
+        setFormData((prev) => {
+          if (!rates.length || prev.city) {
+            return prev
+          }
+
+          return {
+            ...prev,
+            city: rates[0].city,
+          }
+        })
+      } catch {
+        setDeliveryRates([])
+      }
+    }
+
+    void fetchDeliveryRates()
+  }, [])
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target
@@ -193,7 +228,10 @@ export default function CheckoutPage() {
     }
   }
 
-  const finalTotal = Math.max(0, getTotalPrice() - promoDiscount)
+  const productsSubtotal = Math.max(0, getTotalPrice() - promoDiscount)
+  const selectedDeliveryRate = deliveryRates.find((rate) => rate.city === formData.city)
+  const deliveryFee = selectedDeliveryRate?.fee ?? 0
+  const finalTotal = productsSubtotal + deliveryFee
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {}
@@ -206,6 +244,10 @@ export default function CheckoutPage() {
       newErrors.phone = cp.errorPhone
     } else if (!/^\+?[0-9\s\-\(\)]{10,}$/.test(formData.phone)) {
       newErrors.phone = cp.errorPhoneFormat
+    }
+
+    if (deliveryRates.length > 0 && !formData.city) {
+      newErrors.city = cp.errorCity
     }
 
     if (!formData.address.trim()) {
@@ -243,6 +285,8 @@ export default function CheckoutPage() {
 
     const orderPayload = {
       ...formData,
+      city: formData.city || undefined,
+      deliveryFee,
       email: session?.user?.email,
       items: items.map(item => ({
         productId: item.product.id,
@@ -432,51 +476,53 @@ export default function CheckoutPage() {
                   {errors.phone && <p className="text-red-500 text-sm mt-1">{errors.phone}</p>}
                 </div>
 
-                {/* Address */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    <MapPin className="inline h-4 w-4 mr-1" />
-                    {cp.address}
-                  </label>
-                  <textarea
-                    name="address"
-                    value={formData.address}
-                    onChange={handleInputChange}
-                    rows={3}
-                    className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors resize-none text-gray-900 ${
-                      errors.address ? 'border-red-500' : 'border-gray-300'
-                    }`}
-                    placeholder={cp.addressPlaceholder}
-                  />
-                  {errors.address && <p className="text-red-500 text-sm mt-1">{errors.address}</p>}
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  {/* Address */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <MapPin className="inline h-4 w-4 mr-1" />
+                      {cp.address}
+                    </label>
+                    <input
+                      type="text"
+                      name="address"
+                      value={formData.address}
+                      onChange={handleInputChange}
+                      className={`h-11 w-full px-4 border-2 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors text-gray-900 ${
+                        errors.address ? 'border-red-500' : 'border-gray-300'
+                      }`}
+                      placeholder={cp.addressPlaceholder}
+                    />
+                    {errors.address && <p className="text-red-500 text-sm mt-1">{errors.address}</p>}
+                  </div>
+
+                  {/* City */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <MapPin className="inline h-4 w-4 mr-1" />
+                      {cp.city}
+                    </label>
+                    <select
+                      name="city"
+                      value={formData.city}
+                      onChange={handleInputChange}
+                      className={`h-11 w-full px-4 border-2 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors text-gray-900 ${
+                        errors.city ? 'border-red-500' : 'border-gray-300'
+                      }`}
+                    >
+                      <option value="" disabled>
+                        {cp.selectCity}
+                      </option>
+                      {deliveryRates.map((rate) => (
+                        <option key={rate.city} value={rate.city}>
+                          {rate.city} ({rate.fee.toLocaleString()} ֏)
+                        </option>
+                      ))}
+                    </select>
+                    {errors.city && <p className="text-red-500 text-sm mt-1">{errors.city}</p>}
+                  </div>
                 </div>
 
-                {/* Delivery Time */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    <Clock className="inline h-4 w-4 mr-1" />
-                    {cp.deliveryTime}
-                  </label>
-                  <select
-                    name="deliveryTime"
-                    value={formData.deliveryTime}
-                    onChange={handleInputChange}
-                    className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors text-gray-900"
-                  >
-                    <option value="asap">{cp.asap}</option>
-                    <option value="11:00-12:00">11:00 - 12:00</option>
-                    <option value="12:00-13:00">12:00 - 13:00</option>
-                    <option value="13:00-14:00">13:00 - 14:00</option>
-                    <option value="14:00-15:00">14:00 - 15:00</option>
-                    <option value="15:00-16:00">15:00 - 16:00</option>
-                    <option value="16:00-17:00">16:00 - 17:00</option>
-                    <option value="17:00-18:00">17:00 - 18:00</option>
-                    <option value="18:00-19:00">18:00 - 19:00</option>
-                    <option value="19:00-20:00">19:00 - 20:00</option>
-                    <option value="20:00-21:00">20:00 - 21:00</option>
-                  </select>
-                  {errors.deliveryTime && <p className="text-red-500 text-sm mt-1">{errors.deliveryTime}</p>}
-                </div>
               </div>
             </div>
 
@@ -566,18 +612,26 @@ export default function CheckoutPage() {
                 ))}
                 
                 <div className="border-t border-gray-300 pt-3 space-y-2">
+                  <div className="flex justify-between text-sm text-gray-600">
+                    <span>{cp.subtotal}</span>
+                    <span>{productsSubtotal} ֏</span>
+                  </div>
                   {promoDiscount > 0 && (
                     <div className="flex justify-between text-sm text-green-600">
                       <span>Զեղչ (պրոմո)</span>
                       <span>-{promoDiscount} ֏</span>
                     </div>
                   )}
+                  <div className="flex justify-between text-sm text-gray-600">
+                    <span>{cp.deliveryFee}</span>
+                    <span>{deliveryFee.toLocaleString()} ֏</span>
+                  </div>
                   <div className="flex justify-between text-lg font-bold text-gray-900">
                     <span>{cp.total}</span>
                     <span>{finalTotal} ֏</span>
                   </div>
-                  <div className="text-sm text-green-600 mt-1">
-                    {cp.freeDelivery}
+                  <div className={`text-sm mt-1 ${deliveryFee === 0 ? 'text-green-600' : 'text-gray-600'}`}>
+                    {deliveryFee === 0 ? cp.freeDelivery : `${cp.city}: ${formData.city || cp.selectCity}`}
                   </div>
                 </div>
                 <div className="pt-2">
@@ -675,50 +729,51 @@ export default function CheckoutPage() {
                     {errors.phone && <p className="text-red-500 text-sm mt-1">{errors.phone}</p>}
                   </div>
 
-                  {/* Address */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      <MapPin className="inline h-4 w-4 mr-1" />
-                      {cp.address}
-                    </label>
-                    <textarea
-                      name="address"
-                      value={formData.address}
-                      onChange={handleInputChange}
-                      rows={3}
-                      className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors resize-none text-gray-900 ${
-                        errors.address ? 'border-red-500' : 'border-gray-300'
-                      }`}
-                      placeholder={cp.addressPlaceholder}
-                    />
-                    {errors.address && <p className="text-red-500 text-sm mt-1">{errors.address}</p>}
-                  </div>
+                  <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                    {/* Address */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <MapPin className="inline h-4 w-4 mr-1" />
+                        {cp.address}
+                      </label>
+                      <input
+                        type="text"
+                        name="address"
+                        value={formData.address}
+                        onChange={handleInputChange}
+                        className={`h-11 w-full px-4 border-2 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors text-gray-900 ${
+                          errors.address ? 'border-red-500' : 'border-gray-300'
+                        }`}
+                        placeholder={cp.addressPlaceholder}
+                      />
+                      {errors.address && <p className="text-red-500 text-sm mt-1">{errors.address}</p>}
+                    </div>
 
-                  {/* Delivery Time */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      <Clock className="inline h-4 w-4 mr-1" />
-                      {cp.deliveryTime}
-                    </label>
-                    <select
-                      name="deliveryTime"
-                      value={formData.deliveryTime}
-                      onChange={handleInputChange}
-                      className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors text-gray-900"
-                    >
-                      <option value="asap">{cp.asap}</option>
-                      <option value="11:00-12:00">11:00 - 12:00</option>
-                      <option value="12:00-13:00">12:00 - 13:00</option>
-                      <option value="13:00-14:00">13:00 - 14:00</option>
-                      <option value="14:00-15:00">14:00 - 15:00</option>
-                      <option value="15:00-16:00">15:00 - 16:00</option>
-                      <option value="16:00-17:00">16:00 - 17:00</option>
-                      <option value="17:00-18:00">17:00 - 18:00</option>
-                      <option value="18:00-19:00">18:00 - 19:00</option>
-                      <option value="19:00-20:00">19:00 - 20:00</option>
-                      <option value="20:00-21:00">20:00 - 21:00</option>
-                    </select>
-                    {errors.deliveryTime && <p className="text-red-500 text-sm mt-1">{errors.deliveryTime}</p>}
+                    {/* City */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <MapPin className="inline h-4 w-4 mr-1" />
+                        {cp.city}
+                      </label>
+                      <select
+                        name="city"
+                        value={formData.city}
+                        onChange={handleInputChange}
+                        className={`h-11 w-full px-4 border-2 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors text-gray-900 ${
+                          errors.city ? 'border-red-500' : 'border-gray-300'
+                        }`}
+                      >
+                        <option value="" disabled>
+                          {cp.selectCity}
+                        </option>
+                        {deliveryRates.map((rate) => (
+                          <option key={rate.city} value={rate.city}>
+                            {rate.city} ({rate.fee.toLocaleString()} ֏)
+                          </option>
+                        ))}
+                      </select>
+                      {errors.city && <p className="text-red-500 text-sm mt-1">{errors.city}</p>}
+                    </div>
                   </div>
 
                   {/* Payment Method */}
@@ -816,18 +871,26 @@ export default function CheckoutPage() {
                   ))}
                   
                   <div className="border-t border-gray-300 pt-4 space-y-2">
+                    <div className="flex justify-between text-sm text-gray-600">
+                      <span>{cp.subtotal}</span>
+                      <span>{productsSubtotal} ֏</span>
+                    </div>
                     {promoDiscount > 0 && (
                       <div className="flex justify-between text-sm text-green-600">
                         <span>Զեղչ (պրոմո)</span>
                         <span>-{promoDiscount} ֏</span>
                       </div>
                     )}
+                    <div className="flex justify-between text-sm text-gray-600">
+                      <span>{cp.deliveryFee}</span>
+                      <span>{deliveryFee.toLocaleString()} ֏</span>
+                    </div>
                     <div className="flex justify-between text-lg font-bold text-gray-900">
                       <span>{cp.total}</span>
                       <span>{finalTotal} ֏</span>
                     </div>
-                    <div className="text-sm text-green-600 mt-1">
-                      {cp.freeDelivery}
+                    <div className={`text-sm mt-1 ${deliveryFee === 0 ? 'text-green-600' : 'text-gray-600'}`}>
+                      {deliveryFee === 0 ? cp.freeDelivery : `${cp.city}: ${formData.city || cp.selectCity}`}
                     </div>
                   </div>
                   <div className="pt-4">

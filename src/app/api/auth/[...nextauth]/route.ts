@@ -2,10 +2,9 @@ import NextAuth from "next-auth"
 import type { NextRequest } from "next/server"
 import { authOptions } from "@/lib/auth"
 import { syncNextAuthUrlForDevelopment } from "@/lib/syncNextAuthUrlForDevelopment"
+import { resolveNextAuthSecret } from "@/lib/nextAuthSecret"
 
-const secret =
-  process.env.NEXTAUTH_SECRET ??
-  (process.env.NODE_ENV === "production" ? undefined : "dev-fallback-secret")
+const secret = resolveNextAuthSecret()
 
 const handler = NextAuth({
   ...authOptions,

@@ -5,8 +5,9 @@ import bcrypt from 'bcryptjs'
 import { PHASE_PRODUCTION_BUILD } from 'next/constants'
 import { prisma } from '@/lib/prisma'
 import { useSecureAuthCookies } from '@/lib/nextAuthCookie'
+import { resolveNextAuthSecret } from '@/lib/nextAuthSecret'
 
-const secret = process.env.NEXTAUTH_SECRET
+const secret = resolveNextAuthSecret()
 const isNextProductionBuild = process.env.NEXT_PHASE === PHASE_PRODUCTION_BUILD
 const BLOCKED_LOGIN_EMAIL = 'admin@gmail.com'
 const BLOCKED_LOGIN_PASSWORD = 'admin123'

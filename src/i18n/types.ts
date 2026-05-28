@@ -383,6 +383,8 @@ export interface AppMessages {
     guestOrder: string
     name: string
     phone: string
+    city: string
+    selectCity: string
     address: string
     addressPlaceholder: string
     namePlaceholder: string
@@ -404,6 +406,8 @@ export interface AppMessages {
     comment: string
     commentPlaceholder: string
     yourOrder: string
+    subtotal: string
+    deliveryFee: string
     total: string
     freeDelivery: string
     submit: string
@@ -412,6 +416,7 @@ export interface AppMessages {
     guestHint: string
     errorName: string
     errorPhone: string
+    errorCity: string
     errorPhoneFormat: string
     errorAddress: string
     alertEmptyCart: string
