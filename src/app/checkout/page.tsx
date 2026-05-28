@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
-import { ArrowLeft, MapPin, Clock, CreditCard, Phone, User } from 'lucide-react'
+import { ArrowLeft, MapPin, CreditCard, Phone, User } from 'lucide-react'
 import { useCart } from '@/hooks/useCart'
 import { useSession } from 'next-auth/react'
 import Footer from '@/components/Footer'
@@ -109,7 +109,6 @@ export default function CheckoutPage() {
     phone: '',
     city: '',
     address: '',
-    deliveryTime: 'asap',
     paymentMethod: 'cash',
     notes: ''
   })
@@ -524,32 +523,6 @@ export default function CheckoutPage() {
                   </div>
                 </div>
 
-                {/* Delivery Time */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    <Clock className="inline h-4 w-4 mr-1" />
-                    {cp.deliveryTime}
-                  </label>
-                  <select
-                    name="deliveryTime"
-                    value={formData.deliveryTime}
-                    onChange={handleInputChange}
-                    className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors text-gray-900"
-                  >
-                    <option value="asap">{cp.asap}</option>
-                    <option value="11:00-12:00">11:00 - 12:00</option>
-                    <option value="12:00-13:00">12:00 - 13:00</option>
-                    <option value="13:00-14:00">13:00 - 14:00</option>
-                    <option value="14:00-15:00">14:00 - 15:00</option>
-                    <option value="15:00-16:00">15:00 - 16:00</option>
-                    <option value="16:00-17:00">16:00 - 17:00</option>
-                    <option value="17:00-18:00">17:00 - 18:00</option>
-                    <option value="18:00-19:00">18:00 - 19:00</option>
-                    <option value="19:00-20:00">19:00 - 20:00</option>
-                    <option value="20:00-21:00">20:00 - 21:00</option>
-                  </select>
-                  {errors.deliveryTime && <p className="text-red-500 text-sm mt-1">{errors.deliveryTime}</p>}
-                </div>
               </div>
             </div>
 
@@ -801,33 +774,6 @@ export default function CheckoutPage() {
                       </select>
                       {errors.city && <p className="text-red-500 text-sm mt-1">{errors.city}</p>}
                     </div>
-                  </div>
-
-                  {/* Delivery Time */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      <Clock className="inline h-4 w-4 mr-1" />
-                      {cp.deliveryTime}
-                    </label>
-                    <select
-                      name="deliveryTime"
-                      value={formData.deliveryTime}
-                      onChange={handleInputChange}
-                      className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors text-gray-900"
-                    >
-                      <option value="asap">{cp.asap}</option>
-                      <option value="11:00-12:00">11:00 - 12:00</option>
-                      <option value="12:00-13:00">12:00 - 13:00</option>
-                      <option value="13:00-14:00">13:00 - 14:00</option>
-                      <option value="14:00-15:00">14:00 - 15:00</option>
-                      <option value="15:00-16:00">15:00 - 16:00</option>
-                      <option value="16:00-17:00">16:00 - 17:00</option>
-                      <option value="17:00-18:00">17:00 - 18:00</option>
-                      <option value="18:00-19:00">18:00 - 19:00</option>
-                      <option value="19:00-20:00">19:00 - 20:00</option>
-                      <option value="20:00-21:00">20:00 - 21:00</option>
-                    </select>
-                    {errors.deliveryTime && <p className="text-red-500 text-sm mt-1">{errors.deliveryTime}</p>}
                   </div>
 
                   {/* Payment Method */}
