@@ -19,9 +19,10 @@ import {
   Truck,
 } from 'lucide-react'
 import { useState, useEffect } from 'react'
+import { SiteBrandMark } from '@/components/SiteBrandMark'
+import { usePublicSiteSettings } from '@/hooks/usePublicSiteSettings'
 
 const SIDEBAR_NAV_ITEMS = [
-  { href: '/', label: 'Գլխավոր էջ', icon: Home, external: false },
   { href: '/supersudo', label: 'Վահանակ', icon: LayoutDashboard },
   { href: '/supersudo/products', label: 'Ապրանքներ', icon: Package },
   { href: '/supersudo/orders', label: 'Պատվերներ', icon: ShoppingCart },
@@ -42,6 +43,7 @@ export default function AdminLayout({
   const router = useRouter()
   const pathname = usePathname()
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const branding = usePublicSiteSettings()
 
   useEffect(() => {
     if (status === 'loading') return
@@ -63,34 +65,15 @@ export default function AdminLayout({
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="fixed top-0 left-0 right-0 z-40 h-14 lg:h-16 bg-white border-b border-gray-200 shadow-sm">
-        <div className="flex items-center justify-between h-full px-4 lg:px-6">
-          <div className="flex items-center gap-3">
-            <button
-              type="button"
-              onClick={() => setSidebarOpen((open) => !open)}
-              className="lg:hidden p-2 rounded-lg hover:bg-gray-100 text-gray-600"
-              aria-label="Մենյու"
-            >
-              {sidebarOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-            </button>
-            <Link href="/supersudo" className="font-bold text-gray-900 text-lg">
-              Ադմին վահանակ
-            </Link>
-          </div>
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => signOut({ callbackUrl: '/' })}
-              className="flex items-center gap-1.5 px-3 py-2 text-sm text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-            >
-              <LogOut className="h-4 w-4" />
-              <span>Դուրս գալ</span>
-            </button>
-          </div>
-        </div>
-      </header>
+    <div className="min-h-screen bg-gray-50 lg:flex">
+      <button
+        type="button"
+        onClick={() => setSidebarOpen((open) => !open)}
+        className="fixed top-3 left-3 z-50 lg:hidden p-2 rounded-lg bg-white border border-gray-200 shadow-sm hover:bg-gray-100 text-gray-600"
+        aria-label="Մենյու"
+      >
+        {sidebarOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+      </button>
 
       {sidebarOpen && (
         <div
@@ -102,13 +85,19 @@ export default function AdminLayout({
 
       <aside
         className={`
-          fixed top-14 lg:top-16 left-0 z-40 w-56 h-[calc(100vh-3.5rem)] lg:h-[calc(100vh-4rem)]
+          fixed top-0 left-0 z-40 w-56 h-screen overflow-y-auto
           bg-white border-r border-gray-200 transform transition-transform duration-200 ease-out
+          lg:sticky lg:top-0 lg:h-screen lg:self-start
           lg:translate-x-0
           ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
         `}
       >
-        <nav className="p-3 space-y-0.5">
+        <div className="flex h-full flex-col">
+          <div className="px-4 pt-4 pb-2 border-b border-gray-100">
+            <SiteBrandMark variant="mobile" branding={branding} />
+          </div>
+
+          <nav className="flex-1 p-3 space-y-0.5">
           {SIDEBAR_NAV_ITEMS.map(({ href, label, icon: Icon, external }) => {
             const isAdminLink = href.startsWith('/supersudo')
             const isActive =
@@ -130,10 +119,22 @@ export default function AdminLayout({
               </Link>
             )
           })}
-        </nav>
+          </nav>
+
+          <div className="p-3 border-t border-gray-100">
+            <button
+              type="button"
+              onClick={() => signOut({ callbackUrl: '/' })}
+              className="w-full flex items-center gap-2 px-3 py-2.5 text-sm text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-xl transition-colors"
+            >
+              <LogOut className="h-4 w-4" />
+              <span>Դուրս գալ</span>
+            </button>
+          </div>
+        </div>
       </aside>
 
-      <main className="pt-14 lg:pt-16 lg:pl-56">
+      <main className="pt-14 lg:pt-0 lg:flex-1">
         <div className="p-4 lg:p-8">{children}</div>
       </main>
     </div>
