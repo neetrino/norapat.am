@@ -16,6 +16,7 @@ import {
   Home,
   Users,
   BarChart2,
+  Truck,
 } from 'lucide-react'
 import { useState, useEffect } from 'react'
 
@@ -25,6 +26,7 @@ const SIDEBAR_NAV_ITEMS = [
   { href: '/supersudo/products', label: 'Ապրանքներ', icon: Package },
   { href: '/supersudo/orders', label: 'Պատվերներ', icon: ShoppingCart },
   { href: '/supersudo/categories', label: 'Կատեգորիաներ', icon: Tag },
+  { href: '/supersudo/delivery', label: 'Առաքում', icon: Truck },
   { href: '/supersudo/discounts', label: 'Զեղչեր', icon: BadgePercent },
   { href: '/supersudo/promo', label: 'Պրոմո կոդեր', icon: Percent },
   { href: '/supersudo/users', label: 'Օգտատերեր', icon: Users },

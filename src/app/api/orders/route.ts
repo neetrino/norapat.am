@@ -4,6 +4,10 @@ import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import type { OrderItemForm } from '@/types'
+import {
+  DELIVERY_RATES_SETTINGS_KEY,
+  parseDeliveryRates,
+} from '@/lib/deliveryRates'
 
 const ALLOWED_PAYMENT_METHODS = new Set(['cash', 'idram', 'arca'])
 
@@ -63,7 +67,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions)
-    const { name, phone, address, paymentMethod, notes, items, total, deliveryTime, promoCode } =
+    const { name, phone, city, address, paymentMethod, notes, items, total, deliveryTime, promoCode, deliveryFee } =
       await request.json()
 
     if (
@@ -104,6 +108,27 @@ export async function POST(request: NextRequest) {
       })
     }
 
+    const deliverySetting = await prisma.settings.findUnique({
+      where: { key: DELIVERY_RATES_SETTINGS_KEY },
+      select: { value: true },
+    })
+    const deliveryRates = parseDeliveryRates(deliverySetting?.value)
+    if (deliveryRates.length > 0) {
+      if (typeof city !== 'string' || !city.trim()) {
+        return NextResponse.json({ error: 'City is required' }, { status: 400 })
+      }
+
+      const selectedRate = deliveryRates.find((rate) => rate.city === city)
+      if (!selectedRate) {
+        return NextResponse.json({ error: 'Invalid city' }, { status: 400 })
+      }
+
+      const submittedFee = typeof deliveryFee === 'number' ? Math.round(deliveryFee) : null
+      if (submittedFee === null || submittedFee !== selectedRate.fee) {
+        return NextResponse.json({ error: 'Invalid delivery fee' }, { status: 400 })
+      }
+    }
+
     const idramInitSecret =
       paymentMethod === 'idram' ? randomBytes(24).toString('hex') : null
 
@@ -116,7 +141,7 @@ export async function POST(request: NextRequest) {
         name: name || 'Guest Customer',
         status: 'PENDING',
         total,
-        address,
+        address: city ? `${city}, ${address}` : address,
         phone,
         notes,
         paymentMethod,
