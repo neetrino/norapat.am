@@ -1,8 +1,9 @@
 import { withAuth } from "next-auth/middleware"
 import { NextResponse } from "next/server"
 import { AUTH_SESSION_TOKEN_COOKIE_NAME } from '@/lib/nextAuthCookie'
+import { resolveNextAuthSecret } from '@/lib/nextAuthSecret'
 
-const authSecret = process.env.NEXTAUTH_SECRET
+const authSecret = resolveNextAuthSecret()
 const ADMIN_INTERNAL_PATH = '/admin'
 const ADMIN_PUBLIC_PATH = '/supersudo'
 
