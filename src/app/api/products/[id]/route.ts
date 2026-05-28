@@ -91,9 +91,14 @@ export async function DELETE(
       )
     }
 
-    // Удаляем товар
-    await prisma.product.delete({
-      where: { id }
+    await prisma.$transaction(async tx => {
+      await tx.orderItem.deleteMany({
+        where: { productId: id }
+      })
+
+      await tx.product.delete({
+        where: { id }
+      })
     })
 
     return NextResponse.json(

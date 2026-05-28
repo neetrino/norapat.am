@@ -67,6 +67,23 @@ function normalizeProductFlags(p: ProductWithCategory): AdminProductRow {
   }
 }
 
+async function readApiErrorMessage(response: Response): Promise<string> {
+  if (response.status === 409) {
+    return 'Այս ապրանքը կապված է պատվերների հետ, դրա համար չի կարող ջնջվել։ Կարող եք արխիվացնել կամ անջատել հասանելիությունը։'
+  }
+
+  try {
+    const payload = (await response.json()) as { error?: string }
+    if (payload.error && payload.error.trim().length > 0) {
+      return payload.error
+    }
+  } catch {
+    // Ignore invalid JSON and use fallback message.
+  }
+
+  return 'Սխալ ապրանքը ջնջելիս'
+}
+
 export default function AdminProducts() {
   const { data: session, status } = useSession()
   const router = useRouter()
@@ -135,7 +152,7 @@ export default function AdminProducts() {
           return next
         })
       } else {
-        alert('Սխալ ապրանքը ջնջելիս')
+        alert(await readApiErrorMessage(res))
       }
     } catch (err) {
       console.error('Error deleting product:', err)
@@ -166,6 +183,7 @@ export default function AdminProducts() {
           if (res.ok) {
             deletedIds.push(p.id)
           } else {
+            console.warn(await readApiErrorMessage(res))
             failedCount += 1
           }
         } catch {
