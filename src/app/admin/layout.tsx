@@ -13,7 +13,6 @@ import {
   LogOut,
   Menu,
   X,
-  Home,
   Users,
   BarChart2,
   Truck,
