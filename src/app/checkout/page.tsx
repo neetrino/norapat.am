@@ -515,7 +515,7 @@ export default function CheckoutPage() {
                       </option>
                       {deliveryRates.map((rate) => (
                         <option key={rate.city} value={rate.city}>
-                          {rate.city} ({rate.fee.toLocaleString()} ֏)
+                          {rate.city}
                         </option>
                       ))}
                     </select>
@@ -630,9 +630,11 @@ export default function CheckoutPage() {
                     <span>{cp.total}</span>
                     <span>{finalTotal} ֏</span>
                   </div>
-                  <div className={`text-sm mt-1 ${deliveryFee === 0 ? 'text-green-600' : 'text-gray-600'}`}>
-                    {deliveryFee === 0 ? cp.freeDelivery : `${cp.city}: ${formData.city || cp.selectCity}`}
-                  </div>
+                  {deliveryFee === 0 && (
+                    <div className="text-sm mt-1 text-green-600">
+                      {cp.freeDelivery}
+                    </div>
+                  )}
                 </div>
                 <div className="pt-2">
                   <label className="block text-sm font-medium text-gray-700 mb-1">Պրոմո կոդ</label>
@@ -641,7 +643,7 @@ export default function CheckoutPage() {
                       type="text"
                       value={promoCode}
                       onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
-                      placeholder="PROMO"
+                      placeholder="Մուտքագրեք code-ը"
                       className="flex-1 px-4 py-2 border border-gray-300 rounded-xl text-gray-900"
                     />
                     <button
@@ -768,7 +770,7 @@ export default function CheckoutPage() {
                         </option>
                         {deliveryRates.map((rate) => (
                           <option key={rate.city} value={rate.city}>
-                            {rate.city} ({rate.fee.toLocaleString()} ֏)
+                            {rate.city}
                           </option>
                         ))}
                       </select>
@@ -889,9 +891,11 @@ export default function CheckoutPage() {
                       <span>{cp.total}</span>
                       <span>{finalTotal} ֏</span>
                     </div>
-                    <div className={`text-sm mt-1 ${deliveryFee === 0 ? 'text-green-600' : 'text-gray-600'}`}>
-                      {deliveryFee === 0 ? cp.freeDelivery : `${cp.city}: ${formData.city || cp.selectCity}`}
-                    </div>
+                    {deliveryFee === 0 && (
+                      <div className="text-sm mt-1 text-green-600">
+                        {cp.freeDelivery}
+                      </div>
+                    )}
                   </div>
                   <div className="pt-4">
                     <label className="block text-sm font-medium text-gray-700 mb-1">Պրոմո կոդ</label>
@@ -900,7 +904,7 @@ export default function CheckoutPage() {
                         type="text"
                         value={promoCode}
                         onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
-                        placeholder="PROMO"
+                        placeholder="Մուտքագրեք code-ը"
                         className="flex-1 px-4 py-2 border border-gray-300 rounded-xl text-gray-900"
                       />
                       <button
