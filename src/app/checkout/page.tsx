@@ -639,19 +639,19 @@ export default function CheckoutPage() {
                 </div>
                 <div className="pt-2">
                   <label className="block text-sm font-medium text-gray-700 mb-1">Պրոմո կոդ</label>
-                  <div className="flex gap-2">
+                  <div className="flex flex-col gap-2 sm:flex-row">
                     <input
                       type="text"
                       value={promoCode}
                       onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
                       placeholder="Մուտքագրեք code-ը"
-                      className="flex-1 px-4 py-2 border border-gray-300 rounded-xl text-gray-900"
+                      className="min-w-0 flex-1 px-4 py-2 border border-gray-300 rounded-xl text-gray-900"
                     />
                     <button
                       type="button"
                       onClick={applyPromo}
                       disabled={promoApplying}
-                      className="px-4 py-2 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 disabled:opacity-50"
+                      className="w-full shrink-0 px-4 py-2 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 disabled:opacity-50 sm:w-auto"
                     >
                       {promoApplying ? '...' : 'Կիրառել'}
                     </button>
@@ -900,19 +900,19 @@ export default function CheckoutPage() {
                   </div>
                   <div className="pt-4">
                     <label className="block text-sm font-medium text-gray-700 mb-1">Պրոմո կոդ</label>
-                    <div className="flex gap-2">
+                    <div className="flex flex-col gap-2 sm:flex-row">
                       <input
                         type="text"
                         value={promoCode}
                         onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
                         placeholder="Մուտքագրեք code-ը"
-                        className="flex-1 px-4 py-2 border border-gray-300 rounded-xl text-gray-900"
+                        className="min-w-0 flex-1 px-4 py-2 border border-gray-300 rounded-xl text-gray-900"
                       />
                       <button
                         type="button"
                         onClick={applyPromo}
                         disabled={promoApplying}
-                        className="px-4 py-2 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 disabled:opacity-50"
+                        className="w-full shrink-0 px-4 py-2 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 disabled:opacity-50 sm:w-auto"
                       >
                         {promoApplying ? '...' : 'Կիրառել'}
                       </button>
