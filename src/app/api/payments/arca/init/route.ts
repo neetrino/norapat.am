@@ -5,6 +5,7 @@ import { prisma } from '@/lib/prisma'
 import {
   getArcaConfig,
   arcaRegisterOrder,
+  resolveArcaApiLanguage,
   type ArcaPageView,
 } from '@/lib/payments/arca'
 import { arcaLogger } from '@/lib/payments/arca/arcaLogger'
@@ -80,7 +81,7 @@ export async function POST(request: NextRequest) {
       `?shopOrderId=${encodeURIComponent(order.id)}` +
       `&token=${encodeURIComponent(arcaInitSecret)}`
 
-    const lang = language ?? 'en'
+    const lang = resolveArcaApiLanguage(language)
     const description = buildDescription(order)
     const pageView =
       bodyPageView ?? inferPageViewFromUserAgent(request.headers.get('user-agent'))

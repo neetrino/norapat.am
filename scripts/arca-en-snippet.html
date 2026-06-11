@@ -1,0 +1,75 @@
+id="formPayment" class="data-form">
+                        <input type="hidden" id="expiry">
+                        <input type="hidden" id="mdOrder">
+                        <input type="hidden" id="location" value="/../">
+                        <input type="hidden" id="language" value="<ru>">
+                        <input type="hidden" id="iPAN" name="$PAN" maxlength="19">
+                        <div class="fields-payment">
+                            <div id="errorBlock"></div>
+                            <div id="infoBlock"></div>
+                            <div class="row">
+                                <div class="col-xs-12 d-flex flex-wrap gap-3">
+                                    <div class="form-group ardshin-user-input-field">
+                                        <label class="form-group__label" for="iPAN" id="panLabel"><span
+                                                langLbl="pan"/></label>
+                                        <select id="combobox" name="bindingId" type="tel" style="display:none">
+                                        </select>
+                                    </div>
+
+                                    <div class="form-group ardshin-user-input-field">
+                                        <label class="form-group__label" for="iTEXT" id="cardholderLabel"><span
+                                                langLbl="cardholder"/></label>
+                                        <input type="text" class="form-control" id="iTEXT" maxlength="26">
+                                    </div>
+
+                                </div>
+                                <div class="col-sm-8 col-xs-12">
+                                    <div class="form-group">
+                                        <label class="form-group__label" id="expiryLabel"><span
+                                                langLbl="expiry"/></label>
+                                        <div class="d-flex flex-wrap gap-3" id="expiry_row">
+                                            <div class="expiry-month" dir="ltr">
+                                                <select id="month" class="form-control">
+                                                    <option></option>
+                                                    <option>01</option>
+                                                    <option>02</option>
+                                                    <option>03</option>
+                                                    <option>04</option>
+                                                    <option>05</option>
+                                                    <option>06</option>
+                                                    <option>07</option>
+                                                    <option>08</option>
+                                                    <option>09</option>
+                                                    <option>10</option>
+                                                    <option>11</option>
+                                                    <option>12</option>
+                                                </select>
+                                            </div>
+                                            <div class="expiry-year" dir="ltr">
+                                                <select id="year" class="form-control">
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-xs-12 col-sm-4">
+                                    <div class="form-group">
+                                        <label class="form-group__label" id="cvcLabel">CVV2 / CVC2</label>
+                                        <input class="form-control" id="iCVC" placeholder="***">
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div id="avsBlock" style="display: none;">
+                                <div class="form-group">
+                                    <label class="form-group__label" for="streetAddress"><span
+                                            langLbl="streetAddress"/></label>
+                                    <input type="text" class="form-control" id="streetAddress" maxlength="40">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-group__label" for="postalCode"><span
+                                            langLbl="postalCode"/></label>
+                                    <input type="text" class="form-control" id="postalCode" maxlength="9">
+                                </div>
+                            </div>
+                            <div class="form-group" id="emailBlock" style="displa

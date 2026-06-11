@@ -25,12 +25,30 @@ function shouldUseTestMode(
   return false
 }
 
+function resolveBaseUrl(useTest: boolean): string {
+  const override = trimEnv(
+    useTest ? process.env.ARCA_TEST_BASE_URL : process.env.ARCA_LIVE_BASE_URL
+  )
+  if (override) {
+    return override.replace(/\/$/, '')
+  }
+
+  const bank = trimEnv(process.env.ARCA_BANK).toLowerCase()
+  if (bank === 'inecobank') {
+    return 'https://pg.inecoecom.am/payment/rest'
+  }
+
+  return useTest ? ARCA_TEST_BASE_URL : ARCA_LIVE_BASE_URL
+}
+
 /**
  * Reads Arca credentials and base URL from environment variables.
  *
  * Env vars:
+ *   ARCA_BANK — idbank (default) | inecobank
  *   ARCA_TEST_USERNAME / ARCA_TEST_PASSWORD — test merchant credentials
  *   ARCA_LIVE_USERNAME / ARCA_LIVE_PASSWORD — production merchant credentials
+ *   ARCA_TEST_BASE_URL / ARCA_LIVE_BASE_URL — optional gateway override
  *   ARCA_TEST_MODE=true|false — force test or live mode
  */
 export function getArcaConfig(): ArcaConfig {
@@ -49,7 +67,7 @@ export function getArcaConfig(): ArcaConfig {
   if (user && pass) {
     return {
       credentials: { userName: user, password: pass },
-      baseUrl: useTest ? ARCA_TEST_BASE_URL : ARCA_LIVE_BASE_URL,
+      baseUrl: resolveBaseUrl(useTest),
     }
   }
 
