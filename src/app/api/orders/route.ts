@@ -146,7 +146,9 @@ export async function POST(request: NextRequest) {
         notes,
         paymentMethod,
         deliveryTime,
-        ...(paymentMethod === 'idram' ? { paymentStatus: 'PENDING' as const } : {}),
+        ...(paymentMethod === 'idram' || paymentMethod === 'arca'
+          ? { paymentStatus: 'PENDING' as const }
+          : {}),
         idramInitSecret,
         arcaInitSecret,
         items: {

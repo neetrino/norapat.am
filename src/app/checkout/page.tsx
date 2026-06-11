@@ -23,7 +23,8 @@ function mapLocaleToIdramLanguage(locale: AppLocale): 'EN' | 'AM' | 'RU' {
 }
  
 function mapLocaleToArcaLanguage(locale: AppLocale): 'hy' | 'en' | 'ru' {
-  if (locale === 'hy') return 'hy'
+  if (locale === 'ru') return 'ru'
+  // hy → en: merchant payment_hy.html has card form commented out on epg.arca.am
   return 'en'
 }
 

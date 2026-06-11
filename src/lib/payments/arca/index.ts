@@ -12,5 +12,8 @@ export {
   arcaRegisterOrder,
   arcaGetOrderStatus,
   arcaGetOrderStatusWithAcsRetry,
+  normalizeArcaFormUrl,
+  resolveArcaRegisterLanguage,
+  resolveArcaApiLanguage,
 } from './arca.api'
-export type { ArcaPageView } from './arca.api'
+export type { ArcaPageView, ArcaLanguage } from './arca.api'

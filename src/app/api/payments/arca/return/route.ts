@@ -141,6 +141,7 @@ export async function GET(request: NextRequest) {
         where: { id: shopOrderId },
         data: {
           status: 'CONFIRMED',
+          paymentStatus: 'PAID',
           arcaInitSecret: null,
         },
       })

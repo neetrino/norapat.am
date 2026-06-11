@@ -20,6 +20,33 @@ function arcaFetchSignal(): AbortSignal {
 
 export type ArcaPageView = 'MOBILE' | 'DESKTOP'
 
+export type ArcaLanguage = 'hy' | 'en' | 'ru'
+
+/**
+ * Some merchants ship `payment_hy.html` with the card form HTML commented out.
+ * Swap to the English page — same mdOrder session, working card fields + 3DS flow.
+ */
+export function normalizeArcaFormUrl(formUrl: string): string {
+  return formUrl
+    .replace(/mobile_payment_hy\.html/i, 'mobile_payment_en.html')
+    .replace(/payment_hy\.html/i, 'payment_en.html')
+}
+
+/**
+ * Arca register.do language. Armenian hosted page is broken for merchant 15537659;
+ * use English so card fields and 3DS redirect work.
+ */
+export function resolveArcaRegisterLanguage(locale: string): ArcaLanguage {
+  if (locale === 'ru') return 'ru'
+  return 'en'
+}
+
+/** Maps register.do language param; `hy` hosted page is broken for some merchants. */
+export function resolveArcaApiLanguage(language: ArcaLanguage | undefined): ArcaLanguage {
+  if (language === 'ru') return 'ru'
+  return 'en'
+}
+
 type RegisterOrderParams = {
   credentials: ArcaCredentials
   baseUrl: string
@@ -121,7 +148,7 @@ export async function arcaRegisterOrder(
 
   return {
     arcaOrderId: data.orderId,
-    formUrl: data.formUrl,
+    formUrl: normalizeArcaFormUrl(data.formUrl),
   }
 }
 
